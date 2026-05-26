@@ -108,7 +108,7 @@ The table below lists all core Rust concepts a learner should eventually see. **
 | `loop`, `while`, `continue`, `break` | ✅ | 1 |
 | `const` | ✅ | 1 |
 | Iterators (`iter`, `map`, `filter`, `count`, `collect`, `zip`, `enumerate`, `any`, `all`) | ✅ | 1 |
-| Closures (`|x| x * 2`) | ✅ | 1 |
+| Closures (`\|x\| x * 2`) | ✅ | 1 |
 | `print!`, `println!` | ✅ | 1 |
 | `std::io::stdin()`, `read_line()` | ✅ | 1 |
 | `io::stdout().flush()` | ✅ | 1 |
