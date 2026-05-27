@@ -85,6 +85,10 @@ In Rust, a variable is declared with `let`. **By default, variables are immutabl
 
 Rust is statically typed, but the compiler can often *infer* the type. You can also explicitly annotate types.
 
+#### A Note on `fn main()`
+
+You'll see `fn main() { ... }` in many examples. `fn` defines a function, and `main` is the function that runs when you execute the program — similar to `if __name__ == "__main__"` in Python. All example code goes **inside** the curly braces. Don't worry about the syntax for now; we'll cover functions properly in a later section.
+
 #### Example
 
 ```rust
@@ -143,7 +147,7 @@ String literals like `"hello"` are of type `&str`.
 
 ```rust
 fn main() {
-    let s1: String = String::from("hello");  // owned String
+    let s1: String = String::from("hello");  // heap-allocated String
     let s2: &str = "world";                  // string literal (&str)
 
     // You can borrow a String as a &str
