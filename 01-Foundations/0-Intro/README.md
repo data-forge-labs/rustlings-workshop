@@ -436,11 +436,10 @@ Status: above average
 
 ### Further Reading
 
-The following lesson files in this folder provide additional context:
+The following lesson file in this folder provides additional context:
 
 | File | Topics |
 |------|--------|
-| [00_welcome.md](./00_welcome.md) | Course overview, methodology, tools, `wr` workshop runner |
 | [01_syntax.md](./01_syntax.md) | Functions, return types, expressions vs statements, comments |
 
 ### Next Steps

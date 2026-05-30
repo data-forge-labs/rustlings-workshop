@@ -4,7 +4,7 @@
 
 ## Prerequisites
 
-- Rust installed (see [0-Intro](./0-Intro/workshop.md))
+- Rust installed (see [0-Intro](./0-Intro/README.md))
 - Basic Python knowledge
 - Familiarity with terminal/command line
 
