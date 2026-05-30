@@ -1,4 +1,4 @@
-# Rust for Python Data Engineers — Introduction
+# Rust for Python Data Engineers - Introduction
 
 *A beginner-friendly introduction to Rust designed specifically for data engineers coming from Python.*
 
@@ -9,7 +9,7 @@
 1. [Why Rust for Data Engineering?](#1-why-rust-for-data-engineering)
 2. [Installing Rust](#2-installing-rust)
 3. [Your First Rust Program: Hello, Data!](#3-your-first-rust-program-hello-data)
-4. [Concept: Rust vs Python — Syntax Side-by-Side](#4-concept-rust-vs-python--syntax-side-by-side)
+4. [Concept: Rust vs Python - Syntax Side-by-Side](#4-concept-rust-vs-python--syntax-side-by-side)
 5. [Concept: Functions in Rust](#5-concept-functions-in-rust)
 6. [Concept: Variables and Mutability](#6-concept-variables-and-mutability)
 7. [Concept: Expressions vs Statements](#7-concept-expressions-vs-statements)
@@ -32,15 +32,15 @@ If you're a Python data engineer, you know the pain points:
 
 ### Where Rust Shines for Data Engineering
 
-- **High-throughput data pipelines** — process millions of rows without GC pauses
-- **CLI tools for data processing** — single binary, fast startup, easy distribution
-- **Embedded/sidecar services** — predictable memory footprint
-- **Python extension modules** — write performance-critical code in Rust, call it from Python (PyO3)
-- **Streaming data** — real-time processing with deterministic latency
+- **High-throughput data pipelines** - process millions of rows without GC pauses
+- **CLI tools for data processing** - single binary, fast startup, easy distribution
+- **Embedded/sidecar services** - predictable memory footprint
+- **Python extension modules** - write performance-critical code in Rust, call it from Python (PyO3)
+- **Streaming data** - real-time processing with deterministic latency
 
 ### The Trade-off
 
-Rust has a **steep learning curve** — the compiler is strict, and concepts like ownership and lifetimes are new. But every concept exists to solve real problems: memory safety without GC, data races eliminated at compile time, and zero-cost abstractions.
+Rust has a **steep learning curve** - the compiler is strict, and concepts like ownership and lifetimes are new. But every concept exists to solve real problems: memory safety without GC, data races eliminated at compile time, and zero-cost abstractions.
 
 This course is designed to **flatten that curve** by mapping every Rust concept back to something you already know from Python.
 
@@ -115,13 +115,13 @@ Hello, data engineers!
 | `"..."` | String literal | `"..."` |
 | `;` | Statement terminator (optional in Python) | Required in Rust |
 
-> **`!` means macro.** `println!` is a macro, not a function. Macros can do things functions can't — like accepting a variable number of arguments. You'll see `!` on `vec!`, `panic!`, `assert_eq!` and many others.
+> **`!` means macro.** `println!` is a macro, not a function. Macros can do things functions can't - like accepting a variable number of arguments. You'll see `!` on `vec!`, `panic!`, `assert_eq!` and many others.
 
 ---
 
-## 4. Concept: Rust vs Python — Syntax Side-by-Side
+## 4. Concept: Rust vs Python - Syntax Side-by-Side
 
-Here's a quick reference table. Don't memorize it — refer back as you go through exercises.
+Here's a quick reference table. Don't memorize it - refer back as you go through exercises.
 
 | Feature | Python | Rust |
 |---|---|---|
@@ -146,13 +146,13 @@ Here's a quick reference table. Don't memorize it — refer back as you go throu
 ### Key Differences for Data Engineers
 
 ```python
-# Python — dynamic typing, flexible
+# Python - dynamic typing, flexible
 def process_data(df, threshold):
     return df[df["value"] > threshold]
 ```
 
 ```rust
-// Rust — static typing, explicit
+// Rust - static typing, explicit
 fn process_data(data: Vec<f64>, threshold: f64) -> Vec<f64> {
     data.into_iter()
         .filter(|&x| x > threshold)
@@ -160,7 +160,7 @@ fn process_data(data: Vec<f64>, threshold: f64) -> Vec<f64> {
 }
 ```
 
-In Rust you must specify **types** — the compiler enforces them at compile time. No more `AttributeError: 'NoneType' object has no attribute 'shape'` at 3 AM.
+In Rust you must specify **types** - the compiler enforces them at compile time. No more `AttributeError: 'NoneType' object has no attribute 'shape'` at 3 AM.
 
 ---
 
@@ -183,7 +183,7 @@ def celsius_to_fahrenheit(c):
 ```
 
 ```rust
-// Rust — same logic, explicit types
+// Rust - same logic, explicit types
 fn celsius_to_fahrenheit(c: f64) -> f64 {
     c * 9.0 / 5.0 + 32.0
 }
@@ -270,12 +270,12 @@ Try it: `cargo run`
 ### `let` Binding
 
 ```rust
-let x = 5;     // Immutable — cannot change
+let x = 5;     // Immutable - cannot change
 x = 6;         // ❌ Compiler error!
 ```
 
 ```rust
-let mut y = 5; // Mutable — can change
+let mut y = 5; // Mutable - can change
 y = 6;         // ✅ OK
 ```
 
@@ -286,13 +286,13 @@ Rust defaults to immutability for **safety**. In concurrent code, shared mutable
 ### Python Comparison
 
 ```python
-# Python — always mutable
+# Python - always mutable
 x = 5
 x = 6  # Fine
 ```
 
 ```rust
-// Rust — opt in to mutation
+// Rust - opt in to mutation
 let x = 5;
 x = 6;  // ❌ "cannot assign twice to immutable variable"
 ```
@@ -308,14 +308,14 @@ Rust lets you **shadow** a variable by redeclaring it with `let`:
 
 ```rust
 let x = 5;
-let x = x + 1;   // Shadowing — creates a new variable
+let x = x + 1;   // Shadowing - creates a new variable
 ```
 
-This is different from `mut` — shadowing creates a new variable (can change type too):
+This is different from `mut` - shadowing creates a new variable (can change type too):
 
 ```rust
 let x = "hello";  // x is &str
-let x = x.len();  // x is usize — type changed!
+let x = x.len();  // x is usize - type changed!
 ```
 
 > **Python comparison:** Python `x = 5; x = "hello"` works the same way, but Rust makes the rebinding explicit with `let`.
@@ -352,7 +352,7 @@ This is one of the most important Rust concepts that has no direct Python equiva
 // if x > 0: result = "positive"
 // else: result = "non-positive"
 
-// In Rust — `if` returns a value:
+// In Rust - `if` returns a value:
 let result = if x > 0 { "positive" } else { "non-positive" };
 ```
 
@@ -362,12 +362,12 @@ let result = if x > 0 { "positive" } else { "non-positive" };
 let x = {
     let a = 2;
     let b = 3;
-    a + b   // No semicolon — this IS the return value
+    a + b   // No semicolon - this IS the return value
 };
 // x = 5
 ```
 
-This is the foundation for Rust's functional style — you can assign the result of any control flow to a variable.
+This is the foundation for Rust's functional style - you can assign the result of any control flow to a variable.
 
 ---
 
@@ -433,6 +433,124 @@ Status: above average
 | `;` | Statement terminator | Optional in Python |
 | Expression | Produces a value | Most Python constructs are statements |
 | `println!` | Print to stdout | `print()` |
+
+---
+
+## 10. Exercise: Guess the Number Game
+
+Let's build a small game to practice everything you've learned: `let`, `mut`, `fn`, `println!`, `std::io`, loops, `if/else`, and external crates.
+
+### How It Works
+
+The program:
+1. Generates a random 2-digit number (10–99)
+2. Gives the user **5 chances** to guess it
+3. After each guess, tells the user "Too high!" or "Too low!"
+4. If the user guesses correctly, prints "You win!" and exits
+5. If all 5 guesses are used, prints the secret number
+
+### Python Version First
+
+```python
+import random
+
+secret = random.randint(10, 99)
+attempts = 5
+
+print("Guess the 2-digit number!")
+for i in range(attempts):
+    guess = int(input(f"Attempt {i+1}/{attempts}: "))
+    if guess == secret:
+        print("You win!")
+        break
+    elif guess < secret:
+        print("Too low!")
+    else:
+        print("Too high!")
+else:
+    print(f"Game over! The number was {secret}.")
+```
+
+### Rust Version - Step by Step
+
+Create a new Cargo project:
+
+```bash
+cargo new guess_game
+cd guess_game
+```
+
+Add the `rand` crate to `Cargo.toml`:
+
+```toml
+[dependencies]
+rand = "0.8"
+```
+
+Now write `src/main.rs`:
+
+```rust
+use rand::Rng;
+use std::io;
+
+fn main() {
+    let secret = rand::thread_rng().gen_range(10..=99);
+    let attempts = 5;
+
+    println!("Guess the 2-digit number!");
+
+    for i in 0..attempts {
+        println!("Attempt {}/{}:", i + 1, attempts);
+
+        let mut guess = String::new();
+        io::stdin().read_line(&mut guess).expect("Failed to read line");
+        let guess: u32 = guess.trim().parse().expect("Please enter a number");
+
+        if guess == secret {
+            println!("You win!");
+            return;
+        } else if guess < secret {
+            println!("Too low!");
+        } else {
+            println!("Too high!");
+        }
+    }
+
+    println!("Game over! The number was {}.", secret);
+}
+```
+
+### Rust vs Python - Side by Side
+
+| Aspect | Python | Rust |
+|--------|--------|------|
+| Random number | `random.randint(10, 99)` | `rand::thread_rng().gen_range(10..=99)` |
+| Read input | `input()` | `io::stdin().read_line(&mut String)` |
+| Parse input | `int(input())` | `guess.trim().parse::<u32>()` |
+| Loop | `for i in range(5)` | `for i in 0..5` |
+| Loop `else` (no break) | `for...else` | Not directly available |
+
+Run it:
+
+```bash
+cargo run
+```
+
+### Key Takeaways for This Exercise
+
+- **`rand::thread_rng().gen_range(10..=99)`** - generating random numbers with an external crate
+- **`io::stdin().read_line(&mut guess)`** - reading user input into a mutable `String`
+- **`.trim().parse::<u32>()`** - trimming whitespace and parsing a string into a number
+- **`for i in 0..attempts`** - range-based loop (Python `range()` equivalent)
+- **`return;`** - early exit from the function (like `break` but exits `main`)
+- **`expect("message")`** - crash with a helpful message on error (like not catching an exception)
+
+### Experiment
+
+Try modifying the game:
+- Change the range to 3-digit (100–999) with 8 attempts
+- Add a hint: "You're freezing!" if within 3 of the secret
+- Keep score: count how many guesses the player has taken across multiple rounds
 
 ### Further Reading
 
