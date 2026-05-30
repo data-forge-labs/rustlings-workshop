@@ -15,7 +15,7 @@
 
 ## Learning Path
 
-1. Build **59-Radish** to create a production-grade Redis-compatible server
+1. Build **01-Radish** to create a production-grade Redis-compatible server
 
 ## Key Concepts Covered
 

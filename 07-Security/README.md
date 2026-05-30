@@ -20,11 +20,11 @@
 
 ## Learning Path
 
-1. Study **35-SafeAndUnsafe** to understand Rust's safety boundaries
-2. Build **40-DecoderRing** for a practical crypto application
-3. Explore **41-RustCryptoHashes** for hashing algorithms
-4. Compare safety models with **42-RustSoftwareSecurity**
-5. Reflect with **39-SafetyLessonReflection** and **43-SecurityLessonReflection**
+1. Study **01-SafeAndUnsafe** to understand Rust's safety boundaries
+2. Build **02-DecoderRing** for a practical crypto application
+3. Explore **03-RustCryptoHashes** for hashing algorithms
+4. Compare safety models with ****
+5. Reflect with **** and ****
 
 ## Key Concepts Covered
 

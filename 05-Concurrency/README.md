@@ -28,9 +28,9 @@
 
 1. Study **7-Threads** tutorial for threading fundamentals
 2. Study **8-Futures** tutorial for async/await patterns
-3. Build **34-DataRace** to see Rust prevent data races at compile time
-4. Explore **44-Atomics** through **51-SendSync** for advanced concurrency
-5. Finish with **50-RayonChallenge** (data parallelism) and **52-ConcurrencyLessonReflection**
+3. Build **03-DataRace** to see Rust prevent data races at compile time
+4. Explore **04-Atomics** through **11-SendSync** for advanced concurrency
+5. Finish with **10-RayonChallenge** (data parallelism) and ****
 
 ## Key Concepts Covered
 

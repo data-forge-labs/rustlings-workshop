@@ -16,8 +16,8 @@
 
 ## Learning Path
 
-1. Start with **58-RustJupyterNotebook** to set up interactive Rust in Jupyter
-2. Explore **57-ExploringPandas** to see Rust and Python working together
+1. Start with **02-RustJupyterNotebook** to set up interactive Rust in Jupyter
+2. Explore **01-ExploringPandas** to see Rust and Python working together
 
 ## Key Concepts Covered
 

@@ -1,0 +1,8 @@
+[package]
+name = "rust-configuration"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+config = "0.14"
+serde = { version = "1.0", features = ["derive"] }

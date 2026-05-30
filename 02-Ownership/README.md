@@ -22,8 +22,8 @@
 1. **3-TicketV1** — the most important workshop. Master ownership with extensive diagrams
 2. **4-Traits** — learn Rust's interface system (like Python protocols)
 3. **5-TicketV2** — enums and Result-based error handling (essential for production)
-4. **37-OBRM** — apply ownership in a resource management project
-5. **38-OwnershipLifetimes** — deep dive into lifetime annotations
+4. **04-OBRM** — apply ownership in a resource management project
+5. **05-OwnershipLifetimes** — deep dive into lifetime annotations
 
 ## Key Concepts Covered
 

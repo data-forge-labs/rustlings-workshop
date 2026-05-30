@@ -1,6 +1,6 @@
 # Rust Tutorial — Learn by Doing
 
-A comprehensive, progressive Rust course built from two high-quality sources. It combines **tutorial-based exercises** (projects 0–8) with **hands-on Cargo projects** (projects 9–58), walking you from absolute beginner to advanced Rust.
+A comprehensive, progressive Rust course for Python data engineers. It combines **tutorial-based exercises** (Section 1 projects) with **hands-on Cargo projects** (Sections 2–10), walking you from absolute beginner to productive Rust developer.
 
 ## How It Works
 
@@ -9,18 +9,20 @@ RustTut/
 ├── README.md                        ← this file
 ├── AGENTS.md                        ← AI workshop designer instructions
 ├── .devcontainer/                   ← preconfigured Rust dev environment
-├── 01-Foundations/                  ← Section 1 (projects 0,1,2)
-├── 02-Ownership/                    ← Section 2 (projects 3,4,5,37,38)
-├── 03-Collections/                  ← Section 3 (projects 6,9-13,15-19,23,28,30,36)
-├── 04-FileIO/                       ← Section 4 (projects 53-56)
-├── 05-Concurrency/                  ← Section 5 (projects 7,8,34,44-52)
-├── 06-CLIAndTools/                  ← Section 6 (projects 14,20-22,24-27,29,31,33)
-├── 07-Security/                     ← Section 7 (projects 35,39-43)
-├── 08-Interop/                      ← Section 8 (projects 57,58)
-└── 09-ProductionSystems/           ← Section 9 (project 59)
+├── 01-Foundations/                  ← Section 1 (projects 01-03)
+├── 02-Ownership/                    ← Section 2 (projects 01-05)
+├── 03-Collections/                  ← Section 3 (projects 01-13)
+├── 04-FileIO/                       ← Section 4 (projects 01-03)
+├── 05-Concurrency/                  ← Section 5 (projects 01-11)
+├── 06-CLIAndTools/                  ← Section 6 (projects 01-10)
+├── 07-Security/                     ← Section 7 (projects 01-03)
+├── 08-Interop/                      ← Section 8 (projects 01-02)
+├── 09-ProductionSystems/           ← Section 9 (project 01)
+├── 10-ToolsAndFrameworks/          ← Section 10 (projects 01-03)
+└── 11-Reference/                    ← Section 11 (reference material)
 ```
 
-The course is organized into **9 sections** designed for a Python data engineer moving to Rust. Each section starts with tutorial-style projects (read `.md` files, write code alongside) and progresses to hands-on Cargo projects (build and run complete programs).
+The course is organized into **11 sections** designed for a Python data engineer moving to Rust. Each section starts with tutorial-style projects (read `.md` files, write code alongside) and progresses to hands-on Cargo projects (build and run complete programs).
 
 **Progression:** Go through sections in order. Within each section, start with lower-numbered projects (introduce concepts) then move to higher-numbered ones (apply and deepen). Concepts from earlier sections are assumed in later ones.
 
@@ -32,15 +34,17 @@ The course is carefully sequenced so each concept is introduced by one source an
 
 | Section | Concept Cluster | Projects |
 |---------|----------------|----------|
-| 1 — Foundations | Syntax, types, control flow, basic I/O | 0 (Intro), 1 (BasicCalculator), 2 (MasterMind) |
-| 2 — Ownership | Structs, ownership, borrowing, lifetimes, traits, enums, error handling | 3 (TicketV1), 4 (Traits), 5 (TicketV2), 37 (OBRM), 38 (OwnershipLifetimes) |
-| 3 — Collections | Vec, arrays, HashMap, HashSet, BTreeMap, iterators, LinkedList, VecDeque, BinaryHeap | 6 (TicketManagement), 9–13, 15–19, 23, 28, 30, 36 |
-| 4 — File I/O | CSV reading/writing, Parquet, serde, file I/O | 53 (CSVCookbook), 54 (CSVWriter), 55 (Parquet), 56 (Reflection) |
-| 5 — Concurrency | Threads, async/await, Mutex, Arc, Send/Sync, Rayon, atomics, channels | 7 (Threads), 8 (Futures), 34, 44–52 |
-| 6 — CLI & Tools | CLAP, petgraph, Dijkstra, PageRank, Neo4j | 14, 20–22, 24–27, 29, 31, 33 |
-| 7 — Security | Safe vs unsafe, crypto, security model | 35, 39–43 |
-| 8 — Interop | evcxr, Jupyter, pandas bridge | 57, 58 |
-| 9 — Production Systems | Tokio, async, TCP, RESP protocol | 59 (Radish) |
+| 1 — Foundations | Syntax, types, control flow, basic I/O | 01 (Intro), 02 (BasicCalculator), 03 (MasterMind) |
+| 2 — Ownership | Structs, ownership, borrowing, lifetimes, traits, enums, error handling | 01 (TicketV1), 02 (Traits), 03 (TicketV2), 04 (OBRM), 05 (OwnershipLifetimes) |
+| 3 — Collections | Vec, arrays, HashMap, HashSet, BTreeMap, iterators, LinkedList, VecDeque, BinaryHeap | 01 (TicketManagement), 02–13 (Fruit Salad series, HashMap, iterators) |
+| 4 — File I/O | CSV reading/writing, Parquet, serde, file I/O | 01 (CSVCookbook), 02 (CSVWriter), 03 (Parquet) |
+| 5 — Concurrency | Threads, async/await, Mutex, Arc, Send/Sync, Rayon, atomics, channels | 01 (Threads), 02 (Futures), 03–11 (DataRace, Atomics, DiningPhilosophers, Rayon, etc.) |
+| 6 — CLI & Tools | clap, petgraph, Dijkstra, PageRank, Neo4j | 01–10 (CLISalad, CommunityDetection, PageRank, GraphVisualize, etc.) |
+| 7 — Security | Safe vs unsafe, crypto, security model | 01 (SafeAndUnsafe), 02 (DecoderRing), 03 (RustCryptoHashes) |
+| 8 — Interop | evcxr, Jupyter, pandas bridge | 01 (ExploringPandas), 02 (RustJupyterNotebook) |
+| 9 — Production Systems | Tokio, async, TCP, RESP protocol | 01 (Radish) |
+| 10 — Tools & Frameworks | Logging, configuration management, testing frameworks | 01 (Logging), 02 (Configuration), 03 (Testing) |
+| 11 — Reference | Quick concept lookup, cheatsheets | (no cargo projects — reference materials only) |
 
 **How to use this table:** Start from Section 1 and work forward. Within each section, start with the lower-numbered projects (they introduce the concepts) and then move to the higher-numbered ones (they apply and deepen them).
 
@@ -70,9 +74,9 @@ Projects are grouped into **sections** that map concepts a Python data engineer 
 
 | # | Project | Rust Topics Covered |
 |---|---------|-------------------|
-| 0 | **Intro** — Rust syntax primer (reference) | `fn main()`, `let`, `mut`, macros (`println!`), basic types, `&str`, arithmetic |
-| 1 | **BasicCalculator** — integers, branching, loops, overflow | `i32`/`u32`, `if`/`else`, `while`/`for`, panics, overflow, saturating arithmetic, `as` casting |
-| 2 | **MasterMind** — guess a 4-digit secret code with hints | `struct`, `impl`, `Vec<T>`, `Option<T>`, `if let`, loops, `String`/`&str`, `rand`, iterators |
+| 01 | **Intro** — Rust syntax primer (reference) | `fn main()`, `let`, `mut`, macros (`println!`), basic types, `&str`, arithmetic |
+| 02 | **BasicCalculator** — integers, branching, loops, overflow | `i32`/`u32`, `if`/`else`, `while`/`for`, panics, overflow, saturating arithmetic, `as` casting |
+| 03 | **MasterMind** — guess a 4-digit secret code with hints | `struct`, `impl`, `Vec<T>`, `Option<T>`, `if let`, loops, `String`/`&str`, `rand`, iterators |
 
 ### Section 2: Ownership — Rust's Superpower over Python's GC
 
@@ -80,11 +84,11 @@ Projects are grouped into **sections** that map concepts a Python data engineer 
 
 | # | Project | Rust Topics Covered |
 |---|---------|-------------------|
-| 3 | **TicketV1** — structs, ownership, stack vs heap | `struct`, validation, `mod`/`pub`, encapsulation, ownership, setters, stack/heap, destructors (`Drop`) |
-| 4 | **Traits** — trait definitions, derive, bounds | `trait`, orphan rule, operator overloading, `derive`, trait bounds, `Deref`, `Sized`, `From` |
-| 5 | **TicketV2** — enums, match, error handling | `enum`, `match`, `if let`, `Option`, `Result`, error enums, `Error` trait, `thiserror`, `TryFrom` |
-| 37 | **OBRM** — ownership-based resource management | Ownership rules, `Drop` trait, RAII, borrowing, resource lifecycle |
-| 38 | **OwnershipLifetimes** — lifetimes & borrow checker | Ownership (move semantics), borrowing (`&T`/`&mut T`), lifetimes (`'a`), `Copy`/`Clone` |
+| 01 | **TicketV1** — structs, ownership, stack vs heap | `struct`, validation, `mod`/`pub`, encapsulation, ownership, setters, stack/heap, destructors (`Drop`) |
+| 02 | **Traits** — trait definitions, derive, bounds | `trait`, orphan rule, operator overloading, `derive`, trait bounds, `Deref`, `Sized`, `From` |
+| 03 | **TicketV2** — enums, match, error handling | `enum`, `match`, `if let`, `Option`, `Result`, error enums, `Error` trait, `thiserror`, `TryFrom` |
+| 04 | **OBRM** — ownership-based resource management | Ownership rules, `Drop` trait, RAII, borrowing, resource lifecycle |
+| 05 | **OwnershipLifetimes** — lifetimes & borrow checker | Ownership (move semantics), borrowing (`&T`/`&mut T`), lifetimes (`'a`), `Copy`/`Clone` |
 
 ### Section 3: Collections — Faster Than Python Lists & Dicts
 
@@ -92,21 +96,19 @@ Projects are grouped into **sections** that map concepts a Python data engineer 
 
 | # | Project | Rust Topics Covered |
 |---|---------|-------------------|
-| 6 | **TicketManagement** — Vec, arrays, HashMap, BTreeMap | `Vec`, arrays `[T;N]`, iterators, lifetimes, `impl Trait`, slices, `HashMap`, `BTreeMap`, `Index` |
-| 9 | **VectorFruitSalad** — dynamic arrays with Vec | `Vec<T>`, `SliceRandom`, `rand`, iteration, `&str`, mutable refs |
-| 10 | **ArrayFruitSalad** — fixed-size vs dynamic arrays | Arrays `[T;N]`, `Vec`/`VecDeque`/`LinkedList` comparison |
-| 11 | **HashMapCount** — frequency counting | `HashMap`, `entry`/`or_insert`, `BTreeMap`, sorting by value |
-| 12 | **LinkedListFruitSalad** — doubly-linked list | `LinkedList`, memory overhead, collection conversion |
-| 13 | **VecDequeFruitSalad** — double-ended queue | `VecDeque`, ring buffer, `push_front`/`push_back` |
-| 15 | **HashMapLanguage** — complex HashMap data | `HashMap` with complex values, `values_mut`, normalization |
-| 16 | **CollectionsLessonReflection** — comparison guide | Collection trade-offs, big-O, memory efficiency |
-| 17 | **RustCollectionsDoc** — reference document | All `std::collections`, `criterion` benchmarks |
-| 18 | **BinaryHeapFruit** — priority queue | `BinaryHeap`, max-heap, priority queue behavior |
-| 19 | **BTreeSetFruit** — ordered set | `BTreeSet`, ordered iteration, `HashSet` vs `BTreeSet` |
-| 23 | **HashSetFruit** — unique items with HashSet | `HashSet`, uniqueness, membership testing |
-| 28 | **RustIterators** — lazy functional iteration | `Iterator` trait, lazy eval, `map`/`filter`/`fold` |
-| 30 | **WhenToUseRustSet** — selection guide | All collections comparison, complexity trade-offs |
-| 36 | **MutableFruitSalad** — Vec mutation | `push`/`pop`/`insert`/`remove`, capacity vs length |
+| 01 | **TicketManagement** — Vec, arrays, HashMap, BTreeMap | `Vec`, arrays `[T;N]`, iterators, lifetimes, `impl Trait`, slices, `HashMap`, `BTreeMap`, `Index` |
+| 02 | **VectorFruitSalad** — dynamic arrays with Vec | `Vec<T>`, `SliceRandom`, `rand`, iteration, `&str`, mutable refs |
+| 03 | **ArrayFruitSalad** — fixed-size vs dynamic arrays | Arrays `[T;N]`, `Vec`/`VecDeque`/`LinkedList` comparison |
+| 04 | **HashMapCount** — frequency counting | `HashMap`, `entry`/`or_insert`, `BTreeMap`, sorting by value |
+| 05 | **LinkedListFruitSalad** — doubly-linked list | `LinkedList`, memory overhead, collection conversion |
+| 06 | **VecDequeFruitSalad** — double-ended queue | `VecDeque`, ring buffer, `push_front`/`push_back` |
+| 07 | **HashMapLanguage** — complex HashMap data | `HashMap` with complex values, `values_mut`, normalization |
+| 08 | **RustCollectionsDoc** — reference document | All `std::collections`, `criterion` benchmarks |
+| 09 | **BinaryHeapFruit** — priority queue | `BinaryHeap`, max-heap, priority queue behavior |
+| 10 | **BTreeSetFruit** — ordered set | `BTreeSet`, ordered iteration, `HashSet` vs `BTreeSet` |
+| 11 | **HashSetFruit** — unique items with HashSet | `HashSet`, uniqueness, membership testing |
+| 12 | **RustIterators** — lazy functional iteration | `Iterator` trait, lazy eval, `map`/`filter`/`fold` |
+| 13 | **MutableFruitSalad** — Vec mutation | `push`/`pop`/`insert`/`remove`, capacity vs length |
 
 ### Section 4: File I/O — CSV & Parquet at Scale
 
@@ -114,10 +116,9 @@ Projects are grouped into **sections** that map concepts a Python data engineer 
 
 | # | Project | Rust Topics Covered |
 |---|---------|-------------------|
-| 53 | **CSVCookbook** — read, write, transform CSV | `csv` crate, deserialization, record iteration, error handling |
-| 54 | **CSVWriter** — programmatic CSV writing | `csv::Writer`, custom delimiters, `serde` (`Deserialize`/`Serialize`) |
-| 55 | **Parquet** — Apache Parquet columnar format | Parquet format, columnar storage, Arrow integration |
-| 56 | **DataManagementLessonReflection** — I/O reflection | File I/O, serialization, columnar vs row-oriented |
+| 01 | **CSVCookbook** — read, write, transform CSV | `csv` crate, deserialization, record iteration, error handling |
+| 02 | **CSVWriter** — programmatic CSV writing | `csv::Writer`, custom delimiters, `serde` (`Deserialize`/`Serialize`) |
+| 03 | **Parquet** — Apache Parquet columnar format | Parquet format, columnar storage, Arrow integration |
 
 ### Section 5: Concurrency — Beyond Python's GIL
 
@@ -125,18 +126,17 @@ Projects are grouped into **sections** that map concepts a Python data engineer 
 
 | # | Project | Rust Topics Covered |
 |---|---------|-------------------|
-| 7 | **Threads** — threads, channels, locks | `std::thread`, `'static`, scoped threads, `mpsc`, interior mutability, `Mutex`/`Arc`, `RwLock`, `Sync` |
-| 8 | **Futures** — async/await, tasks, runtimes | `async fn`, `.await`, `tokio`, `Future` trait, spawning, cancellation |
-| 34 | **DataRace** — preventing data races | `Mutex`, `Arc`, `MutexGuard`, shared-state concurrency |
-| 44 | **Atomics** — lock-free atomics | Atomic types, memory ordering (`Relaxed`, `Acquire`, `Release`, `SeqCst`) |
-| 45 | **DistributedChallenges** — consistency in distributed systems | Eventual vs strong consistency, CAP theorem |
-| 46 | **ConcurrencyParallelism** — Send/Sync, RwLock | `Send`/`Sync` traits, `Mutex`, `RwLock`, `Arc` |
-| 47 | **DataRacesRaceConditions** — data races vs race conditions | Data races, race conditions, `Cell`/`RefCell` |
-| 48 | **DiningPhilosophers** — deadlock prevention | `Mutex`, ordered lock acquisition, thread synchronization |
-| 49 | **DistributedComputing** — Rust for distributed systems | GC overhead, compiled vs interpreted, distributed challenges |
-| 50 | **RayonChallenge** — data parallelism with Rayon | `rayon` parallel iterators, speedup benchmarking |
-| 51 | **SendSync** — Send and Sync marker traits | `Send`, `Sync`, thread safety markers, `unsafe impl` |
-| 52 | **ConcurrencyLessonReflection** — concurrency review | Ownership + concurrency, data-race freedom, `mpsc` |
+| 01 | **Threads** — threads, channels, locks | `std::thread`, `'static`, scoped threads, `mpsc`, interior mutability, `Mutex`/`Arc`, `RwLock`, `Sync` |
+| 02 | **Futures** — async/await, tasks, runtimes | `async fn`, `.await`, `tokio`, `Future` trait, spawning, cancellation |
+| 03 | **DataRace** — preventing data races | `Mutex`, `Arc`, `MutexGuard`, shared-state concurrency |
+| 04 | **Atomics** — lock-free atomics | Atomic types, memory ordering (`Relaxed`, `Acquire`, `Release`, `SeqCst`) |
+| 05 | **DistributedChallenges** — consistency in distributed systems | Eventual vs strong consistency, CAP theorem |
+| 06 | **ConcurrencyParallelism** — Send/Sync, RwLock | `Send`/`Sync` traits, `Mutex`, `RwLock`, `Arc` |
+| 07 | **DataRacesRaceConditions** — data races vs race conditions | Data races, race conditions, `Cell`/`RefCell` |
+| 08 | **DiningPhilosophers** — deadlock prevention | `Mutex`, ordered lock acquisition, thread synchronization |
+| 09 | **DistributedComputing** — Rust for distributed systems | GC overhead, compiled vs interpreted, distributed challenges |
+| 10 | **RayonChallenge** — data parallelism with Rayon | `rayon` parallel iterators, speedup benchmarking |
+| 11 | **SendSync** — Send and Sync marker traits | `Send`, `Sync`, thread safety markers, `unsafe impl` |
 
 ### Section 6: CLI & Data Engineering Tools
 
@@ -144,17 +144,16 @@ Projects are grouped into **sections** that map concepts a Python data engineer 
 
 | # | Project | Rust Topics Covered |
 |---|---------|-------------------|
-| 14 | **CLISalad** — CLI with clap arg parsing | `clap` derive, `std::env`, pattern matching, `std::io` |
-| 20 | **CommunityDetection** — Kosaraju's SCC algorithm | `petgraph`, directed graphs, SCC, DFS, graph transposition |
-| 21 | **UFCGraphCentrality** — centrality on UFC data | `UnGraph`, degree/closeness centrality, `NodeIndex` |
-| 22 | **GraphVisualize** — ASCII bar charts | `rasciigraph`, ASCII visualization, data scaling |
-| 24 | **LisbonShortestPath** — Dijkstra's algorithm | Dijkstra, weighted graphs, `BinaryHeap` as priority queue |
-| 25 | **Neo4jDataScience** — Neo4j graph DB | Neo4j integration, centrality algorithms (degree, closeness, betweenness, eigenvector) |
-| 26 | **PageRank** — PageRank algorithm | PageRank, iterative ranking, damping factor, link analysis |
-| 27 | **RussianTrollTweets** — Neo4j analysis | Graph DB analysis, influence detection, social graph modeling |
-| 29 | **DataStructuresLessonReflection** — graph DS reflection | Graph vs other DS, centrality metrics, community detection |
-| 31 | **FullyConnectedGraph** — graph connectivity | Graph connectivity, `HashMap` memoization |
-| 33 | **CustomCLIFruitSalad** — advanced CLI + CSV | `clap` derive, CSV reading, `lib.rs`/`main.rs` separation, modules |
+| 01 | **CLISalad** — CLI with clap arg parsing | `clap` derive, `std::env`, pattern matching, `std::io` |
+| 02 | **CommunityDetection** — Kosaraju's SCC algorithm | `petgraph`, directed graphs, SCC, DFS, graph transposition |
+| 03 | **UFCGraphCentrality** — centrality on UFC data | `UnGraph`, degree/closeness centrality, `NodeIndex` |
+| 04 | **GraphVisualize** — ASCII bar charts | `rasciigraph`, ASCII visualization, data scaling |
+| 05 | **LisbonShortestPath** — Dijkstra's algorithm | Dijkstra, weighted graphs, `BinaryHeap` as priority queue |
+| 06 | **Neo4jDataScience** — Neo4j graph DB | Neo4j integration, centrality algorithms (degree, closeness, betweenness, eigenvector) |
+| 07 | **PageRank** — PageRank algorithm | PageRank, iterative ranking, damping factor, link analysis |
+| 08 | **RussianTrollTweets** — Neo4j analysis | Graph DB analysis, influence detection, social graph modeling |
+| 09 | **FullyConnectedGraph** — graph connectivity | Graph connectivity, `HashMap` memoization |
+| 10 | **CustomCLIFruitSalad** — advanced CLI + CSV | `clap` derive, CSV reading, `lib.rs`/`main.rs` separation, modules |
 
 ### Section 7: Security & Systems Programming
 
@@ -162,12 +161,9 @@ Projects are grouped into **sections** that map concepts a Python data engineer 
 
 | # | Project | Rust Topics Covered |
 |---|---------|-------------------|
-| 35 | **SafeAndUnsafe** — safe vs unsafe Rust | `unsafe` keyword, raw pointers, FFI, safety invariants |
-| 39 | **SafetyLessonReflection** — Rust vs GC languages | Memory safety, data race prevention, explicit resource management |
-| 40 | **DecoderRing** — crack Caesar cipher | Frequency analysis, statistical scoring, `rayon` parallelism |
-| 41 | **RustCryptoHashes** — cryptographic hashes | SHA-2/3, BLAKE2, `Digest` trait, RustCrypto |
-| 42 | **RustSoftwareSecurity** — Rust vs C/C++/Java | Ownership/borrowing safety, compile-time vs runtime safety |
-| 43 | **SecurityLessonReflection** — high-availability security | Redundancy, encryption, access control, disaster recovery |
+| 01 | **SafeAndUnsafe** — safe vs unsafe Rust | `unsafe` keyword, raw pointers, FFI, safety invariants |
+| 02 | **DecoderRing** — crack Caesar cipher | Frequency analysis, statistical scoring, `rayon` parallelism |
+| 03 | **RustCryptoHashes** — cryptographic hashes | SHA-2/3, BLAKE2, `Digest` trait, RustCrypto |
 
 ### Section 8: Rust + Python Interop
 
@@ -175,8 +171,8 @@ Projects are grouped into **sections** that map concepts a Python data engineer 
 
 | # | Project | Rust Topics Covered |
 |---|---------|-------------------|
-| 57 | **ExploringPandas** — Rust meets pandas | DataFrame operations, Python/Rust interop, filtering/grouping, matplotlib |
-| 58 | **RustJupyterNotebook** — interactive Rust with evcxr | `evcxr` Jupyter kernel, interactive Rust, `plotters`/`ndarray`/`rayon` |
+| 01 | **ExploringPandas** — Rust meets pandas | DataFrame operations, Python/Rust interop, filtering/grouping, matplotlib |
+| 02 | **RustJupyterNotebook** — interactive Rust with evcxr | `evcxr` Jupyter kernel, interactive Rust, `plotters`/`ndarray`/`rayon` |
 
 ### Section 9: Production Systems — Building Real-World Services
 
@@ -184,7 +180,23 @@ Projects are grouped into **sections** that map concepts a Python data engineer 
 
 | # | Project | Rust Topics Covered |
 |---|---------|-------------------|
-| 59 | **Radish** — Redis-compatible KV store | `tokio` async, RESP protocol, TCP networking, `Rc<RefCell>`, `BytesMut`, TTL expiry |
+| 01 | **Radish** — Redis-compatible KV store | `tokio` async, RESP protocol, TCP networking, `Rc<RefCell>`, `BytesMut`, TTL expiry |
+
+### Section 10: Tools & Frameworks
+
+*Logging, configuration management, and testing frameworks — the tools you need for production Rust applications.*
+
+| # | Project | Rust Topics Covered |
+|---|---------|-------------------|
+| 01 | **Logging** — structured logging with the `log` crate | `log` crate, `env_logger`, log levels, structured logging |
+| 02 | **Configuration** — manage app configuration | `config` crate, environment variables, TOML/YAML config files |
+| 03 | **Testing** — testing strategies and frameworks | `#[test]`, test organization, integration tests, mocking, property-based testing |
+
+### Section 11: Reference
+
+*Quick reference materials for concept lookup — no cargo projects, just cheatsheets and reference documents.*
+
+This section contains reference documents for quick lookup of Rust syntax, idioms, and patterns covered across all 10 prior sections.
 
 ---
 
@@ -211,7 +223,7 @@ cargo run
 
 ```bash
 # Build and run any project with cargo
-cd 03-Collections/9-VectorFruitSalad
+cd 03-Collections/02-VectorFruitSalad
 cargo build
 cargo run
 
@@ -223,11 +235,11 @@ make run
 
 ```bash
 # Some projects can be compiled without cargo
-cd 01-Foundations/1-BasicCalculator
+cd 01-Foundations/02-BasicCalculator
 cargo run
 ```
 
-Browse the full list of 59 projects (0–58) in the [Projects](#projects) table above.
+Browse the full list of projects in the [Projects](#projects) table above.
 
 ---
 
@@ -237,82 +249,82 @@ The table below lists all core Rust concepts a learner should eventually see. **
 
 | Concept | Covered? | First Project |
 |---------|----------|---------------|
-| `cargo new`, `cargo build`, `cargo run` | ✅ | 1 |
-| `Cargo.toml` dependencies | ✅ | 1, 5 |
-| Variables (`let`, `let mut`) | ✅ | 0, 1 |
-| Data types (`u32`, `i32`, `f64`, `bool`, `char`, `usize`, `u8`) | ✅ | 0, 1, 2 |
-| `String` vs `&str` | ✅ | 1, 4 |
-| Ownership, borrowing, references (`&`, `&mut`) | ✅ | 1, 3, 38 |
-| `Vec<T>`, `vec![]` | ✅ | 1, 6, 9 |
-| `struct`, `impl`, methods (`&self`, `&mut self`) | ✅ | 1, 3 |
-| `Option<T>`, `Some`, `None`, `if let` | ✅ | 1, 5 |
-| `match` (basic) | ✅ | 1, 5 |
-| `match` with patterns (advanced) | ✅ | 5, 14, 51 |
-| `loop`, `while`, `continue`, `break` | ✅ | 1, 2 |
-| `const` | ✅ | 1 |
-| `if` / `else` branching | ✅ | 2 |
-| Integer overflow & saturating arithmetic | ✅ | 2 |
-| Iterators (`iter`, `map`, `filter`, `count`, `collect`, `zip`, `enumerate`, `any`, `all`) | ✅ | 1, 6, 28 |
-| Closures (`\|x\| x * 2`) | ✅ | 1, 28 |
-| `print!`, `println!` | ✅ | 1 |
-| `std::io::stdin()`, `read_line()` | ✅ | 1 |
-| `io::stdout().flush()` | ✅ | 1 |
-| String methods (`chars`, `trim`, `to_lowercase`, `is_ascii_digit`, `to_digit`) | ✅ | 1 |
-| Ranges (`0..=9`) | ✅ | 1, 2 |
-| `rand` crate (`thread_rng`, `shuffle`, `choose`) | ✅ | 1, 9 |
-| Type casting (`as`) | ✅ | 1, 2 |
-| Tuples | ✅ | 1 |
-| `unwrap()` / basic error handling | ✅ | 1, 5 |
-| `Result<T, E>`, `?` operator | ✅ | 5, 14, 33, 53 |
-| `enum` (custom enums) | ✅ | 5, 14, 40, 51 |
-| `impl` with generics and traits | ✅ | 4, 6, 28, 37, 51 |
-| Arrays `[T; N]` | ✅ | 6, 10 |
-| `HashMap` | ✅ | 6, 11, 15 |
-| `HashSet` | ✅ | 23 |
-| `BTreeMap` / `BTreeSet` | ✅ | 6, 11, 19 |
-| `LinkedList` | ✅ | 12 |
-| `VecDeque` | ✅ | 13 |
-| `BinaryHeap` | ✅ | 18, 24 |
-| `Box<T>`, `Rc<T>`, `Arc<T>` (smart pointers) | ✅ | 3, 34, 37, 51 |
-| Lifetimes and borrow checker annotations | ✅ | 6, 38 |
-| Stack vs heap memory | ✅ | 3 |
-| Error handling with `Result` and custom error types | ✅ | 5, 14, 33, 53 |
-| `thiserror` crate | ✅ | 5 |
-| `TryFrom` / `TryInto` traits | ✅ | 5 |
-| `mod`, `pub`, `use` (modules & visibility) | ✅ | 3, 33 |
-| External crates beyond `rand` | ✅ | 5, 7, 14, 20, 33, 53 |
-| File I/O (`std::fs`, `File`, `BufReader`) | ✅ | 53, 54 |
-| CSV parsing / writing (`csv` crate) | ✅ | 53, 54 |
-| Serde (serialisation / deserialisation) | ✅ | 54, 55 |
-| Parquet / Arrow columnar format | ✅ | 55 |
-| Testing (`#[test]`, `cargo test`) | ✅ | 1 |
-| Documentation (`///`, `cargo doc`) | ✅ | 1 |
-| `derive` macros (`Debug`, `Clone`, `Copy`, `PartialEq`, etc.) | ✅ | 4, 14, 33, 54 |
-| Trait definitions, bounds, and orphan rule | ✅ | 4 |
-| `Deref` / `Sized` / `From` / `Clone` / `Copy` / `Drop` traits | ✅ | 4 |
-| Concurrency (`std::thread`, `mpsc`, `Mutex`, `Arc`) | ✅ | 7, 34, 46, 48, 50 |
-| Scoped threads | ✅ | 7 |
-| `mpsc` channels | ✅ | 7 |
-| `RwLock` | ✅ | 7 |
-| Interior mutability (`Cell`, `RefCell`) | ✅ | 7, 47 |
-| `Send` / `Sync` marker traits | ✅ | 7, 46, 51 |
-| `rayon` parallel iterators | ✅ | 40, 50 |
-| Atomics & memory ordering | ✅ | 44 |
-| `async` / `.await` basics | ✅ | 8 |
-| `Future` trait & `tokio` runtime | ✅ | 8 |
-| Spawning async tasks & cancellation | ✅ | 8 |
-| Graph algorithms (`petgraph`, Dijkstra, PageRank, SCC) | ✅ | 20, 21, 24, 26 |
-| `HashMap` iteration and entry API | ✅ | 11 |
-| Pattern matching with `@` bindings, guards, etc. | ✅ | 0 |
-| Package layout (`lib.rs` + `main.rs`) | ✅ | 33 |
-| Library re‑exports (`pub use`) | ✅ | 33 |
-| CLI argument parsing (`clap` derive) | ✅ | 14, 33, 40 |
-| Safe vs unsafe Rust | ✅ | 35 |
-| RAII / `Drop` trait / OBRM | ✅ | 3, 37 |
-| Cryptographic hashes (`Digest` trait) | ✅ | 41 |
-| Caesar cipher / frequency analysis | ✅ | 40 |
-| Jupyter notebook / `evcxr` | ✅ | 58 |
-| Pandas / DataFrame operations | ✅ | 57 |
+| `cargo new`, `cargo build`, `cargo run` | ✅ | 01-02 |
+| `Cargo.toml` dependencies | ✅ | 01-02, 02-03 |
+| Variables (`let`, `let mut`) | ✅ | 01-01, 01-02 |
+| Data types (`u32`, `i32`, `f64`, `bool`, `char`, `usize`, `u8`) | ✅ | 01-01, 01-02, 01-03 |
+| `String` vs `&str` | ✅ | 01-02, 02-02 |
+| Ownership, borrowing, references (`&`, `&mut`) | ✅ | 01-02, 02-01, 02-05 |
+| `Vec<T>`, `vec![]` | ✅ | 01-02, 03-01, 03-02 |
+| `struct`, `impl`, methods (`&self`, `&mut self`) | ✅ | 01-02, 02-01 |
+| `Option<T>`, `Some`, `None`, `if let` | ✅ | 01-03, 02-03 |
+| `match` (basic) | ✅ | 01-03, 02-03 |
+| `match` with patterns (advanced) | ✅ | 02-03, 06-01, 05-11 |
+| `loop`, `while`, `continue`, `break` | ✅ | 01-02, 01-03 |
+| `const` | ✅ | 01-02 |
+| `if` / `else` branching | ✅ | 01-03 |
+| Integer overflow & saturating arithmetic | ✅ | 01-02 |
+| Iterators (`iter`, `map`, `filter`, `count`, `collect`, `zip`, `enumerate`, `any`, `all`) | ✅ | 01-02, 03-01, 03-12 |
+| Closures (`\|x\| x * 2`) | ✅ | 01-02, 03-12 |
+| `print!`, `println!` | ✅ | 01-02 |
+| `std::io::stdin()`, `read_line()` | ✅ | 01-02 |
+| `io::stdout().flush()` | ✅ | 01-02 |
+| String methods (`chars`, `trim`, `to_lowercase`, `is_ascii_digit`, `to_digit`) | ✅ | 01-02 |
+| Ranges (`0..=9`) | ✅ | 01-02, 01-03 |
+| `rand` crate (`thread_rng`, `shuffle`, `choose`) | ✅ | 01-02, 03-02 |
+| Type casting (`as`) | ✅ | 01-02, 01-03 |
+| Tuples | ✅ | 01-02 |
+| `unwrap()` / basic error handling | ✅ | 01-02, 02-03 |
+| `Result<T, E>`, `?` operator | ✅ | 02-03, 06-01, 06-10, 04-01 |
+| `enum` (custom enums) | ✅ | 02-03, 06-01, 07-02, 05-11 |
+| `impl` with generics and traits | ✅ | 02-02, 03-01, 03-12, 02-04, 05-11 |
+| Arrays `[T; N]` | ✅ | 03-01, 03-03 |
+| `HashMap` | ✅ | 03-01, 03-04, 03-07 |
+| `HashSet` | ✅ | 03-11 |
+| `BTreeMap` / `BTreeSet` | ✅ | 03-01, 03-04, 03-10 |
+| `LinkedList` | ✅ | 03-05 |
+| `VecDeque` | ✅ | 03-06 |
+| `BinaryHeap` | ✅ | 03-09, 06-05 |
+| `Box<T>`, `Rc<T>`, `Arc<T>` (smart pointers) | ✅ | 02-01, 05-03, 02-04, 05-11 |
+| Lifetimes and borrow checker annotations | ✅ | 03-01, 02-05 |
+| Stack vs heap memory | ✅ | 02-01 |
+| Error handling with `Result` and custom error types | ✅ | 02-03, 06-01, 06-10, 04-01 |
+| `thiserror` crate | ✅ | 02-03 |
+| `TryFrom` / `TryInto` traits | ✅ | 02-03 |
+| `mod`, `pub`, `use` (modules & visibility) | ✅ | 02-01, 06-10 |
+| External crates beyond `rand` | ✅ | 02-03, 05-01, 06-01, 06-02, 06-10, 04-01 |
+| File I/O (`std::fs`, `File`, `BufReader`) | ✅ | 04-01, 04-02 |
+| CSV parsing / writing (`csv` crate) | ✅ | 04-01, 04-02 |
+| Serde (serialisation / deserialisation) | ✅ | 04-02, 04-03 |
+| Parquet / Arrow columnar format | ✅ | 04-03 |
+| Testing (`#[test]`, `cargo test`) | ✅ | 01-02 |
+| Documentation (`///`, `cargo doc`) | ✅ | 01-02 |
+| `derive` macros (`Debug`, `Clone`, `Copy`, `PartialEq`, etc.) | ✅ | 02-02, 06-01, 06-10, 04-02 |
+| Trait definitions, bounds, and orphan rule | ✅ | 02-02 |
+| `Deref` / `Sized` / `From` / `Clone` / `Copy` / `Drop` traits | ✅ | 02-02 |
+| Concurrency (`std::thread`, `mpsc`, `Mutex`, `Arc`) | ✅ | 05-01, 05-03, 05-06, 05-08, 05-10 |
+| Scoped threads | ✅ | 05-01 |
+| `mpsc` channels | ✅ | 05-01 |
+| `RwLock` | ✅ | 05-01 |
+| Interior mutability (`Cell`, `RefCell`) | ✅ | 05-01, 05-07 |
+| `Send` / `Sync` marker traits | ✅ | 05-01, 05-06, 05-11 |
+| `rayon` parallel iterators | ✅ | 07-02, 05-10 |
+| Atomics & memory ordering | ✅ | 05-04 |
+| `async` / `.await` basics | ✅ | 05-02 |
+| `Future` trait & `tokio` runtime | ✅ | 05-02 |
+| Spawning async tasks & cancellation | ✅ | 05-02 |
+| Graph algorithms (`petgraph`, Dijkstra, PageRank, SCC) | ✅ | 06-02, 06-03, 06-05, 06-07 |
+| `HashMap` iteration and entry API | ✅ | 03-04 |
+| Pattern matching with `@` bindings, guards, etc. | ✅ | 01-01 |
+| Package layout (`lib.rs` + `main.rs`) | ✅ | 06-10 |
+| Library re‑exports (`pub use`) | ✅ | 06-10 |
+| CLI argument parsing (`clap` derive) | ✅ | 06-01, 06-10, 07-02 |
+| Safe vs unsafe Rust | ✅ | 07-01 |
+| RAII / `Drop` trait / OBRM | ✅ | 02-01, 02-04 |
+| Cryptographic hashes (`Digest` trait) | ✅ | 07-03 |
+| Caesar cipher / frequency analysis | ✅ | 07-02 |
+| Jupyter notebook / `evcxr` | ✅ | 08-02 |
+| Pandas / DataFrame operations | ✅ | 08-01 |
 
 ---
 
@@ -414,8 +426,8 @@ Both features are now ✅ covered in this course. See the [Concepts Coverage](#r
 
 This course is built from two excellent open-source Rust resources:
 
-- **[data-engineering-rust](https://github.com/jolisper/data-engineering-rust)** by [Jorge López](https://github.com/jolisper) — the hands-on Cargo projects (9–58) teaching Rust for data engineering through practical examples (collections, graphs, concurrency, file I/O, etc.).
-- **[100-exercises-to-learn-rust](https://github.com/mainmatter/100-exercises-to-learn-rust)** by [Mainmatter](https://mainmatter.com) — the tutorial exercises (0–8) teaching Rust fundamentals through structured, progressive exercises.
+- **[data-engineering-rust](https://github.com/jolisper/data-engineering-rust)** by [Jorge López](https://github.com/jolisper) — the hands-on Cargo projects teaching Rust for data engineering through practical examples (collections, graphs, concurrency, file I/O, etc.).
+- **[100-exercises-to-learn-rust](https://github.com/mainmatter/100-exercises-to-learn-rust)** by [Mainmatter](https://mainmatter.com) — the tutorial exercises teaching Rust fundamentals through structured, progressive exercises.
 
 The original content, structure, and teaching design belong to their respective authors. This repository reorganizes and sequences the material into a single progressive curriculum. Huge thanks to both projects for their excellent work.
 

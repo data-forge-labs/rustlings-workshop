@@ -20,7 +20,7 @@ This repository is a **full Rust data engineering course** — not just a langua
 
 ## 2. Repository Architecture
 
-The repo is organized into **9 numbered concept sections**, each containing related projects:
+The repo is organized into **11 numbered concept sections**, each containing related projects:
 
 ```
 RustTut/
@@ -29,114 +29,107 @@ RustTut/
 ├── .devcontainer/                  ← Preconfigured Rust dev environment
 ├── 01-Foundations/                 ← Section 1: syntax, types, control flow
 │   ├── README.md                   ← Section overview with project table & learning path
-│   ├── 0-Intro/                    ← Rust syntax primer
-│   ├── 1-BasicCalculator/          ← Integers, branching, loops
-│   ├── 2-MasterMind/               ← Structs, Vec, Option, console I/O
-│   └── 32-Week1FinalReflection/    ← Reflection / review
+│   ├── 01-Intro/                   ← Rust syntax primer
+│   ├── 02-BasicCalculator/         ← Integers, branching, loops
+│   └── 03-MasterMind/              ← Structs, Vec, Option, console I/O
 ├── 02-Ownership/                   ← Section 2: ownership, borrowing, traits, enums
-│   ├── 3-TicketV1/                 ← Structs, ownership, stack vs heap
-│   ├── 4-Traits/                   ← Trait definitions, derive, bounds
-│   ├── 5-TicketV2/                 ← Enums, match, Result, error handling
-│   ├── 37-OBRM/                    ← RAII / Drop / ownership-based resource mgmt
-│   └── 38-OwnershipLifetimes/      ← Lifetimes, borrow checker
+│   ├── 01-TicketV1/                ← Structs, ownership, stack vs heap
+│   ├── 02-Traits/                  ← Trait definitions, derive, bounds
+│   ├── 03-TicketV2/                ← Enums, match, Result, error handling
+│   ├── 04-OBRM/                    ← RAII / Drop / ownership-based resource mgmt
+│   └── 05-OwnershipLifetimes/      ← Lifetimes, borrow checker
 ├── 03-Collections/                 ← Section 3: data structures & iterators
-│   ├── 6-TicketManagement/         ← Vec, arrays, HashMap, BTreeMap, iterators
-│   ├── 9-VectorFruitSalad/         ← Vec<T> dynamic arrays
-│   ├── 10-ArrayFruitSalad/         ← Fixed-size arrays [T; N]
-│   ├── 11-HashMapCount/            ← Word frequency counting
-│   ├── 12-LinkedListFruitSalad/    ← Doubly-linked list
-│   ├── 13-VecDequeFruitSalad/      ← Double-ended queue
-│   ├── 15-HashMapLanguage/         ← Complex HashMap data
-│   ├── 16-CollectionsLessonReflection/
-│   ├── 17-RustCollectionsDoc/      ← std::collections reference
-│   ├── 18-BinaryHeapFruit/         ← Priority queue
-│   ├── 19-BTreeSetFruit/           ← Ordered set
-│   ├── 23-HashSetFruit/            ← Unique items / set operations
-│   ├── 28-RustIterators/           ← Lazy functional iteration
-│   ├── 30-WhenToUseRustSet/        ← Collection selection guide
-│   └── 36-MutableFruitSalad/       ← Vec mutation patterns
+│   ├── 01-TicketManagement/        ← Vec, arrays, HashMap, BTreeMap, iterators
+│   ├── 02-VectorFruitSalad/        ← Vec<T> dynamic arrays
+│   ├── 03-ArrayFruitSalad/         ← Fixed-size arrays [T; N]
+│   ├── 04-HashMapCount/            ← Word frequency counting
+│   ├── 05-LinkedListFruitSalad/    ← Doubly-linked list
+│   ├── 06-VecDequeFruitSalad/      ← Double-ended queue
+│   ├── 07-HashMapLanguage/         ← Complex HashMap data
+│   ├── 08-RustCollectionsDoc/      ← std::collections reference
+│   ├── 09-BinaryHeapFruit/         ← Priority queue
+│   ├── 10-BTreeSetFruit/           ← Ordered set
+│   ├── 11-HashSetFruit/            ← Unique items / set operations
+│   ├── 12-RustIterators/           ← Lazy functional iteration
+│   └── 13-MutableFruitSalad/       ← Vec mutation patterns
 ├── 04-FileIO/                      ← Section 4: file I/O & data formats
-│   ├── 53-CSVCookbook/             ← Read/write CSV with csv crate
-│   ├── 54-CSVWriter/               ← CSV writing with serde
-│   ├── 55-Parquet/                 ← Apache Parquet / Arrow
-│   └── 56-DataManagementLessonReflection/
+│   ├── 01-CSVCookbook/             ← Read/write CSV with csv crate
+│   ├── 02-CSVWriter/               ← CSV writing with serde
+│   └── 03-Parquet/                 ← Apache Parquet / Arrow
 ├── 05-Concurrency/                 ← Section 5: threads, async, atomics
-│   ├── 7-Threads/                  ← Threads, channels, locks (100-exercises)
-│   ├── 8-Futures/                  ← async/await, tokio (100-exercises)
-│   ├── 34-DataRace/                ← Mutex, Arc, data-race prevention
-│   ├── 44-Atomics/                 ← Lock-free atomics
-│   ├── 45-DistributedChallenges/   ← Consistency models, CAP
-│   ├── 46-ConcurrencyParallelism/  ← Send/Sync, RwLock
-│   ├── 47-DataRacesRaceConditions/ ← Cell/RefCell patterns
-│   ├── 48-DiningPhilosophers/      ← Deadlock prevention
-│   ├── 49-DistributedComputing/    ← Rust for distributed systems
-│   ├── 50-RayonChallenge/          ← Data parallelism with Rayon
-│   ├── 51-SendSync/                ← Send/Sync marker traits
-│   └── 52-ConcurrencyLessonReflection/
+│   ├── 01-Threads/                 ← Threads, channels, locks
+│   ├── 02-Futures/                 ← async/await, tokio
+│   ├── 03-DataRace/                ← Mutex, Arc, data-race prevention
+│   ├── 04-Atomics/                 ← Lock-free atomics
+│   ├── 05-DistributedChallenges/   ← Consistency models, CAP
+│   ├── 06-ConcurrencyParallelism/  ← Send/Sync, RwLock
+│   ├── 07-DataRacesRaceConditions/ ← Cell/RefCell patterns
+│   ├── 08-DiningPhilosophers/      ← Deadlock prevention
+│   ├── 09-DistributedComputing/    ← Rust for distributed systems
+│   ├── 10-RayonChallenge/          ← Data parallelism with Rayon
+│   └── 11-SendSync/                ← Send/Sync marker traits
 ├── 06-CLIAndTools/                 ← Section 6: CLI tools & graph algorithms
-│   ├── 14-CLISalad/                ← clap CLI parsing
-│   ├── 20-CommunityDetection/      ← Kosaraju SCC algorithm
-│   ├── 21-UFCGraphCentrality/      ← Graph centrality
-│   ├── 22-GraphVisualize/          ← ASCII bar charts
-│   ├── 24-LisbonShortestPath/      ← Dijkstra on weighted graphs
-│   ├── 25-Neo4jDataScience/        ← Neo4j graph database
-│   ├── 26-PageRank/                ← PageRank algorithm
-│   ├── 27-RussianTrollTweets/      ← Social graph analysis
-│   ├── 29-DataStructuresLessonReflection/
-│   ├── 31-FullyConnectedGraph/     ← Graph connectivity
-│   └── 33-CustomCLIFruitSalad/     ← Advanced CLI + modules
+│   ├── 01-CLISalad/                ← clap CLI parsing
+│   ├── 02-CommunityDetection/      ← Kosaraju SCC algorithm
+│   ├── 03-UFCGraphCentrality/      ← Graph centrality
+│   ├── 04-GraphVisualize/          ← ASCII bar charts
+│   ├── 05-LisbonShortestPath/      ← Dijkstra on weighted graphs
+│   ├── 06-Neo4jDataScience/        ← Neo4j graph database
+│   ├── 07-PageRank/                ← PageRank algorithm
+│   ├── 08-RussianTrollTweets/      ← Social graph analysis
+│   ├── 09-FullyConnectedGraph/     ← Graph connectivity
+│   └── 10-CustomCLIFruitSalad/     ← Advanced CLI + modules
 ├── 07-Security/                    ← Section 7: safety & cryptography
-│   ├── 35-SafeAndUnsafe/           ← Safe vs unsafe Rust
-│   ├── 39-SafetyLessonReflection/  ← Memory safety guarantees
-│   ├── 40-DecoderRing/             ← Caesar cipher + Rayon
-│   ├── 41-RustCryptoHashes/        ← Cryptographic hashes
-│   ├── 42-RustSoftwareSecurity/    ← Rust vs C/C++/Java security
-│   └── 43-SecurityLessonReflection/
+│   ├── 01-SafeAndUnsafe/           ← Safe vs unsafe Rust
+│   ├── 02-DecoderRing/             ← Caesar cipher + Rayon
+│   └── 03-RustCryptoHashes/        ← Cryptographic hashes
 ├── 08-Interop/                     ← Section 8: Python/Rust interop
-│   ├── 57-ExploringPandas/         ← Pandas + Rust comparison
-│   └── 58-RustJupyterNotebook/     ← evcxr Jupyter kernel
-└── 09-ProductionSystems/          ← Section 9: production-grade systems
-    └── 59-Radish/                  ← Redis-compatible KV store (async TCP)
+│   ├── 01-ExploringPandas/         ← Pandas + Rust comparison
+│   └── 02-RustJupyterNotebook/     ← evcxr Jupyter kernel
+├── 09-ProductionSystems/          ← Section 9: production-grade systems
+│   ├── 01-Radish/                  ← Redis-compatible KV store (async TCP)
+│   └── README.md                   ← Section overview
+├── 10-ToolsAndFrameworks/         ← Section 10: essential Rust tools & frameworks
+│   ├── 01-Logging/                 ← Logging with log/env_logger/tracing
+│   ├── 02-Configuration/           ← Configuration with config crate
+│   ├── 03-Testing/                 ← Testing deep dive (property-based)
+│   └── README.md                   ← Section overview
+└── 11-Reference/                   ← Section 11: concept reference & cheatsheets
+    ├── README.md                   ← Section overview
+    ├── collections-guide.md        ← Collections comparison & selection guide
+    ├── concurrency-reference.md    ← Concurrency model review
+    ├── data-management-io.md       ← File I/O & serialization reference
+    ├── distributed-systems.md      ← Distributed systems concepts (CAP, consistency)
+    ├── memory-safety.md            ← Memory safety & security model
+    ├── safety-reflection.md        ← Rust vs GC languages safety comparison
+    ├── security-model.md           ← Rust security model & best practices
+    └── send-sync.md                ← Send/Sync, thread safety markers
 ```
 
 ### Section naming convention
-- Sections are numbered `01`–`09` for correct alphabetical ordering.
+- Sections are numbered `01`–`11` for correct alphabetical ordering.
 - Section folder names describe the concept cluster: `01-Foundations`, `02-Ownership`, etc.
-- When a new concept cluster is needed (e.g., `10-Networking`, `11-Databases`), add it as `10-Name/` and update this file.
+- When a new concept cluster is needed (e.g., `12-Networking`, `13-Databases`), add it as `12-Name/` and update this file.
 
 ### Project numbering
-- Projects within a section keep their original number (0–59) for cross-referencing.
-- Project folders are named `N-ProjectName/` where N is the original number.
-- Numbers may not be contiguous within a section (e.g., Section 1 has 0, 1, 2, 32).
-- Numbers are NOT reused — even if a project is removed, the number stays retired.
+- Projects within a section are numbered sequentially (01, 02, 03...) for correct ordering.
+- Project folders are named `NN-ProjectName/` where NN is the sequential number within the section.
+- Numbers are unique within each section, not globally.
+- When a project is removed from a section, remaining projects are NOT renumbered (to preserve git history).
 
 ---
 
 ## 3. Two Project Types
 
-The repo contains two types of projects, each with a different "complete structure":
+The repo contains two types of projects:
 
-### Type A — 100-Exercises Lesson Projects (projects 0–8)
-These come from the [100-exercises-to-learn-rust](https://github.com/mainmatter/100-exercises-to-learn-rust) source. They are tutorial-based with progressive exercises.
+### Type A — Tutorial Lesson Projects
+These are comprehensive tutorial-based workshops with step-by-step instruction. They contain:
+- `README.md` — Comprehensive step-by-step tutorial
+- `project.py` — Python implementation (optional)
 
-**Required structure:**
-```
-N-ProjectName/
-├── README.md               ← Comprehensive step-by-step Rust tutorial (the workshop)
-├── 00_intro.md             ← Complementary lesson files (numbered 00–NN)
-├── 01_concept.md
-├── ...
-├── NN_outro.md
-└── project.py              ← Python implementation (optional, present in some)
-```
-
-**Reference model: `01-Foundations/2-MasterMind/`** contains:
-- `README.md` — full tutorial with Python comparisons, diagrams, and exercises
-- `master_mind.md` + `master-mind-advanced.md` — complementary lesson files
-- `master-mind.py` + `master_mind2.py` — Python implementations
-
-### Type B — Data-Engineering Cargo Projects (projects 9–59)
-These come from the [data-engineering-rust](https://github.com/jolisper/data-engineering-rust) source. They are hands-on Cargo projects.
+### Type B — Data-Engineering Cargo Projects
+These are hands-on Cargo projects with test-driven architecture.
 
 **Required structure:**
 ```
@@ -228,7 +221,7 @@ When a user asks to improve a section or folder:
 
 ### 4.3 Adding a new section
 
-When projects cover a domain not represented by the 9 existing sections:
+When projects cover a domain not represented by the existing sections:
 
 1. Choose the next section number (e.g., `10-Databases`, `11-Networking`).
 2. Create the folder and `README.md` with the section overview.
@@ -360,7 +353,7 @@ Before finalising any change:
 - [ ] The workshop runs end‑to‑end (for Type B: `cargo run` compiles; for Type A: the tutorial steps are verifiable).
 - [ ] Every new Rust concept has a Python comparison.
 - [ ] The concept coverage table in root `README.md` is accurate.
-- [ ] Cross-references to other projects use correct relative paths (e.g., `../02-Ownership/3-TicketV1/README.md`).
+- [ ] Cross-references to other projects use correct relative paths (e.g., `../02-Ownership/01-TicketV1/README.md`).
 - [ ] No other sections of the root `README.md` are broken.
 - [ ] All changes are committed and pushed.
 

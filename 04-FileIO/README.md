@@ -18,10 +18,10 @@
 
 ## Learning Path
 
-1. Start with **53-CSVCookbook** for basic CSV reading
-2. Move to **54-CSVWriter** for writing CSV data
-3. Explore **55-Parquet** for columnar storage
-4. Reflect with **56-DataManagementLessonReflection**
+1. Start with **01-CSVCookbook** for basic CSV reading
+2. Move to **02-CSVWriter** for writing CSV data
+3. Explore **03-Parquet** for columnar storage
+4. Reflect with ****
 
 ## Key Concepts Covered
 

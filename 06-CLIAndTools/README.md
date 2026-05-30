@@ -25,11 +25,11 @@
 
 ## Learning Path
 
-1. Start with **14-CLISalad** for CLI argument parsing basics
-2. Explore graph algorithms with **20-CommunityDetection** through **22-GraphVisualize**
-3. Build **24-LisbonShortestPath** and **26-PageRank** for classic algorithms
-4. Integrate with external databases via **25-Neo4jDataScience** and **27-RussianTrollTweets**
-5. Finish with **33-CustomCLIFruitSalad** (advanced CLI) and **29-DataStructuresLessonReflection**
+1. Start with **01-CLISalad** for CLI argument parsing basics
+2. Explore graph algorithms with **02-CommunityDetection** through **04-GraphVisualize**
+3. Build **05-LisbonShortestPath** and **07-PageRank** for classic algorithms
+4. Integrate with external databases via **06-Neo4jDataScience** and **08-RussianTrollTweets**
+5. Finish with **10-CustomCLIFruitSalad** (advanced CLI) and ****
 
 ## Key Concepts Covered
 
