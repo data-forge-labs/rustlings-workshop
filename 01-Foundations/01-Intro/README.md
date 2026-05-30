@@ -118,7 +118,9 @@ Rust macros (`!`) perform compile-time code generation. `println!`, `vec!`, `pan
 6. [Concept: Variables and Mutability](#6-concept-variables-and-mutability)
 7. [Concept: Expressions vs Statements](#7-concept-expressions-vs-statements)
 8. [Putting It All Together](#8-putting-it-all-together)
-9. [Summary](#9-summary)
+9. [Appendix: Rust Syntax Reference](#9-appendix-rust-syntax-reference)
+10. [Summary](#10-summary)
+11. [Exercise: Guess the Number Game](#11-exercise-guess-the-number-game)
 
 ---
 
@@ -525,7 +527,87 @@ Status: above average
 
 ---
 
-## 9. Summary
+## 9. Appendix: Rust Syntax Reference
+
+### Comments
+
+You can use `//` for single-line comments:
+
+```rust
+// This is a single-line comment
+// Followed by another single-line comment
+```
+
+### Functions
+
+Functions in Rust are defined using the `fn` keyword, followed by the function's name, its input parameters, and its return type. The function's body is enclosed in curly braces `{}`.
+
+```rust
+// `fn` <function_name> ( <input params> ) -> <return_type> { <body> }
+fn greeting() -> &'static str {
+    "I'm ready to learn Rust!"
+}
+```
+
+`greeting` has no input parameters and returns a reference to a string slice (`&'static str`).
+
+### Return type
+
+The return type can be omitted from the signature if the function doesn't return anything (i.e. if it returns `()`, Rust's unit type):
+
+```rust
+fn test_welcome() {
+    assert_eq!(greeting(), "I'm ready to learn Rust!");
+}
+```
+
+The above is equivalent to:
+
+```rust
+fn test_welcome() -> () {
+    assert_eq!(greeting(), "I'm ready to learn Rust!");
+}
+```
+
+### Returning values
+
+The last expression in a function is implicitly returned:
+
+```rust
+fn greeting() -> &'static str {
+    "I'm ready to learn Rust!"  // Last expression — returned implicitly
+}
+```
+
+You can also use the `return` keyword to return a value early:
+
+```rust
+fn greeting() -> &'static str {
+    return "I'm ready to learn Rust!";
+}
+```
+
+It is considered idiomatic to omit the `return` keyword when possible.
+
+### Input parameters
+
+Input parameters are declared inside the parentheses `()` that follow the function's name. Each parameter is declared with its name, followed by a colon `:`, followed by its type.
+
+```rust
+fn greet(name: &str) -> String {
+    format!("Hello, {}!", name)
+}
+```
+
+If there are multiple input parameters, they must be separated with commas.
+
+### Type annotations
+
+Rust is a **statically typed language**. Every single value in Rust has a type and that type must be known to the compiler at compile-time. Types are a form of **static analysis** — the compiler attaches a type tag to every value and enforces rules (e.g., you can't add a string to a number). If leveraged correctly, types can prevent whole classes of runtime bugs.
+
+---
+
+## 10. Summary
 
 | Concept | Description | Python Equivalent |
 |---|---|---|
@@ -540,7 +622,7 @@ Status: above average
 
 ---
 
-## 10. Exercise: Guess the Number Game
+## 11. Exercise: Guess the Number Game
 
 Let's build a small game to practice everything you've learned: `let`, `mut`, `fn`, `println!`, `std::io`, loops, `if/else`, and external crates.
 
@@ -658,11 +740,11 @@ Try modifying the game:
 
 ### Further Reading
 
-The following lesson file in this folder provides additional context:
+The following topic is now covered in the [Appendix: Rust Syntax Reference](#9-appendix-rust-syntax-reference) section of this README:
 
-| File | Topics |
-|------|--------|
-| [01_syntax.md](./01_syntax.md) | Functions, return types, expressions vs statements, comments |
+| Section | Topics |
+|---------|--------|
+| Appendix | Functions, return types, expressions vs statements, comments, type annotations |
 
 ### Next Steps
 

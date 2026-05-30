@@ -127,6 +127,7 @@ Rich error enums with fields: `enum TicketError { EmptyTitle, TitleTooLong { max
 10. [Concept: `thiserror` and `anyhow` Crates](#10-concept-thiserror-and-anyhow-crates)
 11. [Putting It All Together](#11-putting-it-all-together)
 12. [Summary](#12-summary)
+13. [Appendix: Original Step-by-Step Tutorial](#13-appendix-original-step-by-step-tutorial)
 
 ---
 
@@ -993,3 +994,997 @@ The following lesson files in this folder provide deeper dives into each concept
 ### Next Project
 
 Proceed to [6-TicketManagement](../03-Collections/01-TicketManagement/README.md) for **collections, iterators, and HashMap** — essential tools for data pipelines.
+
+## Appendix: Original Step-by-Step Tutorial
+
+### Appendix 1: Introduction
+
+# Modelling A Ticket, pt. 2
+
+The `Ticket` struct we worked on in the previous chapters is a good start,
+but it still screams "I'm a beginner Rustacean!".
+
+We'll use this chapter to refine our Rust domain modelling skills.
+We'll need to introduce a few more concepts along the way:
+
+- `enum`s, one of Rust's most powerful features for data modeling
+- The `Option` type, to model nullable values
+- The `Result` type, to model recoverable errors
+- The `Debug` and `Display` traits, for printing
+- The `Error` trait, to mark error types
+- The `TryFrom` and `TryInto` traits, for fallible conversions
+- Rust's package system, explaining what's a library, what's a binary, how to use third-party crates
+
+### Appendix 2: Enumerations
+
+# Enumerations
+
+Based on the validation logic you wrote [in a previous chapter](../03_ticket_v1/02_validation.md),
+there are only a few valid statuses for a ticket: `To-Do`, `InProgress` and `Done`.\
+This is not obvious if we look at the `status` field in the `Ticket` struct or at the type of the `status`
+parameter in the `new` method:
+
+```rust
+#[derive(Debug, PartialEq)]
+pub struct Ticket {
+    title: String,
+    description: String,
+    status: String,
+}
+
+impl Ticket {
+    pub fn new(
+        title: String, 
+        description: String, 
+        status: String
+    ) -> Self {
+        // [...]
+    }
+}
+```
+
+In both cases we're using `String` to represent the `status` field.
+`String` is a very general type—it doesn't immediately convey the information that the `status` field
+has a limited set of possible values. Even worse, the caller of `Ticket::new` will only find out **at runtime**
+if the status they provided is valid or not.
+
+We can do better than that with **enumerations**.
+
+## `enum`
+
+An enumeration is a type that can have a fixed set of values, called **variants**.\
+In Rust, you define an enumeration using the `enum` keyword:
+
+```rust
+enum Status {
+    ToDo,
+    InProgress,
+    Done,
+}
+```
+
+`enum`, just like `struct`, defines **a new Rust type**.
+
+### Appendix 3: `match`
+
+# `match`
+
+You may be wondering—what can you actually **do** with an enum?\
+The most common operation is to **match** on it.
+
+```rust
+enum Status {
+    ToDo,
+    InProgress,
+    Done
+}
+
+impl Status {
+    fn is_done(&self) -> bool {
+        match self {
+            Status::Done => true,
+            // The `|` operator lets you match multiple patterns.
+            // It reads as "either `Status::ToDo` or `Status::InProgress`".
+            Status::InProgress | Status::ToDo => false
+        }
+    }
+}
+```
+
+A `match` statement that lets you compare a Rust value against a series of **patterns**.\
+You can think of it as a type-level `if`. If `status` is a `Done` variant, execute the first block;
+if it's a `InProgress` or `ToDo` variant, execute the second block.
+
+## Exhaustiveness
+
+There's one key detail here: `match` is **exhaustive**. You must handle all enum variants.\
+If you forget to handle a variant, Rust will stop you **at compile-time** with an error.
+
+E.g. if we forget to handle the `ToDo` variant:
+
+```rust
+match self {
+    Status::Done => true,
+    Status::InProgress => false,
+}
+```
+
+the compiler will complain:
+
+```text
+error[E0004]: non-exhaustive patterns: `ToDo` not covered
+ --> src/main.rs:5:9
+  |
+5 |     match status {
+  |     ^^^^^^^^^^^^ pattern `ToDo` not covered
+```
+
+This is a big deal!\
+Codebases evolve over time—you might add a new status down the line, e.g. `Blocked`. The Rust compiler
+will emit an error for every single `match` statement that's missing logic for the new variant.
+That's why Rust developers often sing the praises of "compiler-driven refactoring"—the compiler tells you
+what to do next, you just have to fix what it reports.
+
+## Catch-all
+
+If you don't care about one or more variants, you can use the `_` pattern as a catch-all:
+
+```rust
+match status {
+    Status::Done => true,
+    _ => false
+}
+```
+
+The `_` pattern matches anything that wasn't matched by the previous patterns.
+
+<div class="warning">
+By using this catch-all pattern, you _won't_ get the benefits of compiler-driven refactoring.\
+If you add a new enum variant, the compiler _won't_ tell you that you're not handling it.
+
+If you're keen on correctness, avoid using catch-alls. Leverage the compiler to re-examine all matching sites and determine how new enum variants should be handled.
+
+</div>
+
+### Appendix 4: Variants Can Hold Data
+
+# Variants can hold data
+
+```rust
+enum Status {
+    ToDo,
+    InProgress,
+    Done,
+}
+```
+
+Our `Status` enum is what's usually called a **C-style enum**.\
+Each variant is a simple label, a bit like a named constant. You can find this kind of enum in many programming
+languages, like C, C++, Java, C#, Python, etc.
+
+Rust enums can go further though. We can **attach data to each variant**.
+
+## Variants
+
+Let's say that we want to store the name of the person who's currently working on a ticket.\
+We would only have this information if the ticket is in progress. It wouldn't be there for a to-do ticket or
+a done ticket.
+We can model this by attaching a `String` field to the `InProgress` variant:
+
+```rust
+enum Status {
+    ToDo,
+    InProgress {
+        assigned_to: String,
+    },
+    Done,
+}
+```
+
+`InProgress` is now a **struct-like variant**.\
+The syntax mirrors, in fact, the one we used to define a struct—it's just "inlined" inside the enum, as a variant.
+
+## Accessing variant data
+
+If we try to access `assigned_to` on a `Status` instance,
+
+```rust
+let status: Status = /* */;
+
+// This won't compile
+println!("Assigned to: {}", status.assigned_to);
+```
+
+the compiler will stop us:
+
+```text
+error[E0609]: no field `assigned_to` on type `Status`
+ --> src/main.rs:5:40
+  |
+5 |     println!("Assigned to: {}", status.assigned_to);
+  |                                        ^^^^^^^^^^^ unknown field
+```
+
+`assigned_to` is **variant-specific**, it's not available on all `Status` instances.\
+To access `assigned_to`, we need to use **pattern matching**:
+
+```rust
+match status {
+    Status::InProgress { assigned_to } => {
+        println!("Assigned to: {}", assigned_to);
+    },
+    Status::ToDo | Status::Done => {
+        println!("ToDo or Done");
+    }
+}
+```
+
+## Bindings
+
+In the match pattern `Status::InProgress { assigned_to }`, `assigned_to` is a **binding**.\
+We're **destructuring** the `Status::InProgress` variant and binding the `assigned_to` field to
+a new variable, also named `assigned_to`.\
+If we wanted, we could bind the field to a different variable name:
+
+```rust
+match status {
+    Status::InProgress { assigned_to: person } => {
+        println!("Assigned to: {}", person);
+    },
+    Status::ToDo | Status::Done => {
+        println!("ToDo or Done");
+    }
+}
+```
+
+### Appendix 5: Concise Branching
+
+# Concise branching
+
+Your solution to the previous exercise probably looks like this:
+
+```rust
+impl Ticket {
+    pub fn assigned_to(&self) -> &str {
+        match &self.status {
+            Status::InProgress { assigned_to } => assigned_to,
+            Status::Done | Status::ToDo => {
+                panic!(
+                    "Only `In-Progress` tickets can be \
+                    assigned to someone"
+                )
+            }
+        }
+    }
+}
+```
+
+You only care about the `Status::InProgress` variant.
+Do you really need to match on all the other variants?
+
+New constructs to the rescue!
+
+## `if let`
+
+The `if let` construct allows you to match on a single variant of an enum,
+without having to handle all the other variants.
+
+Here's how you can use `if let` to simplify the `assigned_to` method:
+
+```rust
+impl Ticket {
+    pub fn assigned_to(&self) -> &str {
+        if let Status::InProgress { assigned_to } = &self.status {
+            assigned_to
+        } else {
+            panic!(
+                "Only `In-Progress` tickets can be assigned to someone"
+            );
+        }
+    }
+}
+```
+
+## `let/else`
+
+If the `else` branch is meant to return early (a panic counts as returning early!),
+you can use the `let/else` construct:
+
+```rust
+impl Ticket {
+    pub fn assigned_to(&self) -> &str {
+        let Status::InProgress { assigned_to } = &self.status else {
+            panic!(
+                "Only `In-Progress` tickets can be assigned to someone"
+            );
+        };
+        assigned_to
+    }
+}
+```
+
+It allows you to assign the destructured variable without incurring
+any "right drift", i.e. the variable is assigned at the same indentation level
+as the code that precedes it.
+
+## Style
+
+Both `if let` and `let/else` are idiomatic Rust constructs.\
+Use them as you see fit to improve the readability of your code,
+but don't overdo it: `match` is always there when you need it.
+
+### Appendix 6: Nullability
+
+# Nullability
+
+Our implementation of the `assigned` method is fairly blunt: panicking for to-do and done tickets is far from ideal.\
+We can do better using **Rust's `Option` type**.
+
+## `Option`
+
+`Option` is a Rust type that represents **nullable values**.\
+It is an enum, defined in Rust's standard library:
+
+```rust
+enum Option<T> {
+    Some(T),
+    None,
+}
+```
+
+`Option` encodes the idea that a value might be present (`Some(T)`) or absent (`None`).\
+It also forces you to **explicitly handle both cases**. You'll get a compiler error if you are working with
+a nullable value and you forget to handle the `None` case.\
+This is a significant improvement over "implicit" nullability in other languages, where you can forget to check
+for `null` and thus trigger a runtime error.
+
+## `Option`'s definition
+
+`Option`'s definition uses a Rust construct that you haven't seen before: **tuple-like variants**.
+
+### Tuple-like variants
+
+`Option` has two variants: `Some(T)` and `None`.\
+`Some` is a **tuple-like variant**: it's a variant that holds **unnamed fields**.
+
+Tuple-like variants are often used when there is a single field to store, especially when we're looking at a
+"wrapper" type like `Option`.
+
+### Tuple-like structs
+
+They're not specific to enums—you can define tuple-like structs too:
+
+```rust
+struct Point(i32, i32);
+```
+
+You can then access the two fields of a `Point` instance using their positional index:
+
+```rust
+let point = Point(3, 4);
+let x = point.0;
+let y = point.1;
+```
+
+### Tuples
+
+It's weird to say that something is tuple-like when we haven't seen tuples yet!\
+Tuples are another example of a primitive Rust type.
+They group together a fixed number of values with (potentially different) types:
+
+```rust
+// Two values, same type
+let first: (i32, i32) = (3, 4);
+// Three values, different types
+let second: (i32, u32, u8) = (-42, 3, 8);
+```
+
+The syntax is simple: you list the types of the values between parentheses, separated by commas.
+You can access the fields of a tuple using the dot notation and the field index:
+
+```rust
+assert_eq!(second.0, -42);
+assert_eq!(second.1, 3);
+assert_eq!(second.2, 8);
+```
+
+Tuples are a convenient way of grouping values together when you can't be bothered to define a dedicated struct type.
+
+### Appendix 7: Fallibility
+
+# Fallibility
+
+Let's revisit the `Ticket::new` function from the previous exercise:
+
+```rust
+impl Ticket {
+    pub fn new(
+        title: String, 
+        description: String, 
+        status: Status
+    ) -> Ticket {
+        if title.is_empty() {
+            panic!("Title cannot be empty");
+        }
+        if title.len() > 50 {
+            panic!("Title cannot be longer than 50 bytes");
+        }
+        if description.is_empty() {
+            panic!("Description cannot be empty");
+        }
+        if description.len() > 500 {
+            panic!("Description cannot be longer than 500 bytes");
+        }
+
+        Ticket {
+            title,
+            description,
+            status,
+        }
+    }
+}
+```
+
+As soon as one of the checks fails, the function panics.
+This is not ideal, as it doesn't give the caller a chance to **handle the error**.
+
+It's time to introduce the `Result` type, Rust's primary mechanism for error handling.
+
+## The `Result` type
+
+The `Result` type is an enum defined in the standard library:
+
+```rust
+enum Result<T, E> {
+    Ok(T),
+    Err(E),
+}
+```
+
+It has two variants:
+
+- `Ok(T)`: represents a successful operation. It holds `T`, the output of the operation.
+- `Err(E)`: represents a failed operation. It holds `E`, the error that occurred.
+
+Both `Ok` and `Err` are generic, allowing you to specify your own types for the success and error cases.
+
+## No exceptions
+
+Recoverable errors in Rust are **represented as values**.\
+They're just an instance of a type, being passed around and manipulated like any other value.
+This is a significant difference from other languages, such as Python or C#, where **exceptions** are used to signal errors.
+
+Exceptions create a separate control flow path that can be hard to reason about.\
+You don't know, just by looking at a function's signature, if it can throw an exception or not.
+You don't know, just by looking at a function's signature, **which** exception types it can throw.\
+You must either read the function's documentation or look at its implementation to find out.
+
+Exception handling logic has very poor locality: the code that throws the exception is far removed from the code
+that catches it, and there's no direct link between the two.
+
+## Fallibility is encoded in the type system
+
+Rust, with `Result`, forces you to **encode fallibility in the function's signature**.\
+If a function can fail (and you want the caller to have a shot at handling the error), it must return a `Result`.
+
+```rust
+// Just by looking at the signature, you know that this function 
+// can fail. You can also inspect `ParseIntError` to see what 
+// kind of failures to expect.
+fn parse_int(s: &str) -> Result<i32, ParseIntError> {
+    // ...
+}
+```
+
+That's the big advantage of `Result`: it makes fallibility explicit.
+
+Keep in mind, though, that panics exist. They aren't tracked by the type system, just like exceptions in other languages.
+But they're meant for **unrecoverable errors** and should be used sparingly.
+
+### Appendix 8: Unwrapping
+
+# Unwrapping
+
+`Ticket::new` now returns a `Result` instead of panicking on invalid inputs.\
+What does this mean for the caller?
+
+## Failures can't be (implicitly) ignored
+
+Unlike exceptions, Rust's `Result` forces you to **handle errors at the call site**.\
+If you call a function that returns a `Result`, Rust won't allow you to implicitly ignore the error case.
+
+```rust
+fn parse_int(s: &str) -> Result<i32, ParseIntError> {
+    // ...
+}
+
+// This won't compile: we're not handling the error case.
+// We must either use `match` or one of the combinators provided by 
+// `Result` to "unwrap" the success value or handle the error.
+let number = parse_int("42") + 2;
+```
+
+## You got a `Result`. Now what?
+
+When you call a function that returns a `Result`, you have two key options:
+
+- Panic if the operation failed.
+  This is done using either the `unwrap` or `expect` methods.
+  ```rust
+  // Panics if `parse_int` returns an `Err`.
+  let number = parse_int("42").unwrap();
+  // `expect` lets you specify a custom panic message.
+  let number = parse_int("42").expect("Failed to parse integer");
+  ```
+- Destructure the `Result` using a `match` expression to deal with the error case explicitly.
+  ```rust
+  match parse_int("42") {
+      Ok(number) => println!("Parsed number: {}", number),
+      Err(err) => eprintln!("Error: {}", err),
+  }
+  ```
+
+### Appendix 9: Error Enums
+
+# Error enums
+
+Your solution to the previous exercise may have felt awkward: matching on strings is not ideal!\
+A colleague might rework the error messages returned by `Ticket::new` (e.g. to improve readability) and,
+all of a sudden, your calling code would break.
+
+You already know the machinery required to fix this: enums!
+
+## Reacting to errors
+
+When you want to allow the caller to behave differently based on the specific error that occurred, you can
+use an enum to represent the different error cases:
+
+```rust
+// An error enum to represent the different error cases
+// that may occur when parsing a `u32` from a string.
+enum U32ParseError {
+    NotANumber,
+    TooLarge,
+    Negative,
+}
+```
+
+Using an error enum, you're encoding the different error cases in the type system—they become part of the
+signature of the fallible function.\
+This simplifies error handling for the caller, as they can use a `match` expression to react to the different
+error cases:
+
+```rust
+match s.parse_u32() {
+    Ok(n) => n,
+    Err(U32ParseError::Negative) => 0,
+    Err(U32ParseError::TooLarge) => u32::MAX,
+    Err(U32ParseError::NotANumber) => {
+        panic!("Not a number: {}", s);
+    }
+}
+```
+
+### Appendix 10: Error Trait
+
+# Error trait
+
+## Error reporting
+
+In the previous exercise you had to destructure the `TitleError` variant to extract the error message and
+pass it to the `panic!` macro.\
+This is a (rudimentary) example of **error reporting**: transforming an error type into a representation that can be
+shown to a user, a service operator, or a developer.
+
+It's not practical for each Rust developer to come up with their own error reporting strategy: it'd be a waste of time
+and it wouldn't compose well across projects.
+That's why Rust provides the `std::error::Error` trait.
+
+## The `Error` trait
+
+There are no constraints on the type of the `Err` variant in a `Result`, but it's a good practice to use a type
+that implements the `Error` trait.
+`Error` is the cornerstone of Rust's error handling story:
+
+```rust
+// Slightly simplified definition of the `Error` trait
+pub trait Error: Debug + Display {}
+```
+
+You might recall the `:` syntax from [the `From` trait](../04_traits/09_from.md#supertrait--subtrait)—it's used to specify **supertraits**.
+For `Error`, there are two supertraits: `Debug` and `Display`. If a type wants to implement `Error`, it must also
+implement `Debug` and `Display`.
+
+## `Display` and `Debug`
+
+We've already encountered the `Debug` trait in [a previous exercise](../04_traits/04_derive.md)—it's the trait used by
+`assert_eq!` to display the values of the variables it's comparing when the assertion fails.
+
+From a "mechanical" perspective, `Display` and `Debug` are identical—they encode how a type should be converted
+into a string-like representation:
+
+```rust
+// `Debug`
+pub trait Debug {
+    fn fmt(&self, f: &mut Formatter<'_>) -> Result<(), Error>;
+}
+
+// `Display`
+pub trait Display {
+    fn fmt(&self, f: &mut Formatter<'_>) -> Result<(), Error>;
+}
+```
+
+The difference is in their _purpose_: `Display` returns a representation that's meant for "end-users",
+while `Debug` provides a low-level representation that's more suitable to developers and service operators.\
+That's why `Debug` can be automatically implemented using the `#[derive(Debug)]` attribute, while `Display`
+**requires** a manual implementation.
+
+### Appendix 11: Libraries and Binaries
+
+# Libraries and binaries
+
+It took a bit of code to implement the `Error` trait for `TicketNewError`, didn't it?\
+A manual `Display` implementation, plus an `Error` impl block.
+
+We can remove some of the boilerplate by using [`thiserror`](https://docs.rs/thiserror/latest/thiserror/),
+a Rust crate that provides a **procedural macro** to simplify the creation of custom error types.\
+But we're getting ahead of ourselves: `thiserror` is a third-party crate, it'd be our first dependency!
+
+Let's take a step back to talk about Rust's packaging system before we dive into dependencies.
+
+## What is a package?
+
+A Rust package is defined by the `[package]` section in a `Cargo.toml` file, also known as its **manifest**.
+Within `[package]` you can set the package's metadata, such as its name and version.
+
+Go check the `Cargo.toml` file in the directory of this section's exercise!
+
+## What is a crate?
+
+Inside a package, you can have one or more **crates**, also known as **targets**.\
+The two most common crate types are **binary crates** and **library crates**.
+
+### Binaries
+
+A binary is a program that can be compiled to an **executable file**.\
+It must include a function named `main`—the program's entry point. `main` is invoked when the program is executed.
+
+### Libraries
+
+Libraries, on the other hand, are not executable on their own. You can't _run_ a library,
+but you can _import its code_ from another package that depends on it.\
+A library groups together code (i.e. functions, types, etc.) that can be leveraged by other packages as a **dependency**.
+
+All the exercises you've solved so far have been structured as libraries, with a test suite attached to them.
+
+### Conventions
+
+There are some conventions around Rust packages that you need to keep in mind:
+
+- The package's source code is usually located in the `src` directory.
+- If there's a `src/lib.rs` file, `cargo` will infer that the package contains a library crate.
+- If there's a `src/main.rs` file, `cargo` will infer that the package contains a binary crate.
+
+You can override these defaults by explicitly declaring your targets in the `Cargo.toml` file—see
+[`cargo`'s documentation](https://doc.rust-lang.org/cargo/reference/cargo-targets.html#cargo-targets) for more details.
+
+Keep in mind that while a package can contain multiple crates, it can only contain one library crate.
+
+### Appendix 12: Dependencies
+
+# Dependencies
+
+A package can depend on other packages by listing them in the `[dependencies]` section of its `Cargo.toml` file.\
+The most common way to specify a dependency is by providing its name and version:
+
+```toml
+[dependencies]
+thiserror = "1"
+```
+
+This will add `thiserror` as a dependency to your package, with a **minimum** version of `1.0.0`.
+`thiserror` will be pulled from [crates.io](https://crates.io), Rust's official package registry.
+When you run `cargo build`, `cargo` will go through a few stages:
+
+- Dependency resolution
+- Downloading the dependencies
+- Compiling your project (your own code and the dependencies)
+
+Dependency resolution is skipped if your project has a `Cargo.lock` file and your manifest files are unchanged.
+A lockfile is automatically generated by `cargo` after a successful round of dependency resolution: it contains
+the exact versions of all dependencies used in your project, and is used to ensure that the same versions are
+consistently used across different builds (e.g. in CI). If you're working on a project with multiple developers,
+you should commit the `Cargo.lock` file to your version control system.
+
+You can use `cargo update` to update the `Cargo.lock` file with the latest (compatible) versions of all your dependencies.
+
+### Path dependencies
+
+You can also specify a dependency using a **path**. This is useful when you're working on multiple local packages.
+
+```toml
+[dependencies]
+my-library = { path = "../my-library" }
+```
+
+The path is relative to the `Cargo.toml` file of the package that's declaring the dependency.
+
+### Other sources
+
+Check out the [Cargo documentation](https://doc.rust-lang.org/cargo/reference/specifying-dependencies.html) for more
+details on where you can get dependencies from and how to specify them in your `Cargo.toml` file.
+
+## Dev dependencies
+
+You can also specify dependencies that are only needed for development—i.e. they only get pulled in when you're
+running `cargo test`.\
+They go in the `[dev-dependencies]` section of your `Cargo.toml` file:
+
+```toml
+[dev-dependencies]
+static_assertions = "1.1.0"
+```
+
+We've been using a few of these throughout the book to shorten our tests.
+
+### Appendix 13: `thiserror`
+
+# `thiserror`
+
+That was a bit of detour, wasn't it? But a necessary one!\
+Let's get back on track now: custom error types and `thiserror`.
+
+## Custom error types
+
+We've seen how to implement the `Error` trait "manually" for a custom error type.\
+Imagine that you have to do this for most error types in your codebase. That's a lot of boilerplate, isn't it?
+
+We can remove some of the boilerplate by using [`thiserror`](https://docs.rs/thiserror/latest/thiserror/),
+a Rust crate that provides a **procedural macro** to simplify the creation of custom error types.
+
+```rust
+#[derive(thiserror::Error, Debug)]
+enum TicketNewError {
+    #[error("{0}")]
+    TitleError(String),
+    #[error("{0}")]
+    DescriptionError(String),
+}
+```
+
+## You can write your own macros
+
+All the `derive` macros we've seen so far were provided by the Rust standard library.\
+`thiserror::Error` is the first example of a **third-party** `derive` macro.
+
+`derive` macros are a subset of **procedural macros**, a way to generate Rust code at compile time.
+We won't get into the details of how to write a procedural macro in this course, but it's important
+to know that you can write your own!\
+A topic to approach in a more advanced Rust course.
+
+## Custom syntax
+
+Each procedural macro can define its own syntax, which is usually explained in the crate's documentation.
+In the case of `thiserror`, we have:
+
+- `#[derive(thiserror::Error)]`: this is the syntax to derive the `Error` trait for a custom error type, helped by `thiserror`.
+- `#[error("{0}")]`: this is the syntax to define a `Display` implementation for each variant of the custom error type.
+  `{0}` is replaced by the zero-th field of the variant (`String`, in this case) when the error is displayed.
+
+### Appendix 14: `TryFrom` and `TryInto`
+
+# `TryFrom` and `TryInto`
+
+In the previous chapter we looked at the [`From` and `Into` traits](../04_traits/09_from.md),
+Rust's idiomatic interfaces for **infallible** type conversions.\
+But what if the conversion is not guaranteed to succeed?
+
+We now know enough about errors to discuss the **fallible** counterparts of `From` and `Into`:
+`TryFrom` and `TryInto`.
+
+## `TryFrom` and `TryInto`
+
+Both `TryFrom` and `TryInto` are defined in the `std::convert` module, just like `From` and `Into`.
+
+```rust
+pub trait TryFrom<T>: Sized {
+    type Error;
+    fn try_from(value: T) -> Result<Self, Self::Error>;
+}
+
+pub trait TryInto<T>: Sized {
+    type Error;
+    fn try_into(self) -> Result<T, Self::Error>;
+}
+```
+
+The main difference between `From`/`Into` and `TryFrom`/`TryInto` is that the latter return a `Result` type.\
+This allows the conversion to fail, returning an error instead of panicking.
+
+## `Self::Error`
+
+Both `TryFrom` and `TryInto` have an associated `Error` type.
+This allows each implementation to specify its own error type, ideally the most appropriate for the conversion
+being attempted.
+
+`Self::Error` is a way to refer to the `Error` associated type defined in the trait itself.
+
+## Duality
+
+Just like `From` and `Into`, `TryFrom` and `TryInto` are dual traits.\
+If you implement `TryFrom` for a type, you get `TryInto` for free.
+
+### Appendix 15: `Error::source`
+
+# `Error::source`
+
+There's one more thing we need to talk about to complete our coverage of the `Error` trait: the `source` method.
+
+```rust
+// Full definition this time!
+pub trait Error: Debug + Display {
+    fn source(&self) -> Option<&(dyn Error + 'static)> {
+        None
+    }
+}
+```
+
+The `source` method is a way to access the **error cause**, if any.\
+Errors are often chained, meaning that one error is the cause of another: you have a high-level error (e.g.
+cannot connect to the database) that is caused by a lower-level error (e.g. can't resolve the database hostname).
+The `source` method allows you to "walk" the full chain of errors, often used when capturing error context in logs.
+
+## Implementing `source`
+
+The `Error` trait provides a default implementation that always returns `None` (i.e. no underlying cause). That's why
+you didn't have to care about `source` in the previous exercises.\
+You can override this default implementation to provide a cause for your error type.
+
+```rust
+use std::error::Error;
+
+#[derive(Debug)]
+struct DatabaseError {
+    source: std::io::Error
+}
+
+impl std::fmt::Display for DatabaseError {
+    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+        write!(f, "Failed to connect to the database")
+    }
+}
+
+impl std::error::Error for DatabaseError {
+    fn source(&self) -> Option<&(dyn Error + 'static)> {
+        Some(&self.source)
+    }
+}
+```
+
+In this example, `DatabaseError` wraps an `std::io::Error` as its source.
+We then override the `source` method to return this source when called.
+
+## `&(dyn Error + 'static)`
+
+What's this `&(dyn Error + 'static)` type?\
+Let's unpack it:
+
+- `dyn Error` is a **trait object**. It's a way to refer to any type that implements the `Error` trait.
+- `'static` is a special **lifetime specifier**.
+  `'static` implies that the reference is valid for "as long as we need it", i.e. the entire program execution.
+
+Combined: `&(dyn Error + 'static)` is a reference to a trait object that implements the `Error` trait
+and is valid for the entire program execution.
+
+Don't worry too much about either of these concepts for now. We'll cover them in more detail in future chapters.
+
+## Implementing `source` using `thiserror`
+
+`thiserror` provides three ways to automatically implement `source` for your error types:
+
+- A field named `source` will automatically be used as the source of the error.
+  ```rust
+  use thiserror::Error;
+
+  #[derive(Error, Debug)]
+  pub enum MyError {
+      #[error("Failed to connect to the database")]
+      DatabaseError {
+          source: std::io::Error
+      }
+  }
+  ```
+- A field annotated with the `#[source]` attribute will automatically be used as the source of the error.
+  ```rust
+  use thiserror::Error;
+
+  #[derive(Error, Debug)]
+  pub enum MyError {
+      #[error("Failed to connect to the database")]
+      DatabaseError {
+          #[source]
+          inner: std::io::Error
+      }
+  }
+  ```
+- A field annotated with the `#[from]` attribute will automatically be used as the source of the error **and**
+  `thiserror` will automatically generate a `From` implementation to convert the annotated type into your error type.
+  ```rust
+  use thiserror::Error;
+
+  #[derive(Error, Debug)]
+  pub enum MyError {
+      #[error("Failed to connect to the database")]
+      DatabaseError {
+          #[from]
+          inner: std::io::Error
+      }
+  }
+  ```
+
+## The `?` operator
+
+The `?` operator is a shorthand for propagating errors.\
+When used in a function that returns a `Result`, it will return early with an error if the `Result` is `Err`.
+
+For example:
+
+```rust
+use std::fs::File;
+
+fn read_file() -> Result<String, std::io::Error> {
+    let mut file = File::open("file.txt")?;
+    let mut contents = String::new();
+    file.read_to_string(&mut contents)?;
+    Ok(contents)
+}
+```
+
+is equivalent to:
+
+```rust
+use std::fs::File;
+
+fn read_file() -> Result<String, std::io::Error> {
+    let mut file = match File::open("file.txt") {
+        Ok(file) => file,
+        Err(e) => {
+            return Err(e);
+        }
+    };
+    let mut contents = String::new();
+    match file.read_to_string(&mut contents) {
+        Ok(_) => (),
+        Err(e) => {
+            return Err(e);
+        }
+    }
+    Ok(contents)
+}
+```
+
+You can use the `?` operator to shorten your error handling code significantly.\
+In particular, the `?` operator will automatically convert the error type of the fallible operation into the error type
+of the function, if a conversion is possible (i.e. if there is a suitable `From` implementation)
+
+### Appendix 16: Wrapping Up
+
+# Wrapping up
+
+When it comes to domain modelling, the devil is in the details.\
+Rust offers a wide range of tools to help you represent the constraints of your domain directly in the type system,
+but it takes some practice to get it right and write code that looks idiomatic.
+
+Let's close the chapter with one final refinement of our `Ticket` model.\
+We'll introduce a new type for each of the fields in `Ticket` to encapsulate the respective constraints.\
+Every time someone accesses a `Ticket` field, they'll get back a value that's guaranteed to be valid—i.e. a
+`TicketTitle` instead of a `String`. They won't have to worry about the title being empty elsewhere in the code:
+as long as they have a `TicketTitle`, they know it's valid **by construction**.
+
+This is just an example of how you can use Rust's type system to make your code safer and more expressive.
+
+## Further reading
+
+- [Parse, don't validate](https://lexi-lambda.github.io/blog/2019/11/05/parse-don-t-validate/)
+- [Using types to guarantee domain invariants](https://www.lpalmieri.com/posts/2020-12-11-zero-to-production-6-domain-modelling/)

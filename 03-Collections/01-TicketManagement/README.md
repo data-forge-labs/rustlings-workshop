@@ -19,6 +19,7 @@
 9. [Concept: Lifetimes — Connecting Data](#9-concept-lifetimes--connecting-data)
 10. [Putting It All Together](#10-putting-it-all-together)
 11. [Summary](#11-summary)
+12. [Appendix: Original Step-by-Step Tutorial](#12-appendix-original-step-by-step-tutorial)
 
 ---
 
@@ -782,28 +783,1184 @@ fn main() {
 
 ### Further Reading
 
-The following lesson files in this folder provide deeper dives into each concept:
-
-| File | Topics |
-|------|--------|
-| [00_intro.md](./00_intro.md) | Project introduction |
-| [01_arrays.md](./01_arrays.md) | Fixed-size arrays `[T; N]` |
-| [02_vec.md](./02_vec.md) | `Vec<T>` creation, methods, capacity |
-| [03_resizing.md](./03_resizing.md) | Resizing strategies, `reserve`, `shrink_to_fit` |
-| [04_iterators.md](./04_iterators.md) | `Iterator` and `IntoIterator` traits |
-| [05_iter.md](./05_iter.md) | `.iter()`, `.iter_mut()`, `.into_iter()` |
-| [06_lifetimes.md](./06_lifetimes.md) | Lifetime annotations, elision |
-| [07_combinators.md](./07_combinators.md) | `map`, `filter`, `fold`, `take`, `skip` |
-| [08_impl_trait.md](./08_impl_trait.md) | `impl Trait` syntax |
-| [09_impl_trait_2.md](./09_impl_trait_2.md) | `impl Trait` in return position |
-| [10_slices.md](./10_slices.md) | `&[T]` slice type |
-| [11_mutable_slices.md](./11_mutable_slices.md) | `&mut [T]` mutable slices |
-| [12_two_states.md](./12_two_states.md) | Two-state borrowing patterns |
-| [13_index.md](./13_index.md) | `Index` trait, `[]` operator |
-| [14_index_mut.md](./14_index_mut.md) | `IndexMut` trait |
-| [15_hashmap.md](./15_hashmap.md) | `HashMap` creation, entry API, iteration |
-| [16_btreemap.md](./16_btreemap.md) | `BTreeMap`, sorted iteration, range queries |
+The supplementary lesson files have been merged into the [Appendix](#12-appendix-original-step-by-step-tutorial) below.
 
 ### Next Project
 
 Proceed to [7-Threads](../05-Concurrency/01-Threads/README.md) for **concurrency** — running data pipelines in parallel.
+
+---
+
+## 12. Appendix: Original Step-by-Step Tutorial
+
+### 12.1 Intro
+
+In the previous chapter we modelled `Ticket` in a vacuum: we defined its fields and their constraints, we learned
+how to best represent them in Rust, but we didn't consider how `Ticket` fits into a larger system.
+We'll use this chapter to build a simple workflow around `Ticket`, introducing a (rudimentary) management system to
+store and retrieve tickets.
+
+The task will give us an opportunity to explore new Rust concepts, such as:
+
+- Stack-allocated arrays
+- `Vec`, a growable array type
+- `Iterator` and `IntoIterator`, for iterating over collections
+- Slices (`&[T]`), to work with parts of a collection
+- Lifetimes, to describe how long references are valid
+- `HashMap` and `BTreeMap`, two key-value data structures
+- `Eq` and `Hash`, to compare keys in a `HashMap`
+- `Ord` and `PartialOrd`, to work with a `BTreeMap`
+- `Index` and `IndexMut`, to access elements in a collection
+
+### 12.2 Arrays (01_arrays.md)
+
+As soon as we start talking about "ticket management" we need to think about a way to store _multiple_ tickets.
+In turn, this means we need to think about collections. In particular, homogeneous collections:
+we want to store multiple instances of the same type.
+
+What does Rust have to offer in this regard?
+
+#### Arrays
+
+A first attempt could be to use an **array**.\\
+Arrays in Rust are fixed-size collections of elements of the same type.
+
+Here's how you can define an array:
+
+```rust
+// Array type syntax: [ <type> ; <number of elements> ]
+let numbers: [u32; 3] = [1, 2, 3];
+```
+
+This creates an array of 3 integers, initialized with the values `1`, `2`, and `3`.\\
+The type of the array is `[u32; 3]`, which reads as "an array of `u32`s with a length of 3".
+
+If all array elements are the same, you can use a shorter syntax to initialize it:
+
+```rust
+// [ <value> ; <number of elements> ]
+let numbers: [u32; 3] = [1; 3];
+```
+
+`[1; 3]` creates an array of three elements, all equal to `1`.
+
+#### Accessing elements
+
+You can access elements of an array using square brackets:
+
+```rust
+let first = numbers[0];
+let second = numbers[1];
+let third = numbers[2];
+```
+
+The index must be of type `usize`.\\
+Arrays are **zero-indexed**, like everything in Rust. You've seen this before with string slices and field indexing in
+tuples/tuple-like variants.
+
+#### Out-of-bounds access
+
+If you try to access an element that's out of bounds, Rust will panic:
+
+```rust
+let numbers: [u32; 3] = [1, 2, 3];
+let fourth = numbers[3]; // This will panic
+```
+
+This is enforced at runtime using **bounds checking**. It comes with a small performance overhead, but it's how
+Rust prevents buffer overflows.\\
+In some scenarios the Rust compiler can optimize away bounds checks, especially if iterators are involved—we'll speak
+more about this later on.
+
+If you don't want to panic, you can use the `get` method, which returns an `Option<&T>`:
+
+```rust
+let numbers: [u32; 3] = [1, 2, 3];
+assert_eq!(numbers.get(0), Some(&1));
+// You get a `None` if you try to access an out-of-bounds index
+// rather than a panic.
+assert_eq!(numbers.get(3), None);
+```
+
+#### Performance
+
+Since the size of an array is known at compile-time, the compiler can allocate the array on the stack.
+If you run the following code:
+
+```rust
+let numbers: [u32; 3] = [1, 2, 3];
+```
+
+You'll get the following memory layout:
+
+```text
+        +---+---+---+
+Stack:  | 1 | 2 | 3 |
+        +---+---+---+
+```
+
+In other words, the size of an array is `std::mem::size_of::<T>() * N`, where `T` is the type of the elements and `N` is
+the number of elements.\\
+You can access and replace each element in `O(1)` time.
+
+### 12.3 Vec (02_vec.md)
+
+Arrays' strength is also their weakness: their size must be known upfront, at compile-time.
+If you try to create an array with a size that's only known at runtime, you'll get a compilation error:
+
+```rust
+let n = 10;
+let numbers: [u32; n];
+```
+
+```text
+error[E0435]: attempt to use a non-constant value in a constant
+ --> src/main.rs:3:20
+  |
+2 | let n = 10;
+3 | let numbers: [u32; n];
+  |                    ^ non-constant value
+```
+
+Arrays wouldn't work for our ticket management system—we don't know how many tickets we'll need to store at compile-time.
+This is where `Vec` comes in.
+
+#### `Vec`
+
+`Vec` is a growable array type, provided by the standard library.\\
+You can create an empty array using the `Vec::new` function:
+
+```rust
+let mut numbers: Vec<u32> = Vec::new();
+```
+
+You would then push elements into the vector using the `push` method:
+
+```rust
+numbers.push(1);
+numbers.push(2);
+numbers.push(3);
+```
+
+New values are added to the end of the vector.\\
+You can also create an initialized vector using the `vec!` macro, if you know the values at creation time:
+
+```rust
+let numbers = vec![1, 2, 3];
+```
+
+#### Accessing elements
+
+The syntax for accessing elements is the same as with arrays:
+
+```rust
+let numbers = vec![1, 2, 3];
+let first = numbers[0];
+let second = numbers[1];
+let third = numbers[2];
+```
+
+The index must be of type `usize`.\\
+You can also use the `get` method, which returns an `Option<&T>`:
+
+```rust
+let numbers = vec![1, 2, 3];
+assert_eq!(numbers.get(0), Some(&1));
+// You get a `None` if you try to access an out-of-bounds index
+// rather than a panic.
+assert_eq!(numbers.get(3), None);
+```
+
+Access is bounds-checked, just like element access with arrays. It has O(1) complexity.
+
+#### Memory layout
+
+`Vec` is a heap-allocated data structure.\\
+When you create a `Vec`, it allocates memory on the heap to store the elements.
+
+If you run the following code:
+
+```rust
+let mut numbers = Vec::with_capacity(3);
+numbers.push(1);
+numbers.push(2);
+```
+
+you'll get the following memory layout:
+
+```text
+      +---------+--------+----------+
+Stack | pointer | length | capacity |
+      |  |      |   2    |    3     |
+      +--|------+--------+----------+
+         |
+         |
+         v
+       +---+---+---+
+Heap:  | 1 | 2 | ? |
+       +---+---+---+
+```
+
+`Vec` keeps track of three things:
+
+- The **pointer** to the heap region you reserved.
+- The **length** of the vector, i.e. how many elements are in the vector.
+- The **capacity** of the vector, i.e. the number of elements that can fit in the space reserved on the heap.
+
+This layout should look familiar: it's exactly the same as `String`!\\
+That's not a coincidence: `String` is defined as a vector of bytes, `Vec<u8>`, under the hood:
+
+```rust
+pub struct String {
+    vec: Vec<u8>,
+}
+```
+
+### 12.4 Resizing (03_resizing.md)
+
+We said that `Vec` is a "growable" vector type, but what does that mean?
+What happens if you try to insert an element into a `Vec` that's already at maximum capacity?
+
+```rust
+let mut numbers = Vec::with_capacity(3);
+numbers.push(1);
+numbers.push(2);
+numbers.push(3); // Max capacity reached
+numbers.push(4); // What happens here?
+```
+
+The `Vec` will **resize** itself.\\
+It will ask the allocator for a new (larger) chunk of heap memory, copy the elements over, and deallocate the old memory.
+
+This operation can be expensive, as it involves a new memory allocation and copying all existing elements.
+
+#### `Vec::with_capacity`
+
+If you have a rough idea of how many elements you'll store in a `Vec`, you can use the `Vec::with_capacity`
+method to pre-allocate enough memory upfront.\\
+This can avoid a new allocation when the `Vec` grows, but it may waste memory if you overestimate actual usage.
+
+Evaluate on a case-by-case basis.
+
+### 12.5 Iteration — Iterator and IntoIterator (04_iterators.md)
+
+During the very first exercises, you learned that Rust lets you iterate over collections using `for` loops.
+We were looking at ranges at that point (e.g. `0..5`), but the same holds true for collections like arrays and vectors.
+
+```rust
+// It works for `Vec`s
+let v = vec![1, 2, 3];
+for n in v {
+    println!("{}", n);
+}
+
+// It also works for arrays
+let a: [u32; 3] = [1, 2, 3];
+for n in a {
+    println!("{}", n);
+}
+```
+
+It's time to understand how this works under the hood.
+
+#### `for` desugaring
+
+Every time you write a `for` loop in Rust, the compiler _desugars_ it into the following code:
+
+```rust
+let mut iter = IntoIterator::into_iter(v);
+loop {
+    match iter.next() {
+        Some(n) => {
+            println!("{}", n);
+        }
+        None => break,
+    }
+}
+```
+
+`loop` is another looping construct, on top of `for` and `while`.\\
+A `loop` block will run forever, unless you explicitly `break` out of it.
+
+#### `Iterator` trait
+
+The `next` method in the previous code snippet comes from the `Iterator` trait.
+The `Iterator` trait is defined in Rust's standard library and provides a shared interface for
+types that can produce a sequence of values:
+
+```rust
+trait Iterator {
+    type Item;
+    fn next(&mut self) -> Option<Self::Item>;
+}
+```
+
+The `Item` associated type specifies the type of the values produced by the iterator.
+
+`next` returns the next value in the sequence.\\
+It returns `Some(value)` if there's a value to return, and `None` when there isn't.
+
+Be careful: there is no guarantee that an iterator is exhausted when it returns `None`. That's only
+guaranteed if the iterator implements the (more restrictive)
+[`FusedIterator`](https://doc.rust-lang.org/std/iter/trait.FusedIterator.html) trait.
+
+#### `IntoIterator` trait
+
+Not all types implement `Iterator`, but many can be converted into a type that does.\\
+That's where the `IntoIterator` trait comes in:
+
+```rust
+trait IntoIterator {
+    type Item;
+    type IntoIter: Iterator<Item = Self::Item>;
+    fn into_iter(self) -> Self::IntoIter;
+}
+```
+
+The `into_iter` method consumes the original value and returns an iterator over its elements.\\
+A type can only have one implementation of `IntoIterator`: there can be no ambiguity as to what `for` should desugar to.
+
+One detail: every type that implements `Iterator` automatically implements `IntoIterator` as well.
+They just return themselves from `into_iter`!
+
+#### Bounds checks
+
+Iterating over iterators has a nice side effect: you can't go out of bounds, by design.\\
+This allows Rust to remove bounds checks from the generated machine code, making iteration faster.
+
+In other words,
+
+```rust
+let v = vec![1, 2, 3];
+for n in v {
+    println!("{}", n);
+}
+```
+
+is usually faster than
+
+```rust
+let v = vec![1, 2, 3];
+for i in 0..v.len() {
+    println!("{}", v[i]);
+}
+```
+
+There are exceptions to this rule: the compiler can sometimes prove that you're not going out of bounds even
+with manual indexing, thus removing the bounds checks anyway. But in general, prefer iteration to indexing
+where possible.
+
+### 12.6 `.iter()` — Iteration Modes (05_iter.md)
+
+`IntoIterator` **consumes** `self` to create an iterator.
+
+This has its benefits: you get **owned** values from the iterator.
+For example: if you call `.into_iter()` on a `Vec<Ticket>` you'll get an iterator that returns `Ticket` values.
+
+That's also its downside: you can no longer use the original collection after calling `.into_iter()` on it.
+Quite often you want to iterate over a collection without consuming it, looking at **references** to the values instead.
+In the case of `Vec<Ticket>`, you'd want to iterate over `&Ticket` values.
+
+Most collections expose a method called `.iter()` that returns an iterator over references to the collection's elements.
+For example:
+
+```rust
+let numbers: Vec<u32> = vec![1, 2];
+// `n` has type `&u32` here
+for n in numbers.iter() {
+    // [...]
+}
+```
+
+This pattern can be simplified by implementing `IntoIterator` for a **reference to the collection**.
+In our example above, that would be `&Vec<Ticket>`.\\
+The standard library does this, that's why the following code works:
+
+```rust
+let numbers: Vec<u32> = vec![1, 2];
+// `n` has type `&u32` here
+// We didn't have to call `.iter()` explicitly
+// It was enough to use `&numbers` in the `for` loop
+for n in &numbers {
+    // [...]
+}
+```
+
+It's idiomatic to provide both options:
+
+- An implementation of `IntoIterator` for a reference to the collection.
+- An `.iter()` method that returns an iterator over references to the collection's elements.
+
+The former is convenient in `for` loops, the latter is more explicit and can be used in other contexts.
+
+### 12.7 Lifetimes (06_lifetimes.md)
+
+Let's try to complete the previous exercise by adding an implementation of `IntoIterator` for `&TicketStore`, for
+maximum convenience in `for` loops.
+
+Let's start by filling in the most "obvious" parts of the implementation:
+
+```rust
+impl IntoIterator for &TicketStore {
+    type Item = &Ticket;
+    type IntoIter = // What goes here?
+
+    fn into_iter(self) -> Self::IntoIter {
+        self.tickets.iter()
+    }
+}
+```
+
+What should `type IntoIter` be set to?\\
+Intuitively, it should be the type returned by `self.tickets.iter()`, i.e. the type returned by `Vec::iter()`.\\
+If you check the standard library documentation, you'll find that `Vec::iter()` returns an `std::slice::Iter`.
+The definition of `Iter` is:
+
+```rust
+pub struct Iter<'a, T> { /* fields omitted */ }
+```
+
+`'a` is a **lifetime parameter**.
+
+#### Lifetime parameters
+
+Lifetimes are **labels** used by the Rust compiler to keep track of how long a reference (either mutable or
+immutable) is valid.\\
+The lifetime of a reference is constrained by the scope of the value it refers to. Rust always makes sure, at compile-time,
+that references are not used after the value they refer to has been dropped, to avoid dangling pointers and use-after-free bugs.
+
+This should sound familiar: we've already seen these concepts in action when we discussed ownership and borrowing.
+Lifetimes are just a way to **name** how long a specific reference is valid.
+
+Naming becomes important when you have multiple references and you need to clarify how they **relate to each other**.
+Let's look at the signature of `Vec::iter()`:
+
+```rust
+impl <T> Vec<T> {
+    // Slightly simplified
+    pub fn iter<'a>(&'a self) -> Iter<'a, T> {
+        // [...]
+    }
+}
+```
+
+`Vec::iter()` is generic over a lifetime parameter, named `'a`.\\
+`'a` is used to **tie together** the lifetime of the `Vec` and the lifetime of the `Iter` returned by `iter()`.
+In plain English: the `Iter` returned by `iter()` cannot outlive the `Vec` reference (`&self`) it was created from.
+
+This is important because `Vec::iter`, as we discussed, returns an iterator over **references** to the `Vec`'s elements.
+If the `Vec` is dropped, the references returned by the iterator would be invalid. Rust must make sure this doesn't happen,
+and lifetimes are the tool it uses to enforce this rule.
+
+#### Lifetime elision
+
+Rust has a set of rules, called **lifetime elision rules**, that allow you to omit explicit lifetime annotations in many cases.
+For example, `Vec::iter`'s definition looks like this in `std`'s source code:
+
+```rust
+impl <T> Vec<T> {
+    pub fn iter(&self) -> Iter<'_, T> {
+        // [...]
+    }
+}
+```
+
+No explicit lifetime parameter is present in the signature of `Vec::iter()`.
+Elision rules imply that the lifetime of the `Iter` returned by `iter()` is tied to the lifetime of the `&self` reference.
+You can think of `'_` as a **placeholder** for the lifetime of the `&self` reference.
+
+See the [References](#references) section for a link to the official documentation on lifetime elision.\\
+In most cases, you can rely on the compiler telling you when you need to add explicit lifetime annotations.
+
+#### References
+
+- [std::vec::Vec::iter](https://doc.rust-lang.org/std/vec/struct.Vec.html#method.iter)
+- [std::slice::Iter](https://doc.rust-lang.org/std/slice/struct.Iter.html)
+- [Lifetime elision rules](https://doc.rust-lang.org/reference/lifetime-elision.html)
+
+### 12.8 Iterator Combinators (07_combinators.md)
+
+Iterators can do so much more than `for` loops!\\
+If you look at the documentation for the `Iterator` trait, you'll find a **vast** collection of
+methods that you can leverage to transform, filter, and combine iterators in various ways.
+
+Let's mention the most common ones:
+
+- `map` applies a function to each element of the iterator.
+- `filter` keeps only the elements that satisfy a predicate.
+- `filter_map` combines `filter` and `map` in one step.
+- `cloned` converts an iterator of references into an iterator of values, cloning each element.
+- `enumerate` returns a new iterator that yields `(index, value)` pairs.
+- `skip` skips the first `n` elements of the iterator.
+- `take` stops the iterator after `n` elements.
+- `chain` combines two iterators into one.
+
+These methods are called **combinators**.\\
+They are usually **chained** together to create complex transformations in a concise and readable way:
+
+```rust
+let numbers = vec![1, 2, 3, 4, 5];
+// The sum of the squares of the even numbers
+let outcome: u32 = numbers.iter()
+    .filter(|&n| n % 2 == 0)
+    .map(|&n| n * n)
+    .sum();
+```
+
+#### Closures
+
+What's going on with the `filter` and `map` methods above?\\
+They take **closures** as arguments.
+
+Closures are **anonymous functions**, i.e. functions that are not defined using the `fn` syntax we are used to.\\
+They are defined using the `|args| body` syntax, where `args` are the arguments and `body` is the function body.
+`body` can be a block of code or a single expression.
+For example:
+
+```rust
+// An anonymous function that adds 1 to its argument
+let add_one = |x| x + 1;
+// Could be written with a block too:
+let add_one = |x| { x + 1 };
+```
+
+Closures can take more than one argument:
+
+```rust
+let add = |x, y| x + y;
+let sum = add(1, 2);
+```
+
+They can also capture variables from their environment:
+
+```rust
+let x = 42;
+let add_x = |y| x + y;
+let sum = add_x(1);
+```
+
+If necessary, you can specify the types of the arguments and/or the return type:
+
+```rust
+// Just the input type
+let add_one = |x: i32| x + 1;
+// Or both input and output types, using the `fn` syntax
+let add_one: fn(i32) -> i32 = |x| x + 1;
+```
+
+#### `collect`
+
+What happens when you're done transforming an iterator using combinators?\\
+You either iterate over the transformed values using a `for` loop, or you collect them into a collection.
+
+The latter is done using the `collect` method.\\
+`collect` consumes the iterator and collects its elements into a collection of your choice.
+
+For example, you can collect the squares of the even numbers into a `Vec`:
+
+```rust
+let numbers = vec![1, 2, 3, 4, 5];
+let squares_of_evens: Vec<u32> = numbers.iter()
+    .filter(|&n| n % 2 == 0)
+    .map(|&n| n * n)
+    .collect();
+```
+
+`collect` is generic over its **return type**.\\
+Therefore you usually need to provide a type hint to help the compiler infer the correct type.
+In the example above, we annotated the type of `squares_of_evens` to be `Vec<u32>`.
+Alternatively, you can use the **turbofish syntax** to specify the type:
+
+```rust
+let squares_of_evens = numbers.iter()
+    .filter(|&n| n % 2 == 0)
+    .map(|&n| n * n)
+    // Turbofish syntax: `<method_name>::<type>()`
+    // It's called turbofish because `::<>` looks like a fish
+    .collect::<Vec<u32>>();
+```
+
+#### Further reading
+
+- [`Iterator`'s documentation](https://doc.rust-lang.org/std/iter/trait.Iterator.html) gives you an
+  overview of the methods available for iterators in `std`.
+- [The `itertools` crate](https://docs.rs/itertools/) defines even **more** combinators for iterators.
+
+### 12.9 `impl Trait` in Return Position (08_impl_trait.md)
+
+`TicketStore::to_dos` returns a `Vec<&Ticket>`.\\
+That signature introduces a new heap allocation every time `to_dos` is called, which may be unnecessary depending
+on what the caller needs to do with the result.
+It'd be better if `to_dos` returned an iterator instead of a `Vec`, thus empowering the caller to decide whether to
+collect the results into a `Vec` or just iterate over them.
+
+That's tricky though!
+What's the return type of `to_dos`, as implemented below?
+
+```rust
+impl TicketStore {
+    pub fn to_dos(&self) -> ??? {
+        self.tickets.iter().filter(|t| t.status == Status::ToDo)
+    }
+}
+```
+
+#### Unnameable types
+
+The `filter` method returns an instance of `std::iter::Filter`, which has the following definition:
+
+```rust
+pub struct Filter<I, P> { /* fields omitted */ }
+```
+
+where `I` is the type of the iterator being filtered on and `P` is the predicate used to filter the elements.\\
+We know that `I` is `std::slice::Iter<'_, Ticket>` in this case, but what about `P`?\\
+`P` is a closure, an **anonymous function**. As the name suggests, closures don't have a name,
+so we can't write them down in our code.
+
+Rust has a solution for this: **impl Trait**.
+
+#### `impl Trait`
+
+`impl Trait` is a feature that allows you to return a type without specifying its name.
+You just declare what trait(s) the type implements, and Rust figures out the rest.
+
+In this case, we want to return an iterator of references to `Ticket`s:
+
+```rust
+impl TicketStore {
+    pub fn to_dos(&self) -> impl Iterator<Item = &Ticket> {
+        self.tickets.iter().filter(|t| t.status == Status::ToDo)
+    }
+}
+```
+
+That's it!
+
+#### Generic?
+
+`impl Trait` in return position is **not** a generic parameter.
+
+Generics are placeholders for types that are filled in by the caller of the function.
+A function with a generic parameter is **polymorphic**: it can be called with different types, and the compiler will generate
+a different implementation for each type.
+
+That's not the case with `impl Trait`.
+The return type of a function with `impl Trait` is **fixed** at compile time, and the compiler will generate
+a single implementation for it.
+This is why `impl Trait` is also called **opaque return type**: the caller doesn't know the exact type of the return value,
+only that it implements the specified trait(s). But the compiler knows the exact type, there is no polymorphism involved.
+
+#### RPIT
+
+If you read RFCs or deep-dives about Rust, you might come across the acronym **RPIT**.\\
+It stands for **"Return Position Impl Trait"** and refers to the use of `impl Trait` in return position.
+
+### 12.10 `impl Trait` in Argument Position (09_impl_trait_2.md)
+
+In the previous section, we saw how `impl Trait` can be used to return a type without specifying its name.\\
+The same syntax can also be used in **argument position**:
+
+```rust
+fn print_iter(iter: impl Iterator<Item = i32>) {
+    for i in iter {
+        println!("{}", i);
+    }
+}
+```
+
+`print_iter` takes an iterator of `i32`s and prints each element.\\
+When used in **argument position**, `impl Trait` is equivalent to a generic parameter with a trait bound:
+
+```rust
+fn print_iter<T>(iter: T)
+where
+    T: Iterator<Item = i32>
+{
+    for i in iter {
+        println!("{}", i);
+    }
+}
+```
+
+#### Downsides
+
+As a rule of thumb, prefer generics over `impl Trait` in argument position.\\
+Generics allow the caller to explicitly specify the type of the argument, using the turbofish syntax (`::<>`),
+which can be useful for disambiguation. That's not the case with `impl Trait`.
+
+### 12.11 Slices — `&[T]` (10_slices.md)
+
+Let's go back to the memory layout of a `Vec`:
+
+```rust
+let mut numbers = Vec::with_capacity(3);
+numbers.push(1);
+numbers.push(2);
+```
+
+```text
+      +---------+--------+----------+
+Stack | pointer | length | capacity |
+      |  |      |   2    |    3     |
+      +--|------+--------+----------+
+         |
+         |
+         v
+       +---+---+---+
+Heap:  | 1 | 2 | ? |
+       +---+---+---+
+```
+
+We already remarked how `String` is just a `Vec<u8>` in disguise.\\
+The similarity should prompt you to ask: "What's the equivalent of `&str` for `Vec`?"
+
+#### `&[T]`
+
+`[T]` is a **slice** of a contiguous sequence of elements of type `T`.\\
+It's most commonly used in its borrowed form, `&[T]`.
+
+There are various ways to create a slice reference from a `Vec`:
+
+```rust
+let numbers = vec![1, 2, 3];
+// Via index syntax
+let slice: &[i32] = &numbers[..];
+// Via a method
+let slice: &[i32] = numbers.as_slice();
+// Or for a subset of the elements
+let slice: &[i32] = &numbers[1..];
+```
+
+`Vec` implements the `Deref` trait using `[T]` as the target type, so you can use slice methods on a `Vec` directly
+thanks to deref coercion:
+
+```rust
+let numbers = vec![1, 2, 3];
+// Surprise, surprise: `iter` is not a method on `Vec`!
+// It's a method on `&[T]`, but you can call it on a `Vec`
+// thanks to deref coercion.
+let sum: i32 = numbers.iter().sum();
+```
+
+##### Memory layout
+
+A `&[T]` is a **fat pointer**, just like `&str`.\\
+It consists of a pointer to the first element of the slice and the length of the slice.
+
+If you have a `Vec` with three elements:
+
+```rust
+let numbers = vec![1, 2, 3];
+```
+
+and then create a slice reference:
+
+```rust
+let slice: &[i32] = &numbers[1..];
+```
+
+you'll get this memory layout:
+
+```text
+                  numbers                          slice
+      +---------+--------+----------+      +---------+--------+
+Stack | pointer | length | capacity |      | pointer | length |
+      |    |    |   3    |    4     |      |    |    |   2    |
+      +----|----+--------+----------+      +----|----+--------+
+           |                                    |
+           |                                    |
+           v                                    |
+         +---+---+---+---+                      |
+Heap:    | 1 | 2 | 3 | ? |                      |
+         +---+---+---+---+                      |
+               ^                                |
+               |                                |
+               +--------------------------------+
+```
+
+#### `&Vec<T>` vs `&[T]`
+
+When you need to pass an immutable reference to a `Vec` to a function, prefer `&[T]` over `&Vec<T>`.\\
+This allows the function to accept any kind of slice, not necessarily one backed by a `Vec`.
+
+For example, you can then pass a subset of the elements in a `Vec`.
+But it goes further than that—you could also pass a **slice of an array**:
+
+```rust
+let array = [1, 2, 3];
+let slice: &[i32] = &array;
+```
+
+Array slices and `Vec` slices are the same type: they're fat pointers to a contiguous sequence of elements.
+In the case of arrays, the pointer points to the stack rather than the heap, but that doesn't matter
+when it comes to using the slice.
+
+### 12.12 Mutable Slices — `&mut [T]` (11_mutable_slices.md)
+
+Every time we've talked about slice types (like `str` and `[T]`), we've used their immutable borrow form (`&str` and `&[T]`).\\
+But slices can also be mutable!
+
+Here's how you create a mutable slice:
+
+```rust
+let mut numbers = vec![1, 2, 3];
+let slice: &mut [i32] = &mut numbers;
+```
+
+You can then modify the elements in the slice:
+
+```rust
+slice[0] = 42;
+```
+
+This will change the first element of the `Vec` to `42`.
+
+#### Limitations
+
+When working with immutable borrows, the recommendation was clear: prefer slice references over references to
+the owned type (e.g. `&[T]` over `&Vec<T>`).\\
+That's **not** the case with mutable borrows.
+
+Consider this scenario:
+
+```rust
+let mut numbers = Vec::with_capacity(2);
+let mut slice: &mut [i32] = &mut numbers;
+slice.push(1);
+```
+
+It won't compile!\\
+`push` is a method on `Vec`, not on slices. This is the manifestation of a more general principle: Rust won't
+allow you to add or remove elements from a slice. You will only be able to modify/replace the elements that are
+already there.
+
+In this regard, a `&mut Vec` or a `&mut String` are strictly more powerful than a `&mut [T]` or a `&mut str`.\\
+Choose the type that best fits based on the operations you need to perform.
+
+### 12.13 Two States — TicketDraft and Ticket (12_two_states.md)
+
+Let's think again about our ticket management system.\\
+Our ticket model right now looks like this:
+
+```rust
+pub struct Ticket {
+    pub title: TicketTitle,
+    pub description: TicketDescription,
+    pub status: Status
+}
+```
+
+One thing is missing here: an **identifier** to uniquely identify a ticket.\\
+That identifier should be unique for each ticket. That can be guaranteed by generating it automatically when
+a new ticket is created.
+
+#### Refining the model
+
+Where should the id be stored?\\
+We could add a new field to the `Ticket` struct:
+
+```rust
+pub struct Ticket {
+    pub id: TicketId,
+    pub title: TicketTitle,
+    pub description: TicketDescription,
+    pub status: Status
+}
+```
+
+But we don't know the id before creating the ticket. So it can't be there from the get-go.\\
+It'd have to be optional:
+
+```rust
+pub struct Ticket {
+    pub id: Option<TicketId>,
+    pub title: TicketTitle,
+    pub description: TicketDescription,
+    pub status: Status
+}
+```
+
+That's also not ideal—we'd have to handle the `None` case every single time we retrieve a ticket from the store,
+even though we know that the id should always be there once the ticket has been created.
+
+The best solution is to have two different ticket **states**, represented by two separate types:
+a `TicketDraft` and a `Ticket`:
+
+```rust
+pub struct TicketDraft {
+    pub title: TicketTitle,
+    pub description: TicketDescription
+}
+
+pub struct Ticket {
+    pub id: TicketId,
+    pub title: TicketTitle,
+    pub description: TicketDescription,
+    pub status: Status
+}
+```
+
+A `TicketDraft` is a ticket that hasn't been created yet. It doesn't have an id, and it doesn't have a status.\\
+A `Ticket` is a ticket that has been created. It has an id and a status.\\
+Since each field in `TicketDraft` and `Ticket` embeds its own constraints, we don't have to duplicate logic
+across the two types.
+
+### 12.14 Index Trait (13_index.md)
+
+`TicketStore::get` returns an `Option<&Ticket>` for a given `TicketId`.\\
+We've seen before how to access elements of arrays and vectors using Rust's
+indexing syntax:
+
+```rust
+let v = vec![0, 1, 2];
+assert_eq!(v[0], 0);
+```
+
+How can we provide the same experience for `TicketStore`?\\
+You guessed right: we need to implement a trait, `Index`!
+
+#### `Index`
+
+The `Index` trait is defined in Rust's standard library:
+
+```rust
+// Slightly simplified
+pub trait Index<Idx>
+{
+    type Output;
+
+    // Required method
+    fn index(&self, index: Idx) -> &Self::Output;
+}
+```
+
+It has:
+
+- One generic parameter, `Idx`, to represent the index type
+- One associated type, `Output`, to represent the type we retrieved using the index
+
+Notice how the `index` method doesn't return an `Option`. The assumption is that
+`index` will panic if you try to access an element that's not there, as it happens
+for array and vec indexing.
+
+### 12.15 IndexMut Trait (14_index_mut.md)
+
+`Index` allows read-only access. It doesn't let you mutate the value you
+retrieved.
+
+#### `IndexMut`
+
+If you want to allow mutability, you need to implement the `IndexMut` trait.
+
+```rust
+// Slightly simplified
+pub trait IndexMut<Idx>: Index<Idx>
+{
+    // Required method
+    fn index_mut(&mut self, index: Idx) -> &mut Self::Output;
+}
+```
+
+`IndexMut` can only be implemented if the type already implements `Index`,
+since it unlocks an _additional_ capability.
+
+### 12.16 HashMap (15_hashmap.md)
+
+Our implementation of `Index`/`IndexMut` is not ideal: we need to iterate over the entire
+`Vec` to retrieve a ticket by id; the algorithmic complexity is `O(n)`, where
+`n` is the number of tickets in the store.
+
+We can do better by using a different data structure for storing tickets: a `HashMap<K, V>`.
+
+```rust
+use std::collections::HashMap;
+
+// Type inference lets us omit an explicit type signature (which
+// would be `HashMap<String, String>` in this example).
+let mut book_reviews = HashMap::new();
+
+book_reviews.insert(
+    "Adventures of Huckleberry Finn".to_string(),
+    "My favorite book.".to_string(),
+);
+```
+
+`HashMap` works with key-value pairs. It's generic over both: `K` is the generic
+parameter for the key type, while `V` is the one for the value type.
+
+The expected cost of insertions, retrievals and removals is **constant**, `O(1)`.
+That sounds perfect for our usecase, doesn't it?
+
+#### Key requirements
+
+There are no trait bounds on `HashMap`'s struct definition, but you'll find some
+on its methods. Let's look at `insert`, for example:
+
+```rust
+// Slightly simplified
+impl<K, V> HashMap<K, V>
+where
+    K: Eq + Hash,
+{
+    pub fn insert(&mut self, k: K, v: V) -> Option<V> {
+        // [...]
+    }
+}
+```
+
+The key type must implement the `Eq` and `Hash` traits.\\
+Let's dig into those two.
+
+#### `Hash`
+
+A hashing function (or hasher) maps a potentially infinite set of a values (e.g.
+all possible strings) to a bounded range (e.g. a `u64` value).\\
+There are many different hashing functions around, each with different properties
+(speed, collision risk, reversibility, etc.).
+
+A `HashMap`, as the name suggests, uses a hashing function behind the scene.
+It hashes your key and then uses that hash to store/retrieve the associated value.
+This strategy requires the key type must be hashable, hence the `Hash` trait bound on `K`.
+
+You can find the `Hash` trait in the `std::hash` module:
+
+```rust
+pub trait Hash {
+    // Required method
+    fn hash<H>(&self, state: &mut H)
+       where H: Hasher;
+}
+```
+
+You will rarely implement `Hash` manually. Most of the times you'll derive it:
+
+```rust
+#[derive(Hash)]
+struct Person {
+    id: u32,
+    name: String,
+}
+```
+
+#### `Eq`
+
+`HashMap` must be able to compare keys for equality. This is particularly important
+when dealing with hash collisions—i.e. when two different keys hash to the same value.
+
+You may wonder: isn't that what the `PartialEq` trait is for? Almost!\\
+`PartialEq` is not enough for `HashMap` because it doesn't guarantee reflexivity, i.e. `a == a` is always `true`.\\
+For example, floating point numbers (`f32` and `f64`) implement `PartialEq`,
+but they don't satisfy the reflexivity property: `f32::NAN == f32::NAN` is `false`.\\
+Reflexivity is crucial for `HashMap` to work correctly: without it, you wouldn't be able to retrieve a value
+from the map using the same key you used to insert it.
+
+The `Eq` trait extends `PartialEq` with the reflexivity property:
+
+```rust
+pub trait Eq: PartialEq {
+    // No additional methods
+}
+```
+
+It's a marker trait: it doesn't add any new methods, it's just a way for you to say to the compiler
+that the equality logic implemented in `PartialEq` is reflexive.
+
+You can derive `Eq` automatically when you derive `PartialEq`:
+
+```rust
+#[derive(PartialEq, Eq)]
+struct Person {
+    id: u32,
+    name: String,
+}
+```
+
+#### `Eq` and `Hash` are linked
+
+There is an implicit contract between `Eq` and `Hash`: if two keys are equal, their hashes must be equal too.
+This is crucial for `HashMap` to work correctly. If you break this contract, you'll get nonsensical results
+when using `HashMap`.
+
+### 12.17 BTreeMap — Sorted Map (16_btreemap.md)
+
+By moving from a `Vec` to a `HashMap` we have improved the performance of our ticket management system,
+and simplified our code in the process.\\
+It's not all roses, though. When iterating over a `Vec`-backed store, we could be sure that the tickets
+would be returned in the order they were added.\\
+That's not the case with a `HashMap`: you can iterate over the tickets, but the order is random.
+
+We can recover a consistent ordering by switching from a `HashMap` to a `BTreeMap`.
+
+#### `BTreeMap`
+
+A `BTreeMap` guarantees that entries are sorted by their keys.\\
+This is useful when you need to iterate over the entries in a specific order, or if you need to
+perform range queries (e.g. "give me all tickets with an id between 10 and 20").
+
+Just like `HashMap`, you won't find trait bounds on the definition of `BTreeMap`.
+But you'll find trait bounds on its methods. Let's look at `insert`:
+
+```rust
+// `K` and `V` stand for the key and value types, respectively,
+// just like in `HashMap`.
+impl<K, V> BTreeMap<K, V> {
+    pub fn insert(&mut self, key: K, value: V) -> Option<V>
+    where
+        K: Ord,
+    {
+        // implementation
+    }
+}
+```
+
+`Hash` is no longer required. Instead, the key type must implement the `Ord` trait.
+
+#### `Ord`
+
+The `Ord` trait is used to compare values.\\
+While `PartialEq` is used to compare for equality, `Ord` is used to compare for ordering.
+
+It's defined in `std::cmp`:
+
+```rust
+pub trait Ord: Eq + PartialOrd {
+    fn cmp(&self, other: &Self) -> Ordering;
+}
+```
+
+The `cmp` method returns an `Ordering` enum, which can be one
+of `Less`, `Equal`, or `Greater`.\\
+`Ord` requires that two other traits are implemented: `Eq` and `PartialOrd`.
+
+#### `PartialOrd`
+
+`PartialOrd` is a weaker version of `Ord`, just like `PartialEq` is a weaker version of `Eq`.
+You can see why by looking at its definition:
+
+```rust
+pub trait PartialOrd: PartialEq {
+    fn partial_cmp(&self, other: &Self) -> Option<Ordering>;
+}
+```
+
+`PartialOrd::partial_cmp` returns an `Option`—it is not guaranteed that two values can
+be compared.\\
+For example, `f32` doesn't implement `Ord` because `NaN` values are not comparable,
+the same reason why `f32` doesn't implement `Eq`.
+
+#### Implementing `Ord` and `PartialOrd`
+
+Both `Ord` and `PartialOrd` can be derived for your types:
+
+```rust
+// You need to add `Eq` and `PartialEq` too,
+// since `Ord` requires them.
+#[derive(Eq, PartialEq, Ord, PartialOrd)]
+struct TicketId(u64);
+```
+
+If you choose (or need) to implement them manually, be careful:
+
+- `Ord` and `PartialOrd` must be consistent with `Eq` and `PartialEq`.
+- `Ord` and `PartialOrd` must be consistent with each other.

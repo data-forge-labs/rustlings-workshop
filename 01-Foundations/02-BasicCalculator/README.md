@@ -1589,22 +1589,272 @@ fn main() {
 
 ### Further Reading
 
-The following lesson files in this folder provide deeper dives into each concept:
+The detailed step-by-step guides that were previously in individual files have been merged into the [Appendix: Original Step-by-Step Guide](#18-appendix-original-step-by-step-guide) section below.
 
-| File | Topics |
-|------|--------|
-| [00_intro.md](./00_intro.md) | Project introduction and roadmap |
-| [01_integers.md](./01_integers.md) | Integer types, literals, type inference |
-| [02_variables.md](./02_variables.md) | `let` bindings, shadowing, scope |
-| [03_if_else.md](./03_if_else.md) | `if`/`else` expressions, booleans, comparison |
-| [04_panics.md](./04_panics.md) | The `panic!` macro, unrecoverable errors |
-| [05_factorial.md](./05_factorial.md) | Recursive factorial exercise |
-| [06_while.md](./06_while.md) | `while` loops, `mut` keyword |
-| [07_for.md](./07_for.md) | `for` loops, range types |
-| [08_overflow.md](./08_overflow.md) | Integer overflow, profiles, `overflow-checks` |
-| [09_saturating.md](./09_saturating.md) | `wrapping_` and `saturating_` methods |
-| [10_as_casting.md](./10_as_casting.md) | `as` operator, truncation, type conversion |
+| Appendix Section | Topics |
+|------------------|--------|
+| Intro | Project introduction and roadmap |
+| Integer types | Integer types, literals, type inference |
+| Variables | `let` bindings, shadowing, scope |
+| Control Flow | `if`/`else` expressions, booleans, comparison |
+| Panics | The `panic!` macro, unrecoverable errors |
+| Factorial | Recursive factorial exercise |
+| While loops | `while` loops, `mut` keyword |
+| For loops | `for` loops, range types |
+| Overflow | Integer overflow, profiles, `overflow-checks` |
+| Saturating | `wrapping_` and `saturating_` methods |
+| Type Casting | `as` operator, truncation, type conversion |
 
 ### Next Project
 
 Proceed to [2-MasterMind](../01-Foundations/03-MasterMind/master_mind.md) to solidify these concepts with a game, then [3-TicketV1](../02-Ownership/01-TicketV1/README.md) to learn about **ownership** — Rust's most unique and important feature.
+
+---
+
+## 18. Appendix: Original Step-by-Step Guide
+
+### Intro
+
+In this chapter we'll learn how to use Rust as a **calculator**. It might not sound like much, but it'll give us a chance to cover a lot of Rust's basics, such as:
+
+- How to define and call functions
+- How to declare and use variables
+- Primitive types (integers and booleans)
+- Arithmetic operators (including overflow and underflow behavior)
+- Comparison operators
+- Control flow
+- Panics
+
+Nailing the basics with a few exercises will get the language flowing under your fingers. When we move on to more complex topics, such as traits and ownership, you'll be able to focus on the new concepts without getting bogged down by the syntax or other trivial details.
+
+### Integer Types
+
+Rust provides several primitive integer types. `u32` is an **unsigned 32-bit integer**. An integer can be **signed** or **unsigned**. An unsigned integer can only represent non-negative numbers (i.e. `0` or greater). A signed integer can represent both positive and negative numbers (e.g. `-1`, `12`, etc.).
+
+The `u` in `u32` stands for **unsigned**. The equivalent type for signed integer is `i32`, where the `i` stands for integer (i.e. any integer, positive or negative).
+
+The `32` in `u32` refers to the **number of bits** used to represent the number in memory. The more bits, the larger the range of numbers that can be represented. Rust supports multiple bit widths for integers: `8`, `16`, `32`, `64`, `128`.
+
+With 32 bits, `u32` can represent numbers from `0` to `2^32 - 1` (a.k.a. `u32::MAX`). With the same number of bits, a signed integer (`i32`) can represent numbers from `-2^31` to `2^31 - 1` (i.e. from `i32::MIN` to `i32::MAX`).
+
+Combining the two variables (signed/unsigned and bit width), we get the following integer types:
+
+| Bit width | Signed | Unsigned |
+| --------- | ------ | -------- |
+| 8-bit     | `i8`   | `u8`     |
+| 16-bit    | `i16`  | `u16`    |
+| 32-bit    | `i32`  | `u32`    |
+| 64-bit    | `i64`  | `u64`    |
+| 128-bit   | `i128` | `u128`   |
+
+**Literals:** `42` is a Rust literal for the number forty-two. The compiler defaults to `i32` for integer literals. Use suffixes like `2u64` to specify a different type. Underscores improve readability: `1_000_000`.
+
+**Arithmetic operators:** `+` for addition, `-` for subtraction, `*` for multiplication, `/` for division, `%` for remainder. Division with integers truncates toward zero (e.g., `5 / 2` = `2`).
+
+**No automatic type coercion:** Rust won't automatically convert between types, even for lossless conversions:
+
+```rust
+let b: u8 = 100;
+let a: u32 = b;  // ERROR: mismatched types
+```
+
+### Variables
+
+The `let` keyword declares **variables**:
+
+```rust
+let x = 42;
+```
+
+Every variable must have a type, either inferred or explicitly annotated:
+
+```rust
+let x: u32 = 42;   // Explicit annotation
+let x = 42;        // Inferred as i32
+let y: u32 = x;    // x inferred as u32 from context
+```
+
+Function arguments are variables too:
+
+```rust
+fn add_one(x: u32) -> u32 {
+    x + 1
+}
+```
+
+You don't have to initialize a variable when you declare it, but you must before using it:
+
+```rust
+let x: u32;
+let y = x + 1;  // ERROR: used binding `x` isn't initialized
+```
+
+### Control Flow — `if`/`else`
+
+The `if` keyword executes a block only if a condition is true:
+
+```rust
+let number = 3;
+if number < 5 {
+    println!("`number` is smaller than 5");
+} else {
+    println!("`number` is greater than or equal to 5");
+}
+```
+
+Use `else if` for multiple conditions:
+
+```rust
+if number < 5 {
+    println!("smaller than 5");
+} else if number >= 3 {
+    println!("between 3 and 5");
+} else {
+    println!("smaller than 3");
+}
+```
+
+**Booleans:** The condition must be `bool`. No truthy/falsy values:
+
+```rust
+let number = 3;
+if number { }  // ERROR: expected `bool`, found integer
+if number > 0 { }  // ✅
+```
+
+**Comparison operators:** `==`, `!=`, `<`, `>`, `<=`, `>=`.
+
+**`if`/`else` is an expression:** It returns a value:
+
+```rust
+let message = if number < 5 { "small" } else { "big" };
+```
+
+### Panics
+
+A **panic** is Rust's way to signal an unrecoverable error:
+
+```rust
+fn main() {
+    panic!("This is a panic!");
+}
+```
+
+Division by zero triggers a panic:
+
+```
+thread 'main' panicked at src/main.rs:3:5:
+attempt to divide by zero
+```
+
+Use the `panic!` macro to trigger panics intentionally. Panics are for programmer bugs — use `Result<T, E>` (covered later) for recoverable errors like file not found or invalid input.
+
+### Factorial
+
+After learning functions, integer types, arithmetic operators, and control flow, you're ready to tackle factorials — a classic exercise that combines all these concepts.
+
+### While Loops
+
+A `while` loop executes a block as long as a condition is true:
+
+```rust
+while <condition> {
+    // code to execute
+}
+```
+
+Example — summing numbers 1 to 5:
+
+```rust
+let mut sum = 0;
+let mut i = 1;
+while i <= 5 {
+    sum += i;
+    i += 1;
+}
+```
+
+**The `mut` keyword:** Variables in Rust are **immutable by default**. To modify a variable, declare it with `mut`. Attempting to modify an immutable variable causes a compile error.
+
+### For Loops
+
+A `for` loop iterates over each element in an iterator:
+
+```rust
+for <element> in <iterator> {
+    // code to execute
+}
+```
+
+**Ranges** provide a concise way to iterate over sequences:
+
+```rust
+// Half-open: 1..5 = 1, 2, 3, 4 (excludes 5)
+for i in 1..5 { }
+
+// Inclusive: 1..=5 = 1, 2, 3, 4, 5
+for i in 1..=5 { }
+```
+
+Range types:
+- `1..5` — half-open (excludes end)
+- `1..=5` — inclusive
+- `1..` — open-ended (to infinity)
+- `..5` — from minimum to 4
+- `..=5` — from minimum to 5
+
+### Integer Overflow
+
+When the result of an arithmetic operation exceeds the maximum value for a given integer type, **integer overflow** occurs. Underflow is the same problem in the opposite direction.
+
+Rust does not automatically promote to a larger type. Instead, two approaches are used:
+- **Reject the operation** — panic at runtime
+- **Wrap around** — produce a "sensible" result within the type's range
+
+The behavior is controlled by the `overflow-checks` profile setting:
+- `true` for `dev` profile (panics on overflow)
+- `false` for `release` profile (wraps silently)
+
+Recommendation: enable `overflow-checks = true` for both profiles to avoid silent data corruption.
+
+**Profiles** are configuration sets that customize compilation. Cargo provides four built-in profiles: `dev`, `release`, `test`, and `bench`.
+
+### Saturating and Wrapping Arithmetic
+
+Per-operation control over overflow behavior:
+
+**Wrapping methods** wrap around like a clock:
+
+```rust
+let x: u8 = 255;
+let y = x.wrapping_add(1);  // 255 + 1 = 0
+```
+
+**Saturating methods** clamp at the type's minimum or maximum:
+
+```rust
+let x: u8 = 255;
+let y = x.saturating_add(1);  // 255 + 1 = 255 (stays at max)
+let z: u8 = 0;
+let w = z.saturating_sub(1);  // 0 - 1 = 0 (stays at min)
+```
+
+Available methods: `wrapping_add`, `wrapping_sub`, `wrapping_mul`, `saturating_add`, `saturating_sub`, `saturating_mul`.
+
+### Type Casting with `as`
+
+Use the `as` operator for explicit type conversion:
+
+```rust
+let a: u32 = 10;
+let b = a as u64;  // Safe: all u32 values fit in u64
+```
+
+**Truncation** occurs when going from larger to smaller types:
+
+```rust
+let a: u16 = 256;
+let b = a as u8;  // b = 0 — only the last 8 bits are kept
+```
+
+Recommendation: use `as` exclusively for smaller-to-larger conversions. For larger-to-smaller conversions, use fallible conversion methods (`try_into`, covered later in the course).

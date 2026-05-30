@@ -137,6 +137,7 @@ Private fields (no `pub`) force construction through `Ticket::new()`, which alwa
 13. [Putting It All Together — The Complete Ticket System](#13-putting-it-all-together--the-complete-ticket-system)
 14. [Exercises](#14-exercises)
 15. [Summary](#15-summary)
+16. [Appendix: Original Step-by-Step Tutorial](#appendix-original-step-by-step-tutorial)
 
 ---
 
@@ -1226,24 +1227,1250 @@ println!("Length: {}", len);   // ✅ len is valid (copy)
 
 ### Further Reading
 
-The following lesson files in this folder provide deeper dives into each concept:
-
-| File | Topics |
-|------|--------|
-| [00_intro.md](./00_intro.md) | Project introduction and roadmap |
-| [01_struct.md](./01_struct.md) | Struct definition, fields, instantiation, methods, `self` |
-| [02_validation.md](./02_validation.md) | Enforcing invariants with validation |
-| [03_modules.md](./03_modules.md) | Module tree, file system layout, submodules |
-| [04_visibility.md](./04_visibility.md) | `pub`, `pub(crate)`, `pub(super)` visibility rules |
-| [05_encapsulation.md](./05_encapsulation.md) | Hiding fields behind constructors |
-| [06_ownership.md](./06_ownership.md) | Ownership rules, move semantics, borrow-checker |
-| [07_setters.md](./07_setters.md) | Mutable references, setter patterns |
-| [08_stack.md](./08_stack.md) | Stack memory layout, `size_of` |
-| [09_heap.md](./09_heap.md) | Heap allocation, `Box`, `String` internals |
-| [10_references_in_memory.md](./10_references_in_memory.md) | Reference as pointers |
-| [11_destructor.md](./11_destructor.md) | Scopes, `Drop` trait, RAII |
-| [12_outro.md](./12_outro.md) | Section wrap-up |
+The [Appendix](#appendix-original-step-by-step-tutorial) at the end of this document contains the original step-by-step lesson files merged into this README.
 
 ### Next Project
 
 Proceed to [4-Traits](../02-Ownership/02-Traits/README.md) to learn about **traits** — Rust's version of interfaces and protocols.
+
+---
+
+## Appendix: Original Step-by-Step Tutorial
+
+### 00_intro
+
+# Modelling A Ticket
+
+The first chapter should have given you a good grasp over some of Rust's primitive types, operators and
+basic control flow constructs.\
+In this chapter we'll go one step further and cover what makes Rust truly unique: **ownership**.\
+Ownership is what enables Rust to be both memory-safe and performant, with no garbage collector.
+
+As our running example, we'll use a (JIRA-like) ticket, the kind you'd use to track bugs, features, or tasks in
+a software project.\
+We'll take a stab at modeling it in Rust. It'll be the first iteration—it won't be perfect nor very idiomatic
+by the end of the chapter. It'll be enough of a challenge though!\
+To move forward you'll have to pick up several new Rust concepts, such as:
+
+- `struct`s, one of Rust's ways to define custom types
+- Ownership, references and borrowing
+- Memory management: stack, heap, pointers, data layout, destructors
+- Modules and visibility
+- Strings
+
+### 01_struct
+
+# Structs
+
+We need to keep track of three pieces of information for each ticket:
+
+- A title
+- A description
+- A status
+
+We can start by using a [`String`](https://doc.rust-lang.org/std/string/struct.String.html)
+to represent them. `String` is the type defined in Rust's standard library to represent
+[UTF-8 encoded](https://en.wikipedia.org/wiki/UTF-8) text.
+
+But how do we **combine** these three pieces of information into a single entity?
+
+## Defining a `struct`
+
+A `struct` defines a **new Rust type**.
+
+```rust
+struct Ticket {
+    title: String,
+    description: String,
+    status: String
+}
+```
+
+A struct is quite similar to what you would call a class or an object in other programming languages.
+
+## Defining fields
+
+The new type is built by combining other types as **fields**.\
+Each field must have a name and a type, separated by a colon, `:`. If there are multiple fields, they are separated by a comma, `,`.
+
+Fields don't have to be of the same type, as you can see in the `Configuration` struct below:
+
+```rust
+struct Configuration {
+   version: u32,
+   active: bool
+}
+```
+
+## Instantiation
+
+You can create an instance of a struct by specifying the values for each field:
+
+```rust
+// Syntax: <StructName> { <field_name>: <value>, ... }
+let ticket = Ticket {
+    title: "Build a ticket system".into(),
+    description: "A Kanban board".into(),
+    status: "Open".into()
+};
+```
+
+## Accessing fields
+
+You can access the fields of a struct using the `.` operator:
+
+```rust
+// Field access
+let x = ticket.description;
+```
+
+## Methods
+
+We can attach behaviour to our structs by defining **methods**.\
+Using the `Ticket` struct as an example:
+
+```rust
+impl Ticket {
+    fn is_open(self) -> bool {
+        self.status == "Open"
+    }
+}
+
+// Syntax:
+// impl <StructName> {
+//    fn <method_name>(<parameters>) -> <return_type> {
+//        // Method body
+//    }
+// }
+```
+
+Methods are pretty similar to functions, with two key differences:
+
+1. methods must be defined inside an **`impl` block**
+2. methods may use `self` as their first parameter.
+   `self` is a keyword and represents the instance of the struct the method is being called on.
+
+### `self`
+
+If a method takes `self` as its first parameter, it can be called using the **method call syntax**:
+
+```rust
+// Method call syntax: <instance>.<method_name>(<parameters>)
+let is_open = ticket.is_open();
+```
+
+This is the same calling syntax you used to perform saturating arithmetic operations on `u32` values
+in [the previous chapter](../02_basic_calculator/09_saturating.md).
+
+### Static methods
+
+If a method doesn't take `self` as its first parameter, it's a **static method**.
+
+```rust
+struct Configuration {
+    version: u32,
+    active: bool
+}
+
+impl Configuration {
+    // `default` is a static method on `Configuration`
+    fn default() -> Configuration {
+        Configuration { version: 0, active: false }
+    }
+}
+```
+
+The only way to call a static method is by using the **function call syntax**:
+
+```rust
+// Function call syntax: <StructName>::<method_name>(<parameters>)
+let default_config = Configuration::default();
+```
+
+### Equivalence
+
+You can use the function call syntax even for methods that take `self` as their first parameter:
+
+```rust
+// Function call syntax:
+//   <StructName>::<method_name>(<instance>, <parameters>)
+let is_open = Ticket::is_open(ticket);
+```
+
+The function call syntax makes it quite clear that `ticket` is being used as `self`, the first parameter of the method,
+but it's definitely more verbose. Prefer the method call syntax when possible.
+
+### 02_validation
+
+# Validation
+
+Let's go back to our ticket definition:
+
+```rust
+struct Ticket {
+    title: String,
+    description: String,
+    status: String,
+}
+```
+
+We are using "raw" types for the fields of our `Ticket` struct.
+This means that users can create a ticket with an empty title, a suuuuuuuper long description or
+a nonsensical status (e.g. "Funny").\
+We can do better than that!
+
+## Further reading
+
+- Check out [`String`'s documentation](https://doc.rust-lang.org/std/string/struct.String.html)
+  for a thorough overview of the methods it provides. You'll need it for the exercise!
+
+### 03_modules
+
+# Modules
+
+The `new` method you've just defined is trying to enforce some **constraints** on the field values for `Ticket`.
+But are those invariants really enforced? What prevents a developer from creating a `Ticket`
+without going through `Ticket::new`?
+
+To get proper **encapsulation** you need to become familiar with two new concepts: **visibility** and **modules**.
+Let's start with modules.
+
+## What is a module?
+
+In Rust a **module** is a way to group related code together, under a common namespace (i.e. the module's name).\
+You've already seen modules in action: the unit tests that verify the correctness of your code are defined in a
+different module, named `tests`.
+
+```rust
+#[cfg(test)]
+mod tests {
+    // [...]
+}
+```
+
+## Inline modules
+
+The `tests` module above is an example of an **inline module**: the module declaration (`mod tests`) and the module
+contents (the stuff inside `{ ... }`) are next to each other.
+
+## Module tree
+
+Modules can be nested, forming a **tree** structure.\
+The root of the tree is the **crate** itself, which is the top-level module that contains all the other modules.
+For a library crate, the root module is usually `src/lib.rs` (unless its location has been customized).
+The root module is also known as the **crate root**.
+
+The crate root can have submodules, which in turn can have their own submodules, and so on.
+
+## External modules and the filesystem
+
+Inline modules are useful for small pieces of code, but as your project grows you'll want to split your code into
+multiple files. In the parent module, you declare the existence of a submodule using the `mod` keyword.
+
+```rust
+mod dog;
+```
+
+`cargo`, Rust's build tool, is then in charge of finding the file that contains
+the module implementation.\
+If your module is declared in the root of your crate (e.g. `src/lib.rs` or `src/main.rs`),
+`cargo` expects the file to be named either:
+
+- `src/<module_name>.rs`
+- `src/<module_name>/mod.rs`
+
+If your module is a submodule of another module, the file should be named:
+
+- `[..]/<parent_module>/<module_name>.rs`
+- `[..]/<parent_module>/<module_name>/mod.rs`
+
+E.g. `src/animals/dog.rs` or `src/animals/dog/mod.rs` if `dog` is a submodule of `animals`.
+
+Your IDE might help you create these files automatically when you declare a new module using the `mod` keyword.
+
+## Item paths and `use` statements
+
+You can access items defined in the same module without any special syntax. You just use their name.
+
+```rust
+struct Ticket {
+    // [...]
+}
+
+// No need to qualify `Ticket` in any way here
+// because we're in the same module
+fn mark_ticket_as_done(ticket: Ticket) {
+    // [...]
+}
+```
+
+That's not the case if you want to access an entity from a different module.\
+You have to use a **path** pointing to the entity you want to access.
+
+You can compose the path in various ways:
+
+- starting from the root of the current crate, e.g. `crate::module_1::MyStruct`
+- starting from the parent module, e.g. `super::my_function`
+- starting from the current module, e.g. `sub_module_1::MyStruct`
+
+Both `crate` and `super` are **keywords**.\
+`crate` refers to the root of the current crate, while `super` refers to the parent of the current module.
+
+Having to write the full path every time you want to refer to a type can be cumbersome.
+To make your life easier, you can introduce a `use` statement to bring the entity into scope.
+
+```rust
+// Bring `MyStruct` into scope
+use crate::module_1::module_2::MyStruct;
+
+// Now you can refer to `MyStruct` directly
+fn a_function(s: MyStruct) {
+     // [...]
+}
+```
+
+### Star imports
+
+You can also import all the items from a module with a single `use` statement.
+
+```rust
+use crate::module_1::module_2::*;
+```
+
+This is known as a **star import**.\
+It is generally discouraged because it can pollute the current namespace, making it hard to understand
+where each name comes from and potentially introducing name conflicts.\
+Nonetheless, it can be useful in some cases, like when writing unit tests. You might have noticed
+that most of our test modules start with a `use super::*;` statement to bring all the items from the parent module
+(the one being tested) into scope.
+
+## Visualizing the module tree
+
+If you're struggling to picture the module tree of your project, you can try using
+[`cargo-modules`](https://crates.io/crates/cargo-modules) to visualize it!
+
+Refer to their documentation for installation instructions and usage examples.
+
+### 04_visibility
+
+# Visibility
+
+When you start breaking down your code into multiple modules, you need to start thinking about **visibility**.
+Visibility determines which regions of your code (or other people's code) can access a given entity,
+be it a struct, a function, a field, etc.
+
+## Private by default
+
+By default, everything in Rust is **private**.\
+A private entity can only be accessed:
+
+1. within the same module where it's defined, or
+2. by one of its submodules
+
+We've used this extensively in the previous exercises:
+
+- `create_todo_ticket` worked (once you added a `use` statement) because `helpers` is a submodule of the crate root,
+  where `Ticket` is defined. Therefore, `create_todo_ticket` can access `Ticket` without any issues even
+  though `Ticket` is private.
+- All our unit tests are defined in a submodule of the code they're testing, so they can access everything without
+  restrictions.
+
+## Visibility modifiers
+
+You can modify the default visibility of an entity using a **visibility modifier**.\
+Some common visibility modifiers are:
+
+- `pub`: makes the entity **public**, i.e. accessible from outside the module where it's defined, potentially from
+  other crates.
+- `pub(crate)`: makes the entity public within the same **crate**, but not outside of it.
+- `pub(super)`: makes the entity public within the parent module.
+- `pub(in path::to::module)`: makes the entity public within the specified module.
+
+You can use these modifiers on modules, structs, functions, fields, etc.
+For example:
+
+```rust
+pub struct Configuration {
+    pub(crate) version: u32,
+    active: bool,
+}
+```
+
+`Configuration` is public, but you can only access the `version` field from within the same crate.
+The `active` field, instead, is private and can only be accessed from within the same module or one of its submodules.
+
+### 05_encapsulation
+
+# Encapsulation
+
+Now that we have a basic understanding of modules and visibility, let's circle back to **encapsulation**.\
+Encapsulation is the practice of hiding the internal representation of an object. It is most commonly
+used to enforce some **invariants** on the object's state.
+
+Going back to our `Ticket` struct:
+
+```rust
+struct Ticket {
+    title: String,
+    description: String,
+    status: String,
+}
+```
+
+If all fields are made public, there is no encapsulation.\
+You must assume that the fields can be modified at any time, set to any value that's allowed by
+their type. You can't rule out that a ticket might have an empty title or a status
+that doesn't make sense.
+
+To enforce stricter rules, we must keep the fields private[^newtype].
+We can then provide public methods to interact with a `Ticket` instance.
+Those public methods will have the responsibility of upholding our invariants (e.g. a title must not be empty).
+
+If at least one field is private it is no longer possible to create a `Ticket` instance directly using the struct
+instantiation syntax:
+
+```rust
+// This won't work!
+let ticket = Ticket {
+    title: "Build a ticket system".into(),
+    description: "A Kanban board".into(),
+    status: "Open".into()
+};
+```
+
+You've seen this in action in the previous exercise on visibility.\
+We now need to provide one or more public **constructors**—i.e. static methods or functions that can be used
+from outside the module to create a new instance of the struct.\
+Luckily enough we already have one: `Ticket::new`, as implemented in [a previous exercise](02_validation.md).
+
+## Accessor methods
+
+In summary:
+
+- All `Ticket` fields are private
+- We provide a public constructor, `Ticket::new`, that enforces our validation rules on creation
+
+That's a good start, but it's not enough: apart from creating a `Ticket`, we also need to interact with it.
+But how can we access the fields if they're private?
+
+We need to provide **accessor methods**.\
+Accessor methods are public methods that allow you to read the value of a private field (or fields) of a struct.
+
+Rust doesn't have a built-in way to generate accessor methods for you, like some other languages do.
+You have to write them yourself—they're just regular methods.
+
+[^newtype]: Or refine their type, a technique we'll explore [later on](../05_ticket_v2/15_outro.md).
+
+### 06_ownership
+
+# Ownership
+
+If you solved the previous exercise using what this course has taught you so far,
+your accessor methods probably look like this:
+
+```rust
+impl Ticket {
+    pub fn title(self) -> String {
+        self.title
+    }
+
+    pub fn description(self) -> String {
+        self.description
+    }
+
+    pub fn status(self) -> String {
+        self.status
+    }
+}
+```
+
+Those methods compile and are enough to get tests to pass, but in a real-world scenario they won't get you very far.
+Consider this snippet:
+
+```rust
+if ticket.status() == "To-Do" {
+    // We haven't covered the `println!` macro yet,
+    // but for now it's enough to know that it prints 
+    // a (templated) message to the console
+    println!("Your next task is: {}", ticket.title());
+}
+```
+
+If you try to compile it, you'll get an error:
+
+```text
+error[E0382]: use of moved value: `ticket`
+  --> src/main.rs:30:43
+   |
+25 |     let ticket = Ticket::new(/* */);
+   |         ------ move occurs because `ticket` has type `Ticket`, 
+   |                which does not implement the `Copy` trait
+26 |     if ticket.status() == "To-Do" {
+   |               -------- `ticket` moved due to this method call
+...
+30 |         println!("Your next task is: {}", ticket.title());
+   |                                           ^^^^^^ 
+   |                                value used here after move
+   |
+note: `Ticket::status` takes ownership of the receiver `self`, 
+      which moves `ticket`
+  --> src/main.rs:12:23
+   |
+12 |         pub fn status(self) -> String {
+   |                       ^^^^
+```
+
+Congrats, this is your first borrow-checker error!
+
+## The perks of Rust's ownership system
+
+Rust's ownership system is designed to ensure that:
+
+- Data is never mutated while it's being read
+- Data is never read while it's being mutated
+- Data is never accessed after it has been destroyed
+
+These constraints are enforced by the **borrow checker**, a subsystem of the Rust compiler,
+often the subject of jokes and memes in the Rust community.
+
+Ownership is a key concept in Rust, and it's what makes the language unique.
+Ownership enables Rust to provide **memory safety without compromising performance**.
+All these things are true at the same time for Rust:
+
+1. There is no runtime garbage collector
+2. As a developer, you rarely have to manage memory directly
+3. You can't cause dangling pointers, double frees, and other memory-related bugs
+
+Languages like Python, JavaScript, and Java give you 2. and 3., but not 1.\
+Language like C or C++ give you 1., but neither 2. nor 3.
+
+Depending on your background, 3. might sound a bit arcane: what is a "dangling pointer"?
+What is a "double free"? Why are they dangerous?\
+Don't worry: we'll cover these concepts in more details during the rest of the course.
+
+For now, though, let's focus on learning how to work within Rust's ownership system.
+
+## The owner
+
+In Rust, each value has an **owner**, statically determined at compile-time.
+There is only one owner for each value at any given time.
+
+## Move semantics
+
+Ownership can be transferred.
+
+If you own a value, for example, you can transfer ownership to another variable:
+
+```rust
+let a = "hello, world".to_string(); // <- `a` is the owner of the String
+let b = a;  // <- `b` is now the owner of the String
+```
+
+Rust's ownership system is baked into the type system: each function has to declare in its signature
+_how_ it wants to interact with its arguments.
+
+So far, all our methods and functions have **consumed** their arguments: they've taken ownership of them.
+For example:
+
+```rust
+impl Ticket {
+    pub fn description(self) -> String {
+        self.description
+    }
+}
+```
+
+`Ticket::description` takes ownership of the `Ticket` instance it's called on.\
+This is known as **move semantics**: ownership of the value (`self`) is **moved** from the caller to
+the callee, and the caller can't use it anymore.
+
+That's exactly the language used by the compiler in the error message we saw earlier:
+
+```text
+error[E0382]: use of moved value: `ticket`
+  --> src/main.rs:30:43
+   |
+25 |     let ticket = Ticket::new(/* */);
+   |         ------ move occurs because `ticket` has type `Ticket`, 
+   |                which does not implement the `Copy` trait
+26 |     if ticket.status() == "To-Do" {
+   |               -------- `ticket` moved due to this method call
+...
+30 |         println!("Your next task is: {}", ticket.title());
+   |                                           ^^^^^^ 
+   |                                value used here after move
+   |
+note: `Ticket::status` takes ownership of the receiver `self`, 
+      which moves `ticket`
+  --> src/main.rs:12:23
+   |
+12 |         pub fn status(self) -> String {
+   |                       ^^^^
+```
+
+In particular, this is the sequence of events that unfold when we call `ticket.status()`:
+
+- `Ticket::status` takes ownership of the `Ticket` instance
+- `Ticket::status` extracts `status` from `self` and transfers ownership of `status` back to the caller
+- The rest of the `Ticket` instance is discarded (`title` and `description`)
+
+When we try to use `ticket` again via `ticket.title()`, the compiler complains: the `ticket` value is gone now,
+we no longer own it, therefore we can't use it anymore.
+
+To build _useful_ accessor methods we need to start working with **references**.
+
+## Borrowing
+
+It is desirable to have methods that can read the value of a variable without taking ownership of it.\
+Programming would be quite limited otherwise. In Rust, that's done via **borrowing**.
+
+Whenever you borrow a value, you get a **reference** to it.\
+References are tagged with their privileges[^refine]:
+
+- Immutable references (`&`) allow you to read the value, but not to mutate it
+- Mutable references (`&mut`) allow you to read and mutate the value
+
+Going back to the goals of Rust's ownership system:
+
+- Data is never mutated while it's being read
+- Data is never read while it's being mutated
+
+To ensure these two properties, Rust has to introduce some restrictions on references:
+
+- You can't have a mutable reference and an immutable reference to the same value at the same time
+- You can't have more than one mutable reference to the same value at the same time
+- The owner can't mutate the value while it's being borrowed
+- You can have as many immutable references as you want, as long as there are no mutable references
+
+In a way, you can think of an immutable reference as a "read-only" lock on the value,
+while a mutable reference is like a "read-write" lock.
+
+All these restrictions are enforced at compile-time by the borrow checker.
+
+### Syntax
+
+How do you borrow a value, in practice?\
+By adding `&` or `&mut` **in front a variable**, you're borrowing its value.
+Careful though! The same symbols (`&` and `&mut`) in **front of a type** have a different meaning:
+they denote a different type, a reference to the original type.
+
+For example:
+
+```rust
+struct Configuration {
+    version: u32,
+    active: bool,
+}
+
+fn main() {
+    let config = Configuration {
+        version: 1,
+        active: true,
+    };
+    // `b` is a reference to the `version` field of `config`.
+    // The type of `b` is `&u32`, since it contains a reference to 
+    // a `u32` value.
+    // We create a reference by borrowing `config.version`, using 
+    // the `&` operator.
+    // Same symbol (`&`), different meaning depending on the context!
+    let b: &u32 = &config.version;
+    //     ^ The type annotation is not necessary, 
+    //       it's just there to clarify what's going on
+}
+```
+
+The same concept applies to function arguments and return types:
+
+```rust
+// `f` takes a mutable reference to a `u32` as an argument, 
+// bound to the name `number`
+fn f(number: &mut u32) -> &u32 {
+    // [...]
+}
+```
+
+## Breathe in, breathe out
+
+Rust's ownership system can be a bit overwhelming at first.\
+But don't worry: it'll become second nature with practice.\
+And you're going to get a lot of practice over the rest of this chapter, as well as the rest of the course!
+We'll revisit each concept multiple times to make sure you get familiar with them
+and truly understand how they work.
+
+Towards the end of this chapter we'll explain _why_ Rust's ownership system is designed the way it is.
+For the time being, focus on understanding the _how_. Take each compiler error as a learning opportunity!
+
+[^refine]: This is a great mental model to start out, but it doesn't capture the _full_ picture.
+We'll refine our understanding of references [later in the course](../07_threads/06_interior_mutability.md).
+
+### 07_setters
+
+# Mutable references
+
+Your accessor methods should look like this now:
+
+```rust
+impl Ticket {
+    pub fn title(&self) -> &String {
+        &self.title
+    }
+
+    pub fn description(&self) -> &String {
+        &self.description
+    }
+
+    pub fn status(&self) -> &String {
+        &self.status
+    }
+}
+```
+
+A sprinkle of `&` here and there did the trick!\
+We now have a way to access the fields of a `Ticket` instance without consuming it in the process.
+Let's see how we can enhance our `Ticket` struct with **setter methods** next.
+
+## Setters
+
+Setter methods allow users to change the values of `Ticket`'s private fields while making sure that its invariants
+are respected (i.e. you can't set a `Ticket`'s title to an empty string).
+
+There are two common ways to implement setters in Rust:
+
+- Taking `self` as input.
+- Taking `&mut self` as input.
+
+### Taking `self` as input
+
+The first approach looks like this:
+
+```rust
+impl Ticket {
+    pub fn set_title(mut self, new_title: String) -> Self {
+        // Validate the new title [...]
+        self.title = new_title;
+        self
+    }
+}
+```
+
+It takes ownership of `self`, changes the title, and returns the modified `Ticket` instance.\
+This is how you'd use it:
+
+```rust
+let ticket = Ticket::new(
+    "Title".into(), 
+    "Description".into(), 
+    "To-Do".into()
+);
+let ticket = ticket.set_title("New title".into());
+```
+
+Since `set_title` takes ownership of `self` (i.e. it **consumes it**), we need to reassign the result to a variable.
+In the example above we take advantage of **variable shadowing** to reuse the same variable name: when
+you declare a new variable with the same name as an existing one, the new variable **shadows** the old one. This
+is a common pattern in Rust code.
+
+`self`-setters work quite nicely when you need to change multiple fields at once: you can chain multiple calls together!
+
+```rust
+let ticket = ticket
+    .set_title("New title".into())
+    .set_description("New description".into())
+    .set_status("In Progress".into());
+```
+
+### Taking `&mut self` as input
+
+The second approach to setters, using `&mut self`, looks like this instead:
+
+```rust
+impl Ticket {
+    pub fn set_title(&mut self, new_title: String) {
+        // Validate the new title [...]
+        
+        self.title = new_title;
+    }
+}
+```
+
+This time the method takes a mutable reference to `self` as input, changes the title, and that's it.
+Nothing is returned.
+
+You'd use it like this:
+
+```rust
+let mut ticket = Ticket::new(
+    "Title".into(),
+    "Description".into(),
+    "To-Do".into()
+);
+ticket.set_title("New title".into());
+
+// Use the modified ticket
+```
+
+Ownership stays with the caller, so the original `ticket` variable is still valid. We don't need to reassign the result.
+We need to mark `ticket` as mutable though, because we're taking a mutable reference to it.
+
+`&mut`-setters have a downside: you can't chain multiple calls together.
+Since they don't return the modified `Ticket` instance, you can't call another setter on the result of the first one.
+You have to call each setter separately:
+
+```rust
+ticket.set_title("New title".into());
+ticket.set_description("New description".into());
+ticket.set_status("In Progress".into());
+```
+
+### 08_stack
+
+# Memory layout
+
+We've looked at ownership and references from an operational point of view—what you can and can't do with them.
+Now it's a good time to take a look under the hood: let's talk about **memory**.
+
+## Stack and heap
+
+When discussing memory, you'll often hear people talk about the **stack** and the **heap**.\
+These are two different memory regions used by programs to store data.
+
+Let's start with the stack.
+
+## Stack
+
+The **stack** is a **LIFO** (Last In, First Out) data structure.\
+When you call a function, a new **stack frame** is added on top of the stack. That stack frame stores
+the function's arguments, local variables and a few "bookkeeping" values.\
+When the function returns, the stack frame is popped off the stack[^stack-overflow].
+
+```text
++-----------------+
+| frame for func1 |
++-----------------+
+        |
+        | func2 is 
+        | called
+        v
++-----------------+
+| frame for func2 |
++-----------------+
+| frame for func1 |
++-----------------+
+        |
+        | func2  
+        | returns
+        v
++-----------------+
+| frame for func1 |
++-----------------+
+```
+
+From an operational point of view, stack allocation/de-allocation is **very fast**.\
+We are always pushing and popping data from the top of the stack, so we don't need to search for free memory.
+We also don't have to worry about fragmentation: the stack is a single contiguous block of memory.
+
+### Rust
+
+Rust will often allocate data on the stack.\
+You have a `u32` input argument in a function? Those 32 bits will be on the stack.\
+You define a local variable of type `i64`? Those 64 bits will be on the stack.\
+It all works quite nicely because the size of those integers is known at compile time, therefore
+the compiled program knows how much space it needs to reserve on the stack for them.
+
+### `std::mem::size_of`
+
+You can verify how much space a type would take on the stack
+using the [`std::mem::size_of`](https://doc.rust-lang.org/std/mem/fn.size_of.html) function.
+
+For a `u8`, for example:
+
+```rust
+// We'll explain this funny-looking syntax (`::<u8>`) later on.
+// Ignore it for now.
+assert_eq!(std::mem::size_of::<u8>(), 1);
+```
+
+1 makes sense, because a `u8` is 8 bits long, or 1 byte.
+
+[^stack-overflow]: If you have nested function calls, each function pushes its data onto the stack when it's called but
+it doesn't pop it off until the innermost function returns.
+If you have too many nested function calls, you can run out of stack space—the stack is not infinite!
+That's called a [**stack overflow**](https://en.wikipedia.org/wiki/Stack_overflow).
+
+### 09_heap
+
+# Heap
+
+The stack is great, but it can't solve all our problems. What about data whose size is not known at compile time?
+Collections, strings, and other dynamically-sized data cannot be (entirely) stack-allocated.
+That's where the **heap** comes in.
+
+## Heap allocations
+
+You can visualize the heap as a big chunk of memory—a huge array, if you will.\
+Whenever you need to store data on the heap, you ask a special program, the **allocator**, to reserve for you
+a subset of the heap. We call this interaction (and the memory you reserved) a **heap allocation**.
+If the allocation succeeds, the allocator will give you a **pointer** to the start of the reserved block.
+
+## No automatic de-allocation
+
+The heap is structured quite differently from the stack.\
+Heap allocations are not contiguous, they can be located anywhere inside the heap.
+
+```
++---+---+---+---+---+---+-...-+-...-+---+---+---+---+---+---+---+
+|  Allocation 1 | Free  | ... | ... |  Allocation N |    Free   |
++---+---+---+---+---+---+ ... + ... +---+---+---+---+---+---+---+
+```
+
+It's the allocator's job to keep track of which parts of the heap are in use and which are free.
+The allocator won't automatically free the memory you allocated, though: you need to be deliberate about it,
+calling the allocator again to **free** the memory you no longer need.
+
+## Performance
+
+The heap's flexibility comes at a cost: heap allocations are **slower** than stack allocations.
+There's a lot more bookkeeping involved!\
+If you read articles about performance optimization you'll often be advised to minimize heap allocations
+and prefer stack-allocated data whenever possible.
+
+## `String`'s memory layout
+
+When you create a local variable of type `String`,
+Rust is forced to allocate on the heap[^empty]: it doesn't know in advance how much text you're going to put in it,
+so it can't reserve the right amount of space on the stack.\
+But a `String` is not _entirely_ heap-allocated, it also keeps some data on the stack. In particular:
+
+- The **pointer** to the heap region you reserved.
+- The **length** of the string, i.e. how many bytes are in the string.
+- The **capacity** of the string, i.e. how many bytes have been reserved on the heap.
+
+Let's look at an example to understand this better:
+
+```rust
+let mut s = String::with_capacity(5);
+```
+
+If you run this code, memory will be laid out like this:
+
+```
+      +---------+--------+----------+
+Stack | pointer | length | capacity | 
+      |  |      |   0    |    5     |
+      +--|------+--------+----------+
+         |
+         |
+         v
+       +---+---+---+---+---+
+Heap:  | ? | ? | ? | ? | ? |
+       +---+---+---+---+---+
+```
+
+We asked for a `String` that can hold up to 5 bytes of text.\
+`String::with_capacity` goes to the allocator and asks for 5 bytes of heap memory. The allocator returns
+a pointer to the start of that memory block.\
+The `String` is empty, though. On the stack, we keep track of this information by distinguishing between
+the length and the capacity: this `String` can hold up to 5 bytes, but it currently holds 0 bytes of
+actual text.
+
+If you push some text into the `String`, the situation will change:
+
+```rust
+s.push_str("Hey");
+```
+
+```
+      +---------+--------+----------+
+Stack | pointer | length | capacity |
+      |  |      |   3    |    5     |
+      +--|  ----+--------+----------+
+         |
+         |
+         v
+       +---+---+---+---+---+
+Heap:  | H | e | y | ? | ? |
+       +---+---+---+---+---+
+```
+
+`s` now holds 3 bytes of text. Its length is updated to 3, but capacity remains 5.
+Three of the five bytes on the heap are used to store the characters `H`, `e`, and `y`.
+
+### `usize`
+
+How much space do we need to store pointer, length and capacity on the stack?\
+It depends on the **architecture** of the machine you're running on.
+
+Every memory location on your machine has an [**address**](https://en.wikipedia.org/wiki/Memory_address), commonly
+represented as an unsigned integer.
+Depending on the maximum size of the address space (i.e. how much memory your machine can address),
+this integer can have a different size. Most modern machines use either a 32-bit or a 64-bit address space.
+
+Rust abstracts away these architecture-specific details by providing the `usize` type:
+an unsigned integer that's as big as the number of bytes needed to address memory on your machine.
+On a 32-bit machine, `usize` is equivalent to `u32`. On a 64-bit machine, it matches `u64`.
+
+Capacity, length and pointers are all represented as `usize`s in Rust[^equivalence].
+
+### No `std::mem::size_of` for the heap
+
+`std::mem::size_of` returns the amount of space a type would take on the stack,
+which is also known as the **size of the type**.
+
+> What about the memory buffer that `String` is managing on the heap? Isn't that
+> part of the size of `String`?
+
+No!\
+That heap allocation is a **resource** that `String` is managing.
+It's not considered to be part of the `String` type by the compiler.
+
+`std::mem::size_of` doesn't know (or care) about additional heap-allocated data
+that a type might manage or refer to via pointers, as is the case with `String`,
+therefore it doesn't track its size.
+
+Unfortunately there is no equivalent of `std::mem::size_of` to measure the amount of
+heap memory that a certain value is allocating at runtime. Some types might
+provide methods to inspect their heap usage (e.g. `String`'s `capacity` method),
+but there is no general-purpose "API" to retrieve runtime heap usage in Rust.\
+You can, however, use a memory profiler tool (e.g. [DHAT](https://valgrind.org/docs/manual/dh-manual.html)
+or [a custom allocator](https://docs.rs/dhat/latest/dhat/)) to inspect the heap usage of your program.
+
+[^empty]: `std` doesn't allocate if you create an **empty** `String` (i.e. `String::new()`).
+Heap memory will be reserved when you push data into it for the first time.
+
+[^equivalence]: The size of a pointer depends on the operating system too.
+In certain environments, a pointer is **larger** than a memory address (e.g. [CHERI](https://web.archive.org/web/20240517051950/https://blog.acolyer.org/2019/05/28/cheri-abi/)).
+Rust makes the simplifying assumption that pointers are the same size as memory addresses,
+which is true for most modern systems you're likely to encounter.
+
+### 10_references_in_memory
+
+# References
+
+What about references, like `&String` or `&mut String`? How are they represented in memory?
+
+Most references[^fat] in Rust are represented, in memory, as a pointer to a memory location.\
+It follows that their size is the same as the size of a pointer, a `usize`.
+
+You can verify this using `std::mem::size_of`:
+
+```rust
+assert_eq!(std::mem::size_of::<&String>(), 8);
+assert_eq!(std::mem::size_of::<&mut String>(), 8);
+```
+
+A `&String`, in particular, is a pointer to the memory location where the `String`'s metadata is stored.\
+If you run this snippet:
+
+```rust
+let s = String::from("Hey");
+let r = &s;
+```
+
+you'll get something like this in memory:
+
+```
+           --------------------------------------
+           |                                    |
+      +----v----+--------+----------+      +----|----+
+Stack | pointer | length | capacity |      | pointer |
+      |  |      |   3    |    5     |      |         |
+      +--|  ----+--------+----------+      +---------+
+         |          s                           r
+         |
+         v
+       +---+---+---+---+---+
+Heap   | H | e | y | ? | ? |
+       +---+---+---+---+---+
+```
+
+It's a pointer to a pointer to the heap-allocated data, if you will.
+The same goes for `&mut String`.
+
+## Not all pointers point to the heap
+
+The example above should clarify one thing: not all pointers point to the heap.\
+They just point to a memory location, which _may_ be on the heap, but doesn't have to be.
+
+[^fat]: [Later in the course](../04_traits/06_str_slice.md) we'll talk about **fat pointers**,
+i.e. pointers with additional metadata. As the name implies, they are larger than
+the pointers we discussed in this chapter, also known as **thin pointers**.
+
+### 11_destructor
+
+# Destructors
+
+When introducing the heap, we mentioned that you're responsible for freeing the memory you allocate.\
+When introducing the borrow-checker, we also stated that you rarely have to manage memory directly in Rust.
+
+These two statements might seem contradictory at first.
+Let's see how they fit together by introducing **scopes** and **destructors**.
+
+## Scopes
+
+The **scope** of a variable is the region of Rust code where that variable is valid, or **alive**.
+
+The scope of a variable starts with its declaration.
+It ends when one of the following happens:
+
+1. the block (i.e. the code between `{}`) where the variable was declared ends
+   ```rust
+   fn main() {
+      // `x` is not yet in scope here
+      let y = "Hello".to_string();
+      let x = "World".to_string(); // <-- x's scope starts here...
+      let h = "!".to_string(); //   |
+   } //  <-------------- ...and ends here
+   ```
+2. ownership of the variable is transferred to someone else (e.g. a function or another variable)
+   ```rust
+   fn compute(t: String) {
+      // Do something [...]
+   }
+
+   fn main() {
+       let s = "Hello".to_string(); // <-- s's scope starts here...
+                   //                    | 
+       compute(s); // <------------------- ..and ends here
+                   //   because `s` is moved into `compute`
+   }
+   ```
+
+## Destructors
+
+When the owner of a value goes out of scope, Rust invokes its **destructor**.\
+The destructor tries to clean up the resources used by that value—in particular, whatever memory it allocated.
+
+You can manually invoke the destructor of a value by passing it to `std::mem::drop`.\
+That's why you'll often hear Rust developers saying "that value has been **dropped**" as a way to state that a value
+has gone out of scope and its destructor has been invoked.
+
+### Visualizing drop points
+
+We can insert explicit calls to `drop` to "spell out" what the compiler does for us. Going back to the previous example:
+
+```rust
+fn main() {
+   let y = "Hello".to_string();
+   let x = "World".to_string();
+   let h = "!".to_string();
+}
+```
+
+It's equivalent to:
+
+```rust
+fn main() {
+   let y = "Hello".to_string();
+   let x = "World".to_string();
+   let h = "!".to_string();
+   // Variables are dropped in reverse order of declaration
+   drop(h);
+   drop(x);
+   drop(y);
+}
+```
+
+Let's look at the second example instead, where `s`'s ownership is transferred to `compute`:
+
+```rust
+fn compute(s: String) {
+   // Do something [...]
+}
+
+fn main() {
+   let s = "Hello".to_string();
+   compute(s);
+}
+```
+
+It's equivalent to this:
+
+```rust
+fn compute(t: String) {
+    // Do something [...]
+    drop(t); // <-- Assuming `t` wasn't dropped or moved 
+             //     before this point, the compiler will call 
+             //     `drop` here, when it goes out of scope
+}
+
+fn main() {
+    let s = "Hello".to_string();
+    compute(s);
+}
+```
+
+Notice the difference: even though `s` is no longer valid after `compute` is called in `main`, there is no `drop(s)`
+in `main`.
+When you transfer ownership of a value to a function, you're also **transferring the responsibility of cleaning it up**.
+
+This ensures that the destructor for a value is called **at most[^leak] once**, preventing
+[double free bugs](https://owasp.org/www-community/vulnerabilities/Doubly_freeing_memory) by design.
+
+### Use after drop
+
+What happens if you try to use a value after it's been dropped?
+
+```rust
+let x = "Hello".to_string();
+drop(x);
+println!("{}", x);
+```
+
+If you try to compile this code, you'll get an error:
+
+```rust
+error[E0382]: use of moved value: `x`
+ --> src/main.rs:4:20
+  |
+3 |     drop(x);
+  |          - value moved here
+4 |     println!("{}", x);
+  |                    ^ value used here after move
+```
+
+Drop **consumes** the value it's called on, meaning that the value is no longer valid after the call.\
+The compiler will therefore prevent you from using it, avoiding [use-after-free bugs](https://owasp.org/www-community/vulnerabilities/Using_freed_memory).
+
+### Dropping references
+
+What if a variable contains a reference?\
+For example:
+
+```rust
+let x = 42i32;
+let y = &x;
+drop(y);
+```
+
+When you call `drop(y)`... nothing happens.\
+If you actually try to compile this code, you'll get a warning:
+
+```text
+warning: calls to `std::mem::drop` with a reference 
+         instead of an owned value does nothing
+ --> src/main.rs:4:5
+  |
+4 |     drop(y);
+  |     ^^^^^-^
+  |          |
+  |          argument has type `&i32`
+  |
+```
+
+It goes back to what we said earlier: we only want to call the destructor once.\
+You can have multiple references to the same value—if we called the destructor for the value they point at
+when one of them goes out of scope, what would happen to the others?
+They would refer to a memory location that's no longer valid: a so-called [**dangling pointer**](https://en.wikipedia.org/wiki/Dangling_pointer),
+a close relative of [**use-after-free bugs**](https://owasp.org/www-community/vulnerabilities/Using_freed_memory).
+Rust's ownership system rules out these kinds of bugs by design.
+
+[^leak]: Rust doesn't guarantee that destructors will run. They won't, for example, if
+you explicitly choose to [leak memory](../07_threads/03_leak.md).
+
+### 12_outro
+
+# Wrapping up
+
+We've covered a lot of foundational Rust concepts in this chapter.\
+Before moving on, let's go through one last exercise to consolidate what we've learned.
+You'll have minimal guidance this time—just the exercise description and the tests to guide you.
