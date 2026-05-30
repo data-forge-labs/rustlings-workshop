@@ -15,14 +15,12 @@
 | 0 | **Intro** — Rust primer, syntax, `fn main` | `fn main()`, `let`, `mut`, `println!`, basic types, `&str`, arithmetic | Reference |
 | 1 | **BasicCalculator** — integers, branching, loops, overflow | `i32`/`u32`, `if`/`else`, `while`/`for`, panics, overflow, saturating arithmetic, `as` casting | Tutorial |
 | 2 | **MasterMind** — guess a 4-digit secret code | `struct`, `impl`, `Vec<T>`, `Option<T>`, `match`, `String`/`&str`, `rand`, iterators, console I/O | Project |
-| 32 | **Week1FinalReflection** — data structures mindset | Memory safety, zero-cost abstractions, Rust vs Python | Reflection |
 
 ## Learning Path
 
 1. Start with **0-Intro** to get Rust installed and write your first program
 2. Move to **1-BasicCalculator** to learn integers, control flow, and loops
 3. Build **2-MasterMind** to apply everything in a real game
-4. Finish with **32-Week1FinalReflection** to solidify the concepts
 
 ## Key Concepts Covered
 

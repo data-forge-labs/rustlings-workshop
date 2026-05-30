@@ -9,7 +9,7 @@ RustTut/
 ├── README.md                        ← this file
 ├── AGENTS.md                        ← AI workshop designer instructions
 ├── .devcontainer/                   ← preconfigured Rust dev environment
-├── 01-Foundations/                  ← Section 1 (projects 0,1,2,32)
+├── 01-Foundations/                  ← Section 1 (projects 0,1,2)
 ├── 02-Ownership/                    ← Section 2 (projects 3,4,5,37,38)
 ├── 03-Collections/                  ← Section 3 (projects 6,9-13,15-19,23,28,30,36)
 ├── 04-FileIO/                       ← Section 4 (projects 53-56)
@@ -20,7 +20,7 @@ RustTut/
 └── 09-ProductionSystems/           ← Section 9 (project 59)
 ```
 
-The course is organized into **8 sections** designed for a Python data engineer moving to Rust. Each section starts with tutorial-style projects (read `.md` files, write code alongside) and progresses to hands-on Cargo projects (build and run complete programs).
+The course is organized into **9 sections** designed for a Python data engineer moving to Rust. Each section starts with tutorial-style projects (read `.md` files, write code alongside) and progresses to hands-on Cargo projects (build and run complete programs).
 
 **Progression:** Go through sections in order. Within each section, start with lower-numbered projects (introduce concepts) then move to higher-numbered ones (apply and deepen). Concepts from earlier sections are assumed in later ones.
 
@@ -71,7 +71,6 @@ Projects are grouped into **sections** that map concepts a Python data engineer 
 | 0 | **Intro** — Rust syntax primer (reference) | `fn main()`, `let`, `mut`, macros (`println!`), basic types, `&str`, arithmetic |
 | 1 | **BasicCalculator** — integers, branching, loops, overflow | `i32`/`u32`, `if`/`else`, `while`/`for`, panics, overflow, saturating arithmetic, `as` casting |
 | 2 | **MasterMind** — guess a 4-digit secret code with hints | `struct`, `impl`, `Vec<T>`, `Option<T>`, `if let`, loops, `String`/`&str`, `rand`, iterators |
-| 32 | **Week1FinalReflection** — data structures mindset | Memory safety, zero-cost abstractions, Rust vs Python data engineering |
 
 ### Section 2: Ownership — Rust's Superpower over Python's GC
 
