@@ -2,6 +2,8 @@
 
 *The most important workshop in this course. Master Rust's ownership system — the concept that makes Rust unique — by building a ticket tracking system.*
 
+> **Test-driven approach**: This project includes a Cargo project with progressive unit tests. Each function in `src/lib.rs` starts as a `todo!()` stub. As you follow each section, replace `todo!()` with real code and run `cargo test` to watch the pass count grow. Your goal: **all 20 tests pass**.
+
 ---
 
 ## Table of Contents
