@@ -6,6 +6,120 @@
 
 ---
 
+## Why This Project?
+
+### The Problem
+
+In Python, when you pass a list or DataFrame to a function, you pass a reference — the function can mutate it silently:
+
+```python
+def add_outlier(data):
+    data.append(999999)  # Mutates the ORIGINAL list!
+    return data
+
+records = [1, 2, 3]
+result = add_outlier(records)
+print(records)  # [1, 2, 3, 999999] — original modified!
+```
+
+This is **aliasing**: multiple names pointing to the same object. In a 10,000-line ETL pipeline, a function that accidentally mutates an input can introduce subtle bugs. Python's GC never tells you who owns what — there's no compile-time guard. You rely on documentation and `_` conventions, none enforced.
+
+```
+Python memory model:
+  a ──→ [1, 2, 3] ←── b  (two owners, mutable aliasing)
+  a.append(4)  → both see the change
+  No compiler error — bug waits until runtime
+```
+
+For data engineers: pipeline stages silently corrupt shared buffers, cleanup is non-deterministic, and there's no guarantee a function won't modify its inputs.
+
+### The Rust Solution
+
+Rust's **ownership** system: every value has exactly one owner. Pass by **move** (transfer ownership) or **borrow** (temporary access). The compiler enforces these rules at compile time — zero cost, guaranteed safety:
+
+```rust
+// Move: ownership transfers, old owner is invalid
+let records = vec![1, 2, 3];
+let result = add_outlier(records);
+// println!("{:?}", records);  // ❌ Compiler error
+
+fn add_outlier(data: Vec<i32>) -> Vec<i32> {
+    let mut d = data;
+    d.push(999999);
+    d  // Ownership returned to caller
+}
+
+// Borrow: read-only, no mutation
+fn read_only(data: &Vec<i32>) {
+    println!("{:?}", data);
+}
+```
+
+By building a ticket system with structs and ownership rules, you'll eliminate entire categories of bugs at compile time — no GC, no aliasing, no accidental mutation.
+
+---
+
+## What You'll Learn
+
+| # | Concept | Rust Type / Module | Python Equivalent | Purpose |
+|---|---------|--------------------|------------------|---------|
+| 1 | Structs | `struct` | `class` / `@dataclass` | Define custom data types for records |
+| 2 | Methods | `impl` block | Methods inside class | Attach behavior to data types |
+| 3 | Modules & Visibility | `pub`, `mod` | `_` naming convention | Organize code and control access |
+| 4 | Ownership | Ownership rules | Nothing (GC) | Memory safety without garbage collector |
+| 5 | Move Semantics | Move by default | Assignment (reference) | Transfer ownership explicitly |
+| 6 | References & Borrowing | `&T`, `&mut T` | Pass-by-reference | Access data without owning it |
+| 7 | Stack vs Heap | Stack / heap | All objects on heap | Understand memory performance |
+| 8 | Validation | `panic!` | `raise ValueError` | Enforce invariants at creation |
+| 9 | Encapsulation | Private fields | `_` convention | Hide internal state behind public API |
+| 10 | Drop Trait | `Drop` | `__del__` / context manager | Deterministic resource cleanup |
+| 11 | String Type | `String` | `str` | Growable, heap-allocated text |
+| 12 | Scopes | `{}` blocks | Variable lifetime | Control when variables are dropped |
+| 13 | Three `self` Forms | `self`, `&self`, `&mut self` | `self` in Python | Choose consume, read, or write |
+
+## Concepts at a Glance
+
+### 1. Structs
+Groups fields into a single type, like a Python `dataclass`. `struct Ticket { title: String }` vs Python `class Ticket:`. Rust structs have explicit memory layout — each field is laid out in order.
+
+### 2. Methods
+Rust writes methods in `impl Ticket { fn title(&self) -> &String { ... } }` blocks. Python puts methods inside the class body with implicit `self`. Rust's `&self` is explicit — you choose borrow vs consume.
+
+### 3. Modules & Visibility
+`pub` controls visibility at compile time. Python's `_` prefix is convention-only. Rust's compiler prevents access to private fields — encapsulation is enforced, not suggested.
+
+### 4. Ownership
+Every value has exactly one owner; when the owner goes out of scope, the value is dropped. Python: GC tracks references at runtime. Rust: checked at compile time, zero runtime cost.
+
+### 5. Move Semantics
+`let b = a` moves ownership (non-Copy types); `a` becomes invalid. Python: `b = a` creates another reference — both can read/write. Rust moves prevent accidental aliasing.
+
+### 6. References & Borrowing
+`&T` for read-only access, `&mut T` for exclusive write access. Rust enforces "many readers OR one writer." Python has no borrowing distinction — any reference can mutate.
+
+### 7. Stack vs Heap
+Python allocates all objects on the heap. Rust puts primitives on the stack (fast LIFO) and only uses the heap for dynamic data (`String`, `Vec`). This impacts pipeline performance.
+
+### 8. Validation
+`Ticket::new()` uses `panic!` (like `raise ValueError`) to reject invalid data. Ensures no `Ticket` with an empty title or bad status can exist — "make invalid states unrepresentable."
+
+### 9. Encapsulation
+Private fields (no `pub`) force construction through `Ticket::new()`, which always validates. Python's privacy is convention; Rust's is compiler-enforced.
+
+### 10. Drop Trait
+`Drop::drop()` runs immediately at end of scope. Python's `__del__` is non-deterministic (GC decides when). Rust guarantees cleanup the instant a value is no longer needed.
+
+### 11. String Type
+`String` is a growable, heap-allocated UTF-8 string (ptr + len + cap = 24 bytes on stack). Python's `str` is immutable; Rust's `String` is mutable with explicit capacity.
+
+### 12. Scopes
+`{}` blocks define when variables live and die. In Rust, exiting a scope immediately runs `Drop` and frees memory. In Python, scope exit doesn't trigger GC — cleanup is unpredictable.
+
+### 13. Three `self` Forms
+`self` (consumes), `&self` (reads), `&mut self` (writes). Python only has `self` (always a reference). Rust's forms make ownership consequences visible in the method signature.
+
+---
+
 ## Table of Contents
 
 1. [Project Overview](#1-project-overview)

@@ -2,6 +2,76 @@
 
 > **Test-driven approach**: This project includes a Cargo project with progressive unit tests. Each function in `workshop/src/lib.rs` starts as a `todo!()` stub. As you follow each section, replace `todo!()` with real code and run `cd workshop && cargo test` to watch the pass count grow. Your goal: **all 12 tests pass**.
 
+## Why This Project?
+
+### The Problem
+
+In Python, interior mutability is the default — any variable can be mutated through any reference. This makes it easy to share mutable state but impossible to track at compile time:
+
+```python
+data = [1, 2, 3]
+
+# Two "references" to the same list — both can mutate it
+r1 = data
+r2 = data
+
+r1.append(4)  # data is now [1, 2, 3, 4]
+r2.append(5)  # data is now [1, 2, 3, 4, 5]
+
+# No error, no warnings — but threading this would be a disaster
+```
+
+```
+Python:                 Rust:
+Variable ──→ List       Variable ──→ Vec (one owner)
+  │         ↑             │
+  ├─ r1 ────┘             └─ only ONE reference at a time
+  └─ r2 ────┘                 (compile-time enforced)
+```
+
+Python's "works by default, breaks in production" approach versus Rust's "breaks at compile time, works in production" philosophy is most visible with shared mutable state.
+
+### The Rust Solution
+
+Rust provides `Cell` and `RefCell` for controlled interior mutability in single-threaded contexts. These types opt into mutation through shared references while preserving safety:
+
+```rust
+use std::cell::Cell;
+
+let counter = Cell::new(0usize);
+
+// Clone the Cell reference (both point to same data)
+let r1 = &counter;
+let r2 = &counter;
+
+r1.set(r1.get() + 1);  // Safe interior mutation
+r2.set(r2.get() + 1);  // Both can modify via shared ref
+
+assert_eq!(counter.get(), 2);
+```
+
+For multi-threaded contexts, `Cell` is deliberately not `Sync` — the compiler prevents using it across threads, directing you to `Mutex` instead.
+
+## What You'll Learn
+
+| # | Concept | Rust Type / Module | Python Equivalent | Purpose |
+|---|---------|--------------------|------------------|---------|
+| 1 | Interior Mutability | `Cell<T>` | Direct variable mutation | Mutate through shared ref (Copy types) |
+| 2 | Runtime Borrow Checking | `RefCell<T>` | No equivalent | Dynamic borrow rules for non-Copy types |
+| 3 | Data Race vs Race Condition | Rust concepts | Same concepts | Understand the key difference |
+| 4 | Compile-Time Prevention | Ownership rules | No equivalent | Data races eliminated at compile time |
+| 5 | Programmer Responsibility | Race conditions | Same | Race conditions still possible in Rust |
+
+## Concepts at a Glance
+
+- **Interior Mutability (`Cell<T>`)**: Allows mutation through a shared `&Cell<T>` reference for `Copy` types. Python allows this implicitly; Rust requires explicit opt-in. `Cell` is single-threaded only (not `Sync`).
+- **Runtime Borrow Checking (`RefCell<T>`)**: Enforces Rust's borrow rules (one mutable or many immutable) at runtime instead of compile time. Violations cause a panic. Python has no equivalent — borrowing violations are simply impossible there.
+- **Data Race vs Race Condition**: A data race is unsynchronized concurrent memory access (Rust prevents at compile time). A race condition is a logic error from timing (Rust prevents neither — the programmer must handle it).
+- **Compile-Time Prevention**: Rust's type system prevents data races by enforcing `Send`/`Sync` and ownership rules. `Cell` and `RefCell` are deliberately `!Sync` to prevent cross-thread sharing.
+- **Programmer Responsibility**: Even with safe Rust, race conditions (like read-check-write without holding the lock) are possible. Rust prevents data races but not all concurrency bugs — the programmer must still design correct logic.
+
+---
+
 ## Table of Contents
 1. [Introduction](#1-introduction)
 2. [Prerequisites](#2-prerequisites)

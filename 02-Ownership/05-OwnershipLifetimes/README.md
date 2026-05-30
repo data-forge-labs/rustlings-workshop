@@ -5,6 +5,100 @@
 > follow each section, replace `todo!()` with real code and run `cd workshop && cargo test` to
 > watch the pass count grow. Your goal: **all 14 tests pass**.
 
+---
+
+## Why This Project?
+
+### The Problem
+
+In Python, you never think about whether a reference is still valid — the garbage collector keeps objects alive as long as needed:
+
+```python
+def longest(x, y):
+    return x if len(x) >= len(y) else y
+
+def problem():
+    s = "hello"
+    return s  # Fine — Python keeps it alive via refcount
+
+a = "hello"
+b = "world!!!"
+result = longest(a, b)  # Both strings stay alive indefinitely
+print(result)  # Works, but at what cost?
+```
+
+This convenience has costs: reference-count updates on every assignment, cycle-detection overhead, non-deterministic memory reclamation. More importantly, Python gives you **no compile-time guarantee** that a reference is valid. A function returning a reference to a local object works by accident (the object lives on the heap, refcounted). There's no way to express "this reference must not outlive that data."
+
+For data engineers: when processing large CSV files, you want to borrow string slices from the input buffer rather than clone every field. But how do you guarantee those borrowed slices don't outlive the buffer? Python can't help — it's all runtime.
+
+```
+Python reference model:
+  All objects heap-allocated, refcounted
+  References always "valid" (objects kept alive)
+  No lifetime concept → no compile-time safety
+  Cost: runtime overhead, unpredictable pauses
+```
+
+### The Rust Solution
+
+Rust uses **lifetimes** — compile-time annotations that connect the lifetimes of references. The borrow checker ensures no reference outlives its data:
+
+```rust
+fn longest<'a>(x: &'a str, y: &'a str) -> &'a str {
+    if x.len() >= y.len() { x } else { y }
+}
+
+fn problem() -> &str {
+    let s = String::from("hello");
+    &s  // ❌ ERROR: returns reference to local variable
+}   // s is dropped here — reference would dangle
+```
+
+Lifetimes have zero runtime cost — they're checked entirely at compile time. By annotating lifetimes, you tell the compiler how references relate. The borrow checker then guarantees that every reference is valid for its entire lifetime, preventing use-after-free bugs in your data pipelines.
+
+---
+
+## What You'll Learn
+
+| # | Concept | Rust Type / Module | Python Equivalent | Purpose |
+|---|---------|--------------------|------------------|---------|
+| 1 | Lifetime Annotations | `'a` | Nothing (GC) | Link lifetimes of references together |
+| 2 | Lifetime Elision | Compiler inference | Nothing | Auto-infer lifetimes in common patterns |
+| 3 | Struct Lifetime Params | `Struct<'a>` | Nothing | Structs containing borrowed references |
+| 4 | Move Semantics | Move by default | Reference semantics | Non-Copy types transfer ownership |
+| 5 | Copy Semantics | `Copy` trait | Implicit (primitives) | Bitwise copy for stack-only types |
+| 6 | &str (String Slice) | `&str` | `str` | Borrowed reference to string data |
+| 7 | 'static Lifetime | `'static` | Global/constants | References valid for entire program |
+| 8 | Borrow Checker | Compiler analysis | Nothing (runtime) | Validates all references at compile time |
+
+## Concepts at a Glance
+
+### 1. Lifetime Annotations
+`'a` labels how long references are valid: `fn longest<'a>(x: &'a str, y: &'a str) -> &'a str`. Python has no equivalent — the GC hides all lifetime concerns at the cost of runtime overhead.
+
+### 2. Lifetime Elision
+Rust infers lifetimes in common patterns (one input = output gets its lifetime). Python has no such feature because lifetimes don't exist. Elision lets you write clean signatures while the compiler still enforces safety.
+
+### 3. Struct Lifetime Params
+`struct Bookmark<'a> { title: &'a str, url: &'a str }` — the struct cannot outlive the borrowed data. Python: `class Bookmark:` with no lifetime worries (GC keeps data alive). Rust's annotation makes the dependency explicit.
+
+### 4. Move Semantics
+Non-Copy types (like `String`) are moved on assignment — ownership transfers. Python: assignment creates a reference, both variables point to the same object. Rust moves prevent accidental aliasing.
+
+### 5. Copy Semantics
+Stack-only types (`i32`, `bool`) implement `Copy` — assignment bitwise-copies the value, both variables are valid. Python: integers are immutable objects, assignment creates new references (but immutability makes aliasing safe).
+
+### 6. &str (String Slice)
+`&str` is a borrowed reference to UTF-8 string data (ptr + len). Python: `str` is always owned. In Rust, you can borrow slices of a `String` without copying — critical for performance in data pipelines.
+
+### 7. 'static Lifetime
+`'static` references live for the entire program. String literals (`"hello"`) are `'static`. Python: global/class-level variables remain as long as referenced. In Rust, `'static` is a bound, not a guarantee of indefinite life.
+
+### 8. Borrow Checker
+The compiler analyzes all references at compile time, enforcing that: no reference outlives its data, no mutable aliasing, and all borrows are valid. Python: these checks happen at runtime (or not at all). The borrow checker eliminates use-after-free bugs.
+
+---
+
 ## Table of Contents
 
 1. [Introduction](#1-introduction)

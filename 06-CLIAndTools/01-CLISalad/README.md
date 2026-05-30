@@ -5,6 +5,63 @@
 > follow each section, replace `todo!()` with real code and run `cd workshop && cargo test` to
 > watch the pass count grow. Your goal: **all 10 tests pass**.
 
+## Why This Project?
+
+### The Problem
+
+Python's `argparse` is the standard for CLI parsing, but it comes with repetitive boilerplate that grows with every argument:
+
+```python
+import argparse
+
+parser = argparse.ArgumentParser(description="Fruit salad maker")
+parser.add_argument("-c", "--count", type=int, default=5, help="Number of fruits")
+parser.add_argument("--fruits", nargs="+", default=["Apple", "Banana"])
+args = parser.parse_args()
+```
+
+Every project repeats this pattern. There is no compile-time validation -- a typo in argument names only appears at runtime. Python CLI tools also pay 100-300ms interpreter startup overhead, which adds up in pipelined data workflows running hundreds of small CLI tools.
+
+### The Rust Solution
+
+Rust's `clap` derive API turns argument parsing into a single struct definition with automatic `--help` generation and compile-time validation:
+
+```rust
+use clap::Parser;
+
+#[derive(Parser)]
+struct Args {
+    #[arg(short, long, default_value_t = 5)]
+    count: usize,
+}
+
+fn main() {
+    let args = Args::parse();
+    println!("Count: {}", args.count);
+}
+```
+
+No manual validation, no boilerplate, no runtime surprises. Startup time is single-digit milliseconds -- fast enough for tight data pipelines.
+
+## What You'll Learn
+
+| # | Concept | Rust Type / Module | Python Equivalent | Purpose |
+|---|---------|--------------------|------------------|---------|
+| 1 | CLI argument iteration | `std::env::args()` | `sys.argv` | Collect raw CLI argument strings |
+| 2 | Builder API parsing | `clap::Command` builder | `argparse.ArgumentParser` | Define CLI arguments with help text |
+| 3 | Derive API parsing | `clap::Parser` derive macro | `argparse.Namespace` | Auto-generate CLI parser from struct |
+| 4 | Random shuffle | `rand::seq::SliceRandom` | `random.shuffle()` | Randomize fruit order in-place |
+| 5 | Random subset | `.choose_multiple()` | `random.sample()` | Pick N distinct random fruits |
+| 6 | Custom error type | `enum SaladError` | Custom `Exception` subclass | Model domain-specific errors |
+| 7 | Pattern matching on errors | `match` on `Result` | `try/except` with type checks | Handle each error variant distinctly |
+| 8 | Testable CLI logic | `fn(Vec<String>) -> Result<String, String>` | Function returning `(bool, str)` | Unit-test CLI without spawning process |
+
+## Concepts at a Glance
+
+**std::env::args** -- Rust's `env::args()` returns an iterator over argument strings, like Python's `sys.argv`. Collect into `Vec<String>` to inspect argument count and values. **clap Command builder** -- The builder API chains `.short('c')`, `.long("count")`, and `.help(...)` calls, mirroring `parser.add_argument()` in argparse but with a fluent style. **clap Parser derive** -- `#[derive(Parser)]` on a struct auto-generates a CLI parser from field attributes, eliminating all manual `parser.parse_args()` plumbing. **SliceRandom::shuffle** -- This trait extends every `&mut [T]` with `.shuffle(&mut rng)`, analogous to Python's `random.shuffle()` operating in-place. **choose_multiple** -- A `SliceRandom` method that picks N random elements without replacement, parallel to `random.sample(population, k)`. **Custom error enum** -- `enum SaladError { InvalidCount(usize), InvalidFruit(String) }` defines typed error variants, like subclassing Python's `Exception` with specific fields. **match on Result** -- `match result { Ok(v) => ..., Err(e) => ... }` mirrors Python's `try/except`. Each `Err` variant is a separate `except` clause. **Testable CLI functions** -- By accepting `Vec<String>` and returning `Result`, CLI logic is testable without subprocess invocation, unlike Python's argparse which requires mocking `sys.argv`.
+
+---
+
 ## Table of Contents
 
 1. [Introduction](#1-introduction)

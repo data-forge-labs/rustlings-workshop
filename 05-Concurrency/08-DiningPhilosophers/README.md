@@ -2,6 +2,84 @@
 
 > **Test-driven approach**: This project includes a Cargo project with progressive unit tests. Each function in `workshop/src/lib.rs` starts as a `todo!()` stub. As you follow each section, replace `todo!()` with real code and run `cd workshop && cargo test` to watch the pass count grow. Your goal: **all 7 tests pass**.
 
+## Why This Project?
+
+### The Problem
+
+Deadlocks are notoriously hard to debug. In Python, a deadlocked program simply hangs with no error message:
+
+```python
+import threading
+
+lock1 = threading.Lock()
+lock2 = threading.Lock()
+
+def thread_a():
+    with lock1:
+        with lock2:  # This might wait forever
+            pass
+
+def thread_b():
+    with lock2:
+        with lock1:  # This might wait forever
+            pass
+
+# Run both — if timing is unlucky, they deadlock silently
+t1 = threading.Thread(target=thread_a)
+t2 = threading.Thread(target=thread_b)
+t1.start(); t2.start()
+t1.join(); t2.join()
+print("Done")  # May never print
+```
+
+```
+Thread A: holds Lock1 ──→ waits for Lock2
+Thread B: holds Lock2 ──→ waits for Lock1
+                            → DEADLOCK (no progress)
+```
+
+Python offers no tooling to detect or prevent deadlocks — you must reason about lock ordering manually and hope your review catches every cycle.
+
+### The Rust Solution
+
+Rust doesn't prevent deadlocks at compile time (that's undecidable), but it makes the lock acquisition explicit and forces you to think about ownership. This project implements two deadlock prevention strategies that work identically in both languages:
+
+```rust
+// Ordered lock acquisition — breaks circular wait
+pub fn lock_ordered(id: u32, left: &Arc<Mutex<Fork>>, right: &Arc<Mutex<Fork>>) -> bool {
+    if id % 2 == 0 {
+        let _first = left.lock().unwrap();
+        let _second = right.lock().unwrap();
+    } else {
+        let _first = right.lock().unwrap();
+        let _second = left.lock().unwrap();
+    }
+    true
+}
+```
+
+The alternative — using `try_lock()` — returns immediately instead of blocking, breaking the hold-and-wait condition.
+
+## What You'll Learn
+
+| # | Concept | Rust Type / Module | Python Equivalent | Purpose |
+|---|---------|--------------------|------------------|---------|
+| 1 | Dining Philosophers | `struct` + `Mutex<Fork>` | `threading.Thread` + `Lock` | Classic deadlock demonstration |
+| 2 | Deadlock Conditions | 4 necessary conditions | Same conditions | Understand why deadlocks occur |
+| 3 | Non-Blocking Lock | `Mutex::try_lock()` | `lock.acquire(blocking=False)` | Break hold-and-wait |
+| 4 | Ordered Acquisition | Lock ordering strategy | Same strategy | Break circular wait |
+| 5 | Resource Structs | `Arc<Mutex<Fork>>` | `threading.Lock` | Represent shared resources |
+
+## Concepts at a Glance
+
+- **Dining Philosophers**: A classic concurrency problem where philosophers (threads) need two forks (resources) to eat. If all pick up the left fork simultaneously, they deadlock waiting for the right fork. Python's `threading.Thread` and `threading.Lock` model the same problem.
+- **Deadlock Conditions**: Four necessary conditions: mutual exclusion, hold-and-wait, no preemption, and circular wait. Breaking any one prevents deadlock. These are language-independent concepts.
+- **Non-Blocking Lock (`Mutex::try_lock()`)**: Attempts to acquire the lock without blocking, returning `Err` if another thread holds it. Python's `lock.acquire(blocking=False)` does the same. This breaks the hold-and-wait condition.
+- **Ordered Acquisition**: Enforces a global ordering of lock acquisition (even-ID philosophers pick up left first, odd pick up right first). This breaks the circular wait condition. The same logic works in Python.
+- **Resource Structs (`Arc<Mutex<Fork>>`)**: Each fork is a shared, locked resource. Python uses `threading.Lock` objects directly, while Rust wraps them in `Arc` for shared ownership and `Mutex` for exclusive access.
+
+---
+
 ## Table of Contents
 1. [Introduction](#1-introduction)
 2. [Prerequisites](#2-prerequisites)

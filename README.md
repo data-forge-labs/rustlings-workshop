@@ -17,7 +17,7 @@ RustTut/
 ├── 06-CLIAndTools/                  ← Section 6 (projects 01-10)
 ├── 07-Security/                     ← Section 7 (projects 01-03)
 ├── 08-Interop/                      ← Section 8 (projects 01-02)
-├── 09-ProductionSystems/           ← Section 9 (project 01)
+├── 09-ProductionSystems/           ← Section 9 (projects 01-02)
 ├── 10-ToolsAndFrameworks/          ← Section 10 (projects 01-03)
 └── 11-Reference/                    ← Section 11 (reference material)
 ```
@@ -42,9 +42,9 @@ The course is carefully sequenced so each concept is introduced by one source an
 | 6 — CLI & Tools | clap, petgraph, Dijkstra, PageRank, Neo4j | 01–10 (CLISalad, CommunityDetection, PageRank, GraphVisualize, etc.) |
 | 7 — Security | Safe vs unsafe, crypto, security model | 01 (SafeAndUnsafe), 02 (DecoderRing), 03 (RustCryptoHashes) |
 | 8 — Interop | evcxr, Jupyter, pandas bridge | 01 (ExploringPandas), 02 (RustJupyterNotebook) |
-| 9 — Production Systems | Tokio, async, TCP, RESP protocol | 01 (Radish) |
+| 9 — Production Systems | Tokio, async, TCP, RESP protocol, Axum web API | 01 (Radish), 02 (AxumShop) |
 | 10 — Tools & Frameworks | Logging, configuration management, testing frameworks | 01 (Logging), 02 (Configuration), 03 (Testing) |
-| 11 — Reference | Quick concept lookup, cheatsheets | (no cargo projects — reference materials only) |
+| 11 — Reference | Quick concept lookup, cheatsheets, memory architecture | (no cargo projects — reference materials only) |
 
 **How to use this table:** Start from Section 1 and work forward. Within each section, start with the lower-numbered projects (they introduce the concepts) and then move to the higher-numbered ones (they apply and deepen them).
 
@@ -181,6 +181,7 @@ Projects are grouped into **sections** that map concepts a Python data engineer 
 | # | Project | Rust Topics Covered |
 |---|---------|-------------------|
 | 01 | **Radish** — Redis-compatible KV store | `tokio` async, RESP protocol, TCP networking, `Rc<RefCell>`, `BytesMut`, TTL expiry |
+| 02 | **AxumShop** — Shop Manager API with Axum | `axum::Router`, `tokio` async, `sqlx` async DB, `serde` JSON, `tower-http` CORS, `tower-sessions`, `FromRequestParts` auth, SHA-256 hashing, DB transactions |
 
 ### Section 10: Tools & Frameworks
 

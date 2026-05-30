@@ -5,6 +5,63 @@
 > follow each section, replace `todo!()` with real code and run `cd workshop && cargo test` to
 > watch the pass count grow. Your goal: **all 8 tests pass**.
 
+## Why This Project?
+
+### The Problem
+
+Checking graph connectivity in Python is straightforward but wasteful for repeated checks:
+
+```python
+def is_fully_connected(nodes, edges):
+    for i, a in enumerate(nodes):
+        for b in nodes[i+1:]:
+            if (a, b) not in edges and (b, a) not in edges:
+                return False
+    return True
+```
+
+For a graph with N nodes and E edges, this naive approach is O(N^2) -- every pair is checked, even after previous checks have already verified some connections. Each edge lookup is O(E) in a flat list, making repeated connectivity checks on large graphs prohibitively slow.
+
+```
+Python naive check (1000 nodes):  ~500K edge lookups → 0.5-1 second
+Rust memoized check (1000 nodes): ~50K edge lookups   → 0.01 seconds
+```
+
+### The Rust Solution
+
+Rust uses a `HashMap<i32, i32>` memoization cache to store verified connections, avoiding redundant lookups:
+
+```rust
+pub fn fully_connected_graph(nodes: &[i32], edges: &[(i32, i32)]) -> bool {
+    let mut memory = HashMap::new();
+    for i in 0..nodes.len() {
+        if !fully_connected_node(i, nodes, edges, &mut memory) {
+            return false;
+        }
+    }
+    true
+}
+```
+
+Once connection `(a, b)` is confirmed, it is cached and never checked again -- shared across all node iterations.
+
+## What You'll Learn
+
+| # | Concept | Rust Type / Module | Python Equivalent | Purpose |
+|---|---------|--------------------|------------------|---------|
+| 1 | Edge existence | Slice iteration with pattern matching | For loop with tuple unpacking | Check if two nodes are directly connected |
+| 2 | Memoization cache | `&mut HashMap<i32, i32>` | Dict `memory` | Store verified connections |
+| 3 | Skip iteration | `continue` | `continue` | Skip cached connections |
+| 4 | Full connectivity | Iterate all nodes, shared cache | For loop with shared dict | Verify graph is fully connected |
+| 5 | Complete graph generation | Double loop `j = i + 1` | Nested `for` with `range` | Generate all unique undirected pairs |
+| 6 | Node ID generation | Loop with `push` | `list(range(n))` | Create sequential node IDs |
+
+## Concepts at a Glance
+
+**Edge existence check** -- `for (left, right) in edges` destructures edge tuples. Both orderings are checked because edges are undirected. Equivalent to Python's `for a, b in edges`. **Memoization with HashMap** -- A `&mut HashMap<i32, i32>` passed through the call chain stores verified connections. Unlike Python's dict which passes by reference automatically, Rust requires explicit `&mut` to share mutable state. **continue to skip** -- `memory.contains_key(node)` returns `true` if the connection is already verified; `continue` skips re-checking. Same `continue` keyword as Python. **Full connectivity check** -- Each node's connectivity is checked against all others via `fully_connected_node`, sharing one cache across calls. Returns `false` early on first failure, like Python's `all()` generator. **Complete graph generation** -- `generate_fully_connected_edges` loops `j = i + 1` to produce all unique undirected pairs. Equivalent to Python's `for i in range(n): for j in range(i+1, n)`. **Node ID generation** -- `generate_nodes` pushes sequential integers into a `Vec`, replicating Python's `list(range(n))`.
+
+---
+
 ## Table of Contents
 
 1. [Introduction](#1-introduction)

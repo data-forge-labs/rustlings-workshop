@@ -1,5 +1,95 @@
 # Project 59: Radish — Build a Redis-Compatible KV Store in Rust
 
+## Why This Project?
+
+### The Problem
+
+Python's `redis-py` library is a client — it connects to an external Redis server. You never see the wire protocol, the event loop, or the shared-state management:
+
+```python
+import redis
+
+r = redis.Redis()
+r.set("key", "value")  # Magic: TCP connect -> RESP encode -> send -> wait -> parse -> return
+```
+
+```
+What Python hides from you:
+  r.set("key", "value")
+    -> redis-py encodes: *3\r\n$3\r\nSET\r\n$3\r\nkey\r\n$5\r\nvalue\r\n
+    -> TCP send to localhost:6379
+    -> Real Redis server decodes, stores, responds
+    -> redis-py parses response: +OK\r\n
+    -> Returns "OK"
+  <- You never touch the network or protocol at all
+```
+
+Building a real server reveals the full stack: raw TCP bytes, protocol parsing, shared mutable state, async I/O, and TTL expiry. This is systems-level engineering that Python abstracts away entirely.
+
+### The Rust Solution
+
+Radish is a full Redis-compatible server built from scratch — handling raw TCP streams, parsing RESP byte-by-byte, and managing shared state with zero-cost concurrency:
+
+```rust
+// The heart of Radish: async TCP event loop with Tokio
+pub(crate) async fn run() -> Result<(), Box<dyn std::error::Error>> {
+    let listener = TcpListener::bind("127.0.0.1:7379").await?;
+    let store = Store::new();  // Rc<RefCell<HashMap<String, StoreValue>>>
+    let local = task::LocalSet::new();
+    local.run_until(async move {
+        loop {
+            let (mut stream, _addr) = listener.accept().await?;
+            let store_clone = Rc::clone(&store);
+            task::spawn_local(async move {
+                let mut buf = [0; 512];
+                loop {
+                    let n = stream.read(&mut buf).await?;
+                    if n == 0 { break; }
+                    // Parse RESP bytes -> execute -> write response
+                }
+            });
+        }
+    }).await;
+}
+```
+
+Single-threaded Tokio with `Rc<RefCell<>>` gives zero-lock shared state — matching Redis's own design — without needing `Arc` or `Mutex`.
+
+## What You'll Learn
+
+| # | Concept | Rust Type / Module | Python Equivalent | Purpose |
+|---|---------|--------------------|------------------|---------|
+| 1 | Async/await with Tokio | `tokio` runtime | `asyncio` | Concurrent TCP I/O without threads |
+| 2 | TCP networking | `tokio::net::TcpListener` | `asyncio.start_server` | Accept and manage client connections |
+| 3 | Recursive enum | `RespValue::Array(Vec<RespValue>)` | `Union[str, int, list, None]` | Model nested RESP protocol variants |
+| 4 | Pattern matching | `match first { b'*' => ... }` | `if/elif` chain / `match/case` | Parse wire protocol by first byte |
+| 5 | From trait | `impl From<&str> for CommandType` | Dict lookup with `.upper()` | Case-insensitive command name conversion |
+| 6 | Rc<RefCell> | `Rc<RefCell<Store>>` | Mutable object (GIL-protected) | Single-threaded shared state, zero lock contention |
+| 7 | HashMap store | `HashMap<String, StoreValue>` | `dict` | In-memory key-value data engine |
+| 8 | BytesMut | `bytes::BytesMut` | `bytearray` | Zero-copy byte buffer for network I/O |
+| 9 | Chrono DateTime | `chrono::DateTime<Utc>` | `datetime.datetime` | TTL expiry timestamp tracking |
+| 10 | spawn_local | `task::spawn_local` | `asyncio.create_task` | Run !Send futures on the same thread |
+
+## Concepts at a Glance
+
+**1-2. Async/await with Tokio** — Python's `asyncio` and Rust's `tokio` both provide non-blocking I/O. Tokio defaults to multi-threaded work-stealing; Radish uses `current_thread` flavor to match Redis's single-threaded design, enabling zero-lock shared state.
+
+**3-4. Recursive enum & pattern matching** — RESP is a recursive protocol (arrays can contain arrays). Rust's `enum RespValue` with `Array(Vec<RespValue>)` models this natively. Python's equivalent is `Union[str, int, list, bytes, None]`, but without compiler-verified exhaustiveness.
+
+**5. From trait** — Python uses a dict or `if/elif` chain for name-to-enum mapping. Rust's `From<&str>` trait is the canonical conversion — the compiler enforces every command name produces a valid `CommandType`, and `match` is exhaustive.
+
+**6. Rc<RefCell>** — Python objects are freely mutable because the GIL protects everything. Rust distinguishes: `Rc<RefCell<T>>` for single-threaded (zero overhead) vs `Arc<Mutex<T>>` for multi-threaded (locking overhead). The type system enforces thread safety at compile time.
+
+**7. HashMap store** — Rust's `HashMap<String, StoreValue>` is the same as Python's `dict` — O(1) average lookup. Rust's `entry()` API replaces Python's `dict.setdefault()` pattern for atomic insert-or-update.
+
+**8. BytesMut** — Python's `bytearray` is a mutable byte buffer. Rust's `BytesMut` provides zero-copy slicing — split a buffer into segments without copying data. Critical for high-performance network protocol parsing.
+
+**9. Chrono DateTime** — Python's `datetime.datetime.utcnow()` maps to `chrono::Utc::now()`. Both support adding durations and comparing timestamps. Radish uses it for lazy TTL expiry checking.
+
+**10. spawn_local** — Python's `asyncio.create_task()` always works because of the GIL. Rust's `spawn_local` is explicit about running !Send futures on one thread — the compiler won't let you share `Rc` across threads.
+
+---
+
 ## Table of Contents
 1. [Introduction](#1-introduction)
 2. [Prerequisites](#2-prerequisites)

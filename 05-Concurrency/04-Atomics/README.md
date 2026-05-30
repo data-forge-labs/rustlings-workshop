@@ -2,6 +2,80 @@
 
 > **Test-driven approach**: This project includes a Cargo project with progressive unit tests. Each function in `workshop/src/lib.rs` starts as a `todo!()` stub. As you follow each section, replace `todo!()` with real code and run `cd workshop && cargo test` to watch the pass count grow. Your goal: **all 12 tests pass**.
 
+---
+
+## Why This Project?
+
+### The Problem — Python's Lock Tax
+
+```python
+import threading
+
+counter = 0
+lock = threading.Lock()
+
+def increment():
+    global counter
+    for _ in range(1_000_000):
+        with lock:       # ← Every increment needs OS-level locking
+            counter += 1
+```
+
+In Python, every shared counter needs a `Lock`. That means **context switches**, **kernel calls**, and **contention** — even for a simple integer increment. In production, this limits throughput: a high-volume counter (processed records, API hits) becomes a bottleneck.
+
+```
+  Python Lock overhead:
+  ├── acquire() → syscall → kernel → wait → unblock → release() → syscall
+  │   Each cycle: ~1-10 microseconds (thousands of CPU cycles)
+  └── Atomics: single CPU instruction: ~1-10 nanoseconds
+                    Speed difference: 100-1000x
+```
+
+### The Rust Solution — CPU-Level Atomic Operations
+
+```rust
+use std::sync::atomic::{AtomicUsize, Ordering};
+
+let counter = AtomicUsize::new(0);
+counter.fetch_add(1, Ordering::Relaxed);  // Single CPU instruction!
+```
+
+Rust's atomic types use **CPU-level instructions** (like `LOCK XADD` on x86) — no OS kernel calls, no context switches, no lock contention. For simple counters, flags, and accumulators, atomics are **100-1000x faster** than a `Mutex`.
+
+---
+
+## What You'll Learn
+
+| # | Concept | Rust Type / Module | Python Equivalent | Purpose |
+|---|---------|--------------------|------------------|---------|
+| 1 | Atomic integers | `AtomicUsize`, `AtomicIsize` | `threading.Lock` + int | Lock-free counters |
+| 2 | Atomic booleans | `AtomicBool` | `threading.Lock` + bool | Lock-free flags |
+| 3 | Atomic addition | `.fetch_add()` | `counter += 1` (under lock) | Atomic increment/decrement |
+| 4 | Atomic store/load | `.store()`, `.load()` | `flag = True` (under lock) | Atomic read/write |
+| 5 | Compare-and-swap | `.compare_exchange()` | N/A (no equivalent) | Lock-free CAS primitive |
+| 6 | Relaxed ordering | `Ordering::Relaxed` | N/A (GIL provides this) | No ordering guarantees |
+| 7 | Acquire/Release | `Ordering::Acquire` / `Release` | N/A | Happens-before guarantees |
+| 8 | Sequential consistency | `Ordering::SeqCst` | N/A (GIL provides this) | Strongest ordering |
+
+## Concepts at a Glance
+
+### 1-2. Atomic Types (`AtomicUsize`, `AtomicBool`)
+Python has no stdlib atomic types — you must use a `Lock` for every shared variable. Rust provides hardware-accelerated atomic integers and booleans. `AtomicUsize` is like a `usize` that can be safely read/written from multiple threads without a `Mutex`.
+
+### 3. `fetch_add()` — Atomic Addition
+`counter.fetch_add(1, Ordering::Relaxed)` atomically adds 1 and returns the old value. This maps to a single CPU instruction — no lock overhead. In Python, you'd need `with lock: counter += 1`.
+
+### 4. `compare_exchange()` — CAS (Compare And Swap)
+`counter.compare_exchange(5, 6, Ordering::SeqCst, Ordering::Relaxed)` atomically compares the value to 5 and sets it to 6 if equal. Returns `Result`. This is the foundation of lock-free data structures — Python has no direct equivalent.
+
+### 5-8. Memory Ordering
+In Python, the GIL provides sequential consistency for free — but at the cost of true parallelism. Rust's atomics let you choose the level of synchronization:
+- `Relaxed` — fastest, no ordering guarantees (just the atomic op itself)
+- `Acquire`/`Release` — pairs for message passing (like a lock-free channel)
+- `SeqCst` — strongest, all threads agree on operation order (slowest)
+
+---
+
 ## Table of Contents
 1. [Introduction](#1-introduction)
 2. [Prerequisites](#2-prerequisites)

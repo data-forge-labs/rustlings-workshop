@@ -6,6 +6,108 @@
 
 ---
 
+## Why This Project?
+
+### The Problem
+
+You know Python. You love Python. But when you process 10 million rows of CSV data, Python slows to a crawl. When you deploy a data pipeline, you need a Python runtime, virtualenvs, and dependency management. When you need to parallelize a task, the GIL limits you to one CPU core at a time.
+
+Worst of all, many bugs only surface at runtime — a `None` sneaks into your pipeline, a column name changes, a type mismatch crashes your ETL at 3 AM. Python's dynamism is great for exploration but fragile in production.
+
+```python
+def process_row(row):
+    return row["value"] * 2  # Runtime error if value is string or None
+
+counts = {}
+for chunk in data_chunks:
+    counts[chunk.id] = counts.get(chunk.id, 0) + 1
+```
+
+### The Rust Solution
+
+Rust catches these issues at **compile time**, before your pipeline ever runs:
+
+```rust
+fn process_row(row: &HashMap<String, f64>) -> f64 {
+    row["value"] * 2.0  // Compiler ensures "value" exists and is f64
+}
+
+let mut counts: HashMap<u32, u64> = HashMap::new();
+for chunk in data_chunks {
+    let counter = counts.entry(chunk.id).or_insert(0);
+    *counter = counter.saturating_add(1);
+}
+```
+
+Every type is explicit, every potential error is handled, and the compiler guarantees correctness before deployment. No more 3 AM panics from `AttributeError` or `TypeError` in production pipelines.
+
+---
+
+## What You'll Learn
+
+| # | Concept | Rust Type / Module | Python Equivalent | Purpose |
+|---|---------|--------------------|------------------|---------|
+| 1 | Function declarations | `fn` keyword | `def` | Define functions with typed parameters |
+| 2 | Variable bindings | `let`, `let mut` | `x = value` | Declare immutable or mutable variables |
+| 3 | Shadowing | `let x = x + 1` | Simple reassignment | Rebind a name (possibly changing type) |
+| 4 | Constants | `const NAME: Type = val;` | Convention `MAX = val` | Compile-time constant values |
+| 5 | Expressions vs Statements | Expression produces value | Most Python is statements | Functional-style control flow |
+| 6 | `if` as expression | `if` / `else` blocks | Ternary `a if cond else b` | Conditionally produce a value |
+| 7 | Block `{}` expressions | `{ let x = 1; x + 2 }` | N/A | Blocks return their last expression |
+| 8 | `for` loops with ranges | `0..n` syntax | `for i in range(n):` | Iterate over numeric ranges |
+| 9 | `println!` macro | `println!` | `print()` | Print formatted output to stdout |
+| 10 | Macros | `!` suffix (e.g., `vec!`, `panic!`) | N/A (special forms) | Metaprogramming with compile-time code gen |
+| 11 | Module imports | `use std::io;` | `import io` | Import standard library modules |
+| 12 | Cargo build system | `Cargo.toml`, `cargo new` | `pyproject.toml` + `pip` | Package management and builds |
+| 13 | Console input | `io::stdin().read_line()` | `input()` | Read user input from terminal |
+| 14 | String parsing | `.trim().parse::<T>().expect()` | `int(x)` / `float(x)` | Convert string to number with error handling |
+
+## Concepts at a Glance
+
+### 1. Function declarations
+Use `fn` instead of `def`. Every parameter and return value must have an explicit type. **Python:** `def add(x, y):` -> **Rust:** `fn add(x: u32, y: u32) -> u32 { x + y }`.
+
+### 2. Variable bindings
+`let` introduces a variable that is **immutable by default**. Add `mut` to allow changes. **Python:** all variables are mutable. **Rust:** `let x = 5;` cannot reassign; `let mut x = 5;` can reassign.
+
+### 3. Shadowing
+Redeclare a variable with `let` to create a new binding. Unlike mutation, shadowing can change the type. **Python:** simple reassignment `x = "hello"` works but doesn't create a new binding.
+
+### 4. Constants
+`const MAX: u32 = 1000;` declares a compile-time constant. Type is required; naming is `SCREAMING_SNAKE_CASE`. **Python:** `MAX = 1000` is a convention only.
+
+### 5. Expressions vs Statements
+An **expression** produces a value; a **statement** performs an action. In Rust, nearly everything is an expression. **Python:** most constructs are statements (except ternary and comprehensions).
+
+### 6. `if` as expression
+`let status = if x > 0 { "pos" } else { "neg" };` — the `if`/`else` block returns a value. **Python:** only the ternary `"pos" if x > 0 else "neg"` works this way.
+
+### 7. Block `{}` expressions
+`{ let x = 2; x * 3 }` evaluates to `6`. The last expression is the block's value. **Python:** no equivalent — you'd need a separate function.
+
+### 8. `for` loops with ranges
+`for i in 0..5 { }` iterates `0,1,2,3,4`. Use `0..=5` for inclusive. **Python:** `for i in range(5):`.
+
+### 9. `println!` macro
+`println!("val = {}", x)` prints with format interpolation. The `!` marks it as a macro. **Python:** `print(f"val = {x}")`.
+
+### 10. Macros
+Rust macros (`!`) perform compile-time code generation. `println!`, `vec!`, `panic!` are common. **Python:** no direct equivalent — closest are decorators or `eval`/`exec`.
+
+### 11. Module imports
+`use std::io;` imports the `io` module. **Python:** `import io`.
+
+### 12. Cargo build system
+`Cargo.toml` is the package manifest (dependencies, metadata). `cargo new`, `cargo build`, `cargo run` manage the lifecycle. **Python:** `pyproject.toml` + `pip install` + `python -m`.
+
+### 13. Console input
+`io::stdin().read_line(&mut buf)` reads a line of user input into a mutable `String`. **Python:** `input()`.
+
+### 14. String parsing
+`.trim().parse::<u32>()` converts a string to a `u32`. Combine with `.expect("msg")` to panic on parse failure. **Python:** `int(x)` raises `ValueError`.
+
+---
+
 ## Table of Contents
 
 1. [Why Rust for Data Engineering?](#1-why-rust-for-data-engineering)

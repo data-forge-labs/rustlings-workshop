@@ -39,6 +39,7 @@ Stack                    Heap
 - **Stack**: LIFO, fast, fixed size at compile time, no deallocation cost.
 - **Heap**: Dynamic size, allocation cost, freed when owner drops (RAII).
 - Rust decides automatically — no `malloc`/`free` in user code.
+- For a deeper dive (Rust vs Python memory architecture, off-heap concept, allocator comparison), see [heap-memory.md](./heap-memory.md).
 
 ## RAII & Drop
 

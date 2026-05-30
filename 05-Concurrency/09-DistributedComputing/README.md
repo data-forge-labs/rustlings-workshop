@@ -2,6 +2,78 @@
 
 > **Test-driven approach**: This project includes a Cargo project with progressive unit tests. Each function in `workshop/src/lib.rs` starts as a `todo!()` stub. As you follow each section, replace `todo!()` with real code and run `cd workshop && cargo test` to watch the pass count grow. Your goal: **all 14 tests pass**.
 
+## Why This Project?
+
+### The Problem
+
+Python's garbage collector can pause execution at any time, causing unpredictable latency spikes in distributed systems:
+
+```python
+import gc
+import time
+
+def process_stream():
+    data = []
+    for i in range(10_000_000):
+        data.append(i * 2)
+        if i % 100_000 == 0:
+            # GC might kick in here, pausing for 50-200ms
+            time.sleep(0)  # Yield to GC
+```
+
+```
+Latency (ms):
+  Python (GC):   ▁▁▁▁▁▄▁▁▁▁▇▁▁▁▁▁▅▁▁▁▁▁▇▁▁▁▁▁▄▁▁▁▁
+                 ^^^    ^    ^^^    ^    ^    ^^^
+                 GC pauses cause tail latency spikes
+
+  Rust (no GC):  ▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁
+                 Flat, predictable latency — no GC
+```
+
+For distributed systems processing high-throughput data (Kafka streams, real-time aggregators), these GC pauses cause tail latency spikes that cascade across the system.
+
+### The Rust Solution
+
+Rust's ownership system eliminates GC entirely. Memory is reclaimed deterministically when values go out of scope:
+
+```rust
+pub fn measure_allocation_overhead(count: usize) -> usize {
+    for _ in 0..count {
+        let mut v: Vec<u64> = Vec::with_capacity(1000);
+        for j in 0..1000 {
+            v.push(j as u64);
+        }
+        // v is dropped here — deterministic, no GC pause
+    }
+    count
+}
+```
+
+Rust's zero-cost abstractions mean iterator chains compile to the same machine code as hand-written loops — no hidden allocation overhead.
+
+## What You'll Learn
+
+| # | Concept | Rust Feature | Python Issue | Purpose |
+|---|---------|--------------|--------------|---------|
+| 1 | No GC Pauses | Ownership + drop | GC stop-the-world | Predictable tail latency |
+| 2 | Deterministic Drop | RAII | Reference counting + GC | Memory freed at scope exit |
+| 3 | Zero-Cost Abstractions | Iterator compilation | Generator objects | No overhead for high-level patterns |
+| 4 | Compute Throughput | Native compilation | Interpreter overhead | Faster CPU-bound processing |
+| 5 | Cache Efficiency | Tight loops, no bounds checks | Bytecode dispatch | Better cache utilization |
+| 6 | Simulated GC Pause | Busy-work loop | `gc.collect()` | Model the impact of GC |
+
+## Concepts at a Glance
+
+- **No GC Pauses**: Rust frees memory at compile-time drop points — no stop-the-world pauses. Python's GC can pause at any moment, causing unpredictable latency in distributed data pipelines.
+- **Deterministic Drop (RAII)**: Resources are freed when they go out of scope, at a known point in the code. Python's reference counting is deterministic for non-cyclic objects, but cyclic garbage requires the tracing GC.
+- **Zero-Cost Abstractions**: Rust iterator chains like `.filter().map().sum()` compile to the same assembly as a hand-written loop. Python generator expressions allocate generator objects and frames — abstractions have runtime cost.
+- **Compute Throughput**: Rust compiles to native machine code. Python interprets bytecode, adding 10-100x overhead for CPU-bound operations like Fibonacci calculations or data transformations.
+- **Cache Efficiency**: Rust's tight loops and lack of bounds-checking (for iterators) keep the CPU cache hot. Python's bytecode dispatch and object overhead evict cache lines frequently.
+- **Simulated GC Pause**: The project models what a GC pause looks like by inserting busy-work every N items. In a real GC'd language, these pauses happen unpredictably and can cause cascading timeouts in distributed systems.
+
+---
+
 ## Table of Contents
 1. [Introduction](#1-introduction)
 2. [Prerequisites](#2-prerequisites)

@@ -6,6 +6,121 @@
 
 ---
 
+## Why This Project?
+
+### The Problem
+
+Integers seem simple — but they're a major source of bugs in data engineering. In Python, one `int` type handles everything from small counters to astronomical numbers, hiding the real-world constraints of fixed-precision arithmetic. When you port a Python pipeline to a systems language or hit performance limits, you must confront how integers actually work at the hardware level.
+
+Consider an ETL pipeline that counts rows across partitions:
+
+```python
+total_rows = 0
+for partition in partitions:
+    total_rows += partition.row_count  # What if this overflows in Rust?
+print(f"Total: {total_rows}")
+```
+
+In Python this never fails. But row counts in databases are stored as fixed-size integers (often `u32` or `u64`). What happens when your counter hits 4,294,967,295 and you add one more? In many systems, it silently wraps to 0 — corrupting your data without any error.
+
+```python
+def average(a, b):
+    return (a + b) / 2  # What if a = u32::MAX and b = 1?
+```
+
+Rust makes these issues visible and forces you to handle them correctly.
+
+### The Rust Solution
+
+Rust provides explicit integer types with controlled overflow behavior:
+
+```rust
+let small: u8 = 255;            // 0..255 — byte-level data
+let count: u32 = 4_000_000_000; // Row counts up to ~4 billion
+let big: u64 = 18_000_000_000_000_000_000; // Large datasets
+
+// Overflow is detected:
+// let overflow = 255u8 + 1;  // Panics in debug mode!
+
+// Use safe arithmetic methods:
+fn safe_total(counts: &[u64]) -> u64 {
+    let mut total = 0u64;
+    for &c in counts {
+        total = total.saturating_add(c);  // Clamps at u64::MAX
+    }
+    total
+}
+```
+
+Rust's `#[test]` system ensures correctness through built-in, zero-dependency testing.
+
+---
+
+## What You'll Learn
+
+| # | Concept | Rust Type / Module | Python Equivalent | Purpose |
+|---|---------|--------------------|------------------|---------|
+| 1 | Integer types | `u8`, `i32`, `u64`, `usize` | `int` (arbitrary precision) | Fixed-size integers matching hardware |
+| 2 | Mutability | `let` vs `let mut` | `x = value` (always mutable) | Opt-in to mutation for safety |
+| 3 | Shadowing | `let x = x + 1` | `x = x + 1` | Rebind variable with same name |
+| 4 | Arithmetic operators | `+`, `-`, `*`, `/`, `%` | Same operators | Integer math operations |
+| 5 | Integer division | `/` on integers | `//` (floor division) | Truncates toward zero |
+| 6 | `if`/`else` expression | `if` / `else` blocks | Ternary `a if cond else b` | Branching that produces a value |
+| 7 | `bool` type only | `bool` in conditions | Truthy/falsy allowed | Conditions must be explicit boolean |
+| 8 | `panic!` | `panic!("msg")` | `raise Exception("msg")` | Unrecoverable runtime error |
+| 9 | `while` loop | `while cond {}` | `while cond:` | Condition-controlled loop |
+| 10 | `for` with ranges | `0..n` / `0..=n` | `for i in range(n):` | Range-based iteration |
+| 11 | Integer overflow | Debug: panics, Release: wraps | Not possible | Fixed-precision overflow behavior |
+| 12 | Wrapping/saturating | `.wrapping_add()`, `.saturating_add()` | N/A | Controlled overflow handling |
+| 13 | Type casting | `as` operator | Implicit conversion | Explicit type conversion |
+| 14 | Unit testing | `#[test]`, `#[should_panic]`, `#[cfg(test)]` | `pytest` / `unittest` | First-class built-in testing |
+
+## Concepts at a Glance
+
+### 1. Integer types
+Rust provides signed (`i8`, `i16`, `i32`, `i64`) and unsigned (`u8`, `u16`, `u32`, `u64`) integers of fixed bit widths, plus `usize`/`isize` matching your system pointer size. **Python:** a single `int` with arbitrary precision.
+
+### 2. Mutability
+`let` creates an immutable binding. `let mut` creates a mutable one. **Python:** all variables are mutable by default — Rust makes you opt in.
+
+### 3. Shadowing
+Declaring `let x = ...` a second time creates a new variable that shadows the old one, potentially with a different type. **Python:** reassignment `x = "hello"` keeps the same variable; type is not enforced.
+
+### 4. Arithmetic operators
+`+`, `-`, `*`, `/`, `%` work on integers. Both operands must have the same type. **Python:** implicit type promotion (int + float = float).
+
+### 5. Integer division
+In Rust, `5 / 2` = `2` (truncates toward zero). For floating-point, use `5.0 / 2.0`. **Python:** `/` returns float; `//` does floor division.
+
+### 6. `if`/`else` expression
+`let result = if x > 0 { "pos" } else { "neg" };` — the `if` block returns a value. **Python:** only the ternary `"pos" if x > 0 else "neg"` achieves this.
+
+### 7. `bool` type only
+`if x { }` fails if `x` is not a `bool`. No truthy/falsy coercion. **Python:** any value can be truthy or falsy (`0`, `None`, `""`, `[]`).
+
+### 8. `panic!`
+`panic!("msg")` stops execution with a stack trace. Used for programmer bugs. **Python:** `raise Exception("msg")` — but panics can't be caught in normal flow.
+
+### 9. `while` loop
+`while cond { body }` repeats as long as the condition is true. **Python:** `while cond:`.
+
+### 10. `for` with ranges
+`for i in 0..5` iterates `0,1,2,3,4` (exclusive). `0..=5` includes 5. **Python:** `for i in range(5):`.
+
+### 11. Integer overflow
+In debug mode, overflow panics. In release mode, overflow wraps silently. Enable `overflow-checks = true` in `Cargo.toml` for safety. **Python:** arbitrary precision — overflow never happens.
+
+### 12. Wrapping and saturating arithmetic
+`.wrapping_add(n)` wraps on overflow; `.saturating_add(n)` clamps at the type's min/max. **Python:** N/A.
+
+### 13. Type casting
+Use `x as u64` to convert between types. Safe when going smaller to larger; truncates going larger to smaller. **Python:** implicit type conversion.
+
+### 14. Unit testing
+Annotate tests with `#[test]`, use `assert_eq!`/`assert!`, and `#[should_panic]` for expected failures. Tests live in `#[cfg(test)]` modules. **Python:** requires external `pytest` or `unittest`.
+
+---
+
 ## Table of Contents
 
 1. [Project Overview](#1-project-overview)

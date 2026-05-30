@@ -6,6 +6,91 @@
 
 ---
 
+## Why This Project?
+
+### The Problem
+
+Data races are one of the hardest bugs to find in Python. The GIL prevents true parallel writes, but race conditions (wrong results from interleaved operations) are still common:
+
+```python
+import threading
+
+counter = 0
+def increment():
+    global counter
+    for _ in range(100000):
+        # Read, increment, write — three separate operations
+        counter += 1  # GIL helps, but this is still NOT atomic!
+
+threads = [threading.Thread(target=increment) for _ in range(10)]
+for t in threads: t.start()
+for t in threads: t.join()
+print(counter)  # Expected: 1,000,000. Actual: ~600,000
+```
+
+```
+Thread A: read counter (50) → increment → write (51)
+                                    ↑
+Thread B: read counter (50) ────────┘
+         Both threads read 50 and write 51 — one increment is lost!
+```
+
+Python offers no compiler protection — you must manually remember to add `threading.Lock()` everywhere.
+
+### The Rust Solution
+
+Rust prevents data races at **compile time**. You cannot share mutable data across threads without synchronization:
+
+```rust
+use std::sync::{Arc, Mutex};
+use std::thread;
+
+let counter = Arc::new(Mutex::new(0usize));
+let mut handles = vec![];
+
+for _ in 0..10 {
+    let c = Arc::clone(&counter);
+    handles.push(thread::spawn(move || {
+        for _ in 0..100000 {
+            *c.lock().unwrap() += 1;  // Lock held across read-modify-write
+        }
+    }));
+}
+
+for h in handles { h.join().unwrap(); }
+println!("{}", *counter.lock().unwrap());  // Always 1,000,000
+```
+
+Forget the `Mutex`? The compiler refuses to compile. This is the core of Rust's **fearless concurrency** promise.
+
+## What You'll Learn
+
+| # | Concept | Rust Type / Module | Python Equivalent | Purpose |
+|---|---------|--------------------|------------------|---------|
+| 1 | Thread Spawning | `thread::spawn` | `threading.Thread` | Create parallel execution paths |
+| 2 | Move Closures | `move \|\|` | N/A (implicit) | Transfer data ownership to threads |
+| 3 | Shared Ownership | `Arc<T>` | N/A (GC handles this) | Thread-safe reference counting |
+| 4 | Mutual Exclusion | `Mutex<T>` | `threading.Lock` | Exclusive write access |
+| 5 | Read-Write Lock | `RwLock<T>` | No stdlib equivalent | Multiple readers, one writer |
+| 6 | Condition Variable | `Condvar` | `threading.Condition` | Signal between threads |
+| 7 | Scoped Threads | `thread::scope` | No equivalent | Borrow data across threads |
+| 8 | Data Race Prevention | Ownership + type system | No compile-time equivalent | Catch bugs at compile time |
+| 9 | Automatic Unlock | `MutexGuard` Drop | `with lock:` | Never forget to unlock |
+
+## Concepts at a Glance
+
+- **Thread Spawning (`thread::spawn`)**: Creates a real OS thread. Unlike Python's `threading.Thread`, there is no GIL — threads run in true parallel. The closure captures owned data via `move`.
+- **Move Closures (`move ||`)**: Transfers ownership of captured variables into the thread's closure. Python captures references implicitly; Rust's `move` makes the transfer explicit and checkable.
+- **Shared Ownership (`Arc<T>`)**: Atomic reference counting enables multiple threads to share ownership of data. Python's GC handles this invisibly; `Arc` makes sharing explicit with predictable performance.
+- **Mutual Exclusion (`Mutex<T>`)**: Ensures only one thread accesses data at a time. Python's `threading.Lock` is the equivalent, but Rust's compiler forces you to use it when shared mutation is involved.
+- **Read-Write Lock (`RwLock<T>`)**: Allows many concurrent readers or one exclusive writer. Python has no stdlib `RwLock` — `threading.Lock` blocks all readers even when no write is happening.
+- **Condition Variable (`Condvar`)**: Lets threads wait for a condition and be notified when it changes. Python's `threading.Condition` is the same concept but with less ergonomic API.
+- **Scoped Threads (`thread::scope`)**: A unique Rust feature that lets threads borrow references from the parent, with the scope guaranteeing all threads finish before the scope exits.
+- **Data Race Prevention**: Rust's ownership system guarantees that data races cannot occur at compile time. The `Send` and `Sync` traits encode thread safety into the type system.
+- **Automatic Unlock (`MutexGuard` Drop)**: Rust's `Drop` trait automatically releases the mutex when the guard goes out of scope. No `finally` blocks needed — Python's `with` statement achieves the same but requires manual pairing.
+
+---
+
 ## Table of Contents
 
 1. [Project Overview](#1-project-overview)

@@ -6,6 +6,87 @@
 
 ---
 
+## Why This Project?
+
+### The Problem — Python Lists Are Flexible but Heavy
+
+```python
+# Python — flexible but each element is a full PyObject
+fruits = ["Orange", "Apple", "Banana"]
+fruits.append("Pear")
+```
+
+Python's `list` is the go-to for dynamic collections. But each element is a **heap-allocated PyObject** — 28+ bytes per entry plus the pointer. For large datasets (millions of rows), this memory overhead adds up fast. Sampling and shuffling also require copying or careful mutation.
+
+```
+Python list memory:
+┌─────┬─────┬─────┬─────┐
+│  *  │  *  │  *  │  *  │  ← pointers (8 bytes each)
+└─│───┴─│───┴─│───┴─│───┘
+  ▼     ▼     ▼     ▼
+┌────┐┌────┐┌────┐┌────┐
+│str ││str ││str ││str │  ← heap objects (28+ bytes each)
+└────┘└────┘└────┘└────┘
+Total: ~36 bytes per string
+```
+
+### The Rust Solution — Vec Is Compact and Fast
+
+```rust
+// Rust — contiguous memory, no pointer overhead
+let fruits = vec!["Orange", "Apple", "Banana"];
+```
+
+```
+Rust Vec memory:
+┌─────────┬─────────┬─────────┬─────────┐
+│ "Orange"│ "Apple" │ "Banana"│ "Pear"  │  ← contiguous &str pointers
+└─────────┴─────────┴─────────┴─────────┘
+Total: 8 bytes per &str (pointer + length)
+```
+
+`Vec<T>` stores elements in **contiguous memory** — cache-friendly iteration, no pointer chasing. The type is fixed at compile time (`Vec<&str>`), so every element is guaranteed to be the right type.
+
+---
+
+## What You'll Learn
+
+| # | Concept | Rust Type / Module | Python Equivalent | Purpose |
+|---|---------|--------------------|------------------|---------|
+| 1 | Dynamic arrays | `Vec<T>` | `list` | Type-safe, contiguous growable array |
+| 2 | Random generation | `rand::thread_rng()` | `random.Random()` | Random number generator |
+| 3 | Random ranges | `.gen_range()` | `random.randint()` | Generate random numbers in a range |
+| 4 | Random selection | `.choose()` | `random.choice()` | Pick a random element |
+| 5 | Shuffling | `.shuffle()` | `random.shuffle()` | Randomize element order |
+| 6 | External crates | `Cargo.toml` deps | `requirements.txt` | Add third-party libraries |
+| 7 | The SliceRandom trait | `rand::seq::SliceRandom` | N/A (built-in) | Import shuffle/choose methods |
+| 8 | Iterating with index | `.iter().enumerate()` | `enumerate()` | Loop with position tracking |
+
+## Concepts at a Glance
+
+### 1. `Vec<T>` — Dynamic Array
+Same concept as Python's `list`: a growable, heap-allocated collection. Unlike Python, Rust's `Vec` is **type-homogeneous** — all elements must be the same type `T`.
+
+### 2. `rand::thread_rng()` — Random Generator
+Like `random.Random()` in Python — creates a random number generator seeded by the OS. You pass `&mut rng` to methods that need randomness.
+
+### 3. `.gen_range()` — Random in Range
+`rng.gen_range(1..=10)` is like `random.randint(1, 10)` in Python. Uses Rust's range syntax.
+
+### 4. `.choose()` — Random Selection
+`fruits.choose(&mut rng)` picks one random element and returns `Option<&T>` — it could be `None` if the collection is empty.
+
+### 5. `.shuffle()` — In-Place Randomization
+`fruits.shuffle(&mut rng)` randomizes the order in place, just like `random.shuffle(fruits)`.
+
+### 6. External Crates via `Cargo.toml`
+In Python you `pip install rand`; in Rust you add `rand = "0.8"` under `[dependencies]` in `Cargo.toml`. Cargo downloads and compiles it automatically.
+
+### 7. The `SliceRandom` Trait
+`.shuffle()` and `.choose()` aren't built into `Vec` — they come from the `SliceRandom` trait in the `rand` crate. You must add `use rand::seq::SliceRandom;` to use them. This is Rust's **trait-based extension** pattern.
+
+---
+
 ## Table of Contents
 
 1. [Project Overview](#1-project-overview)
@@ -48,16 +129,6 @@ def make_salad():
 make_salad()
 # Output: Fruit salad: Grape, Banana, Peach, Apple
 ```
-
-### What You'll Learn
-
-| Rust Concept | Python Equivalent | Data Engineering Use |
-|---|---|---|
-| `Vec<&str>` | `list[str]` | Dynamic data collections |
-| `rand` crate | `random` module | Sampling, shuffling data |
-| `SliceRandom` trait | `random.shuffle()` | Randomizing data order |
-| Cargo dependencies | `requirements.txt` | Managing external packages |
-| `for` + `.iter()` + `.enumerate()` | `for i, x in enumerate(list)` | Iterating with indices |
 
 ---
 

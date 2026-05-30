@@ -2,7 +2,7 @@
 
 **Role**: You are a **senior Rust data engineer** building a comprehensive Rust course for **Python data engineers** who are new to Rust. Write every workshop as if you are pairing with a junior data engineer — compare each concept to its Python equivalent, explain *why* Rust works differently, and always connect back to real data-engineering use cases (pipelines, ETL, file processing, concurrent workloads, production systems).
 
-This file describes how to systematically maintain, extend, and improve the **Rust Tutorial — Learn by Doing** series. It ensures consistency, completeness, and a smooth learner experience across all 60 projects.
+This file describes how to systematically maintain, extend, and improve the **Rust Tutorial — Learn by Doing** series. It ensures consistency, completeness, and a smooth learner experience across all 61 projects.
 
 ---
 
@@ -88,6 +88,7 @@ RustTut/
 │   └── 02-RustJupyterNotebook/     ← evcxr Jupyter kernel
 ├── 09-ProductionSystems/          ← Section 9: production-grade systems
 │   ├── 01-Radish/                  ← Redis-compatible KV store (async TCP)
+│   ├── 02-AxumShop/                ← Axum web API (FastAPI-compatible shop)
 │   └── README.md                   ← Section overview
 ├── 10-ToolsAndFrameworks/         ← Section 10: essential Rust tools & frameworks
 │   ├── 01-Logging/                 ← Logging with log/env_logger/tracing
@@ -258,19 +259,56 @@ Always pick concepts that build on already‑covered ones. If a prerequisite has
 
 The workshop must be a Markdown file that follows this template. Every workshop serves as the **primary learning file** for that project — the learner reads this, not the complementary files.
 
+Every project README must start with a **motivation + table + concepts-explanation** block before the `---` separator. After the `---`, the original tutorial content follows untouched.
+
 ```markdown
 # 🦀 Project Name — Python to Rust Workshop
 
+*Subtitle: one-line description of what the project builds.*
+
+> **Test-driven approach**: This project includes a Cargo project with progressive
+> unit tests. Each function in `src/lib.rs` starts as a `todo!()` stub. As you
+> follow each section, replace `todo!()` with real code and run `cargo test` to
+> watch the pass count grow. Your goal: **all N tests pass**.
+
+---
+
+## Why This Project?
+
+### The Problem — [Python pain point]
+
+```python
+# Python code that shows the limitation
+```
+
+ASCII diagram showing the bottleneck / architecture issue.
+
+### The Rust Solution — [Rust advantage]
+
+```rust
+// Rust code that solves it
+```
+
+Brief 3-4 bullet list of Rust advantages.
+
+---
+
+## What You'll Learn
+
+| # | Concept | Rust Type / Module | Python Equivalent | Purpose |
+|---|---------|--------------------|------------------|---------|
+| 1 | Concept name | `crate::Module` | Python equivalent | Why it matters |
+
+## Concepts at a Glance
+
+### 1. Concept Name
+Explain with code snippets and Python comparisons. One paragraph per concept.
+
+---
+
 ## Table of Contents
 1. [Introduction](#1-introduction)
-2. [Prerequisites](#2-prerequisites)
-3. [Running the Python Version](#3-running-the-python-version)  ← skip for Type B
-4. [Concept: ...](#4-concept-...)   ← one section per concept
-5. [Concept: ...](#5-concept-...)
 ...
-X. [Putting It All Together](#X-putting-it-all-together)
-Y. [Complete Code Reference](#Y-complete-code-reference)
-Z. [Summary](#Z-summary)
 
 ## 1. Introduction
 Briefly describe the project, what it does (or what the Python script does for Type A), and which new Rust concepts will be learned. Include a data-engineering motivation.
@@ -309,12 +347,14 @@ Table listing the new concepts covered, with short descriptions and where they w
 ```
 
 **Important notes:**
+- **Every** project README must have the **Why This Project? / What You'll Learn / Concepts at a Glance** block prepended (before the `---` separator).
 - The "Concept" sections must come **before** the final assembly.
 - Every concept section must include a **Python comparison** — this is not optional.
 - For Type B projects (Cargo projects), skip Section 3 and instead explain the Rust code directly.
 - Use ASCII diagrams (`┌───┐` style) to illustrate ownership, borrowing, memory layout, data flow.
 - Include 2–3 exercises at the end with varying difficulty (easy / medium / hard).
 - Link to complementary `.md` files in a **Further Reading** section near the end.
+- Do **not** modify the original tutorial content after the `---` separator — only the prepended block may be added/edited.
 
 ---
 

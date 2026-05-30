@@ -6,6 +6,113 @@
 
 ---
 
+## Why This Project?
+
+### The Problem
+
+In Python, error handling is easy to get wrong. Using a string for status invites typos and runtime crashes. Exceptions propagate implicitly — you can forget to handle them:
+
+```python
+def parse_ticket(data):
+    status = data["status"]  # KeyError if missing
+    if status == "Opeen":    # Typo — no error until runtime
+        ...
+    return {"status": status}
+
+# Did parse_ticket succeed? Did it raise? No way to tell from the type!
+result = parse_ticket(row)
+# result could be a dict, or the function could have crashed
+```
+
+Python's `Optional` and exceptions are runtime-based. You don't know if a function returns `None` or raises until you run it. For data pipelines processing millions of records, a single unhandled `KeyError` or `ValueError` can crash the entire job.
+
+Python's `Enum` class helps, but `match`/`case` (Python 3.10+) is not exhaustive — the compiler won't warn you if you forget a variant.
+
+```
+Python error handling:
+  Function may: return value, return None, raise anything
+  Caller must: read docs, write try/except, guess which errors
+  No type-level guarantee → runtime surprises
+```
+
+### The Rust Solution
+
+Rust makes error handling explicit and exhaustive. `Result<T, E>` encodes success or failure in the return type. `match` checks all variants at compile time. `Option<T>` forces you to handle `None`:
+
+```rust
+#[derive(Debug)]
+enum Status { Open, InProgress, Resolved, Closed }
+
+fn parse_status(s: &str) -> Result<Status, String> {
+    match s {
+        "Open" => Ok(Status::Open),
+        "In Progress" => Ok(Status::InProgress),
+        "Resolved" => Ok(Status::Resolved),
+        "Closed" => Ok(Status::Closed),
+        other => Err(format!("Invalid status: {other}")),
+    }
+}
+
+let result = parse_status("Opeen");
+match result {
+    Ok(status) => println!("Got: {status:?}"),
+    Err(e) => eprintln!("Error: {e}"),  // Compiler forces this match!
+}
+```
+
+Every fallible function returns `Result`. Every nullable value returns `Option`. The compiler ensures you handle both cases — zero surprises at runtime.
+
+---
+
+## What You'll Learn
+
+| # | Concept | Rust Type / Module | Python Equivalent | Purpose |
+|---|---------|--------------------|------------------|---------|
+| 1 | Enums | `enum` | `Enum` / constants | Type-safe named variants |
+| 2 | match | `match` | `match` / `if/elif` | Exhaustive pattern matching |
+| 3 | Enums with Data | Variant fields | Dataclass variants | Variants holding values |
+| 4 | if let | `if let` | `isinstance` check | Match a single pattern concisely |
+| 5 | Option | `Option<T>` | `Optional[T]` / `None` | Handle missing or optional data |
+| 6 | Result | `Result<T, E>` | `try` / `except` | Recoverable errors with type info |
+| 7 | Custom Error Types | Error `enum` | Custom `Exception` | Rich, structured error information |
+| 8 | ? Operator | `?` | `raise` (implicit) | Propagate errors concisely |
+| 9 | thiserror | `thiserror` crate | Custom exceptions | Ergonomic derive macro for error types |
+| 10 | anyhow | `anyhow` crate | `raise Exception` | Simple, context-rich app-level errors |
+
+## Concepts at a Glance
+
+### 1. Enums
+Named variants like `enum Status { Open, InProgress, Resolved, Closed }`. Python: `class Status(Enum): OPEN = 1`. Rust's enums are type-safe — `Status::Open` is a distinct type, not an integer.
+
+### 2. match
+Exhaustive pattern matching — the compiler checks ALL variants are handled. Python 3.10+ `match`/`case` is not exhaustive. Rust's `match` forces you to cover every case or use `_`.
+
+### 3. Enums with Data
+Variants can hold values: `enum Source { Csv(String), Db { host: String, port: u16 } }`. Python: dataclass subclasses or `Union` types. Rust stores the tag + data in a compact layout.
+
+### 4. if let
+Shorthand for matching one variant: `if let Status::Open = s { ... }`. Python: `if isinstance(s, StatusOpen)`. Concise when you only care about one case.
+
+### 5. Option
+`Option<T>` is `Some(T)` or `None`. Python: `Optional[T]` or `None`. Rust forces you to handle `None` via `match`, `unwrap_or`, or `?` — no more `AttributeError: 'NoneType'`.
+
+### 6. Result
+`Result<T, E>` is `Ok(T)` or `Err(E)`. Python: function either returns or raises. Rust makes the error path explicit in the return type — callers must handle both possibilities.
+
+### 7. Custom Error Types
+Rich error enums with fields: `enum TicketError { EmptyTitle, TitleTooLong { max: usize, actual: usize } }`. Python: custom `Exception` subclasses. Rust's error types are more structured and matchable.
+
+### 8. ? Operator
+`let x = func()?;` returns early on error, unwrapping on success. Python: `raise` propagates implicitly. Rust's `?` makes error propagation visible in the code.
+
+### 9. thiserror
+`#[derive(Error)]` from the `thiserror` crate auto-implements `Display` and `Error` for custom error enums. Python: defining `class MyError(Exception): pass` is similarly ergonomic.
+
+### 10. anyhow
+`anyhow::Result<T>` provides simple error handling with `with_context` for app-level code. Python: raising `Exception("message")`. `anyhow` is for applications; `thiserror` is for libraries.
+
+---
+
 ## Table of Contents
 
 1. [Project Overview](#1-project-overview)

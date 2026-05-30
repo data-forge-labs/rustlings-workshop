@@ -22,6 +22,83 @@ In Python, the Global Interpreter Lock (GIL) prevents true parallel execution of
 
 In Python, `threading.Thread` and `queue.Queue` are the standard tools. Rust offers `std::thread`, `std::sync::mpsc`, and `std::sync::{Mutex, RwLock}` — faster, safer, and without a GIL.
 
+## Why This Project?
+
+### The Problem
+
+In Python, the Global Interpreter Lock (GIL) prevents true parallel thread execution. Your threads share the same CPU core no matter how many cores you have:
+
+```python
+import threading
+
+def worker(n):
+    print(f"Working on {n}")
+
+for i in range(8):
+    t = threading.Thread(target=worker, args=(i,))
+    t.start()
+# The GIL serializes all 8 threads onto ONE core!
+```
+
+```
+Python GIL:    ┌──────────────────────────┐
+Core 0:        | T1 | T2 | T3 | T4 | T5 |   (serialized)
+Core 1:        |          idle            |
+Core 2:        |          idle            |
+Core 3:        |          idle            |
+               └──────────────────────────┘
+```
+
+Beyond the GIL, Python offers no compile-time data race protection. A missing `threading.Lock()` around a shared counter silently produces wrong results.
+
+### The Rust Solution
+
+Rust gives you true OS threads with **no GIL** — all cores can run threads in parallel. Ownership rules prevent data races at compile time:
+
+```rust
+use std::thread;
+
+let counter = Arc::new(Mutex::new(0usize));
+let mut handles = vec![];
+
+for _ in 0..8 {
+    let c = Arc::clone(&counter);
+    handles.push(thread::spawn(move || {
+        for _ in 0..1000 {
+            *c.lock().unwrap() += 1;  // Compiler forces Mutex use
+        }
+    }));
+}
+```
+
+Without the `Mutex`, Rust wouldn't compile. With Python, you can forget the lock and only discover the bug in production.
+
+## What You'll Learn
+
+| # | Concept | Rust Type / Module | Python Equivalent | Purpose |
+|---|---------|--------------------|------------------|---------|
+| 1 | Thread Spawning | `std::thread::spawn` | `threading.Thread` | Create OS threads for parallel work |
+| 2 | Thread Joining | `.join()` | `.join()` | Wait for a thread to finish |
+| 3 | Move Closures | `move \|\|` | N/A (implicit) | Transfer ownership into a thread |
+| 4 | Scoped Threads | `thread::scope` | No equivalent | Borrow data across threads safely |
+| 5 | Message Passing | `mpsc::channel` | `queue.Queue` | Send data between threads |
+| 6 | Shared State | `Arc<Mutex<T>>` | `threading.Lock` | Safely mutate data across threads |
+| 7 | Read-Write Lock | `Arc<RwLock<T>>` | No stdlib equivalent | Multiple readers / one writer |
+| 8 | Data Race Prevention | Ownership rules | No compile-time equivalent | Catch concurrency bugs at compile time |
+
+## Concepts at a Glance
+
+- **Thread Spawning (`std::thread::spawn`)**: Creates a real OS thread that runs concurrently. Unlike Python's `threading.Thread`, there is no GIL — threads truly run in parallel on multi-core systems.
+- **Thread Joining (`.join()`)**: Blocks the calling thread until the spawned thread completes. Returns a `Result` with the thread's return value. Same semantics as Python's `.join()` but type-safe.
+- **Move Closures (`move ||`)**: Transfers ownership of captured variables into the thread. Python closures share references implicitly — Rust requires explicit `move` to avoid lifetime ambiguity.
+- **Scoped Threads (`thread::scope`)**: A Rust innovation with no Python equivalent. Scoped threads can borrow references from the parent without `move`, and the scope guarantees all threads finish before the scope exits.
+- **Message Passing (`mpsc::channel`)**: Multiple-producer, single-consumer channels for thread communication. Python's `queue.Queue` serves the same purpose but without static channel type guarantees.
+- **Shared State (`Arc<Mutex<T>>`)**: `Arc` provides atomic reference counting for shared ownership across threads; `Mutex` ensures exclusive access. Python uses `threading.Lock` but the compiler won't warn if you forget it.
+- **Read-Write Lock (`Arc<RwLock<T>>`)**: Allows multiple concurrent readers or one exclusive writer. Python has no stdlib equivalent — `threading.Lock` blocks readers unnecessarily.
+- **Data Race Prevention**: Rust's ownership and borrowing rules prevent data races at compile time. Python's GIL prevents raw data races but not race conditions — and the GIL limits parallelism.
+
+---
+
 ## 2. Prerequisites
 
 - Ownership and borrowing from [TicketV1](../../02-Ownership/01-TicketV1/README.md)

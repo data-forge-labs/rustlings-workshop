@@ -5,6 +5,88 @@
 > follow each section, replace `todo!()` with real code and run `cd workshop && cargo test` to
 > watch the pass count grow. Your goal: **all 17 tests pass**.
 
+## Why This Project?
+
+### The Problem
+
+Pandas is the go-to tool for Python data engineers, but it comes with hidden costs: memory overhead (DataFrames copy data), type coercion surprises (strings silently become NaN), and a "black box" abstraction:
+
+```python
+import pandas as pd
+
+df = pd.read_csv("fruits.csv")
+avg = df.groupby("fruit")["price"].mean()
+```
+
+```
+Python/pandas memory model:
+  CSV file -> pd.DataFrame (copies data in memory)
+  -> groupby (splits into groups, copies again)
+  Types inferred at runtime: "123" might become int or stay str
+  No compile-time validation -> bugs surface in production at 3 AM
+```
+
+For production ETL pipelines processing gigabytes daily, these overheads compound — a 2x memory multiplier on a 10 GB dataset wastes resources and money.
+
+### The Rust Solution
+
+Rust builds the same operations from explicit, zero-cost primitives — no hidden allocations, no type surprises, compile-time checked:
+
+```rust
+use serde::Deserialize;
+
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+pub struct FruitRecord {
+    pub fruit: String,
+    pub year: u32,       // u32 can never become NaN
+    pub price: f64,
+}
+
+pub fn mean_price_per_fruit(records: &[FruitRecord]) -> Vec<(String, f64)> {
+    let mut sums: HashMap<&str, (f64, usize)> = HashMap::new();
+    for r in records {
+        let entry = sums.entry(&r.fruit).or_insert((0.0, 0));
+        entry.0 += r.price;
+        entry.1 += 1;
+    }
+    sums.into_iter()
+        .map(|(fruit, (sum, count))| (fruit.to_string(), sum / count as f64))
+        .collect()
+}
+```
+
+Every row is verified at compile time — a CSV containing `"abc"` in the `price` column won't compile. You get pandas-level expressiveness with C-level performance and Rust-level safety.
+
+## What You'll Learn
+
+| # | Concept | Rust Type / Module | Python Equivalent | Purpose |
+|---|---------|--------------------|------------------|---------|
+| 1 | Serde derive macros | `#[derive(Serialize, Deserialize)]` | pydantic `BaseModel` | Define typed data structures from CSV schema |
+| 2 | CSV deserialization | `csv::Reader::deserialize()` | `pd.read_csv()` | Stream CSV rows into typed structs |
+| 3 | HashMap entry API | `HashMap::entry().or_insert()` | `defaultdict` / `dict.setdefault()` | GroupBy aggregation with sum/count |
+| 4 | Iterator filter | `.iter().filter().cloned().collect()` | `df[df["price"] > x]` | Filter records by predicate |
+| 5 | f64 partial_cmp | `.sort_by(\|a, b\| a.partial_cmp(b))` | `df.describe()` | Compute min/max/mean/count statistics |
+| 6 | CSV serialization | `csv::Writer::serialize()` | `df.to_csv()` | Write structs back to CSV format |
+| 7 | Result error handling | `Result<Vec<T>, String>` | `try/except` | Propagate parse and IO errors |
+
+## Concepts at a Glance
+
+**1. Serde derive macros** — Python's pydantic uses `BaseModel` with type annotations; Rust's `#[derive(Serialize, Deserialize)]` generates serialisation code at compile time. Both map fields by name, but Rust rejects type mismatches at compile time rather than at runtime.
+
+**2. CSV deserialization** — `pd.read_csv()` loads everything into memory. Rust's `csv::Reader::deserialize()` returns a lazy iterator — rows are parsed on demand, streaming-friendly. Type mismatches fail immediately at the first bad row, not silently with NaN coercion.
+
+**3. HashMap entry API** — Python's `defaultdict(float)` auto-initialises missing keys. Rust's `entry(key).or_insert(default)` does the same — it returns a mutable reference to the value (inserting a default if absent), which you then update in place.
+
+**4. Iterator filter** — Pandas boolean indexing (`df[df["price"] > x]`) is concise but opaque. Rust's `.iter().filter(|r| r.price > threshold).collect()` makes every step explicit and is lazy — nothing allocates until `.collect()`.
+
+**5. f64 partial_cmp** — Python's `list.sort()` works on floats. Rust requires `partial_cmp` because `f64` has NaN which breaks total ordering. The compiler forces you to handle an edge case Python silently gets wrong.
+
+**6. CSV serialization** — `df.to_csv()` writes the entire DataFrame. Rust's `csv::Writer::serialize()` writes rows one at a time to any `Write` sink — files, buffers, network streams. Serde derives ensure output matches input structure.
+
+**7. Result error handling** — Python raises exceptions. Rust's `Result` is a return value — callers must handle errors (even if just with `?` to propagate). This makes error paths visible in the function signature.
+
+---
+
 ## Table of Contents
 
 1. [Introduction](#1-introduction)

@@ -2,6 +2,79 @@
 
 > **Test-driven approach**: This project includes a Cargo project with progressive unit tests. Each function in `workshop/src/lib.rs` starts as a `todo!()` stub. As you follow each section, replace `todo!()` with real code and run `cd workshop && cargo test` to watch the pass count grow. Your goal: **all 14 tests pass**.
 
+## Why This Project?
+
+### The Problem
+
+Distributed systems are notoriously hard to reason about. Python doesn't provide any tooling to model consistency trade-offs — you must read documentation and hope you implement Cassandra's `QUORUM` correctly. The CAP theorem is taught conceptually, but you rarely get to *code* it:
+
+```python
+# In Python, there's no way to represent consistency guarantees in types
+# You just call the database client and hope for the best:
+
+import cassandra
+session = cassandra.connect(["node1", "node2"])
+session.execute("SELECT * FROM users WHERE id = 1", consistency_level="ONE")
+# Is this eventually consistent? Strongly consistent? The type system can't tell you.
+```
+
+```
+Python:                      Rust:
+┌──────────────────┐        ┌──────────────────────┐
+│ Read from DB     │        │ CAP enum: CP or AP?  │
+│ Hope it's latest │        │ compile-time check    │
+└──────────────────┘        └──────────────────────┘
+```
+
+### The Rust Solution
+
+Rust's algebraic types (`enum` + `match`) let you model consistency models precisely, forcing you to handle every case:
+
+```rust
+pub struct CAPConfig {
+    pub consistency: bool,
+    pub availability: bool,
+    pub partition_tolerance: bool,
+}
+
+pub fn validate_cap_pair(
+    consistency: bool,
+    availability: bool,
+    partition_tolerance: bool,
+) -> &'static str {
+    match (consistency, availability, partition_tolerance) {
+        (true, true, false) => "CA",
+        (true, false, true) => "CP",
+        (false, true, true) => "AP",
+        _ => "Invalid",   // match forces exhaustive handling!
+    }
+}
+```
+
+The `match` exhaustiveness check ensures you handle all CAP combos — no silent fallthrough.
+
+## What You'll Learn
+
+| # | Concept | Rust Feature | Python Equivalent | Purpose |
+|---|---------|--------------|------------------|---------|
+| 1 | CAP Theorem | `match` on bools | `if/elif` | Model consistency/availability trade-offs |
+| 2 | Eventual Consistency | `HashSet` dedup | `set()` dedup | Simulate convergence |
+| 3 | CRDT Merge | Vector union | `set` union | Conflict-free data merging |
+| 4 | Leader Election | Highest-ID logic | `max(range)` | Select a coordinating node |
+| 5 | Quorum Reads | `HashMap` counting | `collections.Counter` | Read with replica agreement |
+| 6 | Exhaustive Matching | `match` arms | No equivalent | Force handling all states |
+
+## Concepts at a Glance
+
+- **CAP Theorem**: Rust's `match` on boolean combinations forces you to handle all 8 possible CAP combinations. Python's `if/elif` chains can silently miss a case. The `_` arm catches all invalid combinations.
+- **Eventual Consistency**: Simulated by deduplicating writes — given enough time without new writes, all replicas converge to the same set of values. Python uses `set()`; Rust uses `HashSet.insert()` within a loop.
+- **CRDT Merge**: Conflict-free Replicated Data Types merge automatically via union. Two replicas' value sets are combined, and repeated merges are idempotent. Python's `set.union()` does the same thing.
+- **Leader Election**: A simplified bully algorithm where the highest-ID node becomes leader. In production, Raft or Paxos would be used, but this demonstrates the concept concisely.
+- **Quorum Reads**: Given writes to replicas, find the value that appears at least `quorum_size` times. Uses `HashMap` for frequency counting — equivalent to Python's `collections.Counter`.
+- **Exhaustive Matching**: Rust's `match` ensures every case is covered. In distributed systems, unhandled edge cases cause production outages — exhaustive matching catches them at compile time.
+
+---
+
 ## Table of Contents
 1. [Introduction](#1-introduction)
 2. [Prerequisites](#2-prerequisites)

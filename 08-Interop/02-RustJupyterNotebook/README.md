@@ -5,6 +5,79 @@
 > follow each section, replace `todo!()` with real code and run `cd workshop && cargo test` to
 > watch the pass count grow. Your goal: **all 21 tests pass**.
 
+## Why This Project?
+
+### The Problem
+
+Jupyter notebooks have transformed Python data workflows, but Rust users are left out — there is no built-in way to run Rust code interactively in a notebook:
+
+```
+Python Jupyter workflow:
+  Write pandas code in a cell
+  Press Shift+Enter
+  See DataFrame rendered as HTML table
+  Iterate: tweak, re-run, inspect
+  Ship the notebook as documentation
+
+Rust before evcxr:
+  Write code in main.rs
+  cargo run  <- 3-second compile cycle
+  See text output
+  Edit, re-compile, re-run  <- friction!
+```
+
+Data exploration thrives on interactivity — tweak a filter, re-plot, inspect intermediate results. Without a notebook kernel, Rust's compile-edit-run cycle makes exploration tedious.
+
+### The Rust Solution
+
+The `evcxr_jupyter` kernel brings Rust into Jupyter. Write Rust code in notebook cells, see rich HTML output (tables, plots), and iterate without recompiling:
+
+```rust
+// In a Jupyter notebook cell with evcxr:
+:dep rust_jupyter_notebook = { path = "." }
+use rust_jupyter_notebook::*;
+
+let df = SimpleDataFrame::new(
+    vec!["city".to_string(), "pop".to_string()],
+    vec![
+        vec!["Lisbon".to_string(), "504718".to_string()],
+        vec!["Porto".to_string(), "249633".to_string()],
+    ],
+);
+":html " + &df.to_html()
+```
+
+This project builds the Rust-side toolkit — `Matrix<T>`, `SimpleDataFrame`, and `range_f64` — so you can display and manipulate data interactively in notebooks, combining Rust's performance with Jupyter's iterative workflow.
+
+## What You'll Learn
+
+| # | Concept | Rust Type / Module | Python Equivalent | Purpose |
+|---|---------|--------------------|------------------|---------|
+| 1 | Generic struct with impl | `Matrix<T>` | `numpy.ndarray` | Type-safe 2D matrix with flat Vec storage |
+| 2 | Generic trait bounds | `T: std::fmt::Debug` | Duck typing | Restrict generic type parameters at compile time |
+| 3 | Safe indexing with Option | `Matrix::get() -> Option<&T>` | `try/except IndexError` | Bounds-checked element access |
+| 4 | HTML string rendering | `to_html() -> String` | `df._repr_html_()` | Rich table display in Jupyter |
+| 5 | SimpleDataFrame | `SimpleDataFrame` struct | `pandas.DataFrame` | Columnar data with row-oriented storage |
+| 6 | Float range generation | `range_f64()` function | `numpy.arange()` | Generate sequences of floating-point numbers |
+| 7 | evcxr Jupyter kernel | `evcxr_jupyter` | `ipykernel` | Interactive Rust in notebook cells |
+| 8 | Crate discovery | `list_interactive_crates()` | pip-installed libraries | Plotters, ndarray, polars, rayon for notebooks |
+
+## Concepts at a Glance
+
+**1-2. Generic struct with impl** — Python's NumPy arrays are typed per-instance (dtype). Rust's `Matrix<T>` is generic at compile time — a `Matrix<f64>` and `Matrix<i32>` are different types. The `T: std::fmt::Debug` bound ensures we can format values for HTML display, similar to Python's `__repr__`.
+
+**3. Safe indexing with Option** — Python raises `IndexError` for out-of-bounds access. Rust's `get()` returns `Option<&T>` — `Some(&value)` or `None`. This forces callers to handle missing values at compile time, preventing runtime crashes.
+
+**4. HTML string rendering** — Python DataFrames auto-render in Jupyter via `_repr_html_()`. Rust requires explicit `.to_html()` calls and the `:html` directive. More manual but gives full control over the output format.
+
+**5. SimpleDataFrame** — pandas stores columnar data internally (columnar arrays). Rust's `SimpleDataFrame` stores row-oriented `Vec<Vec<String>>`. All values are strings deliberately — this maps how raw CSV or JSON data arrives before type conversion.
+
+**6. Float range generation** — Python's `range()` works only on integers; `numpy.arange()` handles floats. Rust's `..` syntax is integer-only too. `range_f64()` fills the gap with a simple while-loop, usable as x-axis values for `plotters` charts.
+
+**7-8. evcxr Jupyter kernel** — Python has `ipykernel` built into every notebook installation. Rust's `evcxr_jupyter` provides the same cell-by-cell execution model. `:dep` directives load crates per cell, similar to `pip install` but scoped to the notebook session.
+
+---
+
 ## Table of Contents
 
 1. [Introduction](#1-introduction)
