@@ -1,5 +1,7 @@
 This tutorial provides a comprehensive guide to working with `VecDeque` in Rust, using the provided code snippet to create a fruit salad with shuffling and double-ended queue operations. We'll explain key concepts like `VecDeque`, its differences from `Vec` and `LinkedList`, and the significance of conversions and operations in the program. The program will be built step-by-step from a simple version to an advanced one, covering both basic and advanced Rust concepts, including traits, iterators, and randomization. We'll also address the questions in the code comments and provide additional challenges to deepen your understanding.
 
+> **Test-driven approach**: This project includes a Cargo project with progressive unit tests. Each function in `src/lib.rs` starts as a `todo!()` stub. As you follow each section, replace `todo!()` with real code and run `cargo test` to watch the pass count grow. Your goal: **all 5 tests pass**.
+
 ---
 
 ## Table of Contents

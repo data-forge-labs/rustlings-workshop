@@ -1,5 +1,7 @@
 This tutorial provides a comprehensive guide to working with arrays (`[T; N]`) in Rust, focusing on their use in a fruit salad program similar to the previous examples. We'll explain key concepts like arrays, their differences from other collections like `Vec`, `VecDeque`, and `LinkedList`, and demonstrate their use in a program that shuffles and manipulates a fixed-size list of fruits. The program will be built step-by-step from a simple version to an advanced one, covering both basic and advanced Rust concepts, including traits, iterators, randomization, and error handling. We'll include reflection questions to mirror the format of the previous tutorials and provide additional challenges to deepen your understanding.
 
+> **Test-driven approach**: This project includes a Cargo project with progressive unit tests. Each function in `src/lib.rs` starts as a `todo!()` stub. As you follow each section, replace `todo!()` with real code and run `cargo test` to watch the pass count grow. Your goal: **all 7 tests pass**.
+
 ---
 
 ## Table of Contents

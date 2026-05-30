@@ -1,5 +1,7 @@
 This tutorial provides a comprehensive guide to working with `HashMap` in Rust, using the provided code snippet to calculate the frequency of numbers in a vector. We'll explain key concepts like `HashMap`, the `entry` API, `or_insert`, and the use of `BTreeMap` for sorting. The program will be built step-by-step from a simple version to an advanced one, covering both basic and advanced Rust concepts, including traits, ownership, and iteration. We'll also address the challenge of sorting the result by frequency and provide additional challenges to deepen your understanding.
 
+> **Test-driven approach**: This project includes a Cargo project with progressive unit tests. Each function in `src/lib.rs` starts as a `todo!()` stub. As you follow each section, replace `todo!()` with real code and run `cargo test` to watch the pass count grow. Your goal: **all 7 tests pass**.
+
 ---
 
 ## Table of Contents

@@ -1,5 +1,7 @@
 This tutorial provides a comprehensive guide to working with `LinkedList` in Rust, using the provided code snippet to create a fruit salad with shuffling and list operations. We'll explain key concepts like `LinkedList`, its differences from `Vec` and `VecDeque`, and the significance of conversions and operations in the program. The program will be built step-by-step from a simple version to an advanced one, covering both basic and advanced Rust concepts, including traits, iterators, randomization, and memory considerations. We'll address the reflection questions in the code comments and provide additional challenges to deepen your understanding.
 
+> **Test-driven approach**: This project includes a Cargo project with progressive unit tests. Each function in `src/lib.rs` starts as a `todo!()` stub. As you follow each section, replace `todo!()` with real code and run `cargo test` to watch the pass count grow. Your goal: **all 4 tests pass**.
+
 ---
 
 ## Table of Contents

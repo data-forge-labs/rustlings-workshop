@@ -1,6 +1,8 @@
 # Rust Collections
 ### Collections in Rust
 
+> **Test-driven approach**: This project includes a Cargo project with progressive unit tests. Each function in `src/lib.rs` starts as a `todo!()` stub. As you follow each section, replace `todo!()` with real code and run `cargo test` to watch the pass count grow. Your goal: **all 8 tests pass**.
+
 Here are several ways to define a collection of fruits in Rust, mirroring the provided list:
 
 #### 1. **Using a Constant Array (`[&str; 10]`)**

@@ -1,5 +1,7 @@
 # HashMap Language Project
 
+> **Test-driven approach**: This project includes a Cargo project with progressive unit tests. Each function in `src/lib.rs` starts as a `todo!()` stub. As you follow each section, replace `todo!()` with real code and run `cargo test` to watch the pass count grow. Your goal: **all 6 tests pass**.
+
 ## Objective
 
 This project demonstrates the practical use of Rust's HashMap data structure by creating a program that calculates and normalizes weights for programming languages based on their creation years. Through this project, you'll learn how to:
