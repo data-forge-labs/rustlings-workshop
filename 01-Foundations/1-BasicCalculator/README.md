@@ -2,6 +2,8 @@
 
 *A hands-on workshop that teaches Rust fundamentals by building a command-line calculator — all concepts mapped to Python equivalents.*
 
+> **Test-driven approach**: This project includes a Cargo project with progressive unit tests. Each `src/lib.rs` function starts as a `todo!()` stub. As you follow each section of this tutorial, replace `todo!()` with real code and run `cargo test` to watch the pass count grow. Your goal: **all 24 tests pass**.
+
 ---
 
 ## Table of Contents
