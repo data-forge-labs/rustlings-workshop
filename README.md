@@ -9,14 +9,15 @@ RustTut/
 ├── README.md                        ← this file
 ├── AGENTS.md                        ← AI workshop designer instructions
 ├── .devcontainer/                   ← preconfigured Rust dev environment
-├── 0-Intro/  … 2-BasicCalculator/   ← Section 1: Foundations
-├── 3-TicketV1/ … 38-OwnershipLifetimes/  ← Section 2: Ownership
-├── 6-TicketManagement/ … 36-MutableFruitSalad/  ← Section 3: Collections
-├── 53-CSVCookbook/ … 56-DataManagementLessonReflection/  ← Section 4: File I/O
-├── 7-Threads/ … 52-ConcurrencyLessonReflection/  ← Section 5: Concurrency
-├── 14-CLISalad/ … 33-CustomCLIFruitSalad/  ← Section 6: CLI & Tools
-├── 35-SafeAndUnsafe/ … 43-SecurityLessonReflection/  ← Section 7: Security
-└── 57-ExploringPandas/ … 58-RustJupyterNotebook/  ← Section 8: Interop
+├── 01-Foundations/                  ← Section 1 (projects 0,1,2,32)
+├── 02-Ownership/                    ← Section 2 (projects 3,4,5,37,38)
+├── 03-Collections/                  ← Section 3 (projects 6,9-13,15-19,23,28,30,36)
+├── 04-FileIO/                       ← Section 4 (projects 53-56)
+├── 05-Concurrency/                  ← Section 5 (projects 7,8,34,44-52)
+├── 06-CLIAndTools/                  ← Section 6 (projects 14,20-22,24-27,29,31,33)
+├── 07-Security/                     ← Section 7 (projects 35,39-43)
+├── 08-Interop/                      ← Section 8 (projects 57,58)
+└── 09-ProductionSystems/           ← Section 9 (project 59)
 ```
 
 The course is organized into **8 sections** designed for a Python data engineer moving to Rust. Each section starts with tutorial-style projects (read `.md` files, write code alongside) and progresses to hands-on Cargo projects (build and run complete programs).
@@ -37,6 +38,7 @@ The course is carefully sequenced so each concept is introduced by one source an
 | 6 — CLI & Tools | CLAP, petgraph, Dijkstra, PageRank, Neo4j | 14, 20–22, 24–27, 29, 31, 33 |
 | 7 — Security | Safe vs unsafe, crypto, security model | 35, 39–43 |
 | 8 — Interop | evcxr, Jupyter, pandas bridge | 57, 58 |
+| 9 — Production Systems | Tokio, async, TCP, RESP protocol | 59 (Radish) |
 
 **How to use this table:** Start from Section 1 and work forward. Within each section, start with the lower-numbered projects (they introduce the concepts) and then move to the higher-numbered ones (they apply and deepen them).
 
@@ -175,6 +177,14 @@ Projects are grouped into **sections** that map concepts a Python data engineer 
 | 57 | **ExploringPandas** — Rust meets pandas | DataFrame operations, Python/Rust interop, filtering/grouping, matplotlib |
 | 58 | **RustJupyterNotebook** — interactive Rust with evcxr | `evcxr` Jupyter kernel, interactive Rust, `plotters`/`ndarray`/`rayon` |
 
+### Section 9: Production Systems — Building Real-World Services
+
+*Production-grade Rust: building networked services, async I/O, wire protocols, and in-memory data stores.*
+
+| # | Project | Rust Topics Covered |
+|---|---------|-------------------|
+| 59 | **Radish** — Redis-compatible KV store | `tokio` async, RESP protocol, TCP networking, `Rc<RefCell>`, `BytesMut`, TTL expiry |
+
 ---
 
 ## Prerequisites
@@ -192,7 +202,7 @@ Each numbered folder is a standalone Rust project with a `Cargo.toml` and `src/`
 The `.devcontainer/` folder at the root provides a preconfigured Rust environment with all dependencies and the `evcxr_jupyter` kernel (for notebooks). Open the repo root in VS Code and click **"Reopen in Container"** when prompted. Then:
 
 ```bash
-cd <project-number>
+cd <section>/<project-number-ProjectName>
 cargo run
 ```
 
@@ -200,7 +210,7 @@ cargo run
 
 ```bash
 # Build and run any project with cargo
-cd 9-VectorFruitSalad
+cd 03-Collections/9-VectorFruitSalad
 cargo build
 cargo run
 
@@ -212,7 +222,7 @@ make run
 
 ```bash
 # Some projects can be compiled without cargo
-cd 1-MasterMind
+cd 01-Foundations/1-MasterMind
 rustc master_mind.rs && ./master_mind
 ```
 

@@ -553,4 +553,4 @@ fn main() {
 
 ### Next Project
 
-Proceed to [5-TicketV2](../5-TicketV2/workshop.md) to learn about **enums** and **error handling with `Result`** — essential for production data pipelines.
+Proceed to [5-TicketV2](../02-Ownership/5-TicketV2/workshop.md) to learn about **enums** and **error handling with `Result`** — essential for production data pipelines.

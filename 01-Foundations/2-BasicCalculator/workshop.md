@@ -49,7 +49,7 @@ We'll build a **command-line calculator** that can:
 
 ## 2. Prerequisites
 
-- Rust installed (see [Project 0: Intro](../0-Intro/workshop.md))
+- Rust installed (see [Project 0: Intro](../01-Foundations/0-Intro/workshop.md))
 - Basic Python knowledge
 - Familiarity with `cargo new` and `cargo run`
 
@@ -1114,4 +1114,4 @@ fn main() {
 
 ### Next Project
 
-Proceed to [1-MasterMind](../1-MasterMind/master_mind.md) to solidify these concepts with a game, then [3-TicketV1](../3-TicketV1/workshop.md) to learn about **ownership** — Rust's most unique and important feature.
+Proceed to [1-MasterMind](../01-Foundations/1-MasterMind/master_mind.md) to solidify these concepts with a game, then [3-TicketV1](../02-Ownership/3-TicketV1/workshop.md) to learn about **ownership** — Rust's most unique and important feature.

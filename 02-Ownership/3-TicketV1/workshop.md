@@ -50,7 +50,7 @@ We'll build a **ticket tracking system** (like Jira or Trello) that:
 
 ## 2. Prerequisites
 
-- Completed [Basic Calculator](../2-BasicCalculator/workshop.md)
+- Completed [Basic Calculator](../01-Foundations/2-BasicCalculator/workshop.md)
 - Understand integers, `if/else`, loops
 - Familiar with `cargo run`, `cargo test`
 
@@ -1110,4 +1110,4 @@ println!("Length: {}", len);   // ✅ len is valid (copy)
 
 ### Next Project
 
-Proceed to [4-Traits](../4-Traits/workshop.md) to learn about **traits** — Rust's version of interfaces and protocols.
+Proceed to [4-Traits](../02-Ownership/4-Traits/workshop.md) to learn about **traits** — Rust's version of interfaces and protocols.

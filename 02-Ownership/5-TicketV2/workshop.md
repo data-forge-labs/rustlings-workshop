@@ -860,4 +860,4 @@ fn main() -> Result<(), TicketError> {
 
 ### Next Project
 
-Proceed to [6-TicketManagement](../6-TicketManagement/workshop.md) for **collections, iterators, and HashMap** — essential tools for data pipelines.
+Proceed to [6-TicketManagement](../03-Collections/6-TicketManagement/workshop.md) for **collections, iterators, and HashMap** — essential tools for data pipelines.

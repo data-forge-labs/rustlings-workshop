@@ -61,8 +61,8 @@ make_salad()
 
 ## 2. Prerequisites
 
-- Completed [Basic Calculator](../2-BasicCalculator/workshop.md)
-- Familiar with `Vec<T>` from [TicketManagement](../6-TicketManagement/workshop.md)
+- Completed [Basic Calculator](../01-Foundations/2-BasicCalculator/workshop.md)
+- Familiar with `Vec<T>` from [TicketManagement](../03-Collections/6-TicketManagement/workshop.md)
 - Understand `for` loops and `if/else`
 
 ---
@@ -470,4 +470,4 @@ Vectors in Rust = Lists in Python. The core operations are the same, but Rust gi
 
 ### Next Project
 
-Proceed to [10-ArrayFruitSalad](../10-ArrayFruitSalad/workshop.md) to compare **arrays** vs **vectors** in Rust.
+Proceed to [10-ArrayFruitSalad](../03-Collections/10-ArrayFruitSalad/workshop.md) to compare **arrays** vs **vectors** in Rust.

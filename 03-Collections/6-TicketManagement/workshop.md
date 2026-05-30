@@ -780,4 +780,4 @@ fn main() {
 
 ### Next Project
 
-Proceed to [7-Threads](../7-Threads/workshop.md) for **concurrency** — running data pipelines in parallel.
+Proceed to [7-Threads](../05-Concurrency/7-Threads/workshop.md) for **concurrency** — running data pipelines in parallel.

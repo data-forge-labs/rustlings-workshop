@@ -40,7 +40,7 @@ MasterMind is a classic code-breaking game:
 
 ## 2. Prerequisites
 
-- Completed [Basic Calculator](../2-BasicCalculator/workshop.md)
+- Completed [Basic Calculator](../01-Foundations/2-BasicCalculator/workshop.md)
 - Rust installed and working
 - Basic familiarity with `cargo run`
 
@@ -214,4 +214,4 @@ Follow the detailed guide in [master_mind.md](./master_mind.md) to build the gam
 
 ### Next Project
 
-Proceed to [3-TicketV1](../3-TicketV1/workshop.md) to master **ownership** — Rust's most important and unique concept.
+Proceed to [3-TicketV1](../02-Ownership/3-TicketV1/workshop.md) to master **ownership** — Rust's most important and unique concept.
