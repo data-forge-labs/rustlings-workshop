@@ -2,7 +2,7 @@
 
 *A hands-on workshop that teaches Strings, Vectors, Structs, Option, Iterators, and I/O by building a MasterMind code-breaking game.*
 
-> **Test-driven approach**: This project includes a Cargo project with progressive unit tests. Each function in `workshop/src/lib.rs` starts as a `todo!()` stub. As you follow each section, replace `todo!()` with real code and run `cd workshop && cargo test` to watch the pass count grow. Your goal: **all 30 tests pass**.
+> **Test-driven approach**: This project includes two Cargo projects with progressive unit tests. The **basic** workshop (`workshop/`) implements the core game; the **advanced** workshop (`workshop/advanced/`) adds modules, CLI args with `clap`, and documentation. Each function in `src/lib.rs` starts as a `todo!()` stub. Run `cd workshop && cargo test` (basic) or `cd workshop/advanced && cargo test` (advanced) to watch the pass count grow. Your goal: **all 30 tests pass (basic) and all tests pass (advanced)**.
 
 ---
 
@@ -120,10 +120,11 @@ Items are private by default. Prefix with `pub` to expose them. Controls the pub
 2. [Prerequisites](#2-prerequisites)
 3. [How to Use This Workshop](#3-how-to-use-this-workshop)
 4. [Python vs Rust Concepts in This Project](#4-python-vs-rust-concepts-in-this-project)
-5. [Step-by-Step Guide](#5-step-by-step-guide)
-6. [Summary](#6-summary)
-7. [Detailed Step-by-Step Guide (from master_mind.md)](#7-detailed-step-by-step-guide-from-mastermindmd)
-8. [Advanced Exercise (from master-mind-advanced.md)](#8-advanced-exercise-from-master-mind-advancedmd)
+5. [Basic Workshop (workshop/)](#5-basic-workshop-workshop)
+6. [Advanced Workshop (workshop/advanced/)](#6-advanced-workshop-workshopadvanced)
+7. [Detailed Step-by-Step Guide (Basic)](#7-detailed-step-by-step-guide-basic)
+8. [Advanced Exercise Guide](#8-advanced-exercise-guide)
+9. [Summary](#9-summary)
 
 ---
 
@@ -160,11 +161,23 @@ MasterMind is a classic code-breaking game:
 
 ## 3. How to Use This Workshop
 
-This project has a **detailed step-by-step guide** merged into Section 7 below. Here's the quick path:
+This project has two separate workshops:
+
+### Basic — `workshop/`
+
+Build the core MasterMind game with structs, Vec, Option, and iterators. Start here.
 
 1. **Read the concept overview** in Section 4 below — maps each Rust concept to Python
-2. **Follow the detailed guide** in [Section 7](#7-detailed-step-by-step-guide-from-mastermindmd) for the full step-by-step implementation
-3. **Build the game** yourself, referring back to concepts as needed
+2. **Follow the detailed guide** in [Section 7](#7-detailed-step-by-step-guide-basic) for the full step-by-step implementation
+3. **Build the game** with `cd workshop && cargo run`
+
+### Advanced — `workshop/advanced/`
+
+Refactor the game into a library + binary crate with `clap` CLI args and documentation. Complete the basic version first.
+
+1. **Read** [Section 8](#8-advanced-exercise-guide) for module organization, `clap`, and doc concepts
+2. **Browse the stub files** in `workshop/advanced/src/` (lib.rs, main.rs, secret.rs, game.rs)
+3. **Build** with `cd workshop/advanced && cargo run -- --max-attempts 15`
 
 ---
 
@@ -292,9 +305,9 @@ match find_item(&data, "x") {
 
 ---
 
-## 5. Step-by-Step Guide
+## 5. Basic Workshop (workshop/)
 
-Follow the detailed guide in [Section 7](#7-detailed-step-by-step-guide-from-mastermindmd) to build the game. Key sections:
+The `workshop/` directory contains the basic MasterMind game. Follow the detailed guide in [Section 7](#7-detailed-step-by-step-guide-basic). Key sections:
 
 1. **Setup:** Create project, add dependencies (`rand` crate)
 2. **Variables & Types:** Declare game constants and state
@@ -324,14 +337,20 @@ Follow the detailed guide in [Section 7](#7-detailed-step-by-step-guide-from-mas
 | Console I/O | `io::stdin().read_line()`, `println!` |
 | `rand` crate | Generate random secret code |
 
+**Advanced workshop extra concepts:**
+| Concept | How Used |
+|---------|----------|
+| `mod` / `pub` | Split code into `secret.rs`, `game.rs`, `lib.rs` modules |
+| `clap::Parser` | Parse `--max-attempts` CLI argument |
+| `///` docs | Document structs and methods, `cargo doc --open` |
+| `#[cfg(test)]` | Unit tests alongside implementation code |
+
 ### Further Reading
 
-The detailed guides have been merged into this README:
-
-| Section | Topics |
-|---------|--------|
-| [Section 7](#7-detailed-step-by-step-guide-from-mastermindmd) | Full step-by-step guide with all concept explanations |
-| [Section 8](#8-advanced-exercise-from-master-mind-advancedmd) | Advanced features and extensions for the game |
+| Section | Workshop | Topics |
+|---------|----------|--------|
+| [Section 7](#7-detailed-step-by-step-guide-basic) | Basic (`workshop/`) | Full step-by-step guide: structs, Vec, Option, iterators, I/O |
+| [Section 8](#8-advanced-exercise-guide) | Advanced (`workshop/advanced/`) | Module organization, `clap` CLI args, documentation, unit tests |
 
 ### Next Project
 
@@ -339,7 +358,9 @@ Proceed to [3-TicketV1](../02-Ownership/01-TicketV1/README.md) to master **owner
 
 ---
 
-## 7. Detailed Step-by-Step Guide (from master_mind.md)
+## 7. Detailed Step-by-Step Guide (Basic)
+
+Build the core MasterMind game. Work in the `workshop/` directory.
 
 ### Table of Contents
 
@@ -1098,14 +1119,16 @@ cargo run
 
 ---
 
-## 8. Advanced Exercise (from master-mind-advanced.md)
+## 8. Advanced Exercise Guide
+
+Refactor the game into a library + binary crate. Work in the `workshop/advanced/` directory.
 
 ### Table of Contents
 
-- [8. Advanced Exercise (from master-mind-advanced.md)](#8-advanced-exercise-from-master-mind-advancedmd)
-  - [Table of Contents](#table-of-contents)
-  - [1. Introduction](#1-introduction)
-  - [2. Prerequisites](#2-prerequisites)
+- [8. Advanced Exercise Guide](#8-advanced-exercise-guide)
+  - [Table of Contents](#table-of-contents-1)
+  - [1. Introduction](#1-introduction-1)
+  - [2. Prerequisites](#2-prerequisites-1)
   - [3. Concept 1: Rust Packages, Crates, and Modules](#3-concept-1-rust-packages-crates-and-modules)
   - [4. Concept 2: Library vs Binary Crate](#4-concept-2-library-vs-binary-crate)
   - [5. Concept 3: Visibility (`pub`) and Re-exports](#5-concept-3-visibility-pub-and-re-exports)
