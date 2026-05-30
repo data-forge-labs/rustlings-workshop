@@ -144,9 +144,44 @@ N-ProjectName/
 ├── README.md               ← Tutorial or introduction pointing to workshop content
 ├── Cargo.toml              ← Rust project manifest
 └── src/
-    ├── main.rs             ← or lib.rs + main.rs
-    └── ...
+    ├── lib.rs              ← All public functions with todo!() stubs + progressive tests
+    └── main.rs             ← Entry point that calls into lib.rs
 ```
+
+### Test-Driven Architecture
+
+Every project must follow the **progressive test** pattern:
+
+1. **`src/lib.rs`**: Place all public functions here. Each function starts as `pub fn foo() { todo!() }`. The user replaces `todo!()` with real code as they progress through the README.
+
+2. **`src/main.rs`**: Minimal CLI entry point that calls functions from `lib.rs`. Tests should NOT depend on main.rs.
+
+3. **Test organization**: Group tests by tutorial step using nested modules:
+   ```rust
+   #[cfg(test)]
+   mod tests {
+       mod step_01_concept_name {
+           // Tests that pass when the user implements the first concept
+       }
+       mod step_02_next_concept {
+           // Additional tests for the next concept
+       }
+   }
+   ```
+
+4. **Test coverage**: Every function in `lib.rs` must have at least 2–3 tests covering normal cases, edge cases, and error conditions. For functions that panic, include a `#[should_panic]` test.
+
+5. **README banner** (at top, after the subtitle):
+   ```
+   > **Test-driven approach**: This project includes a Cargo project with progressive
+   > unit tests. Each function in `src/lib.rs` starts as a `todo!()` stub. As you
+   > follow each section, replace `todo!()` with real code and run `cargo test` to
+   > watch the pass count grow. Your goal: **all N tests pass**.
+   ```
+
+6. **No external test crate dependencies** — use only `#[cfg(test)]` with built-in `#[test]` and `#[should_panic]`. Avoid adding `dev-dependencies` unless the project already uses them for integration tests.
+
+7. **Root README.md** must mention "Test-driven learning" in the Course Progression section.
 
 **Key difference**: Type B projects are pure Rust — no Python equivalent file is expected. The README.md focuses on explaining the Rust code directly with Python comparisons.
 

@@ -28,6 +28,8 @@ The course is organized into **9 sections** designed for a Python data engineer 
 
 The course is carefully sequenced so each concept is introduced by one source and deepened by the other, never repeated as a first-time lesson.
 
+> **Test-driven learning**: Every project has a `Cargo.toml` + `src/lib.rs` with progressive unit tests. Each function starts as a `todo!()` stub. As you follow the project's README, replace `todo!()` with real code. Run `cargo test` after each section to see your pass count grow. When all tests pass, you've completed the project.
+
 | Section | Concept Cluster | Projects |
 |---------|----------------|----------|
 | 1 — Foundations | Syntax, types, control flow, basic I/O | 0 (Intro), 1 (BasicCalculator), 2 (MasterMind) |
