@@ -40,7 +40,7 @@ MasterMind is a classic code-breaking game:
 
 ## 2. Prerequisites
 
-- Completed [Basic Calculator](../01-Foundations/2-BasicCalculator/workshop.md)
+- Completed [Basic Calculator](../01-Foundations/1-BasicCalculator/workshop.md)
 - Rust installed and working
 - Basic familiarity with `cargo run`
 

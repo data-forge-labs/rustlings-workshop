@@ -65,7 +65,7 @@ for i in 0..3 {
 ## 2. Prerequisites
 
 - Completed ownership ([TicketV1](../02-Ownership/3-TicketV1/workshop.md))
-- Understand closures (briefly covered in [MasterMind](../01-Foundations/1-MasterMind/master_mind.md))
+- Understand closures (briefly covered in [MasterMind](../01-Foundations/2-MasterMind/master_mind.md))
 
 ---
 

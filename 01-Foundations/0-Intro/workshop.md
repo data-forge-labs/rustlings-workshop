@@ -436,4 +436,4 @@ Status: above average
 
 ### Next Steps
 
-You're ready to start Project 2: **Basic Calculator**, where you'll learn about integer types, arithmetic, control flow, loops, and error handling in depth.
+You're ready to start Project 1: **Basic Calculator**, where you'll learn about integer types, arithmetic, control flow, loops, and error handling in depth.

@@ -61,7 +61,7 @@ make_salad()
 
 ## 2. Prerequisites
 
-- Completed [Basic Calculator](../01-Foundations/2-BasicCalculator/workshop.md)
+- Completed [Basic Calculator](../01-Foundations/1-BasicCalculator/workshop.md)
 - Familiar with `Vec<T>` from [TicketManagement](../03-Collections/6-TicketManagement/workshop.md)
 - Understand `for` loops and `if/else`
 

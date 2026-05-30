@@ -60,7 +60,7 @@ We'll build a **command-line calculator** that can:
 The Python version (`project.py`) demonstrates what our Rust calculator will do:
 
 ```bash
-cd rustlings-workshop/2-BasicCalculator
+cd rustlings-workshop/1-BasicCalculator
 python project.py
 ```
 
@@ -952,8 +952,8 @@ fn main() {
 ### Create the Project
 
 ```bash
-cargo new 2-BasicCalculator
-cd 2-BasicCalculator
+cargo new 1-BasicCalculator
+cd 1-BasicCalculator
 # Replace src/main.rs with the code above
 cargo run
 ```
@@ -1114,4 +1114,4 @@ fn main() {
 
 ### Next Project
 
-Proceed to [1-MasterMind](../01-Foundations/1-MasterMind/master_mind.md) to solidify these concepts with a game, then [3-TicketV1](../02-Ownership/3-TicketV1/workshop.md) to learn about **ownership** — Rust's most unique and important feature.
+Proceed to [2-MasterMind](../01-Foundations/2-MasterMind/master_mind.md) to solidify these concepts with a game, then [3-TicketV1](../02-Ownership/3-TicketV1/workshop.md) to learn about **ownership** — Rust's most unique and important feature.

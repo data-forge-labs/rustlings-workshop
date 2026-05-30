@@ -30,7 +30,7 @@ The course is carefully sequenced so each concept is introduced by one source an
 
 | Section | Concept Cluster | Projects |
 |---------|----------------|----------|
-| 1 — Foundations | Syntax, types, control flow, basic I/O | 0 (Intro), 1 (MasterMind), 2 (BasicCalculator) |
+| 1 — Foundations | Syntax, types, control flow, basic I/O | 0 (Intro), 1 (BasicCalculator), 2 (MasterMind) |
 | 2 — Ownership | Structs, ownership, borrowing, lifetimes, traits, enums, error handling | 3 (TicketV1), 4 (Traits), 5 (TicketV2), 37 (OBRM), 38 (OwnershipLifetimes) |
 | 3 — Collections | Vec, arrays, HashMap, HashSet, BTreeMap, iterators, LinkedList, VecDeque, BinaryHeap | 6 (TicketManagement), 9–13, 15–19, 23, 28, 30, 36 |
 | 4 — File I/O | CSV reading/writing, Parquet, serde, file I/O | 53 (CSVCookbook), 54 (CSVWriter), 55 (Parquet), 56 (Reflection) |
@@ -69,8 +69,8 @@ Projects are grouped into **sections** that map concepts a Python data engineer 
 | # | Project | Rust Topics Covered |
 |---|---------|-------------------|
 | 0 | **Intro** — Rust syntax primer (reference) | `fn main()`, `let`, `mut`, macros (`println!`), basic types, `&str`, arithmetic |
-| 1 | **MasterMind** — guess a 4-digit secret code with hints | `struct`, `impl`, `Vec<T>`, `Option<T>`, `if let`, loops, `String`/`&str`, `rand`, iterators |
-| 2 | **BasicCalculator** — integers, branching, loops, overflow | `i32`/`u32`, `if`/`else`, `while`/`for`, panics, overflow, saturating arithmetic, `as` casting |
+| 1 | **BasicCalculator** — integers, branching, loops, overflow | `i32`/`u32`, `if`/`else`, `while`/`for`, panics, overflow, saturating arithmetic, `as` casting |
+| 2 | **MasterMind** — guess a 4-digit secret code with hints | `struct`, `impl`, `Vec<T>`, `Option<T>`, `if let`, loops, `String`/`&str`, `rand`, iterators |
 | 32 | **Week1FinalReflection** — data structures mindset | Memory safety, zero-cost abstractions, Rust vs Python data engineering |
 
 ### Section 2: Ownership — Rust's Superpower over Python's GC
@@ -222,8 +222,8 @@ make run
 
 ```bash
 # Some projects can be compiled without cargo
-cd 01-Foundations/1-MasterMind
-rustc master_mind.rs && ./master_mind
+cd 01-Foundations/1-BasicCalculator
+cargo run
 ```
 
 Browse the full list of 59 projects (0–58) in the [Projects](#projects) table above.
