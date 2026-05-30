@@ -49,7 +49,7 @@ We'll build a **command-line calculator** that can:
 
 ## 2. Prerequisites
 
-- Rust installed (see [Project 0: Intro](../01-Foundations/0-Intro/workshop.md))
+- Rust installed (see [Project 0: Intro](../01-Foundations/0-Intro/README.md))
 - Basic Python knowledge
 - Familiarity with `cargo new` and `cargo run`
 
@@ -1104,14 +1104,24 @@ fn main() {
 | `wrapping_*` | Wrap around on overflow | N/A |
 | `as` casting | Explicit type conversion | Implicit conversion |
 
-### Key Takeaways for Data Engineers
+### Further Reading
 
-1. **Choose your integer types carefully** — `u32` for counts, `i64` for timestamps, `u64` for large datasets
-2. **Enable overflow checks in release** — silent data corruption is worse than a crash
-3. **Use saturating arithmetic** for production data pipelines where overflow is possible
-4. **Rust's strict type system** prevents an entire class of bugs — lean into it
-5. **`if` as expression** enables clean, functional-style code
+The following lesson files in this folder provide deeper dives into each concept:
+
+| File | Topics |
+|------|--------|
+| [00_intro.md](./00_intro.md) | Project introduction and roadmap |
+| [01_integers.md](./01_integers.md) | Integer types, literals, type inference |
+| [02_variables.md](./02_variables.md) | `let` bindings, shadowing, scope |
+| [03_if_else.md](./03_if_else.md) | `if`/`else` expressions, booleans, comparison |
+| [04_panics.md](./04_panics.md) | The `panic!` macro, unrecoverable errors |
+| [05_factorial.md](./05_factorial.md) | Recursive factorial exercise |
+| [06_while.md](./06_while.md) | `while` loops, `mut` keyword |
+| [07_for.md](./07_for.md) | `for` loops, range types |
+| [08_overflow.md](./08_overflow.md) | Integer overflow, profiles, `overflow-checks` |
+| [09_saturating.md](./09_saturating.md) | `wrapping_` and `saturating_` methods |
+| [10_as_casting.md](./10_as_casting.md) | `as` operator, truncation, type conversion |
 
 ### Next Project
 
-Proceed to [2-MasterMind](../01-Foundations/2-MasterMind/master_mind.md) to solidify these concepts with a game, then [3-TicketV1](../02-Ownership/3-TicketV1/workshop.md) to learn about **ownership** — Rust's most unique and important feature.
+Proceed to [2-MasterMind](../01-Foundations/2-MasterMind/master_mind.md) to solidify these concepts with a game, then [3-TicketV1](../02-Ownership/3-TicketV1/README.md) to learn about **ownership** — Rust's most unique and important feature.

@@ -11,8 +11,8 @@ The repository contains:
 - `README.md` – the main index, project table, and **Rust Concepts Coverage** checklist.
 - `AGENTS.md` – this file.
 - One folder per workshop, named `N-ProjectName/`, containing:
-  - `project.py` – the original Python implementation the learner can run.
-  - `workshop.md` – the full step‑by‑step Rust tutorial.
+  - `project.py` – the original Python implementation the learner can run (present only in 100-exercises projects).
+  - `README.md` – the full step‑by‑step Rust tutorial (the main learning file).
 
 The workshops are ordered; later workshops may assume concepts from earlier ones.
 
@@ -31,8 +31,8 @@ The workshops are ordered; later workshops may assume concepts from earlier ones
    - Be convertible to Rust in a step‑by‑step manner.
    - Follow the workshop structure defined in Section 5.
 5. **Create the folder** `N-ProjectName/` and populate:
-   - `project.py` – the Python version (with comments explaining the logic).
-   - `workshop.md` – the Rust tutorial.
+   - `project.py` – the Python version (with comments explaining the logic, if applicable).
+   - `README.md` – the Rust tutorial.
 6. **Update `README.md`**:
    - Add a new row to the **Projects** table with number, name, and a concise list of the new Rust concepts.
    - Update the **Rust Concepts Coverage** table: mark each introduced concept as ✅ and set “First Project” to `N`.
@@ -82,7 +82,7 @@ Examples for future workshops:
 
 ---
 
-## 5. Workshop File Structure (`workshop.md`)
+## 5. Workshop File Structure (`README.md`)
 
 The workshop must be a Markdown file that follows this template:
 

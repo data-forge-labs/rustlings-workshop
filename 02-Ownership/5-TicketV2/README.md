@@ -858,6 +858,29 @@ fn main() -> Result<(), TicketError> {
 └──────────────────────────────────────────┘
 ```
 
+### Further Reading
+
+The following lesson files in this folder provide deeper dives into each concept:
+
+| File | Topics |
+|------|--------|
+| [00_intro.md](./00_intro.md) | Project introduction |
+| [01_enum.md](./01_enum.md) | `enum` definition, variants, discriminant |
+| [02_match.md](./02_match.md) | Exhaustive `match`, patterns, wildcard `_` |
+| [03_variants_with_data.md](./03_variants_with_data.md) | Enums with tuple and struct variants |
+| [04_if_let.md](./04_if_let.md) | `if let` and `while let` patterns |
+| [05_nullability.md](./05_nullability.md) | `Option<T>`, `unwrap`, `map`, `and_then` |
+| [06_fallibility.md](./06_fallibility.md) | `Result<T, E>`, recoverable errors |
+| [07_unwrap.md](./07_unwrap.md) | `unwrap`, `expect`, `unwrap_or` |
+| [08_error_enums.md](./08_error_enums.md) | Custom error enums |
+| [09_error_trait.md](./09_error_trait.md) | `std::error::Error` trait |
+| [10_packages.md](./10_packages.md) | Cargo packages, workspace structure |
+| [11_dependencies.md](./11_dependencies.md) | Adding and managing dependencies |
+| [12_thiserror.md](./12_thiserror.md) | `thiserror` derive macro |
+| [13_try_from.md](./13_try_from.md) | `TryFrom` / `TryInto` for fallible conversion |
+| [14_source.md](./14_source.md) | Error source chains |
+| [15_outro.md](./15_outro.md) | Section wrap-up |
+
 ### Next Project
 
-Proceed to [6-TicketManagement](../03-Collections/6-TicketManagement/workshop.md) for **collections, iterators, and HashMap** — essential tools for data pipelines.
+Proceed to [6-TicketManagement](../03-Collections/6-TicketManagement/README.md) for **collections, iterators, and HashMap** — essential tools for data pipelines.

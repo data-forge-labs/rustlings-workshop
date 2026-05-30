@@ -434,6 +434,15 @@ Status: above average
 | Expression | Produces a value | Most Python constructs are statements |
 | `println!` | Print to stdout | `print()` |
 
+### Further Reading
+
+The following lesson files in this folder provide additional context:
+
+| File | Topics |
+|------|--------|
+| [00_welcome.md](./00_welcome.md) | Course overview, methodology, tools, `wr` workshop runner |
+| [01_syntax.md](./01_syntax.md) | Functions, return types, expressions vs statements, comments |
+
 ### Next Steps
 
 You're ready to start Project 1: **Basic Calculator**, where you'll learn about integer types, arithmetic, control flow, loops, and error handling in depth.

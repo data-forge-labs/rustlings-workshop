@@ -50,7 +50,7 @@ We'll build a **ticket tracking system** (like Jira or Trello) that:
 
 ## 2. Prerequisites
 
-- Completed [Basic Calculator](../01-Foundations/1-BasicCalculator/workshop.md)
+- Completed [Basic Calculator](../01-Foundations/1-BasicCalculator/README.md)
 - Understand integers, `if/else`, loops
 - Familiar with `cargo run`, `cargo test`
 
@@ -1108,6 +1108,26 @@ println!("Length: {}", len);   // ✅ len is valid (copy)
 2. **Either: one mutable reference, OR many immutable references**
 3. **References must always be valid** (no dangling pointers)
 
+### Further Reading
+
+The following lesson files in this folder provide deeper dives into each concept:
+
+| File | Topics |
+|------|--------|
+| [00_intro.md](./00_intro.md) | Project introduction and roadmap |
+| [01_struct.md](./01_struct.md) | Struct definition, fields, instantiation, methods, `self` |
+| [02_validation.md](./02_validation.md) | Enforcing invariants with validation |
+| [03_modules.md](./03_modules.md) | Module tree, file system layout, submodules |
+| [04_visibility.md](./04_visibility.md) | `pub`, `pub(crate)`, `pub(super)` visibility rules |
+| [05_encapsulation.md](./05_encapsulation.md) | Hiding fields behind constructors |
+| [06_ownership.md](./06_ownership.md) | Ownership rules, move semantics, borrow-checker |
+| [07_setters.md](./07_setters.md) | Mutable references, setter patterns |
+| [08_stack.md](./08_stack.md) | Stack memory layout, `size_of` |
+| [09_heap.md](./09_heap.md) | Heap allocation, `Box`, `String` internals |
+| [10_references_in_memory.md](./10_references_in_memory.md) | Reference as pointers |
+| [11_destructor.md](./11_destructor.md) | Scopes, `Drop` trait, RAII |
+| [12_outro.md](./12_outro.md) | Section wrap-up |
+
 ### Next Project
 
-Proceed to [4-Traits](../02-Ownership/4-Traits/workshop.md) to learn about **traits** — Rust's version of interfaces and protocols.
+Proceed to [4-Traits](../02-Ownership/4-Traits/README.md) to learn about **traits** — Rust's version of interfaces and protocols.

@@ -551,6 +551,28 @@ fn main() {
 4. **Traits enable polymorphism** without inheritance (composition over inheritance)
 5. **`From`/`Into`** make type conversion in data pipelines clean and explicit
 
+### Further Reading
+
+The following lesson files in this folder provide deeper dives into each concept:
+
+| File | Topics |
+|------|--------|
+| [00_intro.md](./00_intro.md) | Project introduction |
+| [01_trait.md](./01_trait.md) | Trait definition, implementation, associated types |
+| [02_orphan_rule.md](./02_orphan_rule.md) | Orphan rule and coherence |
+| [03_operator_overloading.md](./03_operator_overloading.md) | Operator overloading with traits |
+| [04_derive.md](./04_derive.md) | `#[derive]` macros, auto-implementing traits |
+| [05_trait_bounds.md](./05_trait_bounds.md) | Generic bounds, `where` clauses |
+| [06_str_slice.md](./06_str_slice.md) | `&str` vs `String`, string slice internals |
+| [07_deref.md](./07_deref.md) | `Deref` trait, smart pointer dereferencing |
+| [08_sized.md](./08_sized.md) | `Sized` trait, `?Sized` |
+| [09_from.md](./09_from.md) | `From` and `Into` traits |
+| [10_assoc_vs_generic.md](./10_assoc_vs_generic.md) | Associated types vs generic type parameters |
+| [11_clone.md](./11_clone.md) | `Clone` trait, explicit duplication |
+| [12_copy.md](./12_copy.md) | `Copy` trait, implicit bitwise copy |
+| [13_drop.md](./13_drop.md) | `Drop` trait, deterministic cleanup |
+| [14_outro.md](./14_outro.md) | Section wrap-up |
+
 ### Next Project
 
-Proceed to [5-TicketV2](../02-Ownership/5-TicketV2/workshop.md) to learn about **enums** and **error handling with `Result`** — essential for production data pipelines.
+Proceed to [5-TicketV2](../02-Ownership/5-TicketV2/README.md) to learn about **enums** and **error handling with `Result`** — essential for production data pipelines.

@@ -1,155 +1,344 @@
-This extended tutorial will provide a comprehensive guide to vectors in Rust, building the fruit salad program from a simple version to an advanced one. We'll explain key concepts like `Vec<&'static str>`, `.iter()`, and the traits imported from the `rand` crate in detail. We'll also include additional challenges to deepen your understanding. The tutorial assumes basic Rust knowledge (e.g., variables, functions) but explains vectors, traits, and related concepts thoroughly for beginners and intermediate learners.
+# Rust for Python Data Engineers — Vector Fruit Salad
+
+*Your first data-engineering style project in Rust: select, shuffle, and serve random fruit combinations using vectors — the Rust equivalent of Python lists.*
 
 ---
 
 ## Table of Contents
-1. [Introduction to Vectors](#introduction-to-vectors)
-2. [Key Rust Concepts Explained](#key-rust-concepts-explained)
-   - [What is `Vec<&'static str>`?](#what-is-vec-static-str)
-   - [What is `.iter()`?](#what-is-iter)
-   - [Traits from the `rand` Crate](#traits-from-the-rand-crate)
-3. [Building the Program Step-by-Step](#building-the-program-step-by-step)
-   - [Step 1: Basic Vector Creation and Printing](#step-1-basic-vector-creation-and-printing)
-   - [Step 2: Random Selection with `rand`](#step-2-random-selection-with-rand)
-   - [Step 3: Shuffling with `SliceRandom`](#step-3-shuffling-with-slicerandom)
-   - [Step 4: Advanced Features (No Duplicates, Error Handling)](#step-4-advanced-features-no-duplicates-error-handling)
-4. [Additional Challenges](#additional-challenges)
-5. [Running the Program](#running-the-program)
-6. [Conclusion](#conclusion)
+
+1. [Project Overview](#1-project-overview)
+2. [Prerequisites](#2-prerequisites)
+3. [Running the Python Version](#3-running-the-python-version)
+4. [Concept: Vec Recap — Your Dynamic Collection](#4-concept-vec-recap--your-dynamic-collection)
+5. [Concept: The `rand` Crate — Random Numbers](#5-concept-the-rand-crate--random-numbers)
+6. [Concept: Working with External Crates (Cargo.toml)](#6-concept-working-with-external-crates-cargotoml)
+7. [Concept: SliceRandom — Shuffling and Choosing](#7-concept-slicerandom--shuffling-and-choosing)
+8. [Building Step by Step](#8-building-step-by-step)
+9. [Complete Code](#9-complete-code)
+10. [Exercises](#10-exercises)
+11. [Summary](#11-summary)
 
 ---
 
-## Introduction to Vectors
+## 1. Project Overview
 
-A **vector** in Rust is a dynamic, resizable array provided by the standard library as `Vec<T>`, where `T` is the type of elements stored. Unlike arrays (`[T; N]`), which have a fixed size known at compile time, vectors can grow or shrink at runtime, making them suitable for collections whose size changes dynamically.
+We'll build a program that:
+1. Stores a list of fruits
+2. Randomly selects a subset
+3. Shuffles the selection
+4. Prints a "fruit salad" — a comma-separated list
 
-### Key Features of Vectors:
-- **Dynamic Size**: Use methods like `push`, `pop`, `insert`, and `remove` to modify the vector.
-- **Heap-Allocated**: Vectors store data on the heap, allowing flexible memory allocation.
-- **Type Safety**: All elements must be of the same type `T`.
-- **Standard Methods**: Includes methods for iteration, sorting, slicing, and more.
+### Python Comparison
 
-In the fruit salad program, we use a vector to store a dynamic list of fruit names, randomly selected from a fixed array.
+```python
+# Python version of what we're building
+import random
 
----
+FRUITS = ["Orange", "Apple", "Banana", "Pear", "Grape",
+          "Watermelon", "Strawberry", "Cherry", "Plum", "Peach"]
 
-## Key Rust Concepts Explained
+def make_salad():
+    count = random.randint(1, len(FRUITS))
+    selected = random.choices(FRUITS, k=count)
+    random.shuffle(selected)
+    print("Fruit salad:", ", ".join(selected))
 
-### What is `Vec<&'static str>`?
-
-The type `Vec<&'static str>` appears frequently in the program. Let’s break it down:
-
-- **`Vec<T>`**: A vector that holds elements of type `T`. Here, `T` is `&'static str`.
-- **`&'static str`**:
-  - **`&str`**: A string slice, a reference to a sequence of UTF-8 encoded characters. It’s immutable and doesn’t own its data.
-  - **`'static`**: A lifetime specifier indicating the string slice lives for the entire duration of the program. This is common for string literals (e.g., `"Orange"`) stored in the program’s binary.
-- **Together**: `Vec<&'static str>` is a vector that holds references to string literals with a static lifetime. Each element is a reference (`&`) to a string literal like `"Orange"` or `"Apple"`.
-
-**Why use `&'static str`?**
-- String literals are stored in the program’s read-only memory and have a `'static` lifetime, making them efficient and safe to reference.
-- Using references (`&`) avoids copying the strings, reducing memory usage.
-
-**Example in the Code**:
-```rust
-const FRUITS: [&str; 10] = ["Orange", "Apple", "Banana", "Pear", "Grape", "Watermelon", "Strawberry", "Cherry", "Plum", "Peach"];
-let mut fruit: Vec<&'static str> = Vec::new();
+make_salad()
+# Output: Fruit salad: Grape, Banana, Peach, Apple
 ```
-- `FRUITS` is an array of `&str` (string slices), each pointing to a static string literal.
-- `fruit` is a vector that will store references to these literals, typed as `Vec<&'static str>`.
 
-### What is `.iter()`?
+### What You'll Learn
 
-The `.iter()` method is used to create an iterator over a collection, such as a vector or slice. It’s commonly used for looping over elements without modifying them.
+| Rust Concept | Python Equivalent | Data Engineering Use |
+|---|---|---|
+| `Vec<&str>` | `list[str]` | Dynamic data collections |
+| `rand` crate | `random` module | Sampling, shuffling data |
+| `SliceRandom` trait | `random.shuffle()` | Randomizing data order |
+| Cargo dependencies | `requirements.txt` | Managing external packages |
+| `for` + `.iter()` + `.enumerate()` | `for i, x in enumerate(list)` | Iterating with indices |
 
-- **Definition**: For a `Vec<T>` or slice `&[T]`, `.iter()` returns an iterator of type `std::slice::Iter<'a, T>`, yielding references (`&T`) to each element.
-- **Use Case**: Used in `for` loops or iterator chains to access elements immutably.
-- **In the Code**:
-  ```rust
-  for (i, item) in fruit.iter().enumerate() {
-      print!("{}, ", item);
-  }
-  ```
-  - `fruit.iter()` produces an iterator over `&'static str` (references to the vector’s elements).
-  - `.enumerate()` pairs each element with its index, yielding tuples `(usize, &'static str)`.
+---
 
-**Why use `.iter()`?**
-- It’s safe: It borrows the elements immutably, preventing accidental modification.
-- It’s flexible: Iterators support chaining with methods like `map`, `filter`, or `enumerate`.
-- Alternatives:
-  - `.iter_mut()`: For mutable references (`&mut T`) to modify elements.
-  - `.into_iter()`: Consumes the vector, taking ownership of elements (not used here).
+## 2. Prerequisites
 
-### Traits from the `rand` Crate
+- Completed [Basic Calculator](../01-Foundations/1-BasicCalculator/README.md)
+- Familiar with `Vec<T>` from [TicketManagement](../03-Collections/6-TicketManagement/README.md)
+- Understand `for` loops and `if/else`
 
-The program uses the `rand` crate for random number generation and shuffling. The following traits and types are imported:
+---
 
-1. **`rand::rngs::ThreadRng`**:
-   - **What is it?**: A thread-local random number generator, created by `thread_rng()`.
-   - **Purpose**: Provides a source of randomness for operations like generating numbers or shuffling.
-   - **In the Code**:
-     ```rust
-     let mut rng = thread_rng();
-     ```
-     - `rng` is a `ThreadRng` instance used for all random operations.
+## 3. Running the Python Version
 
-2. **`rand::seq::SliceRandom`**:
-   - **What is it?**: A trait providing methods for random operations on slices and vectors, such as shuffling and random selection.
-   - **Key Methods**:
-     - `shuffle(&mut self, rng: &mut R)`: Randomly reorders the elements of a slice or vector.
-     - `choose(&self, rng: &mut R) -> Option<&T>`: Selects a random element, returning `None` if the collection is empty.
-   - **In the Code**:
-     ```rust
-     fruit.shuffle(&mut rng);
-     let random_fruit = fruit.choose(&mut rng);
-     ```
-     - `shuffle` randomizes the order of `fruit`.
-     - `choose` picks one random fruit.
-   - **Why use it?**: Provides efficient, safe randomization for slices and vectors.
+```python
+# project.py — run to see expected output
+python project.py
+# Sample output: Fruit salad: Plum, Apple, Grape, Cherry
+```
 
-3. **`rand::Rng`**:
-   - **What is it?**: A trait defining methods for random number generation, implemented by types like `ThreadRng`.
-   - **Key Method**:
-     - `gen_range<T, R: RangeBounds<T>>(&mut self, range: R) -> T`: Generates a random value in the given range.
-   - **In the Code**:
-     ```rust
-     let fruit_count = rng.gen_range(1..=FRUITS.len());
-     ```
-     - Generates a random number between 1 and the length of `FRUITS`.
-   - **Why use it?**: Abstracts random number generation, allowing flexibility in choosing the random number source.
+---
 
-**Adding `rand` to Your Project**:
-Include in `Cargo.toml`:
+## 4. Concept: Vec Recap — Your Dynamic Collection
+
+### Creating a Vec
+
+```rust
+// Method 1: Vec::new()
+let mut fruits: Vec<&str> = Vec::new();
+fruits.push("Apple");
+fruits.push("Banana");
+
+// Method 2: vec! macro
+let fruits = vec!["Apple", "Banana", "Cherry"];
+
+// Method 3: From an array
+let arr = ["a", "b", "c"];
+let vec_from_arr: Vec<&str> = arr.to_vec();
+```
+
+### Vec Methods for Data Engineers
+
+```rust
+let mut data: Vec<f64> = vec![1.5, 2.3, 4.7, 0.5];
+
+data.push(3.2);                 // Append
+let last = data.pop();           // Remove last → Some(3.2)
+let first = data.first();        // First element → Option<&f64>
+let count = data.len();          // Number of elements
+let is_empty = data.is_empty();  // Check if empty
+data.sort();                     // Sort in place
+data.reverse();                  // Reverse order
+data.dedup();                    // Remove consecutive duplicates
+data.clear();                    // Remove all elements
+
+// Convert back to array (if size known at compile time)
+let array: [f64; 4] = data.try_into().unwrap();
+```
+
+### Vec vs Python List
+
+| Operation | Python `list` | Rust `Vec<T>` |
+|---|---|---|
+| Create empty | `items = []` | `let items: Vec<T> = Vec::new();` |
+| Create with values | `items = [1, 2, 3]` | `let items = vec![1, 2, 3];` |
+| Add one | `items.append(x)` | `items.push(x)` |
+| Remove last | `items.pop()` | `items.pop()` |
+| Access by index | `items[i]` | `items[i]` (panics if out of bounds) |
+| Safe access | N/A | `items.get(i)` → `Option<&T>` |
+| Length | `len(items)` | `items.len()` |
+| Slice | `items[start:end]` | `&items[start..end]` |
+| Iterate | `for x in items:` | `for x in &items { }` |
+
+---
+
+## 5. Concept: The `rand` Crate — Random Numbers
+
+### Adding to Cargo.toml
+
 ```toml
 [dependencies]
-rand = "0.8.5"
+rand = "0.8.5"   # Use this version
+```
+
+### Generating Random Numbers
+
+```rust
+use rand::Rng;  // Import the Rng trait
+
+let mut rng = rand::thread_rng();  // Create a random number generator
+
+let x: u32 = rng.gen();          // Random u32 (0 to u32::MAX)
+let y = rng.gen_range(1..=10);   // Random number between 1 and 10
+let z: f64 = rng.gen();          // Random float 0.0 to 1.0
+let b: bool = rng.gen();         // Random bool (true/false)
+```
+
+### Python vs rand
+
+```python
+import random
+
+x = random.randint(1, 10)    # Random int 1-10
+y = random.random()           # Random float 0.0-1.0
+z = random.choice(items)      # Random element
+items_shuffled = random.sample(items, k=count)  # Random subset
+random.shuffle(items)         # Shuffle in place
+```
+
+```rust
+use rand::Rng;
+
+let mut rng = rand::thread_rng();
+let x: u32 = rng.gen_range(1..=10);
+let y: f64 = rng.gen();
+let z = fruits.choose(&mut rng);  // Random element
+// Random subset = manual selection
+// fruits.shuffle(&mut rng);  // Shuffle in place
 ```
 
 ---
 
-## Building the Program Step-by-Step
+## 6. Concept: Working with External Crates (Cargo.toml)
 
-We’ll build the fruit salad program incrementally, starting with basic vector operations and progressing to advanced features. Each step introduces new concepts and builds on the previous one.
+### Adding Dependencies
 
-### Step 1: Basic Vector Creation and Printing
+```toml
+# Cargo.toml
+[package]
+name = "vector-fruit-salad"
+version = "0.1.0"
+edition = "2021"
 
-**Goal**: Create a vector of fruits from the `FRUITS` array and print them.
+[dependencies]
+rand = "0.8"
+```
 
-**Code**:
+### How Cargo Resolves Versions
+
+| Version spec | Meaning |
+|---|---|
+| `"0.8"` | `>=0.8.0` and `<0.9.0` (compatible with 0.8.x) |
+| `"0.8.5"` | Exactly `0.8.5` |
+| `"^0.8.5"` | Same as `"0.8.5"` — any 0.8.x >= 0.8.5 |
+| `">=1.0"` | Any version 1.0 or higher |
+| `"*"` | Any version (not recommended) |
+
+### Python vs Cargo
+
+| Python | Rust |
+|---|---|
+| `pip install pandas` | Add to `[dependencies]` in Cargo.toml |
+| `requirements.txt` | `Cargo.toml` |
+| `pip freeze` | `Cargo.lock` (auto-generated) |
+| `import pandas` | `use some_crate::SomeType;` |
+| Virtual environments | Each project is isolated |
+
+---
+
+## 7. Concept: SliceRandom — Shuffling and Choosing
+
+### The SliceRandom Trait
+
+`SliceRandom` is a trait from `rand` that adds methods to slices (`&[T]`):
+
 ```rust
-// Define a static array of fruits
-const FRUITS: [&str; 5] = ["Orange", "Apple", "Banana", "Pear", "Grape"];
+use rand::seq::SliceRandom;
+use rand::thread_rng;
 
+let mut fruits = vec!["Apple", "Banana", "Cherry", "Date"];
+let mut rng = thread_rng();
+
+// Choose one random element
+let pick = fruits.choose(&mut rng);  // Option<&&str>
+
+// Shuffle in place
+fruits.shuffle(&mut rng);  // Randomizes order
+
+// Partial shuffle (first k elements randomized)
+fruits.partial_shuffle(&mut rng, 2);
+```
+
+### Why `SliceRandom` Is a Trait
+
+In Rust, methods like `.shuffle()` and `.choose()` aren't built into `Vec` — they're added via a **trait** that you import:
+
+```rust
+// Without the import, this won't compile:
+// fruits.shuffle(&mut rng);
+// ERROR: no method named `shuffle`
+
+// With the import:
+use rand::seq::SliceRandom;
+// Now `.shuffle()` is available on any slice
+```
+
+### Python Equivalent
+
+```python
+import random
+
+# choose() is like random.choice()
+pick = random.choice(fruits)
+
+# shuffle() is like random.shuffle()
+random.shuffle(fruits)
+```
+
+---
+
+## 8. Building Step by Step
+
+### Step 1: Create the Project
+
+```bash
+cargo new vector-fruit-salad
+cd vector-fruit-salad
+```
+
+### Step 2: Add rand Dependency
+
+Edit `Cargo.toml`:
+
+```toml
+[dependencies]
+rand = "0.8"
+```
+
+### Step 3: Define the Fruit List
+
+```rust
+// A constant array of fruit names — fixed at compile time
+const FRUITS: [&str; 10] = [
+    "Orange", "Apple", "Banana", "Pear", "Grape",
+    "Watermelon", "Strawberry", "Cherry", "Plum", "Peach",
+];
+```
+
+### Step 4: Import rand Types
+
+```rust
+use rand::Rng;                // For gen_range()
+use rand::seq::SliceRandom;  // For shuffle(), choose()
+use rand::thread_rng;        // Get a random number generator
+```
+
+### Step 5: Select Random Fruits
+
+```rust
+fn select_random_fruits(count: usize, fruits: &[&str], rng: &mut impl Rng) -> Vec<&str> {
+    let mut selected = Vec::new();
+    for _ in 0..count {
+        let idx = rng.gen_range(0..fruits.len());
+        selected.push(fruits[idx]);
+    }
+    selected
+}
+```
+
+### Step 6: Main Function
+
+```rust
 fn main() {
-    // Create a vector and populate it with all fruits
-    let mut fruit: Vec<&'static str> = Vec::new();
-    for &f in FRUITS.iter() {
-        fruit.push(f);
+    let mut rng = thread_rng();
+
+    // Pick a random number of fruits to include
+    let fruit_count = rng.gen_range(1..=FRUITS.len());
+
+    // Select that many random fruits
+    let mut fruit_salad = select_random_fruits(fruit_count, &FRUITS, &mut rng);
+
+    // Pick one random fruit to highlight
+    let random_fruit = fruit_salad.choose(&mut rng);
+    if let Some(fruit) = random_fruit {
+        println!("Random fruit: {}", fruit);
     }
 
-    // Print the fruits
+    // Shuffle the salad
+    fruit_salad.shuffle(&mut rng);
+
+    // Print the salad
     println!("Fruit salad:");
-    for (i, item) in fruit.iter().enumerate() {
-        if i < fruit.len() - 1 {
+    for (i, item) in fruit_salad.iter().enumerate() {
+        if i != fruit_salad.len() - 1 {
             print!("{}, ", item);
         } else {
             println!("{}", item);
@@ -158,327 +347,127 @@ fn main() {
 }
 ```
 
-**Explanation**:
-- **Vector Creation**:
-  - `Vec::new()` creates an empty vector.
-  - `fruit.push(f)` adds each fruit from `FRUITS` to the vector.
-- **Iteration**:
-  - `FRUITS.iter()` iterates over references to the array’s elements (`&&str`, dereferenced to `&str` with `&f`).
-  - `fruit.iter().enumerate()` iterates over the vector, pairing indices with elements.
-- **Printing**:
-  - Uses a comma-separated format, omitting the comma for the last fruit.
-- **Concepts**:
-  - Vector initialization and growth with `push`.
-  - Immutable iteration with `.iter()`.
-  - Index tracking with `.enumerate()`.
+---
 
-**Output**:
-```
-Fruit salad:
-Orange, Apple, Banana, Pear, Grape
-```
+## 9. Complete Code
 
-### Step 2: Random Selection with `rand`
-
-**Goal**: Select a random number of fruits and pick one random fruit from the salad.
-
-**Code**:
 ```rust
 use rand::rngs::ThreadRng;
 use rand::seq::SliceRandom;
 use rand::{thread_rng, Rng};
 
-// Define a static array of fruits
-const FRUITS: [&str; 5] = ["Orange", "Apple", "Banana", "Pear", "Grape"];
+/// The master list of available fruits — a fixed-size array
+const FRUITS: [&str; 10] = [
+    "Orange", "Apple", "Banana", "Pear", "Grape",
+    "Watermelon", "Strawberry", "Cherry", "Plum", "Peach",
+];
+
+/// Select `count` random fruits from the given slice
+fn select_random_fruits(count: usize, fruits: &[&str], rng: &mut ThreadRng) -> Vec<&str> {
+    let mut selected = Vec::new();
+    for _ in 0..count {
+        let idx = rng.gen_range(0..fruits.len());
+        selected.push(fruits[idx]);
+    }
+    selected
+}
 
 fn main() {
-    // Create a random number generator
     let mut rng = thread_rng();
 
-    // Get a random number of fruits (1 to FRUITS.len())
+    // How many fruits in this salad?
     let fruit_count = rng.gen_range(1..=FRUITS.len());
 
-    // Select random fruits
-    let mut fruit = select_random_fruits(fruit_count, &FRUITS, &mut rng);
+    // Select the fruits
+    let mut salad = select_random_fruits(fruit_count, &FRUITS, &mut rng);
 
-    // Select a random fruit from the salad
-    let random_fruit = fruit.choose(&mut rng).unwrap();
-    println!("Random fruit: {}", random_fruit);
+    // Highlight one random fruit
+    if let Some(fruit) = salad.choose(&mut rng) {
+        println!("Random fruit: {}", fruit);
+    }
 
-    // Print the fruit salad
+    // Shuffle
+    salad.shuffle(&mut rng);
+
+    // Print the salad
     println!("Fruit salad:");
-    for (i, item) in fruit.iter().enumerate() {
-        if i < fruit.len() - 1 {
+    for (i, item) in salad.iter().enumerate() {
+        if i != salad.len() - 1 {
             print!("{}, ", item);
         } else {
             println!("{}", item);
         }
     }
 }
-
-// Select `fruit_count` random fruits
-fn select_random_fruits(fruit_count: usize, fruits: &[&'static str], rng: &mut ThreadRng) -> Vec<&'static str> {
-    let mut selected_fruits = Vec::new();
-    for _ in 0..fruit_count {
-        let random_index = rng.gen_range(0..fruits.len());
-        selected_fruits.push(fruits[random_index]);
-    }
-    selected_fruits
-}
-```
-
-**New Concepts**:
-- **Random Number Generation**:
-  - `thread_rng()` creates a `ThreadRng`.
-  - `rng.gen_range(1..=FRUITS.len())` picks a random number inclusively.
-- **Random Selection**:
-  - `select_random_fruits` builds a vector by randomly indexing into `fruits`.
-  - `fruit.choose(&mut rng)` uses `SliceRandom` to pick one random element.
-- **Traits**:
-  - `Rng` for `gen_range`.
-  - `SliceRandom` for `choose`.
-- **Safety**:
-  - `unwrap` on `choose` is safe because `fruit` has at least one element (`fruit_count >= 1`).
-
-**Output** (example):
-```
-Random fruit: Banana
-Fruit salad:
-Apple, Banana, Pear
-```
-
-### Step 3: Shuffling with `SliceRandom`
-
-**Goal**: Shuffle the fruit vector to randomize the order before printing.
-
-**Code**:
-```rust
-use rand::rngs::ThreadRng;
-use rand::seq::SliceRandom;
-use rand::{thread_rng, Rng};
-
-// Define a static array of fruits
-const FRUITS: [&str; 5] = ["Orange", "Apple", "Banana", "Pear", "Grape"];
-
-fn main() {
-    // Create a random number generator
-    let mut rng = thread_rng();
-
-    // Get a random number of fruits
-    let fruit_count = rng.gen_range(1..=FRUITS.len());
-
-    // Select random fruits
-    let mut fruit = select_random_fruits(fruit_count, &FRUITS, &mut rng);
-
-    // Select a random fruit from the salad
-    let random_fruit = fruit.choose(&mut rng).unwrap();
-    println!("Random fruit: {}", random_fruit);
-
-    // Shuffle the vector
-    fruit.shuffle(&mut rng);
-
-    // Print the fruit salad
-    println!("Fruit salad:");
-    for (i, item) in fruit.iter().enumerate() {
-        if i < fruit.len() - 1 {
-            print!("{}, ", item);
-        } else {
-            println!("{}", item);
-        }
-    }
-}
-
-// Select `fruit_count` random fruits
-fn select_random_fruits(fruit_count: usize, fruits: &[&'static str], rng: &mut ThreadRng) -> Vec<&'static str> {
-    let mut selected_fruits = Vec::new();
-    for _ in 0..fruit_count {
-        let random_index = rng.gen_range(0..fruits.len());
-        selected_fruits.push(fruits[random_index]);
-    }
-    selected_fruits
-}
-```
-
-**New Concepts**:
-- **Shuffling**:
-  - `fruit.shuffle(&mut rng)` uses `SliceRandom` to randomize the vector’s order in place.
-- **In-Place Modification**:
-  - `shuffle` modifies the vector directly, requiring `fruit` to be mutable (`mut`).
-- **Randomness**:
-  - The shuffle is deterministic given the same `rng` state, but `thread_rng` ensures varied results across runs.
-
-**Output** (example):
-```
-Random fruit: Pear
-Fruit salad:
-Banana, Pear, Orange
-```
-
-### Step 4: Advanced Features (No Duplicates, Error Handling)
-
-**Goal**: Prevent duplicate fruits and add error handling for edge cases.
-
-**Code**:
-```rust
-use rand::rngs::ThreadRng;
-use rand::seq::SliceRandom;
-use rand::{thread_rng, Rng};
-use std::collections::HashSet;
-
-// Define a static array of fruits
-const FRUITS: [&str; 5] = ["Orange", "Apple", "Banana", "Pear", "Grape"];
-
-fn main() -> Result<(), String> {
-    // Create a random number generator
-    let mut rng = thread_rng();
-
-    // Get a random number of fruits
-    let fruit_count = rng.gen_range(1..=FRUITS.len());
-
-    // Select random fruits (no duplicates)
-    let fruit = select_random_fruits(fruit_count, &FRUITS, &mut rng)?;
-
-    // Select a random fruit from the salad
-    let random_fruit = fruit.choose(&mut rng).ok_or("No fruits selected")?;
-    println!("Random fruit: {}", random_fruit);
-
-    // Shuffle the vector
-    let mut fruit = fruit;
-    fruit.shuffle(&mut rng);
-
-    // Print the fruit salad
-    println!("Fruit salad:");
-    if fruit.is_empty() {
-        println!("No fruits in the salad!");
-    } else {
-        for (i, item) in fruit.iter().enumerate() {
-            if i < fruit.len() - 1 {
-                print!("{}, ", item);
-            } else {
-                println!("{}", item);
-            }
-        }
-    }
-
-    Ok(())
-}
-
-// Select `fruit_count` random fruits without duplicates
-fn select_random_fruits(fruit_count: usize, fruits: &[&'static str], rng: &mut ThreadRng) -> Result<Vec<&'static str>, String> {
-    if fruit_count > fruits.len() {
-        return Err(format!("Cannot select {} fruits from {} available", fruit_count, fruits.len()));
-    }
-    if fruits.is_empty() {
-        return Err("No fruits available".to_string());
-    }
-
-    let mut selected_fruits = Vec::new();
-    let mut used_indices = HashSet::new();
-
-    while selected_fruits.len() < fruit_count {
-        let random_index = rng.gen_range(0..fruits.len());
-        if used_indices.insert(random_index) {
-            selected_fruits.push(fruits[random_index]);
-        }
-    }
-
-    Ok(selected_fruits)
-}
-```
-
-**New Concepts**:
-- **No Duplicates**:
-  - Uses a `HashSet<usize>` to track used indices, ensuring each fruit is selected at most once.
-  - `used_indices.insert(random_index)` returns `true` if the index is new, allowing the fruit to be added.
-- **Error Handling**:
-  - `Result<(), String>` in `main` propagates errors.
-  - `select_random_fruits` returns `Result<Vec<&'static str>, String>` to handle cases like:
-    - `fruit_count > fruits.len()` (impossible to select more fruits than available).
-    - `fruits.is_empty()` (no fruits to select).
-  - `choose` uses `.ok_or()` to handle the unlikely case of an empty vector.
-- **Ownership**:
-  - `let mut fruit = fruit;` in `main` works around borrow checker issues after `choose`, as `shuffle` requires ownership.
-- **Empty Vector Check**:
-  - Checks `fruit.is_empty()` before printing to handle edge cases gracefully.
-
-**Output** (example):
-```
-Random fruit: Grape
-Fruit salad:
-Pear, Grape, Banana
-```
-
-**Error Case** (if `FRUITS` is empty):
-```rust
-const FRUITS: [&str; 0] = [];
-```
-Output:
-```
-Error: No fruits available
 ```
 
 ---
 
-## Additional Challenges
+## 10. Exercises
 
-To further explore vectors, traits, and randomization, try these challenges:
+### Exercise 1: No Duplicates
 
-1. **Weighted Selection**:
-   Assign weights to fruits (e.g., `Orange: 0.3`, `Apple: 0.2`) and select fruits based on their weights.
-   **Hint**: Use `rand::distributions::WeightedIndex`.
+Modify `select_random_fruits` so it never selects the same fruit twice:
 
-2. **Custom Fruit Input**:
-   Allow users to input their own list of fruits via the command line.
-   **Hint**: Use `std::io` to read input and `split` to parse a comma-separated string.
+```rust
+fn select_unique_fruits(count: usize, fruits: &[&str], rng: &mut ThreadRng) -> Vec<&str> {
+    // Your code here — hint: use a loop that checks for duplicates
+    // Or: shuffle a copy of fruits and take the first `count`
+}
+```
 
-3. **Sort by Length**:
-   Before printing the salad, sort the fruits by the length of their names (shortest to longest).
-   **Hint**: Use `sort_by` on the vector.
+<details>
+<summary>Solution</summary>
 
-4. **Random Subsets**:
-   Modify `select_random_fruits` to select exactly `fruit_count` fruits without replacement using a single shuffle.
-   **Hint**: Shuffle a slice of indices and take the first `fruit_count`.
+```rust
+fn select_unique_fruits(count: usize, fruits: &[&str], rng: &mut ThreadRng) -> Vec<&str> {
+    let mut available = fruits.to_vec();
+    available.shuffle(rng);
+    available.into_iter().take(count).collect()
+}
+```
+</details>
 
-5. **Advanced Formatting**:
-   Print the salad as a numbered list (e.g., "1. Orange, 2. Apple").
-   **Hint**: Use `enumerate` with a custom format string.
+### Exercise 2: Weighted Selection
 
-6. **Persistent Salad**:
-   Save the generated salad to a file and allow loading it later.
-   **Hint**: Use `std::fs` and `serde` for serialization.
+Some fruits should appear more often. Add weights:
 
----
+```rust
+fn select_weighted(fruits: &[&str], weights: &[f64], count: usize, rng: &mut ThreadRng) -> Vec<&str> {
+    // Use rng.gen_bool() or rand::distributions::WeightedIndex
+}
+```
 
-## Running the Program
+### Exercise 3: Salad Statistics
 
-For any step:
-1. Create a new Rust project:
-   ```bash
-   cargo new fruit_salad
-   cd fruit_salad
-   ```
-2. Update `Cargo.toml`:
-   ```toml
-   [dependencies]
-   rand = "0.8.5"
-   ```
-   For Step 4, add:
-   ```toml
-   std = { version = "1.0", features = ["collections"] }
-   ```
-3. Copy the code for the desired step into `src/main.rs`.
-4. Run:
-   ```bash
-   cargo run
-   ```
+After creating the salad, print statistics:
+
+```
+Fruit salad: Grape, Apple, Banana
+Stats: 3 fruits, 2 unique types
+```
 
 ---
 
-## Conclusion
+## 11. Summary
 
-This tutorial built a fruit salad program from a simple vector-based example to an advanced version with no duplicates and error handling. We covered:
-- **Vectors**: Dynamic, heap-allocated collections (`Vec<&'static str>`).
-- **Iterators**: Using `.iter()` and `.enumerate()` for safe, idiomatic iteration.
-- **Traits**: `Rng` and `SliceRandom` from the `rand` crate for randomization.
-- **Advanced Features**: Ownership, error handling with `Result`, and duplicate prevention with `HashSet`.
+| Concept | How Used | Data Engineering Analog |
+|---|---|---|
+| `Vec::new()` | Create empty fruit list | Create empty data collection |
+| `vec![]` macro | Pre-populate fruits | Initialize data batch |
+| `.push()` | Add selected fruit | Append to dataset |
+| `.choose()` | Pick random fruit | Sample one row |
+| `.shuffle()` | Randomize order | Randomize data for training |
+| `.iter().enumerate()` | Print with indices | Iterate with position |
+| `rng.gen_range()` | Random count | Random partitioning |
 
+### Key Takeaway
+
+Vectors in Rust = Lists in Python. The core operations are the same, but Rust gives you:
+- **Type safety** — `Vec<&str>` can only hold string slices
+- **Explicit cloning** — no accidental duplicate of large data
+- **Trait-based extensions** — `.shuffle()` comes from importing `SliceRandom`, not built into Vec
+
+### Next Project
+
+Proceed to [10-ArrayFruitSalad](../03-Collections/10-ArrayFruitSalad/README.md) to compare **arrays** vs **vectors** in Rust.

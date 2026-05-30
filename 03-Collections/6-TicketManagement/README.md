@@ -778,6 +778,30 @@ fn main() {
 4. **Slices `&[T]`** let you pass sub-sections of data without copying
 5. **Lifetimes** ensure your references are always valid — no dangling data
 
+### Further Reading
+
+The following lesson files in this folder provide deeper dives into each concept:
+
+| File | Topics |
+|------|--------|
+| [00_intro.md](./00_intro.md) | Project introduction |
+| [01_arrays.md](./01_arrays.md) | Fixed-size arrays `[T; N]` |
+| [02_vec.md](./02_vec.md) | `Vec<T>` creation, methods, capacity |
+| [03_resizing.md](./03_resizing.md) | Resizing strategies, `reserve`, `shrink_to_fit` |
+| [04_iterators.md](./04_iterators.md) | `Iterator` and `IntoIterator` traits |
+| [05_iter.md](./05_iter.md) | `.iter()`, `.iter_mut()`, `.into_iter()` |
+| [06_lifetimes.md](./06_lifetimes.md) | Lifetime annotations, elision |
+| [07_combinators.md](./07_combinators.md) | `map`, `filter`, `fold`, `take`, `skip` |
+| [08_impl_trait.md](./08_impl_trait.md) | `impl Trait` syntax |
+| [09_impl_trait_2.md](./09_impl_trait_2.md) | `impl Trait` in return position |
+| [10_slices.md](./10_slices.md) | `&[T]` slice type |
+| [11_mutable_slices.md](./11_mutable_slices.md) | `&mut [T]` mutable slices |
+| [12_two_states.md](./12_two_states.md) | Two-state borrowing patterns |
+| [13_index.md](./13_index.md) | `Index` trait, `[]` operator |
+| [14_index_mut.md](./14_index_mut.md) | `IndexMut` trait |
+| [15_hashmap.md](./15_hashmap.md) | `HashMap` creation, entry API, iteration |
+| [16_btreemap.md](./16_btreemap.md) | `BTreeMap`, sorted iteration, range queries |
+
 ### Next Project
 
-Proceed to [7-Threads](../05-Concurrency/7-Threads/workshop.md) for **concurrency** — running data pipelines in parallel.
+Proceed to [7-Threads](../05-Concurrency/7-Threads/README.md) for **concurrency** — running data pipelines in parallel.

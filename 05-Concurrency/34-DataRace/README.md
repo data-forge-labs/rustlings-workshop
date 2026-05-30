@@ -64,7 +64,7 @@ for i in 0..3 {
 
 ## 2. Prerequisites
 
-- Completed ownership ([TicketV1](../02-Ownership/3-TicketV1/workshop.md))
+- Completed ownership ([TicketV1](../02-Ownership/3-TicketV1/README.md))
 - Understand closures (briefly covered in [MasterMind](../01-Foundations/2-MasterMind/master_mind.md))
 
 ---
@@ -666,4 +666,4 @@ fn parallel_process(items: Vec<i32>) -> Vec<i32> {
 
 ### Next Project
 
-Proceed to [35-SafeAndUnsafe](../07-Security/35-SafeAndUnsafe/workshop.md) for **unsafe Rust** and when to use it.
+Proceed to [35-SafeAndUnsafe](../07-Security/35-SafeAndUnsafe/README.md) for **unsafe Rust** and when to use it.
