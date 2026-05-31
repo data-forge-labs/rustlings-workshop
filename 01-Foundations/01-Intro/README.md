@@ -6,7 +6,7 @@
 
 ---
 
-## Why This Project?
+## Why Rust 4 Data Engineers?
 
 ### The Problem
 
@@ -118,9 +118,10 @@ Rust macros (`!`) perform compile-time code generation. `println!`, `vec!`, `pan
 6. [Concept: Variables and Mutability](#6-concept-variables-and-mutability)
 7. [Concept: Expressions vs Statements](#7-concept-expressions-vs-statements)
 8. [Putting It All Together](#8-putting-it-all-together)
-9. [Appendix: Rust Syntax Reference](#9-appendix-rust-syntax-reference)
-10. [Summary](#10-summary)
-11. [Exercise: Guess the Number Game](#11-exercise-guess-the-number-game)
+9. [Cargo Workshop — Commands for the Course](#9-cargo-workshop--commands-for-the-course)
+10. [Appendix: Rust Syntax Reference](#10-appendix-rust-syntax-reference)
+11. [Summary](#11-summary)
+12. [Exercise: Guess the Number Game](#12-exercise-guess-the-number-game)
 
 ---
 
@@ -527,7 +528,74 @@ Status: above average
 
 ---
 
-## 9. Appendix: Rust Syntax Reference
+## 9. Cargo Workshop — Commands for the Course
+
+Cargo is Rust's package manager and build tool — like `pip` + `setuptools` + `pytest` + `black` combined into one command. You'll use it constantly throughout this course.
+
+For a full reference, see [`cargo-cheatsheet.md`](./cargo-cheatsheet.md) in this folder.
+
+### Essential Commands
+
+```bash
+# Create a new project
+cargo new my_project
+cd my_project
+
+# Build (compile) without running
+cargo build
+
+# Build and run
+cargo run
+
+# Check compilation quickly (no binary produced)
+cargo check
+
+# Run tests
+cargo test
+
+# Add a dependency
+cargo add rand
+
+# Format code
+cargo fmt
+
+# Lint
+cargo clippy
+```
+
+### The Build-Run-Test Loop
+
+Every project in this course follows this pattern:
+
+```bash
+cd workshop          # Enter the project directory
+cargo check          # Check your code compiles
+cargo test           # Run tests — see how many pass
+# ... edit src/lib.rs to replace todo!() calls ...
+cargo test           # More tests should pass now
+cargo run            # Run the final program
+```
+
+### Quick Reference
+
+| Task | Command |
+|------|---------|
+| Build project | `cargo build` |
+| Check without building | `cargo check` |
+| Run project | `cargo run` |
+| Run all tests | `cargo test` |
+| Run a specific test | `cargo test test_name` |
+| Format code | `cargo fmt` |
+| Lint code | `cargo clippy` |
+| Add dependency | `cargo add crate_name` |
+| Build docs | `cargo doc --open` |
+| Build optimized | `cargo build --release` |
+
+> **Tip:** Use `cargo check` during development — it's faster than `cargo build` because it skips the final linking step.
+
+---
+
+## 10. Appendix: Rust Syntax Reference
 
 ### Comments
 
@@ -607,7 +675,7 @@ Rust is a **statically typed language**. Every single value in Rust has a type a
 
 ---
 
-## 10. Summary
+## 11. Summary
 
 | Concept | Description | Python Equivalent |
 |---|---|---|
@@ -622,7 +690,7 @@ Rust is a **statically typed language**. Every single value in Rust has a type a
 
 ---
 
-## 11. Exercise: Guess the Number Game
+## 12. Exercise: Guess the Number Game
 
 Let's build a small game to practice everything you've learned: `let`, `mut`, `fn`, `println!`, `std::io`, loops, `if/else`, and external crates.
 
