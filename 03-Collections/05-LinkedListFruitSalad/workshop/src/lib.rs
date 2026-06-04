@@ -15,7 +15,7 @@ pub fn vec_to_linked_list(vec: Vec<&'static str>) -> LinkedList<&'static str> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use rand::thread_rng;
+    use rand::rng;
 
     mod step_01_linked_list {
         #[test]
@@ -27,7 +27,7 @@ mod tests {
         #[test]
         fn test_shuffle_preserves_length() {
             let list = make_fruit_list();
-            let mut rng = thread_rng();
+            let mut rng = rng();
             let shuffled = shuffle_to_vec(list, &mut rng);
             assert_eq!(shuffled.len(), 3);
         }

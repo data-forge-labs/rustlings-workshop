@@ -24,7 +24,7 @@ This tutorial provides a comprehensive guide to working with `VecDeque` in Rust,
 
 ## Introduction to `VecDeque`
 
-A **VecDeque** (short for "vector double-ended queue") is a collection in Rust’s `std::collections` module that implements a double-ended queue. It allows efficient insertion and removal of elements at both the front and back, while also supporting random access to elements.
+A **VecDeque** (short for "vector double-ended queue") is a collection in Rustâ€™s `std::collections` module that implements a double-ended queue. It allows efficient insertion and removal of elements at both the front and back, while also supporting random access to elements.
 
 ### Key Features of `VecDeque`:
 - **Double-Ended Operations**: Efficient `push_front`, `push_back`, `pop_front`, and `pop_back`.
@@ -73,14 +73,14 @@ let mut fruit: VecDeque<_> = fruit.into_iter().collect();
 ```
 
 **Why Convert?**:
-- **Shuffling**: The `SliceRandom` trait’s `shuffle` method is implemented for `Vec` (and slices), but not directly for `VecDeque`. Converting to `Vec` allows using `shuffle` to randomize the order.
+- **Shuffling**: The `SliceRandom` traitâ€™s `shuffle` method is implemented for `Vec` (and slices), but not directly for `VecDeque`. Converting to `Vec` allows using `shuffle` to randomize the order.
 - **Preserving `VecDeque` Properties**: After shuffling, converting back to `VecDeque` restores the double-ended queue functionality, enabling efficient front/back operations (e.g., `push_front`, `pop_back`).
 - **How It Works**:
   - `into_iter().collect()` consumes the `VecDeque` into an iterator and builds a `Vec`.
   - After shuffling, `into_iter().collect()` converts the `Vec` back to a `VecDeque`.
-- **Trade-Off**: The conversion is O(n) due to copying elements, but it’s a one-time cost for enabling shuffling.
+- **Trade-Off**: The conversion is O(n) due to copying elements, but itâ€™s a one-time cost for enabling shuffling.
 
-**Alternative**: Implement a custom shuffle for `VecDeque` (e.g., by swapping elements randomly), but using `Vec` leverages the standard library’s optimized `shuffle`.
+**Alternative**: Implement a custom shuffle for `VecDeque` (e.g., by swapping elements randomly), but using `Vec` leverages the standard libraryâ€™s optimized `shuffle`.
 
 ### Why Push to Front and Back After Shuffling?
 
@@ -92,12 +92,12 @@ fruit.push_back("Cherry");
 ```
 
 **Purpose**:
-- **Demonstrate Double-Ended Operations**: These operations showcase `VecDeque`’s ability to efficiently modify both ends, a key feature distinguishing it from `Vec`.
+- **Demonstrate Double-Ended Operations**: These operations showcase `VecDeque`â€™s ability to efficiently modify both ends, a key feature distinguishing it from `Vec`.
 - **Flexibility**: Adding elements post-shuffle illustrates how `VecDeque` can be used in dynamic scenarios, such as queues where items are added at either end.
 - **In the Code**:
   - `push_front("Pomegranate")` adds to the start (O(1)).
   - `push_back("Fig")` and `push_back("Cherry")` add to the end (O(1)).
-- **Effect**: The fruit salad now includes these fruits in specific positions, highlighting `VecDeque`’s versatility.
+- **Effect**: The fruit salad now includes these fruits in specific positions, highlighting `VecDeque`â€™s versatility.
 
 ### Traits and Types from `rand`
 
@@ -113,11 +113,11 @@ The program uses the `rand` crate for shuffling:
      - Shuffles the `Vec` of fruits.
    - **Why Use It?**: Provides efficient, safe randomization.
 
-2. **`rand::thread_rng`**:
+2. **`rand::rng`**:
    - **What is it?**: A function returning a thread-local random number generator (`ThreadRng`).
    - **In the Code**:
      ```rust
-     let mut rng = thread_rng();
+     let mut rng = rng();
      ```
      - Creates `rng` for shuffling.
    - **Why Use It?**: Convenient, thread-safe source of randomness.
@@ -126,14 +126,14 @@ The program uses the `rand` crate for shuffling:
 Include in `Cargo.toml`:
 ```toml
 [dependencies]
-rand = "0.8.5"
+rand = "0.10"
 ```
 
 ---
 
 ## Building the Program Step-by-Step
 
-We’ll build the fruit salad program incrementally, starting with basic `VecDeque` operations and progressing to advanced features.
+Weâ€™ll build the fruit salad program incrementally, starting with basic `VecDeque` operations and progressing to advanced features.
 
 ### Step 1: Basic `VecDeque` Creation and Printing
 
@@ -167,7 +167,7 @@ fn print_fruit_salad(fruit: &VecDeque<&str>) {
 **Explanation**:
 - **VecDeque Creation**:
   - `VecDeque::new()` creates an empty `VecDeque<&str>`.
-  - `push_back` adds elements to the back (like `Vec`’s `push`).
+  - `push_back` adds elements to the back (like `Vec`â€™s `push`).
 - **Printing**:
   - `print_fruit_salad` takes a reference (`&VecDeque<&str>`) to avoid ownership transfer.
   - `fruit.iter().enumerate()` iterates over references to elements, pairing with indices.
@@ -190,7 +190,7 @@ Arbutus, Loquat, Strawberry Tree Berry
 **Code**:
 ```rust
 use rand::seq::SliceRandom;
-use rand::thread_rng;
+use rand::rng;
 use std::collections::VecDeque;
 
 fn main() {
@@ -200,7 +200,7 @@ fn main() {
     fruit.push_back("Strawberry Tree Berry");
 
     // Scramble (shuffle) the fruit
-    let mut rng = thread_rng();
+    let mut rng = rng();
     let mut fruit: Vec<_> = fruit.into_iter().collect();
     fruit.shuffle(&mut rng);
 
@@ -224,8 +224,8 @@ fn print_fruit_salad(fruit: &VecDeque<&str>) {
 
 **New Concepts**:
 - **Randomization**:
-  - `thread_rng()` creates a random number generator.
-  - `fruit.shuffle(&mut rng)` randomizes the `Vec`’s order.
+  - `rng()` creates a random number generator.
+  - `fruit.shuffle(&mut rng)` randomizes the `Vec`â€™s order.
 - **Conversion**:
   - `into_iter().collect()` converts `VecDeque` to `Vec` and back.
   - `Vec<_>` uses type inference for `Vec<&str>`.
@@ -243,12 +243,12 @@ Loquat, Arbutus, Strawberry Tree Berry
 
 ### Step 3: Double-Ended Operations
 
-**Goal**: Add fruits to both ends and remove from both ends, showcasing `VecDeque`’s double-ended nature.
+**Goal**: Add fruits to both ends and remove from both ends, showcasing `VecDeque`â€™s double-ended nature.
 
 **Code**:
 ```rust
 use rand::seq::SliceRandom;
-use rand::thread_rng;
+use rand::rng;
 use std::collections::VecDeque;
 
 fn main() {
@@ -258,7 +258,7 @@ fn main() {
     fruit.push_back("Strawberry Tree Berry");
 
     // Scramble (shuffle) the fruit
-    let mut rng = thread_rng();
+    let mut rng = rng();
     let mut fruit: Vec<_> = fruit.into_iter().collect();
     fruit.shuffle(&mut rng);
 
@@ -321,7 +321,7 @@ Loquat, Arbutus, Strawberry Tree Berry, Fig
 **Code**:
 ```rust
 use rand::seq::SliceRandom;
-use rand::thread_rng;
+use rand::rng;
 use std::collections::VecDeque;
 
 fn main() -> Result<(), String> {
@@ -331,7 +331,7 @@ fn main() -> Result<(), String> {
     fruit.push_back("Strawberry Tree Berry");
 
     // Scramble (shuffle) the fruit
-    let mut rng = thread_rng();
+    let mut rng = rng();
     let mut fruit: Vec<_> = fruit.into_iter().collect();
     fruit.shuffle(&mut rng);
 
@@ -386,7 +386,7 @@ fn print_fruit_salad(fruit: &VecDeque<&str>) -> Result<(), String> {
   - `choose` picks a random element, returning `Option<&str>`.
   - `.ok_or()` handles the empty case.
 - **Slice Access**:
-  - `as_slice()` provides a view of `VecDeque`’s elements as a slice, enabling `SliceRandom` methods.
+  - `as_slice()` provides a view of `VecDeque`â€™s elements as a slice, enabling `SliceRandom` methods.
 - **Robustness**:
   - Checks for empty queues prevent panics.
   - `?` operator propagates errors cleanly.
@@ -455,7 +455,7 @@ For any step:
 2. Update `Cargo.toml`:
    ```toml
    [dependencies]
-   rand = "0.8.5"
+   rand = "0.10"
    ```
 3. Copy the code for the desired step into `workshop/src/main.rs`.
 4. Run:
@@ -472,5 +472,5 @@ This tutorial built a fruit salad program using `VecDeque`, from basic queue ope
 - **Comparison**: Differences from `Vec` (back-heavy) and `LinkedList` (no random access).
 - **Conversions**: Converting to `Vec` for shuffling and back to `VecDeque` for queue operations.
 - **Double-Ended Operations**: Demonstrated with `push_front`, `push_back`, `pop_front`, and `pop_back`.
-- **Randomization**: Using `rand`’s `SliceRandom` for shuffling and selection.
+- **Randomization**: Using `rand`â€™s `SliceRandom` for shuffling and selection.
 - **Error Handling**: Robust checks for empty queues.

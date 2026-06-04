@@ -174,14 +174,14 @@ In Rust with the `rand` crate:
 
 ```rust
 use rand::seq::SliceRandom;
-use rand::thread_rng;
+use rand::rng;
 
 let mut fruits = vec!["Apple", "Banana", "Orange", "Grape"];
-let mut rng = thread_rng();
+let mut rng = rng();
 fruits.shuffle(&mut rng);
 ```
 
-`SliceRandom` extends all slices with the `shuffle` method. `thread_rng()` provides a thread-local random number generator. Unlike Python's `random.shuffle()` which works in-place, Rust requires explicit mutable access.
+`SliceRandom` extends all slices with the `shuffle` method. `rng()` provides a thread-local random number generator. Unlike Python's `random.shuffle()` which works in-place, Rust requires explicit mutable access.
 
 ## 6. Concept: Error Handling with Result
 

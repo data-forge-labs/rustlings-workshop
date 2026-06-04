@@ -35,7 +35,7 @@ An **array** in Rust is a fixed-size, contiguous collection of elements of the s
 - **Immutable by Default**: Elements can be modified only if the array is mutable.
 - **Type Safety**: All elements must be of type `T`.
 
-In this tutorial, we’ll use an array to store a fixed-size list of fruit names, shuffle them (via conversion to `Vec`), and perform operations like adding or removing fruits, demonstrating array usage in a constrained context.
+In this tutorial, weâ€™ll use an array to store a fixed-size list of fruit names, shuffle them (via conversion to `Vec`), and perform operations like adding or removing fruits, demonstrating array usage in a constrained context.
 
 ---
 
@@ -68,7 +68,7 @@ In this tutorial, we’ll use an array to store a fixed-size list of fruit names
 
 **Preferred Scenarios**:
 1. **Known, Fixed Size**:
-   - When the number of elements is known at compile time and won’t change.
+   - When the number of elements is known at compile time and wonâ€™t change.
    - Example: Storing the days of the week (`["Mon", "Tue", ..., "Sun"]`).
 2. **Performance-Critical Random Access**:
    - Arrays offer O(1) indexing with excellent cache locality, ideal for frequent element access.
@@ -99,16 +99,16 @@ fruit_vec.shuffle(&mut rng);
 ```
 
 **Why Convert?**:
-- **Shuffling Requirement**: The `SliceRandom` trait’s `shuffle` method is implemented for `Vec` and slices, which support efficient random access. Arrays support indexing but lack a direct `shuffle` method.
+- **Shuffling Requirement**: The `SliceRandom` traitâ€™s `shuffle` method is implemented for `Vec` and slices, which support efficient random access. Arrays support indexing but lack a direct `shuffle` method.
 - **Conversion to `Vec`**:
   - `into_iter().collect()` converts the array to a `Vec`, enabling `shuffle`.
   - Arrays are fixed-size, so shuffling requires a resizable structure like `Vec` to handle temporary transformations.
-- **Shuffling**: `fruit_vec.shuffle(&mut rng)` randomizes the `Vec`’s order using the `rand` crate.
+- **Shuffling**: `fruit_vec.shuffle(&mut rng)` randomizes the `Vec`â€™s order using the `rand` crate.
 - **Conversion Back to Array**:
-  - The program converts back to an array to maintain a fixed-size structure, assuming the final size matches the array’s capacity (e.g., `[&str; 6]`).
+  - The program converts back to an array to maintain a fixed-size structure, assuming the final size matches the arrayâ€™s capacity (e.g., `[&str; 6]`).
   - This is less common in practice, as `Vec` is often preferred for dynamic operations, but it demonstrates array usage in a constrained context.
-- **Trade-Off**: Conversion is O(n) due to copying, but it’s necessary for shuffling.
-- **Alternative**: Shuffle the array in place using index swaps, but `Vec`’s `shuffle` is more convenient and optimized.
+- **Trade-Off**: Conversion is O(n) due to copying, but itâ€™s necessary for shuffling.
+- **Alternative**: Shuffle the array in place using index swaps, but `Vec`â€™s `shuffle` is more convenient and optimized.
 
 ---
 
@@ -130,11 +130,11 @@ The program uses the `rand` crate for shuffling and random selection:
      - Shuffles the `Vec` and selects random fruits.
    - **Why Use It?**: Efficient, safe randomization for contiguous collections.
 
-2. **`rand::thread_rng`**:
+2. **`rand::rng`**:
    - **What is it?**: A function returning a thread-local random number generator (`ThreadRng`).
    - **In the Code**:
      ```rust
-     let mut rng = thread_rng();
+     let mut rng = rng();
      ```
      - Creates `rng` for shuffling and selection.
    - **Why Use It?**: Convenient, thread-safe randomness source.
@@ -143,7 +143,7 @@ The program uses the `rand` crate for shuffling and random selection:
 Include in `Cargo.toml`:
 ```toml
 [dependencies]
-rand = "0.8.5"
+rand = "0.10"
 ```
 
 ### Array Indexing and Iteration
@@ -164,7 +164,7 @@ rand = "0.8.5"
 
 ## Building the Program Step-by-Step
 
-We’ll build a fruit salad program using an array, starting with basic operations and progressing to advanced features. The array will have a fixed size (`[&str; 6]`), and we’ll handle size constraints explicitly.
+Weâ€™ll build a fruit salad program using an array, starting with basic operations and progressing to advanced features. The array will have a fixed size (`[&str; 6]`), and weâ€™ll handle size constraints explicitly.
 
 ### Step 1: Basic Array Creation and Printing
 
@@ -209,13 +209,13 @@ Arbutus, Loquat, Strawberry Tree Berry
 
 ```rust
 use rand::seq::SliceRandom;
-use rand::thread_rng;
+use rand::rng;
 
 fn main() {
     let fruit: [&str; 3] = ["Arbutus", "Loquat", "Strawberry Tree Berry"];
 
     // Scramble (shuffle) the fruit
-    let mut rng = thread_rng();
+    let mut rng = rng();
     let mut fruit_vec: Vec<_> = fruit.into_iter().collect();
     fruit_vec.shuffle(&mut rng);
 
@@ -235,8 +235,8 @@ fn main() {
 
 **New Concepts**:
 - **Randomization**:
-  - `thread_rng()` creates a random number generator.
-  - `fruit_vec.shuffle(&mut rng)` randomizes the `Vec`’s order.
+  - `rng()` creates a random number generator.
+  - `fruit_vec.shuffle(&mut rng)` randomizes the `Vec`â€™s order.
 - **Conversion**:
   - `into_iter().collect()` converts the array to a `Vec<&str>`.
   - `try_into().unwrap()` converts the `Vec` back to `[&str; 3]`, assuming the size matches.
@@ -258,13 +258,13 @@ Loquat, Arbutus, Strawberry Tree Berry
 
 ```rust
 use rand::seq::SliceRandom;
-use rand::thread_rng;
+use rand::rng;
 
 fn main() {
     let fruit: [&str; 3] = ["Arbutus", "Loquat", "Strawberry Tree Berry"];
 
     // Scramble (shuffle) the fruit
-    let mut rng = thread_rng();
+    let mut rng = rng();
     let mut fruit_vec: Vec<_> = fruit.into_iter().collect();
     fruit_vec.shuffle(&mut rng);
 
@@ -291,12 +291,12 @@ fn main() {
 - **Adding Elements**:
   - `fruit_vec.insert(0, "Pomegranate")` adds at the front (O(n) due to shifting).
   - `fruit_vec.push("Fig")` and `push("Cherry")` add at the back (O(1) amortized).
-  - Arrays can’t resize, so `Vec` is used for flexibility.
+  - Arrays canâ€™t resize, so `Vec` is used for flexibility.
 - **Conversion Back**:
   - `try_into().unwrap()` converts the `Vec` to `[&str; 6]`, matching the new size.
-  - Panics if the `Vec` size doesn’t match (addressed in Step 4).
+  - Panics if the `Vec` size doesnâ€™t match (addressed in Step 4).
 - **Purpose**:
-  - Mimics adding fruits to the salad, constrained by the array’s fixed size.
+  - Mimics adding fruits to the salad, constrained by the arrayâ€™s fixed size.
 
 **Output** (example):
 ```
@@ -310,13 +310,13 @@ Pomegranate, Loquat, Arbutus, Strawberry Tree Berry, Fig, Cherry
 
 ```rust
 use rand::seq::SliceRandom;
-use rand::thread_rng;
+use rand::rng;
 
 fn main() -> Result<(), String> {
     let fruit: [&str; 3] = ["Arbutus", "Loquat", "Strawberry Tree Berry"];
 
     // Scramble (shuffle) the fruit
-    let mut rng = thread_rng();
+    let mut rng = rng();
     let mut fruit_vec: Vec<_> = fruit.into_iter().collect();
     fruit_vec.shuffle(&mut rng);
 
@@ -373,7 +373,7 @@ fn print_fruit_salad(fruit: &[&str]) -> Result<(), String> {
   - `fruit.choose(&mut rng)` picks a random element from the array (as a slice).
   - `.ok_or()` handles the empty case (though impossible for a fixed-size array).
 - **Removing Elements**:
-  - Arrays can’t resize, so a new array `[&str; 5]` is created, copying the first 5 elements.
+  - Arrays canâ€™t resize, so a new array `[&str; 5]` is created, copying the first 5 elements.
   - `copy_from_slice` copies data from a slice to the array.
 - **Slice Usage**:
   - `print_fruit_salad` uses a slice for flexibility, working with arrays or `Vec`s.
@@ -409,7 +409,7 @@ To further explore arrays, randomization, and Rust collections, try these challe
 
 1. **In-Place Shuffle**:
    Implement a shuffle function for the array without converting to `Vec`.
-   **Hint**: Use index swaps with `rng.gen_range`.
+   **Hint**: Use index swaps with `rng.random_range`.
 
 2. **Replace Fruit**:
    Replace a specific fruit in the array with another (e.g., replace "Loquat" with "Mango").
@@ -441,10 +441,10 @@ For any step:
    cargo new fruit_salad_array
    cd fruit_salad_array
    ```
-2. Update `Cargo.toml` (for Steps 2–4):
+2. Update `Cargo.toml` (for Steps 2â€“4):
    ```toml
    [dependencies]
-   rand = "0.8.5"
+   rand = "0.10"
    ```
 3. Copy the code for the desired step into `workshop/src/main.rs`.
 4. Run:
@@ -461,6 +461,6 @@ This tutorial built a fruit salad program using arrays, from basic creation to a
 - **Comparison**: Differences from `Vec` (resizable), `VecDeque` (double-ended), and `LinkedList` (flexible insertions).
 - **Conversions**: Converting to `Vec` for shuffling and back to an array for fixed-size storage.
 - **Use Cases**: Scenarios where arrays excel (fixed-size, performance-critical) and their limitations (no resizing).
-- **Randomization**: Using `rand`’s `SliceRandom` for shuffling and selection.
+- **Randomization**: Using `rand`â€™s `SliceRandom` for shuffling and selection.
 - **Advanced Features**: Error handling, slice operations, and array manipulation.
 

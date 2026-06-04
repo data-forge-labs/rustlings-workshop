@@ -87,7 +87,7 @@ In the provided code, `LinkedList` is used to store fruit names, shuffle them (v
   - For random access or indexing, `Vec` or `VecDeque` are required.
 
 **In Practice**:
-- Rust’s `LinkedList` is rarely used due to its performance drawbacks. `Vec` or `VecDeque` often suffice for most use cases, but `LinkedList` shines in niche scenarios requiring frequent middle insertions/removals.
+- Rustâ€™s `LinkedList` is rarely used due to its performance drawbacks. `Vec` or `VecDeque` often suffice for most use cases, but `LinkedList` shines in niche scenarios requiring frequent middle insertions/removals.
 
 ### Why Convert `LinkedList` to `Vec` and Back?
 
@@ -99,15 +99,15 @@ let mut fruit: LinkedList<_> = fruit.into_iter().collect();
 ```
 
 **Why Convert?**:
-- **Shuffling Requirement**: The `SliceRandom` trait’s `shuffle` method is implemented for `Vec` and slices, which require contiguous memory for efficient random access. `LinkedList`’s non-contiguous structure doesn’t support direct shuffling.
+- **Shuffling Requirement**: The `SliceRandom` traitâ€™s `shuffle` method is implemented for `Vec` and slices, which require contiguous memory for efficient random access. `LinkedList`â€™s non-contiguous structure doesnâ€™t support direct shuffling.
 - **Conversion to `Vec`**:
   - `into_iter().collect()` consumes the `LinkedList` into an iterator and builds a `Vec`, enabling `shuffle`.
   - This step is necessary because `LinkedList` lacks indexing, making random swaps inefficient.
-- **Shuffling**: `fruit.shuffle(&mut rng)` randomizes the `Vec`’s order using the `rand` crate.
+- **Shuffling**: `fruit.shuffle(&mut rng)` randomizes the `Vec`â€™s order using the `rand` crate.
 - **Conversion Back to `LinkedList`**:
   - Restores the `LinkedList` structure to leverage its efficient insertion/removal capabilities for subsequent operations.
-  - Ensures the program can continue using `LinkedList`’s features, like `push_front` or potential middle insertions.
-- **Trade-Off**: Conversion is O(n) due to copying elements, but it’s a one-time cost for shuffling.
+  - Ensures the program can continue using `LinkedList`â€™s features, like `push_front` or potential middle insertions.
+- **Trade-Off**: Conversion is O(n) due to copying elements, but itâ€™s a one-time cost for shuffling.
 - **Why Not `VecDeque`?**:
   - `VecDeque` also requires conversion to `Vec` for shuffling, as it lacks a direct `shuffle` method.
   - The choice of `LinkedList` may reflect a need for middle insertions/removals or pedagogical purposes to demonstrate its use.
@@ -128,11 +128,11 @@ The program uses the `rand` crate for shuffling:
      - Shuffles the `Vec` of fruits.
    - **Why Use It?**: Efficient, safe randomization for contiguous collections.
 
-2. **`rand::thread_rng`**:
+2. **`rand::rng`**:
    - **What is it?**: A function returning a thread-local random number generator (`ThreadRng`).
    - **In the Code**:
      ```rust
-     let mut rng = thread_rng();
+     let mut rng = rng();
      ```
      - Creates `rng` for shuffling.
    - **Why Use It?**: Convenient, thread-safe randomness source.
@@ -141,14 +141,14 @@ The program uses the `rand` crate for shuffling:
 Include in `Cargo.toml`:
 ```toml
 [dependencies]
-rand = "0.8.5"
+rand = "0.10"
 ```
 
 ---
 
 ## Building the Program Step-by-Step
 
-We’ll build the fruit salad program incrementally, starting with basic `LinkedList` operations and progressing to advanced features.
+Weâ€™ll build the fruit salad program incrementally, starting with basic `LinkedList` operations and progressing to advanced features.
 
 ### Step 1: Basic `LinkedList` Creation and Printing
 
@@ -198,7 +198,7 @@ Arbutus, Loquat, Strawberry Tree Berry
 
 ```rust
 use rand::seq::SliceRandom;
-use rand::thread_rng;
+use rand::rng;
 use std::collections::LinkedList;
 
 fn main() {
@@ -208,7 +208,7 @@ fn main() {
     fruit.push_back("Strawberry Tree Berry");
 
     // Scramble (shuffle) the fruit
-    let mut rng = thread_rng();
+    let mut rng = rng();
     let mut fruit: Vec<_> = fruit.into_iter().collect();
     fruit.shuffle(&mut rng);
 
@@ -228,8 +228,8 @@ fn main() {
 
 **New Concepts**:
 - **Randomization**:
-  - `thread_rng()` creates a random number generator.
-  - `fruit.shuffle(&mut rng)` randomizes the `Vec`’s order.
+  - `rng()` creates a random number generator.
+  - `fruit.shuffle(&mut rng)` randomizes the `Vec`â€™s order.
 - **Conversion**:
   - `into_iter().collect()` converts `LinkedList` to `Vec` and back.
   - `Vec<_>` uses type inference for `Vec<&str>`.
@@ -247,11 +247,11 @@ Loquat, Arbutus, Strawberry Tree Berry
 
 ### Step 3: Double-Ended Operations
 
-**Goal**: Add fruits to both ends, showcasing `LinkedList`’s flexibility.
+**Goal**: Add fruits to both ends, showcasing `LinkedList`â€™s flexibility.
 
 ```rust
 use rand::seq::SliceRandom;
-use rand::thread_rng;
+use rand::rng;
 use std::collections::LinkedList;
 
 fn main() {
@@ -261,7 +261,7 @@ fn main() {
     fruit.push_back("Strawberry Tree Berry");
 
     // Scramble (shuffle) the fruit
-    let mut rng = thread_rng();
+    let mut rng = rng();
     let mut fruit: Vec<_> = fruit.into_iter().collect();
     fruit.shuffle(&mut rng);
 
@@ -287,7 +287,7 @@ fn main() {
 **New Concepts**:
 - **Double-Ended Operations**:
   - `push_front` and `push_back` add elements efficiently (O(1)).
-  - Demonstrates `LinkedList`’s ability to modify both ends, similar to `VecDeque` but with potential for middle operations.
+  - Demonstrates `LinkedList`â€™s ability to modify both ends, similar to `VecDeque` but with potential for middle operations.
 - **Purpose**:
   - Adding `"Pomegranate"` (front) and `"Fig"`, `"Cherry"` (back) shows flexibility.
 - **Comparison**:
@@ -302,11 +302,11 @@ Pomegranate, Loquat, Arbutus, Strawberry Tree Berry, Fig, Cherry
 
 ### Step 4: Advanced Features (Error Handling, Middle Insertions)
 
-**Goal**: Add error handling, middle insertions, and random selection to leverage `LinkedList`’s strengths.
+**Goal**: Add error handling, middle insertions, and random selection to leverage `LinkedList`â€™s strengths.
 
 ```rust
 use rand::seq::SliceRandom;
-use rand::thread_rng;
+use rand::rng;
 use std::collections::LinkedList;
 
 fn main() -> Result<(), String> {
@@ -316,7 +316,7 @@ fn main() -> Result<(), String> {
     fruit.push_back("Strawberry Tree Berry");
 
     // Scramble (shuffle) the fruit
-    let mut rng = thread_rng();
+    let mut rng = rng();
     let mut fruit: Vec<_> = fruit.into_iter().collect();
     fruit.shuffle(&mut rng);
 
@@ -383,13 +383,13 @@ fn print_fruit_salad(fruit: &LinkedList<&str>) -> Result<(), String> {
 - **Middle Insertion**:
   - Uses `cursor_front_mut()` to create a mutable cursor starting at the front.
   - `move_next()` advances to the middle (approximately `len/2` steps).
-  - `insert_after` inserts `"Mango"` after the cursor’s position (O(1)).
-  - Demonstrates `LinkedList`’s strength for middle insertions, unlike `Vec` or `VecDeque`.
+  - `insert_after` inserts `"Mango"` after the cursorâ€™s position (O(1)).
+  - Demonstrates `LinkedList`â€™s strength for middle insertions, unlike `Vec` or `VecDeque`.
 - **Random Selection**:
   - Converts to `Vec` temporarily for `SliceRandom::choose`, as `LinkedList` lacks direct random access.
   - `fruit_vec.choose(&mut rng)` picks a random element.
 - **Cursor API**:
-  - `LinkedList`’s cursor API allows precise navigation and modification, ideal for complex list manipulations.
+  - `LinkedList`â€™s cursor API allows precise navigation and modification, ideal for complex list manipulations.
 - **Robustness**:
   - Handles empty lists to prevent panics.
   - `?` operator propagates errors cleanly.
@@ -462,7 +462,7 @@ For any step:
 2. Update `Cargo.toml`:
    ```toml
    [dependencies]
-   rand = "0.8.5"
+   rand = "0.10"
    ```
 3. Copy the code for the desired step into `workshop/src/main.rs`. 
 4. Run:
@@ -479,7 +479,7 @@ This tutorial built a fruit salad program using `LinkedList`, from basic list op
 - **Comparison**: Differences from `Vec` (random access, cache-friendly) and `VecDeque` (double-ended, contiguous).
 - **Conversions**: Converting to `Vec` for shuffling and back to `LinkedList` for list operations.
 - **Use Cases**: Scenarios where `LinkedList` excels (e.g., middle insertions) and its cache locality drawbacks.
-- **Randomization**: Using `rand`’s `SliceRandom` for shuffling.
+- **Randomization**: Using `rand`â€™s `SliceRandom` for shuffling.
 - **Advanced Features**: Cursor-based middle insertions and robust error handling.
 - **Error Handling**: Robust checks for empty lists and invalid indices.
 - **Interactive Input**: Using `std::io` for user interaction.

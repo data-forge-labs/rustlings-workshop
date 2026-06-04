@@ -15,13 +15,13 @@ pub fn format_set_reverse(set: &BTreeSet<&str>) -> Vec<&str> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use rand::thread_rng;
+    use rand::rng;
 
     mod step_01_btreeset {
         #[test]
         fn test_generate_set_unique() {
             let fruits = vec!["apple", "banana", "cherry"];
-            let mut rng = thread_rng();
+            let mut rng = rng();
             let (set, _) = generate_fruit_set(&fruits, 3, &mut rng);
             assert_eq!(set.len(), 3);
         }
@@ -29,7 +29,7 @@ mod tests {
         #[test]
         fn test_generate_set_no_duplicates() {
             let fruits = vec!["apple", "apple"];
-            let mut rng = thread_rng();
+            let mut rng = rng();
             let (set, _) = generate_fruit_set(&fruits, 2, &mut rng);
             assert_eq!(set.len(), 1);
         }

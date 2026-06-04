@@ -48,7 +48,6 @@
 //! Both functions effectively prevent deadlocks by ensuring at least one of the
 //! necessary conditions for a deadlock cannot occur in the system.
 
-use rand::Rng;
 use std::{
     collections::HashMap,
     process::exit,
@@ -139,8 +138,7 @@ impl Philosopher {
     }
 
     fn think(&self) {
-        let mut rng = rand::thread_rng();
-        let time_to_think = rng.gen_range(1..5);
+        let time_to_think = rand::random_range(1..5);
         println!("{} is thinking for {} seconds.", self.name, time_to_think);
         thread::sleep(Duration::from_secs(time_to_think));
     }

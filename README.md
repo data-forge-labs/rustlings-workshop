@@ -272,7 +272,7 @@ The table below lists all core Rust concepts a learner should eventually see. **
 | `io::stdout().flush()` | ✅ | 01-02 |
 | String methods (`chars`, `trim`, `to_lowercase`, `is_ascii_digit`, `to_digit`) | ✅ | 01-02 |
 | Ranges (`0..=9`) | ✅ | 01-02, 01-03 |
-| `rand` crate (`thread_rng`, `shuffle`, `choose`) | ✅ | 01-02, 03-02 |
+| `rand` crate (`rng`, `shuffle`, `choose`) | ✅ | 01-02, 03-02 |
 | Type casting (`as`) | ✅ | 01-02, 01-03 |
 | Tuples | ✅ | 01-02 |
 | `unwrap()` / basic error handling | ✅ | 01-02, 02-03 |

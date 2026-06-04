@@ -168,7 +168,7 @@ pub fn generate_fruit() -> &'static str {
         "Apple", "Banana", "Cherry", "Date", "Elderberry",
         "Fig", "Grape", "Honeydew",
     ];
-    let mut rng = rand::thread_rng();
+    let mut rng = rand::rng();
     fruits.choose(&mut rng).unwrap()
 }
 ```

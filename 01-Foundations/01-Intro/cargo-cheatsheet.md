@@ -7,9 +7,9 @@ Every Rust project uses `cargo` for building, testing, and managing dependencies
 | Command | What It Does | Python Equivalent |
 |---------|-------------|-------------------|
 | `cargo new my_project` | Create new Rust project | `mkdir my_project && cd my_project && pip init` |
-| `cargo init` | Init cargo in existing dir | — |
+| `cargo init` | Init cargo in existing dir | â€” |
 | `cargo build` | Compile (debug) | `python -m py_compile` |
-| `cargo build --release` | Compile (optimized) | — |
+| `cargo build --release` | Compile (optimized) | â€” |
 | `cargo run` | Build + run | `python main.py` |
 | `cargo check` | Check compilation without producing binary | `mypy main.py` (type-check only) |
 
@@ -47,11 +47,11 @@ Every Rust project uses `cargo` for building, testing, and managing dependencies
 
 ```
 my_project/
-├── Cargo.toml       # Package manifest (dependencies + metadata)
-├── Cargo.lock       # Lockfile — pin exact versions (commit this!)
-└── src/
-    ├── main.rs      # Binary entry point
-    └── lib.rs       # Library entry point (for shared code)
+â”œâ”€â”€ Cargo.toml       # Package manifest (dependencies + metadata)
+â”œâ”€â”€ Cargo.lock       # Lockfile â€” pin exact versions (commit this!)
+â””â”€â”€ src/
+    â”œâ”€â”€ main.rs      # Binary entry point
+    â””â”€â”€ lib.rs       # Library entry point (for shared code)
 ```
 
 ### `Cargo.toml` Breakdown
@@ -63,7 +63,7 @@ version = "0.1.0"         # Semantic version
 edition = "2021"          # Rust edition (2021 is current)
 
 [dependencies]
-rand = "0.8"              # Crate name + version requirement
+rand = "0.10"              # Crate name + version requirement
 serde = { version = "1", features = ["derive"] }  # With features
 
 [dev-dependencies]        # Only for tests/benchmarks

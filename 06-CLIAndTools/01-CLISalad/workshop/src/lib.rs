@@ -128,8 +128,6 @@ pub fn fruit_salad_cli(args: Vec<String>) -> Result<String, String> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use rand::seq::SliceRandom;
-    use rand::thread_rng;
 
     mod step_01_fruit_list {
         use super::*;

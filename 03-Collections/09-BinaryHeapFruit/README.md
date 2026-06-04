@@ -248,7 +248,7 @@ use rand::seq::SliceRandom;
 pub fn generate_fruit_salad() -> BinaryHeap<Fruit> {
     let mut heap = BinaryHeap::new();
     let fruit_names = vec!["Apple", "Orange", "Banana", "Grape", "Peach"];
-    let mut rng = rand::thread_rng();
+    let mut rng = rand::rng();
     // Always push at least one Fig
     heap.push(Fruit::Fig);
     // Push some random other fruits

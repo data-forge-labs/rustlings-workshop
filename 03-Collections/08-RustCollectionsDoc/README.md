@@ -7,7 +7,7 @@ Here are several ways to define a collection of fruits in Rust, mirroring the pr
 
 #### 1. **Using a Constant Array (`[&str; 10]`)**
 
-This is the closest match to a fixed-size list of string literals, commonly used when the size is known and won’t change.
+This is the closest match to a fixed-size list of string literals, commonly used when the size is known and wonâ€™t change.
 
 ```rust
 const FRUITS: [&str; 10] = [
@@ -127,10 +127,10 @@ let FRUITS: LinkedList<&str> = LinkedList::from([
 
 ### Choosing the Right Collection
 
-Based on the context of the previous tutorials (e.g., fruit salad programs), the array `[&str; 10]` is likely the intended structure, as it matches the fixed-size, constant nature of the fruit list in earlier examples (e.g., `const FRUITS: [&str; 10]`). However, if the list needs to be dynamic or support operations like shuffling, a `Vec<&str>` is more practical, as arrays don’t support resizing or direct shuffling.
+Based on the context of the previous tutorials (e.g., fruit salad programs), the array `[&str; 10]` is likely the intended structure, as it matches the fixed-size, constant nature of the fruit list in earlier examples (e.g., `const FRUITS: [&str; 10]`). However, if the list needs to be dynamic or support operations like shuffling, a `Vec<&str>` is more practical, as arrays donâ€™t support resizing or direct shuffling.
 
-Here’s a quick decision guide:
-- **Use an Array**: If the list is fixed, known at compile time, and won’t change (e.g., a constant list of 10 fruits).
+Hereâ€™s a quick decision guide:
+- **Use an Array**: If the list is fixed, known at compile time, and wonâ€™t change (e.g., a constant list of 10 fruits).
 - **Use a `Vec`**: If the list needs to grow, shrink, or be shuffled/modified.
 - **Use `VecDeque` or `LinkedList`**: For specific queue or list operations (less likely here).
 
@@ -138,11 +138,11 @@ Here’s a quick decision guide:
 
 ### Example in Context
 
-To align with the previous fruit salad tutorials, let’s assume the intent is to define a constant array similar to the vector example. Here’s how it would look in a program:
+To align with the previous fruit salad tutorials, letâ€™s assume the intent is to define a constant array similar to the vector example. Hereâ€™s how it would look in a program:
 
 ```rust
 use rand::seq::SliceRandom;
-use rand::thread_rng;
+use rand::rng;
 
 const FRUITS: [&str; 10] = [
     "Orange",
@@ -158,7 +158,7 @@ const FRUITS: [&str; 10] = [
 ];
 
 fn main() {
-    let mut rng = thread_rng();
+    let mut rng = rng();
     let mut fruit_vec: Vec<&str> = FRUITS.into_iter().collect();
     fruit_vec.shuffle(&mut rng);
 
@@ -175,7 +175,7 @@ fn main() {
 
 - **Explanation**:
   - `FRUITS` is a constant array, matching the provided list.
-  - Converted to `Vec` for shuffling, as arrays don’t support direct shuffling.
+  - Converted to `Vec` for shuffling, as arrays donâ€™t support direct shuffling.
   - Prints the shuffled fruits, similar to previous tutorials.
 
 **Output** (example):
@@ -188,7 +188,7 @@ Peach, Apple, Cherry, Watermelon, Grape, Banana, Plum, Strawberry, Orange, Pear
 
 ### Addressing the Original Syntax
 
-To make the Python-like syntax valid in Rust, you’d rewrite:
+To make the Python-like syntax valid in Rust, youâ€™d rewrite:
 ```python
 FRUITS: List[str] = ["Orange", "Apple", "Banana", "Pear", "Grape", "Watermelon", "Strawberry", "Cherry", "Plum", "Peach"]
 ```
@@ -224,4 +224,4 @@ The syntax `FRUITS: List[str] = [...]` is invalid in Rust due to its Python-styl
 
 3. **String Literals**:
    - The literals `"Orange"`, `"Apple"`, etc., are valid in Rust as `&str` (string slices with a `'static` lifetime).
-   - However, the collection syntax must match Rust’s collection types.
+   - However, the collection syntax must match Rustâ€™s collection types.

@@ -1,6 +1,6 @@
-# Rust for Python Data Engineers — Vector Fruit Salad
+# Rust for Python Data Engineers â€” Vector Fruit Salad
 
-*Your first data-engineering style project in Rust: select, shuffle, and serve random fruit combinations using vectors — the Rust equivalent of Python lists.*
+*Your first data-engineering style project in Rust: select, shuffle, and serve random fruit combinations using vectors â€” the Rust equivalent of Python lists.*
 
 > **Test-driven approach**: This project includes a Cargo project with progressive unit tests. Each function in `workshop/src/lib.rs` starts as a `todo!()` stub. As you follow each section, replace `todo!()` with real code and run `cd workshop && cargo test` to watch the pass count grow. Your goal: **all 4 tests pass**.
 
@@ -8,44 +8,44 @@
 
 ## Why This Project?
 
-### The Problem — Python Lists Are Flexible but Heavy
+### The Problem â€” Python Lists Are Flexible but Heavy
 
 ```python
-# Python — flexible but each element is a full PyObject
+# Python â€” flexible but each element is a full PyObject
 fruits = ["Orange", "Apple", "Banana"]
 fruits.append("Pear")
 ```
 
-Python's `list` is the go-to for dynamic collections. But each element is a **heap-allocated PyObject** — 28+ bytes per entry plus the pointer. For large datasets (millions of rows), this memory overhead adds up fast. Sampling and shuffling also require copying or careful mutation.
+Python's `list` is the go-to for dynamic collections. But each element is a **heap-allocated PyObject** â€” 28+ bytes per entry plus the pointer. For large datasets (millions of rows), this memory overhead adds up fast. Sampling and shuffling also require copying or careful mutation.
 
 ```
 Python list memory:
-┌─────┬─────┬─────┬─────┐
-│  *  │  *  │  *  │  *  │  ← pointers (8 bytes each)
-└─│───┴─│───┴─│───┴─│───┘
-  ▼     ▼     ▼     ▼
-┌────┐┌────┐┌────┐┌────┐
-│str ││str ││str ││str │  ← heap objects (28+ bytes each)
-└────┘└────┘└────┘└────┘
+â”Œâ”€â”€â”€â”€â”€â”¬â”€â”€â”€â”€â”€â”¬â”€â”€â”€â”€â”€â”¬â”€â”€â”€â”€â”€â”
+â”‚  *  â”‚  *  â”‚  *  â”‚  *  â”‚  â† pointers (8 bytes each)
+â””â”€â”‚â”€â”€â”€â”´â”€â”‚â”€â”€â”€â”´â”€â”‚â”€â”€â”€â”´â”€â”‚â”€â”€â”€â”˜
+  â–¼     â–¼     â–¼     â–¼
+â”Œâ”€â”€â”€â”€â”â”Œâ”€â”€â”€â”€â”â”Œâ”€â”€â”€â”€â”â”Œâ”€â”€â”€â”€â”
+â”‚str â”‚â”‚str â”‚â”‚str â”‚â”‚str â”‚  â† heap objects (28+ bytes each)
+â””â”€â”€â”€â”€â”˜â””â”€â”€â”€â”€â”˜â””â”€â”€â”€â”€â”˜â””â”€â”€â”€â”€â”˜
 Total: ~36 bytes per string
 ```
 
-### The Rust Solution — Vec Is Compact and Fast
+### The Rust Solution â€” Vec Is Compact and Fast
 
 ```rust
-// Rust — contiguous memory, no pointer overhead
+// Rust â€” contiguous memory, no pointer overhead
 let fruits = vec!["Orange", "Apple", "Banana"];
 ```
 
 ```
 Rust Vec memory:
-┌─────────┬─────────┬─────────┬─────────┐
-│ "Orange"│ "Apple" │ "Banana"│ "Pear"  │  ← contiguous &str pointers
-└─────────┴─────────┴─────────┴─────────┘
+â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”¬â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¬â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¬â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
+â”‚ "Orange"â”‚ "Apple" â”‚ "Banana"â”‚ "Pear"  â”‚  â† contiguous &str pointers
+â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”´â”€â”€â”€â”€â”€â”€â”€â”€â”€â”´â”€â”€â”€â”€â”€â”€â”€â”€â”€â”´â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
 Total: 8 bytes per &str (pointer + length)
 ```
 
-`Vec<T>` stores elements in **contiguous memory** — cache-friendly iteration, no pointer chasing. The type is fixed at compile time (`Vec<&str>`), so every element is guaranteed to be the right type.
+`Vec<T>` stores elements in **contiguous memory** â€” cache-friendly iteration, no pointer chasing. The type is fixed at compile time (`Vec<&str>`), so every element is guaranteed to be the right type.
 
 ---
 
@@ -54,8 +54,8 @@ Total: 8 bytes per &str (pointer + length)
 | # | Concept | Rust Type / Module | Python Equivalent | Purpose |
 |---|---------|--------------------|------------------|---------|
 | 1 | Dynamic arrays | `Vec<T>` | `list` | Type-safe, contiguous growable array |
-| 2 | Random generation | `rand::thread_rng()` | `random.Random()` | Random number generator |
-| 3 | Random ranges | `.gen_range()` | `random.randint()` | Generate random numbers in a range |
+| 2 | Random generation | `rand::rng()` | `random.Random()` | Random number generator |
+| 3 | Random ranges | `.random_range()` | `random.randint()` | Generate random numbers in a range |
 | 4 | Random selection | `.choose()` | `random.choice()` | Pick a random element |
 | 5 | Shuffling | `.shuffle()` | `random.shuffle()` | Randomize element order |
 | 6 | External crates | `Cargo.toml` deps | `requirements.txt` | Add third-party libraries |
@@ -64,26 +64,26 @@ Total: 8 bytes per &str (pointer + length)
 
 ## Concepts at a Glance
 
-### 1. `Vec<T>` — Dynamic Array
-Same concept as Python's `list`: a growable, heap-allocated collection. Unlike Python, Rust's `Vec` is **type-homogeneous** — all elements must be the same type `T`.
+### 1. `Vec<T>` â€” Dynamic Array
+Same concept as Python's `list`: a growable, heap-allocated collection. Unlike Python, Rust's `Vec` is **type-homogeneous** â€” all elements must be the same type `T`.
 
-### 2. `rand::thread_rng()` — Random Generator
-Like `random.Random()` in Python — creates a random number generator seeded by the OS. You pass `&mut rng` to methods that need randomness.
+### 2. `rand::rng()` â€” Random Generator
+Like `random.Random()` in Python â€” creates a random number generator seeded by the OS. You pass `&mut rng` to methods that need randomness.
 
-### 3. `.gen_range()` — Random in Range
-`rng.gen_range(1..=10)` is like `random.randint(1, 10)` in Python. Uses Rust's range syntax.
+### 3. `.random_range()` â€” Random in Range
+`rng.random_range(1..=10)` is like `random.randint(1, 10)` in Python. Uses Rust's range syntax.
 
-### 4. `.choose()` — Random Selection
-`fruits.choose(&mut rng)` picks one random element and returns `Option<&T>` — it could be `None` if the collection is empty.
+### 4. `.choose()` â€” Random Selection
+`fruits.choose(&mut rng)` picks one random element and returns `Option<&T>` â€” it could be `None` if the collection is empty.
 
-### 5. `.shuffle()` — In-Place Randomization
+### 5. `.shuffle()` â€” In-Place Randomization
 `fruits.shuffle(&mut rng)` randomizes the order in place, just like `random.shuffle(fruits)`.
 
 ### 6. External Crates via `Cargo.toml`
-In Python you `pip install rand`; in Rust you add `rand = "0.8"` under `[dependencies]` in `Cargo.toml`. Cargo downloads and compiles it automatically.
+In Python you `pip install rand`; in Rust you add `rand = "0.10"` under `[dependencies]` in `Cargo.toml`. Cargo downloads and compiles it automatically.
 
 ### 7. The `SliceRandom` Trait
-`.shuffle()` and `.choose()` aren't built into `Vec` — they come from the `SliceRandom` trait in the `rand` crate. You must add `use rand::seq::SliceRandom;` to use them. This is Rust's **trait-based extension** pattern.
+`.shuffle()` and `.choose()` aren't built into `Vec` â€” they come from the `SliceRandom` trait in the `rand` crate. You must add `use rand::seq::SliceRandom;` to use them. This is Rust's **trait-based extension** pattern.
 
 ---
 
@@ -92,10 +92,10 @@ In Python you `pip install rand`; in Rust you add `rand = "0.8"` under `[depende
 1. [Project Overview](#1-project-overview)
 2. [Prerequisites](#2-prerequisites)
 3. [Running the Python Version](#3-running-the-python-version)
-4. [Concept: Vec Recap — Your Dynamic Collection](#4-concept-vec-recap--your-dynamic-collection)
-5. [Concept: The `rand` Crate — Random Numbers](#5-concept-the-rand-crate--random-numbers)
+4. [Concept: Vec Recap â€” Your Dynamic Collection](#4-concept-vec-recap--your-dynamic-collection)
+5. [Concept: The `rand` Crate â€” Random Numbers](#5-concept-the-rand-crate--random-numbers)
 6. [Concept: Working with External Crates (Cargo.toml)](#6-concept-working-with-external-crates-cargotoml)
-7. [Concept: SliceRandom — Shuffling and Choosing](#7-concept-slicerandom--shuffling-and-choosing)
+7. [Concept: SliceRandom â€” Shuffling and Choosing](#7-concept-slicerandom--shuffling-and-choosing)
 8. [Building Step by Step](#8-building-step-by-step)
 9. [Complete Code](#9-complete-code)
 10. [Exercises](#10-exercises)
@@ -109,7 +109,7 @@ We'll build a program that:
 1. Stores a list of fruits
 2. Randomly selects a subset
 3. Shuffles the selection
-4. Prints a "fruit salad" — a comma-separated list
+4. Prints a "fruit salad" â€” a comma-separated list
 
 ### Python Comparison
 
@@ -143,14 +143,14 @@ make_salad()
 ## 3. Running the Python Version
 
 ```python
-# project.py — run to see expected output
+# project.py â€” run to see expected output
 python project.py
 # Sample output: Fruit salad: Plum, Apple, Grape, Cherry
 ```
 
 ---
 
-## 4. Concept: Vec Recap — Your Dynamic Collection
+## 4. Concept: Vec Recap â€” Your Dynamic Collection
 
 ### Creating a Vec
 
@@ -174,8 +174,8 @@ let vec_from_arr: Vec<&str> = arr.to_vec();
 let mut data: Vec<f64> = vec![1.5, 2.3, 4.7, 0.5];
 
 data.push(3.2);                 // Append
-let last = data.pop();           // Remove last → Some(3.2)
-let first = data.first();        // First element → Option<&f64>
+let last = data.pop();           // Remove last â†’ Some(3.2)
+let first = data.first();        // First element â†’ Option<&f64>
 let count = data.len();          // Number of elements
 let is_empty = data.is_empty();  // Check if empty
 data.sort();                     // Sort in place
@@ -196,20 +196,20 @@ let array: [f64; 4] = data.try_into().unwrap();
 | Add one | `items.append(x)` | `items.push(x)` |
 | Remove last | `items.pop()` | `items.pop()` |
 | Access by index | `items[i]` | `items[i]` (panics if out of bounds) |
-| Safe access | N/A | `items.get(i)` → `Option<&T>` |
+| Safe access | N/A | `items.get(i)` â†’ `Option<&T>` |
 | Length | `len(items)` | `items.len()` |
 | Slice | `items[start:end]` | `&items[start..end]` |
 | Iterate | `for x in items:` | `for x in &items { }` |
 
 ---
 
-## 5. Concept: The `rand` Crate — Random Numbers
+## 5. Concept: The `rand` Crate â€” Random Numbers
 
 ### Adding to Cargo.toml
 
 ```toml
 [dependencies]
-rand = "0.8.5"   # Use this version
+rand = "0.10"   # Use this version
 ```
 
 ### Generating Random Numbers
@@ -217,10 +217,10 @@ rand = "0.8.5"   # Use this version
 ```rust
 use rand::Rng;  // Import the Rng trait
 
-let mut rng = rand::thread_rng();  // Create a random number generator
+let mut rng = rand::rng();  // Create a random number generator
 
 let x: u32 = rng.gen();          // Random u32 (0 to u32::MAX)
-let y = rng.gen_range(1..=10);   // Random number between 1 and 10
+let y = rng.random_range(1..=10);   // Random number between 1 and 10
 let z: f64 = rng.gen();          // Random float 0.0 to 1.0
 let b: bool = rng.gen();         // Random bool (true/false)
 ```
@@ -240,8 +240,8 @@ random.shuffle(items)         # Shuffle in place
 ```rust
 use rand::Rng;
 
-let mut rng = rand::thread_rng();
-let x: u32 = rng.gen_range(1..=10);
+let mut rng = rand::rng();
+let x: u32 = rng.random_range(1..=10);
 let y: f64 = rng.gen();
 let z = fruits.choose(&mut rng);  // Random element
 // Random subset = manual selection
@@ -262,7 +262,7 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-rand = "0.8"
+rand = "0.10"
 ```
 
 ### How Cargo Resolves Versions
@@ -271,7 +271,7 @@ rand = "0.8"
 |---|---|
 | `"0.8"` | `>=0.8.0` and `<0.9.0` (compatible with 0.8.x) |
 | `"0.8.5"` | Exactly `0.8.5` |
-| `"^0.8.5"` | Same as `"0.8.5"` — any 0.8.x >= 0.8.5 |
+| `"^0.8.5"` | Same as `"0.8.5"` â€” any 0.8.x >= 0.8.5 |
 | `">=1.0"` | Any version 1.0 or higher |
 | `"*"` | Any version (not recommended) |
 
@@ -287,7 +287,7 @@ rand = "0.8"
 
 ---
 
-## 7. Concept: SliceRandom — Shuffling and Choosing
+## 7. Concept: SliceRandom â€” Shuffling and Choosing
 
 ### The SliceRandom Trait
 
@@ -295,10 +295,10 @@ rand = "0.8"
 
 ```rust
 use rand::seq::SliceRandom;
-use rand::thread_rng;
+use rand::rng;
 
 let mut fruits = vec!["Apple", "Banana", "Cherry", "Date"];
-let mut rng = thread_rng();
+let mut rng = rng();
 
 // Choose one random element
 let pick = fruits.choose(&mut rng);  // Option<&&str>
@@ -312,7 +312,7 @@ fruits.partial_shuffle(&mut rng, 2);
 
 ### Why `SliceRandom` Is a Trait
 
-In Rust, methods like `.shuffle()` and `.choose()` aren't built into `Vec` — they're added via a **trait** that you import:
+In Rust, methods like `.shuffle()` and `.choose()` aren't built into `Vec` â€” they're added via a **trait** that you import:
 
 ```rust
 // Without the import, this won't compile:
@@ -353,13 +353,13 @@ Edit `Cargo.toml`:
 
 ```toml
 [dependencies]
-rand = "0.8"
+rand = "0.10"
 ```
 
 ### Step 3: Define the Fruit List
 
 ```rust
-// A constant array of fruit names — fixed at compile time
+// A constant array of fruit names â€” fixed at compile time
 const FRUITS: [&str; 10] = [
     "Orange", "Apple", "Banana", "Pear", "Grape",
     "Watermelon", "Strawberry", "Cherry", "Plum", "Peach",
@@ -369,9 +369,9 @@ const FRUITS: [&str; 10] = [
 ### Step 4: Import rand Types
 
 ```rust
-use rand::Rng;                // For gen_range()
+use rand::Rng;                // For random_range()
 use rand::seq::SliceRandom;  // For shuffle(), choose()
-use rand::thread_rng;        // Get a random number generator
+use rand::rng;               // Get a random number generator
 ```
 
 ### Step 5: Select Random Fruits
@@ -380,7 +380,7 @@ use rand::thread_rng;        // Get a random number generator
 fn select_random_fruits(count: usize, fruits: &[&str], rng: &mut impl Rng) -> Vec<&str> {
     let mut selected = Vec::new();
     for _ in 0..count {
-        let idx = rng.gen_range(0..fruits.len());
+        let idx = rng.random_range(0..fruits.len());
         selected.push(fruits[idx]);
     }
     selected
@@ -391,10 +391,10 @@ fn select_random_fruits(count: usize, fruits: &[&str], rng: &mut impl Rng) -> Ve
 
 ```rust
 fn main() {
-    let mut rng = thread_rng();
+    let mut rng = rng();
 
     // Pick a random number of fruits to include
-    let fruit_count = rng.gen_range(1..=FRUITS.len());
+    let fruit_count = rng.random_range(1..=FRUITS.len());
 
     // Select that many random fruits
     let mut fruit_salad = select_random_fruits(fruit_count, &FRUITS, &mut rng);
@@ -427,9 +427,9 @@ fn main() {
 ```rust
 use rand::rngs::ThreadRng;
 use rand::seq::SliceRandom;
-use rand::{thread_rng, Rng};
+use rand::rng;
 
-/// The master list of available fruits — a fixed-size array
+/// The master list of available fruits â€” a fixed-size array
 const FRUITS: [&str; 10] = [
     "Orange", "Apple", "Banana", "Pear", "Grape",
     "Watermelon", "Strawberry", "Cherry", "Plum", "Peach",
@@ -439,17 +439,17 @@ const FRUITS: [&str; 10] = [
 fn select_random_fruits(count: usize, fruits: &[&str], rng: &mut ThreadRng) -> Vec<&str> {
     let mut selected = Vec::new();
     for _ in 0..count {
-        let idx = rng.gen_range(0..fruits.len());
+        let idx = rng.random_range(0..fruits.len());
         selected.push(fruits[idx]);
     }
     selected
 }
 
 fn main() {
-    let mut rng = thread_rng();
+    let mut rng = rng();
 
     // How many fruits in this salad?
-    let fruit_count = rng.gen_range(1..=FRUITS.len());
+    let fruit_count = rng.random_range(1..=FRUITS.len());
 
     // Select the fruits
     let mut salad = select_random_fruits(fruit_count, &FRUITS, &mut rng);
@@ -484,7 +484,7 @@ Modify `select_random_fruits` so it never selects the same fruit twice:
 
 ```rust
 fn select_unique_fruits(count: usize, fruits: &[&str], rng: &mut ThreadRng) -> Vec<&str> {
-    // Your code here — hint: use a loop that checks for duplicates
+    // Your code here â€” hint: use a loop that checks for duplicates
     // Or: shuffle a copy of fruits and take the first `count`
 }
 ```
@@ -532,14 +532,14 @@ Stats: 3 fruits, 2 unique types
 | `.choose()` | Pick random fruit | Sample one row |
 | `.shuffle()` | Randomize order | Randomize data for training |
 | `.iter().enumerate()` | Print with indices | Iterate with position |
-| `rng.gen_range()` | Random count | Random partitioning |
+| `rng.random_range()` | Random count | Random partitioning |
 
 ### Key Takeaway
 
 Vectors in Rust = Lists in Python. The core operations are the same, but Rust gives you:
-- **Type safety** — `Vec<&str>` can only hold string slices
-- **Explicit cloning** — no accidental duplicate of large data
-- **Trait-based extensions** — `.shuffle()` comes from importing `SliceRandom`, not built into Vec
+- **Type safety** â€” `Vec<&str>` can only hold string slices
+- **Explicit cloning** â€” no accidental duplicate of large data
+- **Trait-based extensions** â€” `.shuffle()` comes from importing `SliceRandom`, not built into Vec
 
 ### Next Project
 

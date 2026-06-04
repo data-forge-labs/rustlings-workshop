@@ -173,7 +173,7 @@ Python equivalent: `list.sort()`. Both sort in-place.
 use rand::seq::SliceRandom;
 
 let v = vec!["apple", "banana", "cherry"];
-let mut rng = rand::thread_rng();
+let mut rng = rand::rng();
 
 if let Some(picked) = v.choose(&mut rng) {
     println!("Picked: {}", picked);

@@ -19,7 +19,7 @@ pub fn pick_random_fruit<'a>(fruit_salad: &[&'a str], rng: &mut impl rand::Rng) 
 #[cfg(test)]
 mod tests {
     use super::*;
-    use rand::thread_rng;
+    use rand::rng;
 
     mod step_01_mutability {
         #[test]
@@ -57,7 +57,7 @@ mod tests {
         #[test]
         fn test_pick_random_fruit() {
             let salad = vec!["apple", "banana"];
-            let mut rng = thread_rng();
+            let mut rng = rng();
             let picked = pick_random_fruit(&salad, &mut rng);
             assert!(picked.is_some());
             assert!(salad.contains(&picked.unwrap()));
@@ -66,7 +66,7 @@ mod tests {
         #[test]
         fn test_pick_random_empty() {
             let salad: Vec<&str> = vec![];
-            let mut rng = thread_rng();
+            let mut rng = rng();
             assert_eq!(pick_random_fruit(&salad, &mut rng), None);
         }
     }

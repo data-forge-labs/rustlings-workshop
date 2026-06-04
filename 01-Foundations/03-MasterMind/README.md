@@ -1,4 +1,4 @@
-# Rust for Python Data Engineers — MasterMind
+# Rust for Python Data Engineers â€” MasterMind
 
 *A hands-on workshop that teaches Strings, Vectors, Structs, Option, Iterators, and I/O by building a MasterMind code-breaking game.*
 
@@ -10,9 +10,9 @@
 
 ### The Problem
 
-In data engineering, you constantly deal with **collections of structured data** — rows in a DataFrame, records in JSON, chunks of a CSV file. You need to model real-world entities (a "Record", a "Customer", a "Transaction") with clear fields and behaviors. You need to handle **missing data** gracefully. And you need to process text efficiently without performance surprises.
+In data engineering, you constantly deal with **collections of structured data** â€” rows in a DataFrame, records in JSON, chunks of a CSV file. You need to model real-world entities (a "Record", a "Customer", a "Transaction") with clear fields and behaviors. You need to handle **missing data** gracefully. And you need to process text efficiently without performance surprises.
 
-Python makes this easy — almost too easy:
+Python makes this easy â€” almost too easy:
 
 ```python
 def process_records(data):
@@ -27,7 +27,7 @@ processed = value * 2       # TypeError at runtime!
 
 There's no guarantee a "record" has the expected fields. A `None` can silently propagate through a pipeline until it crashes at the worst moment. Python's `str` type hides the distinction between immutable text (most of your data) and mutable string buffers (what you build during processing).
 
-In this project, you'll build a **MasterMind code-breaking game** — a perfect vehicle for learning Rust's solutions to these exact problems. You'll model game state with `struct`, handle missing guesses with `Option` (no more `None` surprises), process characters with iterators, and distinguish between `String` (owned, growable) and `&str` (borrowed, fixed).
+In this project, you'll build a **MasterMind code-breaking game** â€” a perfect vehicle for learning Rust's solutions to these exact problems. You'll model game state with `struct`, handle missing guesses with `Option` (no more `None` surprises), process characters with iterators, and distinguish between `String` (owned, growable) and `&str` (borrowed, fixed).
 
 ### The Rust Solution
 
@@ -47,7 +47,7 @@ fn process(record: Record) -> f64 {
     }
 }
 
-// String vs &str — be explicit about ownership
+// String vs &str â€” be explicit about ownership
 fn analyze(text: &str) -> usize {
     text.chars().count()  // Borrow, don't own
 }
@@ -70,17 +70,17 @@ analyze(&owned);  // Borrow without taking ownership
 | 7 | Ownership basics | Move vs borrow (`&self`, function params) | N/A (GC) | Memory safety without garbage collection |
 | 8 | Iterators | `.chars()`, `.enumerate()`, `.filter()` | `for ch in s`, `enumerate(s)` | Lazy functional iteration over sequences |
 | 9 | Console I/O | `io::stdin().read_line()`, `println!` | `input()`, `print()` | Read user input and print output |
-| 10 | `rand` crate | `rand::thread_rng().gen_range()` | `random.randint()` | Random number generation |
+| 10 | `rand` crate | `rand::rng().random_range()` | `random.randint()` | Random number generation |
 | 11 | `pub` visibility | `pub fn`, `pub struct` | Public by default | Control the public API surface |
 | 12 | `Self` constructor | `fn new(...) -> Self` | `__init__(self)` | Idiomatic constructor pattern |
 
 ## Concepts at a Glance
 
 ### 1. `String` vs `&str`
-`String` is an owned, heap-allocated, growable UTF-8 string. `&str` is a borrowed view — the default for function parameters that only need to read text. **Python:** one `str` type, always immutable.
+`String` is an owned, heap-allocated, growable UTF-8 string. `&str` is a borrowed view â€” the default for function parameters that only need to read text. **Python:** one `str` type, always immutable.
 
 ### 2. `Vec<T>`
-`vec![1, 2, 3]` creates a typed, growable array. Use `.push()` to add, `[i]` to index. **Python:** `list` — but Rust's `Vec` is typed; you can't mix unrelated types.
+`vec![1, 2, 3]` creates a typed, growable array. Use `.push()` to add, `[i]` to index. **Python:** `list` â€” but Rust's `Vec` is typed; you can't mix unrelated types.
 
 ### 3. `struct`
 `struct Guess { value: String }` defines a new data type with named fields, validated at compile time. **Python:** `@dataclass class Guess: value: str`.
@@ -92,10 +92,10 @@ analyze(&owned);  // Borrow without taking ownership
 `Option<T>` represents a value that may be present (`Some(val)`) or absent (`None`). The compiler forces you to check. **Python:** `None` can appear anywhere without warning.
 
 ### 6. `match`
-`match value { Some(x) => x * 2, None => 0 }` performs exhaustive pattern matching. The compiler checks every variant is handled. **Python:** `if x is not None: ... else: ...` — no compiler verification.
+`match value { Some(x) => x * 2, None => 0 }` performs exhaustive pattern matching. The compiler checks every variant is handled. **Python:** `if x is not None: ... else: ...` â€” no compiler verification.
 
 ### 7. Ownership basics
-When a value is assigned to a new variable or passed to a function, ownership moves. Use `&` to borrow. **Python:** everything is reference-counted — no ownership concept.
+When a value is assigned to a new variable or passed to a function, ownership moves. Use `&` to borrow. **Python:** everything is reference-counted â€” no ownership concept.
 
 ### 8. Iterators
 `s.chars()` returns an iterator over characters; `.enumerate()` pairs each element with its index. Iterators are lazy and composable. **Python:** `for ch in s:` and `enumerate(s)` work similarly but are eager.
@@ -104,7 +104,7 @@ When a value is assigned to a new variable or passed to a function, ownership mo
 `io::stdin().read_line(&mut buf)` reads a line into a buffer. `println!` writes to stdout. **Python:** `input()` and `print()`.
 
 ### 10. `rand` crate
-`rand::thread_rng().gen_range(10..=99)` generates a random number. Add `rand = "0.8"` to `Cargo.toml`. **Python:** `random.randint(10, 99)`.
+`rand::rng().random_range(10..=99)` generates a random number. Add `rand = "0.10"` to `Cargo.toml`. **Python:** `random.randint(10, 99)`.
 
 ### 11. `pub` visibility
 Items are private by default. Prefix with `pub` to expose them. Controls the public API surface. **Python:** everything is public; `_` prefix is a convention.
@@ -163,15 +163,15 @@ MasterMind is a classic code-breaking game:
 
 This project has two separate workshops:
 
-### Basic — `workshop/`
+### Basic â€” `workshop/`
 
 Build the core MasterMind game with structs, Vec, Option, and iterators. Start here.
 
-1. **Read the concept overview** in Section 4 below — maps each Rust concept to Python
+1. **Read the concept overview** in Section 4 below â€” maps each Rust concept to Python
 2. **Follow the detailed guide** in [Section 7](#7-detailed-step-by-step-guide-basic) for the full step-by-step implementation
 3. **Build the game** with `cd workshop && cargo run`
 
-### Advanced — `workshop/advanced/`
+### Advanced â€” `workshop/advanced/`
 
 Refactor the game into a library + binary crate with `clap` CLI args and documentation. Complete the basic version first.
 
@@ -186,13 +186,13 @@ Refactor the game into a library + binary crate with `clap` CLI args and documen
 ### Strings: `String` vs `&str`
 
 ```python
-# Python — one string type
+# Python â€” one string type
 name = "Alice"
 name += " Smith"   # Creates a new string
 ```
 
 ```rust
-// Rust — two string types
+// Rust â€” two string types
 let literal: &str = "Alice";       // Immutable, fixed, efficient
 let mut owned: String = String::from("Alice");  // Heap-allocated, growable
 owned.push_str(" Smith");
@@ -208,13 +208,13 @@ owned.push_str(" Smith");
 ### Vectors: `Vec<T>`
 
 ```python
-# Python — dynamic list
+# Python â€” dynamic list
 fruits = ["apple", "banana"]
 fruits.append("cherry")
 ```
 
 ```rust
-// Rust — typed vector
+// Rust â€” typed vector
 let mut fruits: Vec<&str> = vec!["apple", "banana"];
 fruits.push("cherry");
 ```
@@ -267,7 +267,7 @@ impl Guess {
 ### Option and Pattern Matching
 
 ```python
-# Python — None handling
+# Python â€” None handling
 def find_item(items, target):
     for item in items:
         if item == target:
@@ -280,7 +280,7 @@ if result is not None:
 ```
 
 ```rust
-// Rust — Option + match
+// Rust â€” Option + match
 fn find_item(items: &[&str], target: &str) -> Option<&str> {
     for &item in items {
         if item == target {
@@ -326,7 +326,7 @@ The `workshop/` directory contains the basic MasterMind game. Follow the detaile
 | Concept | How Used in MasterMind |
 |---|---|
 | `String` / `&str` | Player input strings, string slicing for digits |
-| Ownership | Function parameters — know when to move vs borrow |
+| Ownership | Function parameters â€” know when to move vs borrow |
 | `Vec<char>` | Store the 4-digit code as vector of characters |
 | `struct Guess` | Model a single guess with validation |
 | `struct Game` | Model the game state (secret, attempts) |
@@ -354,7 +354,7 @@ The `workshop/` directory contains the basic MasterMind game. Follow the detaile
 
 ### Next Project
 
-Proceed to [3-TicketV1](../02-Ownership/01-TicketV1/README.md) to master **ownership** — Rust's most important and unique concept.
+Proceed to [3-TicketV1](../02-Ownership/01-TicketV1/README.md) to master **ownership** â€” Rust's most important and unique concept.
 
 ---
 
@@ -367,14 +367,14 @@ Build the core MasterMind game. Work in the `workshop/` directory.
 1. [Prerequisites & Setup](#1-prerequisites--setup)
 2. [Adding Dependencies](#2-adding-dependencies)
 3. [Concept 1: Variables, Mutability, and Basic Data Types](#3-concept-1-variables-mutability-and-basic-data-types)
-4. [Concept 2: Strings – `String` vs `&str`](#4-concept-2-strings--string-vs-str)
+4. [Concept 2: Strings â€“ `String` vs `&str`](#4-concept-2-strings--string-vs-str)
 5. [Concept 3: Ownership, Borrowing, and References](#5-concept-3-ownership-borrowing-and-references)
-6. [Concept 4: Vectors – `Vec<T>`](#6-concept-4-vectors--vect)
-7. [Concept 5: Structs and Methods – `struct` + `impl`](#7-concept-5-structs-and-methods--struct--impl)
+6. [Concept 4: Vectors â€“ `Vec<T>`](#6-concept-4-vectors--vect)
+7. [Concept 5: Structs and Methods â€“ `struct` + `impl`](#7-concept-5-structs-and-methods--struct--impl)
 8. [Concept 6: `Option<T>` and Pattern Matching](#8-concept-6-optiont-and-pattern-matching)
 9. [Concept 7: Iterators and Closures](#9-concept-7-iterators-and-closures)
 10. [Concept 8: Constants (`const`)](#10-concept-8-constants-const)
-11. [Concept 9: Input/Output – Reading from the Console](#11-concept-9-inputoutput--reading-from-the-console)
+11. [Concept 9: Input/Output â€“ Reading from the Console](#11-concept-9-inputoutput--reading-from-the-console)
 12. [Putting It All Together: The Complete `main.rs`](#12-putting-it-all-together-the-complete-mainrs)
 13. [Running the Game](#13-running-the-game)
 14. [Summary of Rust Concepts Used](#14-summary-of-rust-concepts-used)
@@ -405,8 +405,8 @@ cd mastermind
 
 This creates a folder with:
 
-- `Cargo.toml` – project configuration
-- `src/main.rs` – main source file
+- `Cargo.toml` â€“ project configuration
+- `src/main.rs` â€“ main source file
 
 ### 2. Adding Dependencies
 
@@ -416,7 +416,7 @@ Open `Cargo.toml` and add:
 
 ```toml
 [dependencies]
-rand = "0.8"
+rand = "0.10"
 ```
 
 Now run `cargo build`. Cargo downloads the `rand` crate and compiles your project.
@@ -425,7 +425,7 @@ Now run `cargo build`. Cargo downloads the `rand` crate and compiles your projec
 
 ### 3. Concept 1: Variables, Mutability, and Basic Data Types
 
-In Rust, a variable is declared with `let`. **By default, variables are immutable** – once assigned, you cannot change their value. To allow mutation, you must add the `mut` keyword.
+In Rust, a variable is declared with `let`. **By default, variables are immutable** â€“ once assigned, you cannot change their value. To allow mutation, you must add the `mut` keyword.
 
 Rust is statically typed, but the compiler can often *infer* the type. You can also explicitly annotate types.
 
@@ -459,12 +459,12 @@ let mut attempts_left: u32 = 20;   // mutable, because we decrement it
 let guess_count: u32 = 0;         // immutable, but we'll reassign with let mut later
 ```
 
-### 4. Concept 2: Strings – `String` vs `&str`
+### 4. Concept 2: Strings â€“ `String` vs `&str`
 
 Rust has two main string types:
 
-- **`String`** – an *owned*, growable, heap-allocated string. You can modify it (e.g., push characters).
-- **`&str`** – a *string slice*, a reference to a sequence of UTF-8 bytes. It can point to a part of a `String` or to a string literal.
+- **`String`** â€“ an *owned*, growable, heap-allocated string. You can modify it (e.g., push characters).
+- **`&str`** â€“ a *string slice*, a reference to a sequence of UTF-8 bytes. It can point to a part of a `String` or to a string literal.
 
 String literals like `"hello"` are of type `&str`.
 
@@ -483,7 +483,7 @@ fn main() {
 
 #### Python Comparison
 
-Python's `str` is like Rust's `String` – it's immutable but managed for you. There is no separate slice type.
+Python's `str` is like Rust's `String` â€“ it's immutable but managed for you. There is no separate slice type.
 
 #### Applying to Mastermind
 
@@ -499,8 +499,8 @@ fn evaluate_guess(&self, guess: &str) -> (usize, usize, usize) { ... }
 
 Every value in Rust has exactly one *owner*. When the owner goes out of scope, the value is dropped (memory freed). You can **move** ownership or **borrow** it via references.
 
-- **Move** – the old owner is invalidated.
-- **Borrow** – you temporarily get a reference, but the owner retains ownership.
+- **Move** â€“ the old owner is invalidated.
+- **Borrow** â€“ you temporarily get a reference, but the owner retains ownership.
 
 ```rust
 fn main() {
@@ -531,7 +531,7 @@ impl SecretCode {
 }
 ```
 
-### 6. Concept 4: Vectors – `Vec<T>`
+### 6. Concept 4: Vectors â€“ `Vec<T>`
 
 `Vec<T>` is a resizable, heap-allocated array. It's similar to Python's `list`. You can push elements, iterate, and index into it.
 
@@ -566,7 +566,7 @@ let revealed_positions: Vec<bool> = vec![false; 4];
 let revealed_digits: Vec<bool> = vec![false; 10];
 ```
 
-### 7. Concept 5: Structs and Methods – `struct` + `impl`
+### 7. Concept 5: Structs and Methods â€“ `struct` + `impl`
 
 Rust groups data into **structs** (like Python classes without inheritance). The behaviour (methods) is defined in a separate `impl` block.
 
@@ -754,7 +754,7 @@ const HINT_POSITION_COST: u32 = 5;
 const HINT_DIGIT_COST: u32 = 3;
 ```
 
-### 11. Concept 9: Input/Output – Reading from the Console
+### 11. Concept 9: Input/Output â€“ Reading from the Console
 
 To read a line from standard input, use `std::io::stdin().read_line(&mut some_string)`. For prompts without a newline, you must `flush` the output.
 
@@ -806,7 +806,7 @@ Now build the entire game file step by step. Replace the content of `src/main.rs
 
 ```rust
 use rand::seq::SliceRandom;
-use rand::thread_rng;
+use rand::rng;
 use std::io::{self, Write};
 
 /// Returns true if the given string consists of 4 unique digits.
@@ -834,7 +834,7 @@ struct SecretCode {
 
 impl SecretCode {
     fn new() -> Self {
-        let mut rng = thread_rng();
+        let mut rng = rng();
         let mut pool: Vec<u8> = (0..=9).collect();
         pool.shuffle(&mut rng);
         let digits = pool[..4].to_vec();
@@ -898,7 +898,7 @@ impl SecretCode {
             .map(|(i, _)| i)
             .collect();
 
-        let mut rng = thread_rng();
+        let mut rng = rng();
         let chosen = *available.choose(&mut rng).unwrap();
         self.revealed_positions[chosen] = true;
         Some((chosen, self.digits[chosen]))
@@ -915,7 +915,7 @@ impl SecretCode {
             .map(|(i, _)| i)
             .collect();
 
-        let mut rng = thread_rng();
+        let mut rng = rng();
         let chosen_idx = *available.choose(&mut rng).unwrap();
         let digit = self.digits[chosen_idx];
         self.revealed_digits[digit as usize] = true;
@@ -1169,10 +1169,10 @@ A typical package layout:
 
 ```
 mastermind/
-├── Cargo.toml
-└── src/
-    ├── main.rs      ← binary crate root (by default)
-    └── lib.rs       ← library crate root (if present)
+â”œâ”€â”€ Cargo.toml
+â””â”€â”€ src/
+    â”œâ”€â”€ main.rs      â† binary crate root (by default)
+    â””â”€â”€ lib.rs       â† library crate root (if present)
 ```
 
 ```rust
@@ -1277,9 +1277,9 @@ Now rewrite the Mastermind code as a library crate with proper structure.
 #### Create the files
 
 Inside `src/`, we'll have:
-- `lib.rs` – the library root
-- `secret.rs` – the `SecretCode` module
-- `game.rs` – the `MastermindGame` module
+- `lib.rs` â€“ the library root
+- `secret.rs` â€“ the `SecretCode` module
+- `game.rs` â€“ the `MastermindGame` module
 
 #### `secret.rs`
 
@@ -1287,7 +1287,7 @@ Move the `SecretCode` struct and its `impl` from the old code into `secret.rs`:
 
 ```rust
 use rand::seq::SliceRandom;
-use rand::thread_rng;
+use rand::rng;
 
 pub struct SecretCode {
     digits: Vec<u8>,
@@ -1297,7 +1297,7 @@ pub struct SecretCode {
 
 impl SecretCode {
     pub fn new() -> Self {
-        let mut rng = thread_rng();
+        let mut rng = rng();
         let mut pool: Vec<u8> = (0..=9).collect();
         pool.shuffle(&mut rng);
         let digits = pool[..4].to_vec();
@@ -1368,7 +1368,7 @@ impl SecretCode {
             .filter(|(_, &revealed)| !revealed)
             .map(|(i, _)| i)
             .collect();
-        let mut rng = thread_rng();
+        let mut rng = rng();
         let chosen = *available.choose(&mut rng).unwrap();
         self.revealed_positions[chosen] = true;
         Some((chosen, self.digits[chosen]))
@@ -1384,7 +1384,7 @@ impl SecretCode {
             .filter(|(_, &d)| !self.revealed_digits[d as usize])
             .map(|(i, _)| i)
             .collect();
-        let mut rng = thread_rng();
+        let mut rng = rng();
         let chosen_idx = *available.choose(&mut rng).unwrap();
         let digit = self.digits[chosen_idx];
         self.revealed_digits[digit as usize] = true;
@@ -1483,7 +1483,7 @@ Add `clap` to `Cargo.toml`:
 
 ```toml
 [dependencies]
-rand = "0.8"
+rand = "0.10"
 clap = { version = "4", features = ["derive"] }
 ```
 

@@ -44,7 +44,7 @@ pub fn csv_to_vec(csv: &str) -> Vec<String> {
     csv.split(',').map(|s| s.trim().to_string()).collect()
 }
 pub fn create_fruit_salad(mut fruits: Vec<String>) -> Vec<String> {
-    let mut rng = rand::thread_rng();
+    let mut rng = rand::rng();
     fruits.shuffle(&mut rng);
     fruits
 }
@@ -68,14 +68,14 @@ Logic is fully testable through `lib.rs` without ever invoking `main`.
 |---|---------|--------------------|------------------|---------|
 | 1 | CSV string parsing | `split(',')`, `map(str::trim)`, `collect()` | `str.split(",")` + list comprehension | Parse comma-separated input |
 | 2 | Random shuffle | `SliceRandom::shuffle` | `random.shuffle()` | Randomize fruit order in-place |
-| 3 | Thread-local RNG | `thread_rng()` | `random.Random()` | Generate random numbers per thread |
+| 3 | Thread-local RNG | `rng()` | `random.Random()` | Generate random numbers per thread |
 | 4 | String building | `String::from` + `push_str` + `format!` | String concatenation | Build display output line by line |
 | 5 | CLI argument parsing | `clap::Parser` derive | `argparse.ArgumentParser` | Parse CLI arguments from struct definition |
 | 6 | lib/main module split | `lib.rs` (logic + tests) + `main.rs` (CLI) | Module file + `__main__.py` | Separate testable logic from entry point |
 
 ## Concepts at a Glance
 
-**CSV string parsing** -- `csv.split(',').map(|s| s.trim().to_string()).collect()` splits on comma, trims whitespace, and collects into `Vec<String>`. Python equivalent: `[s.strip() for s in csv.split(",")]`. **SliceRandom::shuffle** -- The `rand::seq::SliceRandom` trait adds `.shuffle(&mut rng)` to any `&mut [T]`, like Python's `random.shuffle(list)`. Requires `use rand::seq::SliceRandom` to bring the trait into scope. **thread_rng()** -- `thread_rng()` returns a thread-local random number generator, analogous to `random.Random()` or the default `random` module in Python. No manual seeding needed -- automatically seeded per thread. **String building** -- `String::from("header") + push_str(&format!(...))` builds strings incrementally, like Python's `s = "header"; s += f"{item}\n"`. More efficient than repeated `+` due to owned vs borrowed semantics. **clap Parser derive** -- `#[derive(Parser)]` auto-generates argument parsing from a struct's `#[arg(...)]` attributes, eliminating manual `parser.add_argument()` boilerplate. Like Python's `argparse` but declarative. **lib/main module split** -- `lib.rs` holds all `pub fn` logic and `#[cfg(test)]` tests; `main.rs` imports the crate and calls functions. Python equivalent: a module file (e.g., `salad.py`) for logic and a `if __name__ == "__main__"` block in `__main__.py` for CLI.
+**CSV string parsing** -- `csv.split(',').map(|s| s.trim().to_string()).collect()` splits on comma, trims whitespace, and collects into `Vec<String>`. Python equivalent: `[s.strip() for s in csv.split(",")]`. **SliceRandom::shuffle** -- The `rand::seq::SliceRandom` trait adds `.shuffle(&mut rng)` to any `&mut [T]`, like Python's `random.shuffle(list)`. Requires `use rand::seq::SliceRandom` to bring the trait into scope. **rng()** -- `rng()` returns a thread-local random number generator, analogous to `random.Random()` or the default `random` module in Python. No manual seeding needed -- automatically seeded per thread. **String building** -- `String::from("header") + push_str(&format!(...))` builds strings incrementally, like Python's `s = "header"; s += f"{item}\n"`. More efficient than repeated `+` due to owned vs borrowed semantics. **clap Parser derive** -- `#[derive(Parser)]` auto-generates argument parsing from a struct's `#[arg(...)]` attributes, eliminating manual `parser.add_argument()` boilerplate. Like Python's `argparse` but declarative. **lib/main module split** -- `lib.rs` holds all `pub fn` logic and `#[cfg(test)]` tests; `main.rs` imports the crate and calls functions. Python equivalent: a module file (e.g., `salad.py`) for logic and a `if __name__ == "__main__"` block in `__main__.py` for CLI.
 
 ---
 
@@ -156,10 +156,10 @@ In Rust:
 
 ```rust
 use rand::seq::SliceRandom;
-use rand::thread_rng;
+use rand::rng;
 
 pub fn create_fruit_salad(mut fruits: Vec<String>) -> Vec<String> {
-    let mut rng = thread_rng();
+    let mut rng = rng();
     fruits.shuffle(&mut rng);
     fruits
 }
@@ -167,7 +167,7 @@ pub fn create_fruit_salad(mut fruits: Vec<String>) -> Vec<String> {
 
 Key details:
 - `SliceRandom` trait extends slices with the `shuffle` method
-- `thread_rng()` returns a thread-local random number generator
+- `rng()` returns a thread-local random number generator
 - The `mut` parameter allows in-place mutation of the `Vec`
 
 ### Applying to Our Project
@@ -254,7 +254,7 @@ This keeps `main.rs` as a thin wrapper, with all logic testable through `lib.rs`
 Open `workshop/src/lib.rs` and implement:
 
 1. **`csv_to_vec`** -- `split(',')`, `map(|s| s.trim().to_string())`, `collect()`
-2. **`create_fruit_salad`** -- accept `mut Vec<String>`, `shuffle(&mut thread_rng())`, return
+2. **`create_fruit_salad`** -- accept `mut Vec<String>`, `shuffle(&mut rng())`, return
 3. **`display_fruit_salad`** -- build string with header + each fruit on its own line
 
 Run `cd workshop && cargo test` after each step. Groups: `step_01_csv_parsing` (4 tests), `step_02_fruit_salad` (3 tests), `step_03_display` (3 tests).
@@ -265,7 +265,7 @@ Run `cd workshop && cargo test` after each step. Groups: `step_01_csv_parsing` (
 |---|---|---|---|
 | CSV string parsing | `split(',')`, `map(str::trim)`, `collect()` | `str.split(",")` + list comprehension | `csv_to_vec` |
 | Random shuffle | `SliceRandom::shuffle` | `random.shuffle()` | `create_fruit_salad` |
-| Thread-local RNG | `thread_rng()` | `random.Random()` | `create_fruit_salad` |
+| Thread-local RNG | `rng()` | `random.Random()` | `create_fruit_salad` |
 | String building | `String::from` + `push_str` + `format!` | String concatenation | `display_fruit_salad` |
 | CLI argument parsing | `clap::Parser` derive | `argparse` | `main.rs` |
 | Library/executable split | `lib.rs` (logic + tests) / `main.rs` (CLI) | Module + `__main__.py` | Project structure |
