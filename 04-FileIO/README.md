@@ -212,11 +212,13 @@ Query "AVG(val)"     → read full file   → read one column
 | 53 | **CSVCookbook** — read, write, transform CSV | `csv` crate, deserialization, record iteration, error handling | Project |
 | 54 | **CSVWriter** — programmatic CSV writing | `csv::Writer`, custom delimiters, `serde` (`Deserialize`/`Serialize`) | Project |
 | 55 | **Parquet** — Apache Parquet columnar format | Parquet format, columnar storage, Arrow integration | Project |
-| 56 | **DataManagementLessonReflection** — I/O reflection | File I/O, serialization, columnar vs row-oriented | Reflection |
+| 56 | **Arrow** — Apache Arrow in-memory columnar format | `arrow` crate, `RecordBatch`, primitive arrays, builders, schema, CSV→Arrow, IPC, `compute` kernels (sum/filter/cast/slice) | Project |
+| 57 | **DataManagementLessonReflection** — I/O reflection | File I/O, serialization, columnar vs row-oriented | Reflection |
 
 ## Learning Path
 
 1. Start with **01-CSVCookbook** for basic CSV reading
 2. Move to **02-CSVWriter** for writing CSV data
 3. Explore **03-Parquet** for columnar storage
-4. Reflect with **DataManagementLessonReflection**
+4. Try **04-Arrow** for the in-memory columnar format that Polars, DuckDB, and DataFusion all build on
+5. Reflect with **DataManagementLessonReflection**

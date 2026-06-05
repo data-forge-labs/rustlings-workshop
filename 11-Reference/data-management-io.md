@@ -79,6 +79,7 @@ struct Record {
 ## Parquet / Arrow
 
 ```toml
+# Cargo.toml
 [dependencies]
 parquet = "53"
 arrow = "53"
@@ -99,6 +100,103 @@ Columnar format advantages:
 - Predicate pushdown (read only needed columns)
 - Schema evolution
 - **Industry standard for data lakes** (Iceberg, Delta Lake, LakeFS)
+
+## Apache Arrow In-Memory Format
+
+```toml
+# Cargo.toml
+[dependencies]
+arrow = "53"
+```
+
+Arrow is the in-memory counterpart to Parquet: a columnar, zero-copy format that
+`polars`, `datafusion`, `duckdb`, and `pyarrow` all share. The same bytes flow
+through the entire Rust data stack.
+
+```rust
+use std::sync::Arc;
+use arrow::array::{Int32Array, StringArray, RecordBatch};
+use arrow::datatypes::{DataType, Field, Schema};
+
+// 1. Build columns
+let ids   = Int32Array::from(vec![1, 2, 3]);
+let names = StringArray::from(vec!["Alice", "Bob", "Carol"]);
+
+// 2. Define schema
+let schema = Arc::new(Schema::new(vec![
+    Field::new("id",   DataType::Int32, false),
+    Field::new("name", DataType::Utf8,  true),
+]));
+
+// 3. Assemble a RecordBatch
+let batch = RecordBatch::try_new(
+    schema,
+    vec![Arc::new(ids), Arc::new(names)],
+).unwrap();
+```
+
+Builders for high-throughput construction:
+
+```rust
+use arrow::array::Int32Builder;
+
+let mut b = Int32Builder::new();
+for v in 0..1_000_000 { b.append_value(v); }
+let arr = b.finish();   // single allocation
+```
+
+CSV → Arrow (skip pandas):
+
+```rust
+use std::io::Cursor;
+use arrow::csv::ReaderBuilder;
+
+let schema = Arc::new(Schema::new(vec![
+    Field::new("id",   DataType::Int32, false),
+    Field::new("name", DataType::Utf8,  true),
+]));
+let mut reader = ReaderBuilder::new(schema)
+    .has_header(true)
+    .build(Cursor::new(csv_bytes))?;
+let batch = reader.next().unwrap()?;
+```
+
+IPC streaming format (zero-copy, magic header `ARROW1`):
+
+```rust
+use arrow::ipc::writer::StreamWriter;
+use arrow::ipc::reader::StreamReader;
+
+// Write
+let mut buf = Vec::new();
+{
+    let mut writer = StreamWriter::try_new(&mut buf, &batch.schema())?;
+    writer.write(&batch)?;
+    writer.finish()?;
+}
+
+// Read
+let mut reader = StreamReader::try_new(Cursor::new(&buf), None)?;
+let back = reader.next().unwrap()?;
+```
+
+Compute kernels:
+
+```rust
+use arrow::compute;
+
+let total: Option<i64> = compute::sum(batch.column_by_name("age").unwrap())
+    .and_then(|s| s.try_as_i64().ok())
+    .flatten();
+let filtered = compute::filter_record_batch(&batch, &mask).unwrap();
+let casted   = compute::cast(&arr, &DataType::Float64).unwrap();
+let sliced   = batch.slice(0, 100);  // zero-copy
+```
+
+Why this matters:
+- Zero-copy interop with `polars`, `datafusion`, `duckdb`
+- SIMD-friendly columnar layout → 10-100x faster than pandas
+- Self-describing (schema travels with the data)
 
 ## Error Handling with `Result`
 
