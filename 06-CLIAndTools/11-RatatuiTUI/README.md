@@ -43,6 +43,114 @@ This project builds a 3-panel dashboard: header (summary paragraph), body (table
 
 ---
 
+## Setup: Create the Project from Scratch
+
+This is a hands-on workshop. You will write the code yourself following the steps below.
+
+### 1. Create the new Cargo project
+
+```bash
+cargo new --lib ratatui_tui_workshop
+cd ratatui_tui_workshop
+```
+
+### 2. Add the dependencies
+
+Open `Cargo.toml` and replace whatever is there with this:
+
+```toml
+[package]
+name = "ratatui_tui_workshop"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+ratatui = "0.29"
+crossterm = "0.28"
+
+```
+
+### 3. Copy the test stubs as your starting point
+
+This project follows a **test-driven** approach. Each function in `src/lib.rs` starts as a `todo!()` stub, and progressive tests guide your implementation.
+
+```bash
+cp "06-CLIAndTools/11-RatatuiTUI/workshop/src/lib.rs" src/lib.rs
+cp "06-CLIAndTools/11-RatatuiTUI/workshop/src/main.rs" src/main.rs
+```
+
+### 4. Run the tests to see them fail (this is expected!)
+
+```bash
+cargo test
+```
+
+You should see all tests fail with the message "not yet implemented". That's the starting point — you are about to make them pass.
+
+### 5. Follow the step-by-step sections below
+
+Each section below corresponds to a step module in the test file. Implement the function(s) described, then run:
+
+```bash
+cargo test step_XX_name
+```
+
+to watch the pass count grow. The test module names match the section headings.
+
+## Setup: Create the Project from Scratch
+
+This is a hands-on workshop. You will write the code yourself following the steps below.
+
+### 1. Create the new Cargo project
+
+```bash
+cargo new --lib ratatui_tui_workshop
+cd ratatui_tui_workshop
+```
+
+### 2. Add the dependencies
+
+Open `Cargo.toml` and replace whatever is there with this:
+
+```toml
+[package]
+name = "ratatui_tui_workshop"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+ratatui = "0.29"
+crossterm = "0.28"
+
+```
+
+### 3. Copy the test stubs as your starting point
+
+This project follows a **test-driven** approach. Each function in `src/lib.rs` starts as a `todo!()` stub, and progressive tests guide your implementation.
+
+```bash
+cp "06-CLIAndTools/11-RatatuiTUI/workshop/src/lib.rs" src/lib.rs
+cp "06-CLIAndTools/11-RatatuiTUI/workshop/src/main.rs" src/main.rs
+```
+
+### 4. Run the tests to see them fail (this is expected!)
+
+```bash
+cargo test
+```
+
+You should see all tests fail with the message "not yet implemented". That's the starting point — you are about to make them pass.
+
+### 5. Follow the step-by-step sections below
+
+Each section below corresponds to a step module in the test file. Implement the function(s) described, then run:
+
+```bash
+cargo test step_XX_name
+```
+
+to watch the pass count grow. The test module names match the section headings.
+
 ## Table of Contents
 1. [Introduction](#1-introduction)
 2. [Prerequisites](#2-prerequisites)
@@ -287,3 +395,58 @@ See [`workshop/src/lib.rs`](workshop/src/lib.rs) and [`workshop/src/main.rs`](wo
 1. **Easy**: Add `color_for_level(level: &str) -> Color` that maps `"INFO" → Blue`, `"WARN" → Yellow`, `"ERROR" → Red`, and 1 test.
 2. **Medium**: Add a `clear_log(events: &mut Vec<LogEvent>)` function that empties the log, and a test that asserts it works.
 3. **Hard**: Add a fourth panel to the dashboard — a `Sparkline` widget that shows the last 10 row counts as a line. Hint: `ratatui::widgets::Sparkline`.
+
+---
+
+**Goal**: Implement all functions in `src/lib.rs` to pass all 13 tests.
+
+## Functions to Implement
+
+### Step 1 — Widgets
+
+#### `build_metric_rows`
+- **Signature**: `pub fn build_metric_rows(metrics: &[PipelineMetric]) -> Vec<Row<'_>>`
+- **Task**: Convert each `PipelineMetric` to a `Row` with 4 cells (name, rows, duration_ms, status).
+
+#### `build_bar_data`
+- **Signature**: `pub fn build_bar_data(metrics: &[PipelineMetric]) -> Vec<(&'static str, u64)>`
+- **Task**: Return `Vec<(name, rows)>` for `BarChart`.
+
+#### `build_log_items`
+- **Signature**: `pub fn build_log_items(events: &[LogEvent]) -> Vec<ListItem<'_>>`
+- **Task**: Convert each `LogEvent` to a `ListItem` (use `Line::from` with two spans).
+
+#### `build_summary_paragraph`
+- **Signature**: `pub fn build_summary_paragraph(metrics: &[PipelineMetric]) -> Paragraph<'_>`
+- **Task**: A summary line: total rows, total duration, success/failed count.
+
+### Step 2 — Styling
+
+#### `color_for_status`
+- **Signature**: `pub fn color_for_status(status: &str) -> Color`
+- **Task**: match `"success"` → `Color::Green`, `"failed"` → `Color::Red`, `"skipped"` → `Color::Yellow`, _ → `Color::Gray`.
+
+### Step 3 — Layout
+
+#### `build_layout_rects`
+- **Signature**: `pub fn build_layout_rects(area: ratatui::layout::Rect) -> std::vec::Vec<ratatui::layout::Rect>`
+- **Task**: Split `area` into 3 vertical sections: header (10%), body (60%), footer (30%).
+
+### Step 4 — Rendering
+
+#### `render_table` / `render_barchart` / `render_log_list` / `render_dashboard`
+- **Task**: Use `terminal.draw(|f| ...)` to render the corresponding widget inside a bordered `Block`.
+
+## Test Modules
+
+| Module | Tests | What It Tests |
+|--------|-------|---------------|
+| step_01_widgets | 4 | Build rows, bar data, log items, summary paragraph |
+| step_02_styling | 4 | Status → Color mapping |
+| step_03_layout | 1 | Layout splits area into 3 sections |
+| step_04_rendering | 4 | Render widgets to a TestBackend |
+
+## How to Run Tests
+```bash
+cargo test
+```

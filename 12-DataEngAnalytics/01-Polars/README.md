@@ -40,6 +40,112 @@ The lazy API builds a **query plan** that the optimizer transforms before execut
 
 ---
 
+## Setup: Create the Project from Scratch
+
+This is a hands-on workshop. You will write the code yourself following the steps below.
+
+### 1. Create the new Cargo project
+
+```bash
+cargo new --lib polars_workshop
+cd polars_workshop
+```
+
+### 2. Add the dependencies
+
+Open `Cargo.toml` and replace whatever is there with this:
+
+```toml
+[package]
+name = "polars_workshop"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+polars = { version = "0.46", features = ["lazy", "parquet", "csv"] }
+
+```
+
+### 3. Copy the test stubs as your starting point
+
+This project follows a **test-driven** approach. Each function in `src/lib.rs` starts as a `todo!()` stub, and progressive tests guide your implementation.
+
+```bash
+cp "12-DataEngAnalytics/01-Polars/workshop/src/lib.rs" src/lib.rs
+cp "12-DataEngAnalytics/01-Polars/workshop/src/main.rs" src/main.rs
+```
+
+### 4. Run the tests to see them fail (this is expected!)
+
+```bash
+cargo test
+```
+
+You should see all tests fail with the message "not yet implemented". That's the starting point — you are about to make them pass.
+
+### 5. Follow the step-by-step sections below
+
+Each section below corresponds to a step module in the test file. Implement the function(s) described, then run:
+
+```bash
+cargo test step_XX_name
+```
+
+to watch the pass count grow. The test module names match the section headings.
+
+## Setup: Create the Project from Scratch
+
+This is a hands-on workshop. You will write the code yourself following the steps below.
+
+### 1. Create the new Cargo project
+
+```bash
+cargo new --lib polars_workshop
+cd polars_workshop
+```
+
+### 2. Add the dependencies
+
+Open `Cargo.toml` and replace whatever is there with this:
+
+```toml
+[package]
+name = "polars_workshop"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+polars = { version = "0.46", features = ["lazy", "parquet", "csv"] }
+
+```
+
+### 3. Copy the test stubs as your starting point
+
+This project follows a **test-driven** approach. Each function in `src/lib.rs` starts as a `todo!()` stub, and progressive tests guide your implementation.
+
+```bash
+cp "12-DataEngAnalytics/01-Polars/workshop/src/lib.rs" src/lib.rs
+cp "12-DataEngAnalytics/01-Polars/workshop/src/main.rs" src/main.rs
+```
+
+### 4. Run the tests to see them fail (this is expected!)
+
+```bash
+cargo test
+```
+
+You should see all tests fail with the message "not yet implemented". That's the starting point — you are about to make them pass.
+
+### 5. Follow the step-by-step sections below
+
+Each section below corresponds to a step module in the test file. Implement the function(s) described, then run:
+
+```bash
+cargo test step_XX_name
+```
+
+to watch the pass count grow. The test module names match the section headings.
+
 ## Table of Contents
 1. [Introduction](#1-introduction)
 2. [Prerequisites](#2-prerequisites)
@@ -258,3 +364,72 @@ See [`workshop/src/lib.rs`](workshop/src/lib.rs) and [`workshop/src/main.rs`](wo
 1. **Easy**: Add `count_products(sales: &DataFrame) -> Result<usize>` that returns the row count, and 1 test.
 2. **Medium**: Add a join function `join_sales_with_products(sales, products) -> Result<DataFrame>` that joins on `product_id` and 1 test that uses a small embedded `products` DataFrame.
 3. **Hard**: Add a UDF with `apply` that uppercases the `name` column, and 1 test verifying all names are uppercased.
+
+---
+
+**Goal**: Implement all functions in `src/lib.rs` to pass all 10 tests.
+
+## Functions to Implement
+
+### Step 1 — Load CSV
+
+#### `load_sales_csv`
+- **Signature**: `pub fn load_sales_csv(path: &str) -> Result<DataFrame, PolarsError>`
+- **Task**: `CsvReader::from_path(path)?.has_header(true).finish()`
+
+### Step 2 — Aggregations
+
+#### `total_units`
+- **Signature**: `pub fn total_units(sales: &DataFrame) -> Result<i64, PolarsError>`
+- **Task**: `sales.column("units")?.sum::<i64>()`
+
+#### `total_revenue`
+- **Signature**: `pub fn total_revenue(sales: &DataFrame) -> Result<f64, PolarsError>`
+- **Task**: `sales.lazy().select([(col("amount") * col("units")).sum().alias("revenue")]).collect()?.column("revenue")?.f64()?.get(0).unwrap_or(0.0)`
+
+### Step 3 — Filter
+
+#### `filter_expensive`
+- **Signature**: `pub fn filter_expensive(sales: &DataFrame, min_amount: f64) -> Result<DataFrame, PolarsError>`
+- **Task**: `sales.clone().lazy().filter(col("amount").gt_eq(lit(min_amount))).collect()`
+
+### Step 4 — Group-by
+
+#### `revenue_per_product`
+- **Signature**: `pub fn revenue_per_product(sales: &DataFrame) -> Result<DataFrame, PolarsError>`
+- **Task**: `sales.lazy().group_by([col("name")]).agg([(col("amount") * col("units")).sum().alias("revenue")]).sort("revenue", SortOptions::default().with_order_desc(true)).collect()`
+
+#### `high_revenue_products`
+- **Signature**: `pub fn high_revenue_products(sales: &DataFrame, min_revenue: f64) -> Result<DataFrame, PolarsError>`
+- **Task**: First compute revenue per product, then filter rows where revenue >= min_revenue.
+
+### Step 5 — Parquet I/O
+
+#### `write_parquet` / `read_parquet`
+- **Task**: `ParquetWriter::new(File::create(path)?).finish(df)` and `ParquetReader::new(File::open(path)?).finish()`.
+
+### Step 6 — Lazy
+
+#### `lazy_filter_expensive`
+- **Signature**: `pub fn lazy_filter_expensive(min_amount: f64) -> Result<DataFrame, PolarsError>`
+- **Task**: Read CSV via `LazyFrame::scan_csv`, filter, collect.
+
+#### `lazy_group_by_total`
+- **Signature**: `pub fn lazy_group_by_total() -> Result<DataFrame, PolarsError>`
+- **Task**: Read CSV via `LazyCsvReader`, group by `name`, sum `units`, collect.
+
+## Test Modules
+
+| Module | Tests | What It Tests |
+|--------|-------|---------------|
+| step_01_load | 2 | CSV → DataFrame shape and column names |
+| step_02_aggregations | 2 | Total units and total revenue |
+| step_03_filter_select | 1 | Filter rows by amount |
+| step_04_group_by | 2 | Group-by and threshold filter |
+| step_05_parquet | 1 | Parquet roundtrip |
+| step_06_lazy | 2 | LazyFrame filter and group-by |
+
+## How to Run Tests
+```bash
+cargo test
+```

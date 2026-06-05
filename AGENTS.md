@@ -136,17 +136,24 @@ These are comprehensive tutorial-based workshops with step-by-step instruction. 
 - `project.py` — Python implementation (optional)
 
 ### Type B — Data-Engineering Cargo Projects
-These are hands-on Cargo projects with test-driven architecture.
+These are hands-on Cargo projects with test-driven architecture. The student
+**creates the project from scratch** following the Setup section in the README
+(`cargo new --lib <name>`, `cd <name>`, add deps, copy test stubs, then
+implement each function step by step).
 
 **Required structure:**
 ```
 N-ProjectName/
-├── README.md               ← Tutorial or introduction pointing to workshop content
-├── Cargo.toml              ← Rust project manifest
-└── src/
+├── README.md               ← Full hands-on tutorial (preamble + Setup + step-by-step)
+└── src/                    ← The student creates this via `cargo new`
     ├── lib.rs              ← All public functions with todo!() stubs + progressive tests
     └── main.rs             ← Entry point that calls into lib.rs
 ```
+
+The `Cargo.toml`, `src/lib.rs`, and `src/main.rs` shown in the Setup section
+of the README are what the student should produce. The repository may
+optionally include a `workshop/` directory with the same files as a reference
+implementation, but the **primary tutorial lives in `N-ProjectName/README.md`**.
 
 ### Test-Driven Architecture
 
@@ -179,11 +186,22 @@ Every project must follow the **progressive test** pattern:
    > watch the pass count grow. Your goal: **all N tests pass**.
    ```
 
-6. **No external test crate dependencies** — use only `#[cfg(test)]` with built-in `#[test]` and `#[should_panic]`. Avoid adding `dev-dependencies` unless the project already uses them for integration tests.
+6. **Setup section** (in the README, after the compact preamble):
+   The README must include a `## Setup: Create the Project from Scratch` section
+   with concrete commands:
+   - `cargo new --lib <name>` (or `cargo new <name>` for binaries)
+   - `cd <name>`
+   - Replace `Cargo.toml` [dependencies] with the project's specific deps
+   - Copy the test stubs from `workshop/src/lib.rs` (or paste the inline stub)
+   - Run `cargo test` to see them fail
+   - Implement each function following the step sections
+   - Run `cargo test step_XX_name` to see progress
 
-7. **Root README.md** must mention "Test-driven learning" in the Course Progression section.
+7. **No external test crate dependencies** — use only `#[cfg(test)]` with built-in `#[test]` and `#[should_panic]`. Avoid adding `dev-dependencies` unless the project already uses them for integration tests.
 
-**Key difference**: Type B projects are pure Rust — no Python equivalent file is expected. The README.md focuses on explaining the Rust code directly with Python comparisons.
+8. **Root README.md** must mention "Test-driven learning" in the Course Progression section.
+
+**Key difference**: Type B projects are pure Rust — no Python equivalent file is expected. The README.md is a complete hands-on tutorial: the student types every command and writes every function themselves.
 
 ---
 

@@ -37,6 +37,118 @@ The output is a self-describing string: `$argon2id$v=19$m=19456,t=2,p=1$...salt.
 
 ---
 
+## Setup: Create the Project from Scratch
+
+This is a hands-on workshop. You will write the code yourself following the steps below.
+
+### 1. Create the new Cargo project
+
+```bash
+cargo new --lib argon2_workshop
+cd argon2_workshop
+```
+
+### 2. Add the dependencies
+
+Open `Cargo.toml` and replace whatever is there with this:
+
+```toml
+[package]
+name = "argon2_workshop"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+argon2 = "0.5"
+password-hash = { version = "0.5", features = ["std"] }
+rand = "0.8"
+subtle = "2"
+
+```
+
+### 3. Copy the test stubs as your starting point
+
+This project follows a **test-driven** approach. Each function in `src/lib.rs` starts as a `todo!()` stub, and progressive tests guide your implementation.
+
+```bash
+cp "07-Security/04-Argon2/workshop/src/lib.rs" src/lib.rs
+cp "07-Security/04-Argon2/workshop/src/main.rs" src/main.rs
+```
+
+### 4. Run the tests to see them fail (this is expected!)
+
+```bash
+cargo test
+```
+
+You should see all tests fail with the message "not yet implemented". That's the starting point — you are about to make them pass.
+
+### 5. Follow the step-by-step sections below
+
+Each section below corresponds to a step module in the test file. Implement the function(s) described, then run:
+
+```bash
+cargo test step_XX_name
+```
+
+to watch the pass count grow. The test module names match the section headings.
+
+## Setup: Create the Project from Scratch
+
+This is a hands-on workshop. You will write the code yourself following the steps below.
+
+### 1. Create the new Cargo project
+
+```bash
+cargo new --lib argon2_workshop
+cd argon2_workshop
+```
+
+### 2. Add the dependencies
+
+Open `Cargo.toml` and replace whatever is there with this:
+
+```toml
+[package]
+name = "argon2_workshop"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+argon2 = "0.5"
+password-hash = { version = "0.5", features = ["std"] }
+rand = "0.8"
+subtle = "2"
+
+```
+
+### 3. Copy the test stubs as your starting point
+
+This project follows a **test-driven** approach. Each function in `src/lib.rs` starts as a `todo!()` stub, and progressive tests guide your implementation.
+
+```bash
+cp "07-Security/04-Argon2/workshop/src/lib.rs" src/lib.rs
+cp "07-Security/04-Argon2/workshop/src/main.rs" src/main.rs
+```
+
+### 4. Run the tests to see them fail (this is expected!)
+
+```bash
+cargo test
+```
+
+You should see all tests fail with the message "not yet implemented". That's the starting point — you are about to make them pass.
+
+### 5. Follow the step-by-step sections below
+
+Each section below corresponds to a step module in the test file. Implement the function(s) described, then run:
+
+```bash
+cargo test step_XX_name
+```
+
+to watch the pass count grow. The test module names match the section headings.
+
 ## Table of Contents
 1. [Introduction](#1-introduction)
 2. [Prerequisites](#2-prerequisites)
@@ -175,3 +287,55 @@ See [`workshop/src/lib.rs`](workshop/src/lib.rs) and [`workshop/src/main.rs`](wo
 1. **Easy**: Add a `hash_password_with_params(password, m_cost, t_cost)` function that uses custom parameters, and 1 test.
 2. **Medium**: Add a `verify_password_with_old_params(password, hash, m_cost)` that detects when a hash uses old parameters and returns `Ok(false)` instead of erroring.
 3. **Hard**: Add a `needs_rehash(hash, m_cost, t_cost)` function that returns `true` if the stored hash was made with cost parameters below the current minimum (forcing a rehash on next login).
+
+---
+
+**Goal**: Implement all functions in `src/lib.rs` to pass all 10 tests.
+
+## Functions to Implement
+
+### Step 1 — Hash and verify
+
+#### `hash_password`
+- **Signature**: `pub fn hash_password(password: &str) -> Result<String, password_hash::Error>`
+- **Task**: Generate a random salt, then `Argon2::default().hash_password(password.as_bytes(), &salt)?.to_string()`.
+
+#### `verify_password`
+- **Signature**: `pub fn verify_password(password: &str, hash: &str) -> Result<bool, password_hash::Error>`
+- **Task**: `let parsed = PasswordHash::new(hash)?; Argon2::default().verify_password(password.as_bytes(), &parsed).map(|_| true).or_else(|e| if matches!(e, password_hash::Error::Password) { Ok(false) } else { Err(e) })`
+
+### Step 2 — Salt
+
+#### `generate_salt`
+- **Signature**: `pub fn generate_salt() -> SaltString`
+- **Task**: `SaltString::generate(&mut OsRng)`
+
+#### `hash_with_salt`
+- **Signature**: `pub fn hash_with_salt(password: &str, salt: &SaltString) -> Result<String, password_hash::Error>`
+- **Task**: `Argon2::default().hash_password(password.as_bytes(), salt).map(|h| h.to_string())`
+
+### Step 3 — Validation
+
+#### `is_password_valid`
+- **Signature**: `pub fn is_password_valid(password: &str, min_length: usize) -> bool`
+- **Task**: `password.chars().count() >= min_length && !password.is_empty()`
+
+### Step 4 — Constant-time comparison
+
+#### `constant_time_eq`
+- **Signature**: `pub fn constant_time_eq(a: &[u8], b: &[u8]) -> bool`
+- **Task**: `a.ct_eq(b).into()`
+
+## Test Modules
+
+| Module | Tests | What It Tests |
+|--------|-------|---------------|
+| step_01_hash_and_verify | 3 | Hash + verify correct + reject wrong |
+| step_02_salt | 2 | Salt uniqueness + determinism with same salt |
+| step_03_validation | 2 | Min-length check + reject empty |
+| step_04_constant_time | 3 | `subtle::ConstantTimeEq` correctness |
+
+## How to Run Tests
+```bash
+cargo test
+```

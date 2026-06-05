@@ -40,6 +40,118 @@ Combined with `tokio` for async, you get a CLI that:
 
 ---
 
+## Setup: Create the Project from Scratch
+
+This is a hands-on workshop. You will write the code yourself following the steps below.
+
+### 1. Create the new Cargo project
+
+```bash
+cargo new --lib async_clap_workshop
+cd async_clap_workshop
+```
+
+### 2. Add the dependencies
+
+Open `Cargo.toml` and replace whatever is there with this:
+
+```toml
+[package]
+name = "async_clap_workshop"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+clap = { version = "4", features = ["derive"] }
+tokio = { version = "1", features = ["rt-multi-thread", "macros", "time"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+
+```
+
+### 3. Copy the test stubs as your starting point
+
+This project follows a **test-driven** approach. Each function in `src/lib.rs` starts as a `todo!()` stub, and progressive tests guide your implementation.
+
+```bash
+cp "06-CLIAndTools/12-AsyncClap/workshop/src/lib.rs" src/lib.rs
+cp "06-CLIAndTools/12-AsyncClap/workshop/src/main.rs" src/main.rs
+```
+
+### 4. Run the tests to see them fail (this is expected!)
+
+```bash
+cargo test
+```
+
+You should see all tests fail with the message "not yet implemented". That's the starting point — you are about to make them pass.
+
+### 5. Follow the step-by-step sections below
+
+Each section below corresponds to a step module in the test file. Implement the function(s) described, then run:
+
+```bash
+cargo test step_XX_name
+```
+
+to watch the pass count grow. The test module names match the section headings.
+
+## Setup: Create the Project from Scratch
+
+This is a hands-on workshop. You will write the code yourself following the steps below.
+
+### 1. Create the new Cargo project
+
+```bash
+cargo new --lib async_clap_workshop
+cd async_clap_workshop
+```
+
+### 2. Add the dependencies
+
+Open `Cargo.toml` and replace whatever is there with this:
+
+```toml
+[package]
+name = "async_clap_workshop"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+clap = { version = "4", features = ["derive"] }
+tokio = { version = "1", features = ["rt-multi-thread", "macros", "time"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+
+```
+
+### 3. Copy the test stubs as your starting point
+
+This project follows a **test-driven** approach. Each function in `src/lib.rs` starts as a `todo!()` stub, and progressive tests guide your implementation.
+
+```bash
+cp "06-CLIAndTools/12-AsyncClap/workshop/src/lib.rs" src/lib.rs
+cp "06-CLIAndTools/12-AsyncClap/workshop/src/main.rs" src/main.rs
+```
+
+### 4. Run the tests to see them fail (this is expected!)
+
+```bash
+cargo test
+```
+
+You should see all tests fail with the message "not yet implemented". That's the starting point — you are about to make them pass.
+
+### 5. Follow the step-by-step sections below
+
+Each section below corresponds to a step module in the test file. Implement the function(s) described, then run:
+
+```bash
+cargo test step_XX_name
+```
+
+to watch the pass count grow. The test module names match the section headings.
+
 ## Table of Contents
 1. [Introduction](#1-introduction)
 2. [Prerequisites](#2-prerequisites)
@@ -253,3 +365,60 @@ See [`workshop/src/lib.rs`](workshop/src/lib.rs) and [`workshop/src/main.rs`](wo
 1. **Easy**: Add `--dry-run` flag to the `Run` subcommand (boolean, default false), and 1 test.
 2. **Medium**: Add a `validate` subcommand that loads a config and returns an error if `parallelism > 16`. Add 1 test.
 3. **Hard**: Add a `parallel_run` function that takes a `Run { parallelism, .. }` command, spawns `parallelism` tokio tasks each calling `fake_io_work(50)`, awaits all of them with `join_all`, and returns the total time. Add 1 test that asserts the result contains "spawned".
+
+---
+
+**Goal**: Implement all functions in `src/lib.rs` to pass all 14 tests.
+
+## Functions to Implement
+
+### Step 1 — Parsing
+
+#### `parse_args`
+- **Signature**: `pub fn parse_args(args: &[&str]) -> Result<Cli, clap::Error>`
+- **Task**: `Cli::try_parse_from(args)`
+
+### Step 2 — Config
+
+#### `parse_pipeline_config`
+- **Signature**: `pub fn parse_pipeline_config(json: &str) -> Result<PipelineConfig, serde_json::Error>`
+- **Task**: `serde_json::from_str(json)`
+
+### Step 3 — Helpers
+
+#### `extract_target`
+- **Signature**: `pub fn extract_target(cli: &Cli) -> Option<String>`
+- **Task**: Match on `Commands::Etl { action: EtlAction::Load { target } }` and return `Some(target.clone())`. All others return `None`.
+
+#### `run_summary`
+- **Signature**: `pub fn run_summary(cli: &Cli) -> String`
+- **Task**: `format!("etlctl {:?}", cli.command)`.
+
+### Step 4 — Async I/O
+
+#### `fake_io_work`
+- **Signature**: `pub async fn fake_io_work(ms: u64) -> Result<String, String>`
+- **Task**: `tokio::time::sleep(Duration::from_millis(ms)).await; Ok(format!("done in {}ms", ms))`.
+
+#### `run_pipeline`
+- **Signature**: `pub async fn run_pipeline(cli: &Cli) -> Result<String, String>`
+- **Task**: Match on `cli.command`:
+  - `Run { config, parallelism }` → call `parse_pipeline_config` (read file), then `fake_io_work(50 * *parallelism as u64)`
+  - `Etl { action: EtlAction::Extract { .. } }` → `fake_io_work(100)`
+  - `Etl { action: EtlAction::Transform { .. } }` → `fake_io_work(50)`
+  - `Etl { action: EtlAction::Load { .. } }` → `fake_io_work(150)`
+  - `Status { .. }` → `Ok("status: running".to_string())`
+
+## Test Modules
+
+| Module | Tests | What It Tests |
+|--------|-------|---------------|
+| step_01_parse | 8 | Parse all subcommands + global log level |
+| step_02_config | 1 | JSON config deserialization |
+| step_03_helpers | 3 | extract_target + run_summary |
+| step_04_async | 3 | fake_io_work + run_pipeline for two actions |
+
+## How to Run Tests
+```bash
+cargo test
+```

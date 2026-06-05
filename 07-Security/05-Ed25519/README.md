@@ -37,6 +37,120 @@ key.verifying_key().verify(b"message", &sig).is_ok();
 
 ---
 
+## Setup: Create the Project from Scratch
+
+This is a hands-on workshop. You will write the code yourself following the steps below.
+
+### 1. Create the new Cargo project
+
+```bash
+cargo new --lib ed25519_workshop
+cd ed25519_workshop
+```
+
+### 2. Add the dependencies
+
+Open `Cargo.toml` and replace whatever is there with this:
+
+```toml
+[package]
+name = "ed25519_workshop"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+ed25519-dalek = { version = "2", features = ["rand_core", "pem"] }
+rand = "0.8"
+rand_core = { version = "0.6", features = ["std"] }
+hex = "0.4"
+base64 = "0.22"
+
+```
+
+### 3. Copy the test stubs as your starting point
+
+This project follows a **test-driven** approach. Each function in `src/lib.rs` starts as a `todo!()` stub, and progressive tests guide your implementation.
+
+```bash
+cp "07-Security/05-Ed25519/workshop/src/lib.rs" src/lib.rs
+cp "07-Security/05-Ed25519/workshop/src/main.rs" src/main.rs
+```
+
+### 4. Run the tests to see them fail (this is expected!)
+
+```bash
+cargo test
+```
+
+You should see all tests fail with the message "not yet implemented". That's the starting point — you are about to make them pass.
+
+### 5. Follow the step-by-step sections below
+
+Each section below corresponds to a step module in the test file. Implement the function(s) described, then run:
+
+```bash
+cargo test step_XX_name
+```
+
+to watch the pass count grow. The test module names match the section headings.
+
+## Setup: Create the Project from Scratch
+
+This is a hands-on workshop. You will write the code yourself following the steps below.
+
+### 1. Create the new Cargo project
+
+```bash
+cargo new --lib ed25519_workshop
+cd ed25519_workshop
+```
+
+### 2. Add the dependencies
+
+Open `Cargo.toml` and replace whatever is there with this:
+
+```toml
+[package]
+name = "ed25519_workshop"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+ed25519-dalek = { version = "2", features = ["rand_core", "pem"] }
+rand = "0.8"
+rand_core = { version = "0.6", features = ["std"] }
+hex = "0.4"
+base64 = "0.22"
+
+```
+
+### 3. Copy the test stubs as your starting point
+
+This project follows a **test-driven** approach. Each function in `src/lib.rs` starts as a `todo!()` stub, and progressive tests guide your implementation.
+
+```bash
+cp "07-Security/05-Ed25519/workshop/src/lib.rs" src/lib.rs
+cp "07-Security/05-Ed25519/workshop/src/main.rs" src/main.rs
+```
+
+### 4. Run the tests to see them fail (this is expected!)
+
+```bash
+cargo test
+```
+
+You should see all tests fail with the message "not yet implemented". That's the starting point — you are about to make them pass.
+
+### 5. Follow the step-by-step sections below
+
+Each section below corresponds to a step module in the test file. Implement the function(s) described, then run:
+
+```bash
+cargo test step_XX_name
+```
+
+to watch the pass count grow. The test module names match the section headings.
+
 ## Table of Contents
 1. [Introduction](#1-introduction)
 2. [Prerequisites](#2-prerequisites)
@@ -169,3 +283,56 @@ See [`workshop/src/lib.rs`](workshop/src/lib.rs) and [`workshop/src/main.rs`](wo
 1. **Easy**: Add a `keypair_to_hex(key: &SigningKey) -> String` that encodes the 32-byte private key as hex, and 1 test.
 2. **Medium**: Add a `sign_with_nonce(key, message, nonce: &[u8; 32]) -> Signature` that uses a deterministic nonce (Ed25519ph / Ed25519ctx variant).
 3. **Hard**: Add a `verify_batch(keys: &[VerifyingKey], messages: &[&[u8]], signatures: &[Signature]) -> Vec<bool>` that verifies many signatures in batched form (constant-time, vectorized).
+
+---
+
+**Goal**: Implement all functions in `src/lib.rs` to pass all 9 tests.
+
+## Functions to Implement
+
+### Step 1 — Keypair
+
+#### `generate_keypair`
+- **Signature**: `pub fn generate_keypair() -> SigningKey`
+- **Task**: `SigningKey::generate(&mut OsRng)`
+
+### Step 2 — Sign and verify
+
+#### `sign_message`
+- **Signature**: `pub fn sign_message(key: &SigningKey, message: &[u8]) -> Signature`
+- **Task**: `key.sign(message)`
+
+#### `verify_signature`
+- **Signature**: `pub fn verify_signature(key: &VerifyingKey, message: &[u8], signature: &Signature) -> bool`
+- **Task**: `key.verify(message, signature).is_ok()`
+
+#### `sign_then_verify`
+- **Signature**: `pub fn sign_then_verify(message: &[u8]) -> bool`
+- **Task**: Generate a key, sign `message`, verify, return the bool.
+
+#### `tampered_signature_fails`
+- **Signature**: `pub fn tampered_signature_fails(message: &[u8]) -> bool`
+- **Task**: Sign a different message, try to verify `message` with that signature, return the (false) result.
+
+### Step 3 — Serialization
+
+#### `public_key_to_hex`
+- **Signature**: `pub fn public_key_to_hex(key: &VerifyingKey) -> String`
+- **Task**: `hex::encode(key.to_bytes())`
+
+#### `public_key_from_hex`
+- **Signature**: `pub fn public_key_from_hex(s: &str) -> Result<VerifyingKey, ed25519_dalek::SignatureError>`
+- **Task**: `let bytes = hex::decode(s).map_err(|_| ed25519_dalek::SignatureError::new())?; VerifyingKey::from_bytes(&bytes)`
+
+## Test Modules
+
+| Module | Tests | What It Tests |
+|--------|-------|---------------|
+| step_01_keypair | 2 | Generate, distinct keypairs |
+| step_02_sign_and_verify | 4 | Roundtrip + tampering detection |
+| step_03_serialization | 3 | Hex roundtrip + invalid input + length check |
+
+## How to Run Tests
+```bash
+cargo test
+```

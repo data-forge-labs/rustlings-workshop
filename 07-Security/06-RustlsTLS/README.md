@@ -44,6 +44,122 @@ let tls_stream = acceptor.accept(tcp_stream).await?;
 
 ---
 
+## Setup: Create the Project from Scratch
+
+This is a hands-on workshop. You will write the code yourself following the steps below.
+
+### 1. Create the new Cargo project
+
+```bash
+cargo new --lib rustls_tls_workshop
+cd rustls_tls_workshop
+```
+
+### 2. Add the dependencies
+
+Open `Cargo.toml` and replace whatever is there with this:
+
+```toml
+[package]
+name = "rustls_tls_workshop"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+rustls = { version = "0.23", default-features = false, features = ["std", "logging", "aws_lc_rs", "tls12"] }
+rustls-pemfile = "2"
+tokio = { version = "1", features = ["rt-multi-thread", "macros", "io-util", "net", "time"] }
+tokio-rustls = "0.26"
+webpki = "0.22"
+aws-lc-rs = "1"
+
+```
+
+### 3. Copy the test stubs as your starting point
+
+This project follows a **test-driven** approach. Each function in `src/lib.rs` starts as a `todo!()` stub, and progressive tests guide your implementation.
+
+```bash
+cp "07-Security/06-RustlsTLS/workshop/src/lib.rs" src/lib.rs
+cp "07-Security/06-RustlsTLS/workshop/src/main.rs" src/main.rs
+```
+
+### 4. Run the tests to see them fail (this is expected!)
+
+```bash
+cargo test
+```
+
+You should see all tests fail with the message "not yet implemented". That's the starting point — you are about to make them pass.
+
+### 5. Follow the step-by-step sections below
+
+Each section below corresponds to a step module in the test file. Implement the function(s) described, then run:
+
+```bash
+cargo test step_XX_name
+```
+
+to watch the pass count grow. The test module names match the section headings.
+
+## Setup: Create the Project from Scratch
+
+This is a hands-on workshop. You will write the code yourself following the steps below.
+
+### 1. Create the new Cargo project
+
+```bash
+cargo new --lib rustls_tls_workshop
+cd rustls_tls_workshop
+```
+
+### 2. Add the dependencies
+
+Open `Cargo.toml` and replace whatever is there with this:
+
+```toml
+[package]
+name = "rustls_tls_workshop"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+rustls = { version = "0.23", default-features = false, features = ["std", "logging", "aws_lc_rs", "tls12"] }
+rustls-pemfile = "2"
+tokio = { version = "1", features = ["rt-multi-thread", "macros", "io-util", "net", "time"] }
+tokio-rustls = "0.26"
+webpki = "0.22"
+aws-lc-rs = "1"
+
+```
+
+### 3. Copy the test stubs as your starting point
+
+This project follows a **test-driven** approach. Each function in `src/lib.rs` starts as a `todo!()` stub, and progressive tests guide your implementation.
+
+```bash
+cp "07-Security/06-RustlsTLS/workshop/src/lib.rs" src/lib.rs
+cp "07-Security/06-RustlsTLS/workshop/src/main.rs" src/main.rs
+```
+
+### 4. Run the tests to see them fail (this is expected!)
+
+```bash
+cargo test
+```
+
+You should see all tests fail with the message "not yet implemented". That's the starting point — you are about to make them pass.
+
+### 5. Follow the step-by-step sections below
+
+Each section below corresponds to a step module in the test file. Implement the function(s) described, then run:
+
+```bash
+cargo test step_XX_name
+```
+
+to watch the pass count grow. The test module names match the section headings.
+
 ## Table of Contents
 1. [Introduction](#1-introduction)
 2. [Prerequisites](#2-prerequisites)
@@ -200,3 +316,67 @@ See [`workshop/src/lib.rs`](workshop/src/lib.rs) and [`workshop/src/main.rs`](wo
 1. **Easy**: Add `build_client_config_with_custom_ca(ca_der: CertificateDer) -> Arc<ClientConfig>` that trusts only the given CA, and 1 test.
 2. **Medium**: Add a `client_auth_required(cert: CertificateDer, key: PrivateKeyDer) -> Arc<ServerConfig>` that requires the client to present a cert, and 1 test.
 3. **Hard**: Add a `tls_proxy(server_addr, backend_addr) -> !` function that accepts TLS connections on `server_addr`, opens plain TCP to `backend_addr`, and forwards bytes between them (TLS termination proxy).
+
+---
+
+**Goal**: Implement all functions in `src/lib.rs` to pass all 5 tests.
+
+> **Compile-heavy workshop**: `rustls` pulls in `aws-lc-rs` (a C/ASM crypto
+> library). First `cargo test` may take 5-10 minutes. Subsequent runs are
+> cached.
+
+## Functions to Implement
+
+### Step 1 — Build configs
+
+#### `build_server_config`
+- **Signature**: `pub fn build_server_config(cert: Vec<CertificateDer<'static>>, key: PrivateKeyDer<'static>) -> Result<Arc<ServerConfig>, rustls::Error>`
+- **Task**: `ServerConfig::builder().with_no_client_auth().with_single_cert(cert, key).map(Arc::new)`
+
+#### `build_client_config`
+- **Signature**: `pub fn build_client_config() -> Arc<ClientConfig>`
+- **Task**: `ClientConfig::builder().dangerous().with_custom_certificate_verifier(Arc::new(SkipVerifier)).with_no_client_auth().unwrap()` (or with `webpki_roots`).
+
+### Step 2 — Name parsing
+
+#### `parse_server_name`
+- **Signature**: `pub fn parse_server_name(name: &str) -> Result<ServerName<'static>, rustls::pki_types::InvalidDnsNameError>`
+- **Task**: `ServerName::try_from(name.to_string())`
+
+### Step 3 — Echo roundtrip
+
+#### `run_echo_server`
+- **Signature**: `pub async fn run_echo_server(addr: &str, config: Arc<ServerConfig>) -> std::io::Result<()>`
+- **Task**: Bind a `TcpListener`, accept connections, wrap each in `TlsAcceptor::from(config).accept(stream)`, echo the first 1024 bytes back.
+
+#### `tls_echo_roundtrip`
+- **Signature**: `pub async fn tls_echo_roundtrip(server_addr, server_config, message) -> Result<Vec<u8>, Box<dyn Error>>`
+- **Task**: Connect a `TcpStream`, wrap in `TlsConnector::from(client_config).connect(name, stream)`, write `message`, read response.
+
+## Test Modules
+
+| Module | Tests | What It Tests |
+|--------|-------|---------------|
+| step_01_build_configs | 2 | ServerConfig + ClientConfig construction |
+| step_02_name_parsing | 2 | DNS name parse |
+| step_03_tls_handshake | 1 | Spawn server + connect (with dummy cert) |
+
+## How to Run Tests
+```bash
+cargo test
+```
+
+## Generating a Self-Signed Certificate
+
+For real TLS testing, generate a cert with `rcgen` (or use the test certs from the
+`rustls` examples):
+
+```rust
+use rcgen::{generate_simple_self_signed, CertifiedKey};
+
+let CertifiedKey { cert, key_pair } = generate_simple_self_signed(vec!["localhost".into()])?;
+let cert_der = cert.der().to_vec();
+let key_der = key_pair.serialized_der().to_vec();
+```
+
+In production, get a real cert from Let's Encrypt.

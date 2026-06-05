@@ -36,6 +36,114 @@ DataFusion is the query layer of distributed systems like **Ballista** (distribu
 
 ---
 
+## Setup: Create the Project from Scratch
+
+This is a hands-on workshop. You will write the code yourself following the steps below.
+
+### 1. Create the new Cargo project
+
+```bash
+cargo new --lib datafusion_workshop
+cd datafusion_workshop
+```
+
+### 2. Add the dependencies
+
+Open `Cargo.toml` and replace whatever is there with this:
+
+```toml
+[package]
+name = "datafusion_workshop"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+datafusion = "43"
+tokio = { version = "1", features = ["rt-multi-thread", "macros"] }
+
+```
+
+### 3. Copy the test stubs as your starting point
+
+This project follows a **test-driven** approach. Each function in `src/lib.rs` starts as a `todo!()` stub, and progressive tests guide your implementation.
+
+```bash
+cp "12-DataEngAnalytics/03-DataFusion/workshop/src/lib.rs" src/lib.rs
+cp "12-DataEngAnalytics/03-DataFusion/workshop/src/main.rs" src/main.rs
+```
+
+### 4. Run the tests to see them fail (this is expected!)
+
+```bash
+cargo test
+```
+
+You should see all tests fail with the message "not yet implemented". That's the starting point — you are about to make them pass.
+
+### 5. Follow the step-by-step sections below
+
+Each section below corresponds to a step module in the test file. Implement the function(s) described, then run:
+
+```bash
+cargo test step_XX_name
+```
+
+to watch the pass count grow. The test module names match the section headings.
+
+## Setup: Create the Project from Scratch
+
+This is a hands-on workshop. You will write the code yourself following the steps below.
+
+### 1. Create the new Cargo project
+
+```bash
+cargo new --lib datafusion_workshop
+cd datafusion_workshop
+```
+
+### 2. Add the dependencies
+
+Open `Cargo.toml` and replace whatever is there with this:
+
+```toml
+[package]
+name = "datafusion_workshop"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+datafusion = "43"
+tokio = { version = "1", features = ["rt-multi-thread", "macros"] }
+
+```
+
+### 3. Copy the test stubs as your starting point
+
+This project follows a **test-driven** approach. Each function in `src/lib.rs` starts as a `todo!()` stub, and progressive tests guide your implementation.
+
+```bash
+cp "12-DataEngAnalytics/03-DataFusion/workshop/src/lib.rs" src/lib.rs
+cp "12-DataEngAnalytics/03-DataFusion/workshop/src/main.rs" src/main.rs
+```
+
+### 4. Run the tests to see them fail (this is expected!)
+
+```bash
+cargo test
+```
+
+You should see all tests fail with the message "not yet implemented". That's the starting point — you are about to make them pass.
+
+### 5. Follow the step-by-step sections below
+
+Each section below corresponds to a step module in the test file. Implement the function(s) described, then run:
+
+```bash
+cargo test step_XX_name
+```
+
+to watch the pass count grow. The test module names match the section headings.
+
 ## Table of Contents
 1. [Introduction](#1-introduction)
 2. [Prerequisites](#2-prerequisites)
@@ -187,3 +295,68 @@ See [`workshop/src/lib.rs`](workshop/src/lib.rs) and [`workshop/src/main.rs`](wo
 1. **Easy**: Add `count_distinct_names(ctx, table) -> Result<i64>` that runs `SELECT COUNT(DISTINCT name) FROM <table>` and 1 test.
 2. **Medium**: Add a UDF with `create_udf` that uppercases a string column, register it as `uppercase`, run `SELECT uppercase(name) FROM orders` and verify.
 3. **Hard**: Add a `join_orders_with_sales(ctx, orders_table, sales_table) -> Result<Vec<RecordBatch>>` that joins on `id` and groups by `name` to get total units sold.
+
+---
+
+**Goal**: Implement all functions in `src/lib.rs` to pass all 7 tests.
+
+## Functions to Implement
+
+### Step 1 — SessionContext
+
+#### `create_context`
+- **Signature**: `pub async fn create_context() -> Result<SessionContext>`
+- **Task**: `SessionContext::new()`
+
+### Step 2 — CSV registration
+
+#### `register_csv`
+- **Signature**: `pub async fn register_csv(ctx: &SessionContext, table: &str, path: &str) -> Result<()>`
+- **Task**: `ctx.register_csv(table, path, CsvReadOptions::new()).await?`
+
+#### `count_rows`
+- **Signature**: `pub async fn count_rows(ctx: &SessionContext, table: &str) -> Result<i64>`
+- **Task**: `ctx.sql(&format!("SELECT COUNT(*) FROM {}", table)).await?.collect().await?` and extract the `Int64Array`.
+
+### Step 3 — Aggregations
+
+#### `total_amount`
+- **Signature**: `pub async fn total_amount(ctx: &SessionContext, table: &str) -> Result<f64>`
+- **Task**: `SELECT SUM(amount) FROM <table>` and extract the `Float64Array`.
+
+#### `rows_above_amount`
+- **Signature**: `pub async fn rows_above_amount(ctx: &SessionContext, table: &str, threshold: f64) -> Result<usize>`
+- **Task**: `SELECT COUNT(*) FROM <table> WHERE amount > <threshold>` and return the count.
+
+#### `names_above_amount`
+- **Signature**: `pub async fn names_above_amount(ctx: &SessionContext, table: &str, threshold: f64) -> Result<Vec<String>>`
+- **Task**: `SELECT name FROM <table> WHERE amount > <threshold>` and collect names.
+
+### Step 4 — Ad-hoc SQL
+
+#### `run_sql`
+- **Signature**: `pub async fn run_sql(ctx: &SessionContext, sql: &str) -> Result<Vec<RecordBatch>>`
+- **Task**: `ctx.sql(sql).await?.collect().await?`
+
+### Step 5 — Parquet write
+
+#### `write_parquet`
+- **Signature**: `pub async fn write_parquet(ctx: &SessionContext, table: &str, path: &str) -> Result<()>`
+- **Task**: Use `ctx.sql(&format!("SELECT * FROM {}", table))` then `datafusion::arrow::ipc::writer` or `parquet` crate's `ArrowWriter` directly. Alternatively use `datafusion::datasource::file_format::parquet::ParquetSink` via `df.execute` and write.
+
+> Note: The simplest path is `ctx.sql(...).await?.collect().await?` → take the first batch → `ArrowWriter::try_new(File::create(path)?, batch.schema(), Default::default())?` → write & close.
+
+## Test Modules
+
+| Module | Tests | What It Tests |
+|--------|-------|---------------|
+| step_01_context | 1 | SessionContext + simple SQL |
+| step_02_csv | 1 | Register CSV and count rows |
+| step_03_aggregations | 3 | Sum, count above threshold, names above threshold |
+| step_04_sql | 1 | Ad-hoc SQL with COUNT + AVG |
+| step_05_parquet | 1 | Write Parquet to disk |
+
+## How to Run Tests
+```bash
+cargo test
+```
