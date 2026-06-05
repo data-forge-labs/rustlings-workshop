@@ -42,7 +42,7 @@ The course is carefully sequenced so each concept is introduced by one source an
 | 5 — Concurrency | Threads, async/await, Mutex, Arc, Send/Sync, Rayon, atomics, channels | 01 (Threads), 02 (Futures), 03–11 (DataRace, Atomics, DiningPhilosophers, Rayon, etc.) |
 | 6 — CLI & Tools | clap, petgraph, Dijkstra, PageRank, Neo4j | 01–10 (CLISalad, CommunityDetection, PageRank, GraphVisualize, etc.) |
 | 7 — Security | Safe vs unsafe, crypto, security model | 01 (SafeAndUnsafe), 02 (DecoderRing), 03 (RustCryptoHashes) |
-| 8 — Interop | evcxr, Jupyter, pandas bridge | 01 (ExploringPandas), 02 (RustJupyterNotebook) |
+| 8 — Interop | evcxr, Jupyter, pandas bridge | 01 (ExploringPandas), 02 (RustJupyterNotebook), 03 (PyO3Bindings), 04 (GILRelease) |
 | 9 — Production Systems | Tokio, async, TCP, RESP protocol, Axum web API | 01 (Radish), 02 (AxumShop) |
 | 10 — Tools & Frameworks | Logging, configuration management, testing frameworks | 01 (Logging), 02 (Configuration), 03 (Testing) |
 | 11 — Reference | Quick concept lookup, cheatsheets, memory architecture | (no cargo projects — reference materials only) |
@@ -184,6 +184,8 @@ Projects are grouped into **sections** that map concepts a Python data engineer 
 |---|---------|-------------------|
 | 01 | **ExploringPandas** — Rust meets pandas | DataFrame operations, Python/Rust interop, filtering/grouping, matplotlib |
 | 02 | **RustJupyterNotebook** — interactive Rust with evcxr | `evcxr` Jupyter kernel, interactive Rust, `plotters`/`ndarray`/`rayon` |
+| 03 | **PyO3Bindings** — Call Rust from Python | `pyo3 0.23`, `#[pyfunction]` / `#[pymodule]`, `cdylib`, `maturin develop`, feature-gated FFI |
+| 04 | **GILRelease** — Free the GIL, free the CPU | `pyo3::Python::allow_threads`, GIL contention factor, multi-threaded CPU work |
 
 ### Section 9: Production Systems — Building Real-World Services
 
@@ -358,6 +360,8 @@ The table below lists all core Rust concepts a learner should eventually see. **
 | Argon2 password hashing (`argon2` crate, salt, `PasswordHasher`/`PasswordVerifier`, `subtle::ConstantTimeEq`) | ✅ | 07-04 |
 | Ed25519 digital signatures (`ed25519-dalek`, `SigningKey`/`VerifyingKey`, hex serialization) | ✅ | 07-05 |
 | Rustls TLS (`rustls` + `aws-lc-rs`, `ServerConfig`/`ClientConfig`, `tokio-rustls` handshake) | ✅ | 07-06 |
+| PyO3 bindings (`#[pyfunction]`, `#[pymodule]`, `cdylib`, `maturin develop`, feature-gated FFI) | ✅ | 08-03 |
+| GIL release (`pyo3::Python::allow_threads`, GIL contention factor) | ✅ | 08-04 |
 | Jupyter notebook / `evcxr` | ✅ | 08-02 |
 | Pandas / DataFrame operations | ✅ | 08-01 |
 

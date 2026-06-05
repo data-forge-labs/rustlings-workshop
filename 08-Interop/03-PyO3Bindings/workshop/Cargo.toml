@@ -1,0 +1,15 @@
+[package]
+name = "pyo3_bindings_workshop"
+version = "0.1.0"
+edition = "2024"
+
+[features]
+default = []
+python = ["dep:pyo3"]
+
+[lib]
+name = "pyo3_bindings_workshop"
+crate-type = ["rlib", "cdylib"]
+
+[dependencies]
+pyo3 = { version = "0.23", features = ["auto-initialize"], optional = true }

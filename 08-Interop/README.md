@@ -171,8 +171,12 @@ for result in reader.deserialize() {
 |---|---------|----------|--------|
 | 57 | **ExploringPandas** — Rust meets pandas | DataFrame operations, Python/Rust interop, filtering/grouping, matplotlib | Project |
 | 58 | **RustJupyterNotebook** — interactive Rust with evcxr | `evcxr` Jupyter kernel, interactive Rust, `plotters`/`ndarray`/`rayon` | Project |
+| 59 | **PyO3Bindings** — Call Rust from Python | `pyo3` 0.23, `#[pyfunction]` / `#[pymodule]`, `cdylib`, `maturin develop`, feature-gated FFI | Project |
+| 60 | **GILRelease** — Free the GIL, free the CPU | `pyo3::Python::allow_threads`, GIL contention factor, multi-threaded CPU work | Project |
 
 ## Learning Path
 
 1. Start with **02-RustJupyterNotebook** to set up interactive Rust in Jupyter
 2. Explore **01-ExploringPandas** to see Rust and Python working together
+3. **03-PyO3Bindings** shows the *producer* direction — write a Python module in Rust
+4. **04-GILRelease** shows the killer feature: `Python::allow_threads` releases the GIL so other Python threads can run while Rust computes
