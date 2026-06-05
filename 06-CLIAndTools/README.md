@@ -220,6 +220,8 @@ This pattern lets you **test the library** without the CLI and reuse the library
 | 29 | **DataStructuresLessonReflection** — graph DS reflection | Graph vs other DS, centrality metrics, community detection | Reflection |
 | 31 | **FullyConnectedGraph** — graph connectivity | Graph connectivity, `HashMap` memoization | Project |
 | 33 | **CustomCLIFruitSalad** — advanced CLI + CSV | `clap` derive, CSV reading, `lib.rs`/`main.rs` separation, modules | Project |
+| 60 | **RatatuiTUI** — terminal dashboard | `ratatui`, `crossterm`, `TestBackend`, immediate-mode UI, layouts, widgets, event loop | Project |
+| 61 | **AsyncClap** — async CLI with subcommands | `clap` derive, `#[tokio::main]`, `ExitCode`, subcommand trees, JSON config | Project |
 
 ## Learning Path
 
@@ -228,3 +230,5 @@ This pattern lets you **test the library** without the CLI and reuse the library
 3. Build **05-LisbonShortestPath** and **07-PageRank** for classic algorithms
 4. Integrate with external databases via **06-Neo4jDataScience** and **08-RussianTrollTweets**
 5. Finish with **10-CustomCLIFruitSalad** (advanced CLI)
+6. **11-RatatuiTUI** — terminal dashboards for monitoring pipelines
+7. **12-AsyncClap** — async subcommand CLIs for ETL tools

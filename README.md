@@ -160,6 +160,8 @@ Projects are grouped into **sections** that map concepts a Python data engineer 
 | 08 | **RussianTrollTweets** — Neo4j analysis | Graph DB analysis, influence detection, social graph modeling |
 | 09 | **FullyConnectedGraph** — graph connectivity | Graph connectivity, `HashMap` memoization |
 | 10 | **CustomCLIFruitSalad** — advanced CLI + CSV | `clap` derive, CSV reading, `lib.rs`/`main.rs` separation, modules |
+| 11 | **RatatuiTUI** — terminal dashboard | `ratatui`, `crossterm`, `TestBackend`, immediate-mode UI, layouts, widgets, event loop |
+| 12 | **AsyncClap** — async CLI with subcommands | `clap` derive, `#[tokio::main]`, `ExitCode`, subcommand trees, JSON config |
 
 ### Section 7: Security & Systems Programming
 
@@ -322,6 +324,8 @@ The table below lists all core Rust concepts a learner should eventually see. **
 | Polars DataFrame (eager + lazy, `group_by`, Parquet I/O, predicate pushdown) | ✅ | 12-01 |
 | DuckDB in-process OLAP (`read_csv_auto`, prepared statements, raw SQL) | ✅ | 12-02 |
 | Apache DataFusion (`SessionContext`, async SQL, Arrow zero-copy, Parquet write) | ✅ | 12-03 |
+| Ratatui terminal UIs (`ratatui`, `crossterm`, `TestBackend`, layouts, widgets) | ✅ | 06-11 |
+| Async CLIs with `clap` derive (subcommands, `#[tokio::main]`, `ExitCode`) | ✅ | 06-12 |
 | Testing (`#[test]`, `cargo test`) | ✅ | 01-02 |
 | Documentation (`///`, `cargo doc`) | ✅ | 01-02 |
 | `derive` macros (`Debug`, `Clone`, `Copy`, `PartialEq`, etc.) | ✅ | 02-02, 06-01, 06-10, 04-02 |
