@@ -1,0 +1,8 @@
+[package]
+name = "insta_workshop"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+insta = { version = "1", features = ["glob"] }
+chrono = "0.4"

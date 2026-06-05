@@ -44,7 +44,7 @@ The course is carefully sequenced so each concept is introduced by one source an
 | 7 — Security | Safe vs unsafe, crypto, security model | 01 (SafeAndUnsafe), 02 (DecoderRing), 03 (RustCryptoHashes) |
 | 8 — Interop | evcxr, Jupyter, pandas bridge | 01 (ExploringPandas), 02 (RustJupyterNotebook), 03 (PyO3Bindings), 04 (GILRelease) |
 | 9 — Production Systems | Tokio, async, TCP, RESP protocol, Axum web API | 01 (Radish), 02 (AxumShop), 03 (AxumAuth), 04 (OpenTelemetry) |
-| 10 — Tools & Frameworks | Logging, configuration management, testing frameworks | 01 (Logging), 02 (Configuration), 03 (Testing) |
+| 10 — Tools & Frameworks | Logging, configuration management, testing frameworks | 01 (Logging), 02 (Configuration), 03 (Testing), 04 (Proptest), 05 (Mockall), 06 (Insta) |
 | 11 — Reference | Quick concept lookup, cheatsheets, memory architecture | (no cargo projects — reference materials only) |
 | 12 — DataEng Analytics | Polars DataFrame, DuckDB in-process OLAP, Apache DataFusion query engine | 01 (Polars), 02 (DuckDB), 03 (DataFusion) |
 
@@ -207,6 +207,9 @@ Projects are grouped into **sections** that map concepts a Python data engineer 
 | 01 | **Logging** — structured logging with the `log` crate | `log` crate, `env_logger`, log levels, structured logging |
 | 02 | **Configuration** — manage app configuration | `config` crate, environment variables, TOML/YAML config files |
 | 03 | **Testing** — testing strategies and frameworks | `#[test]`, test organization, integration tests, mocking, property-based testing |
+| 04 | **Proptest** — property-based testing | `proptest` 1, strategies, random sampling, shrinking, invariants |
+| 05 | **Mockall** — mocking traits for testable pipelines | `mockall` 0.13, `#[automock]`, `&dyn Trait`, predicate matchers, error simulation |
+| 06 | **Insta** — snapshot testing | `insta` 1, inline snapshots, `cargo insta review`, struct Debug snapshots |
 
 ### Section 11: Reference
 
@@ -366,6 +369,9 @@ The table below lists all core Rust concepts a learner should eventually see. **
 | GIL release (`pyo3::Python::allow_threads`, GIL contention factor) | ✅ | 08-04 |
 | JWT auth (`jsonwebtoken` HS256 sign/verify, `Claims`, role checks, refresh tokens) | ✅ | 09-03 |
 | Tracing + OTel data model (`tracing`, `tracing-subscriber` JSON, spans, correlation ids, atomic metrics) | ✅ | 09-04 |
+| Property-based testing (`proptest` strategies, shrinking, invariants) | ✅ | 10-04 |
+| Trait mocking (`mockall` `#[automock]`, `&dyn Trait`, predicate matchers) | ✅ | 10-05 |
+| Snapshot testing (`insta` inline + external snapshots, `cargo insta review`) | ✅ | 10-06 |
 | Jupyter notebook / `evcxr` | ✅ | 08-02 |
 | Pandas / DataFrame operations | ✅ | 08-01 |
 

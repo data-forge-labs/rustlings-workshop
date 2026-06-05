@@ -197,9 +197,15 @@ In Python: `@given(st.text())` from `hypothesis`.
 | 1 | **Logging** — structured logging with multiple backends | `log` crate facade, `env_logger`, `tracing` spans, log levels, structured output | Project |
 | 2 | **Configuration** — multi-format config parsing | `config` crate, TOML/JSON/YAML parsing, `serde` derive, env override merging | Project |
 | 3 | **Testing** — comprehensive test patterns | `#[test]`, `#[should_panic]`, `Result<T,E>` in tests, property-based patterns, integration tests | Project |
+| 4 | **Proptest** — property-based testing | `proptest` 1, strategies, random sampling, shrinking, invariants | Workshop |
+| 5 | **Mockall** — mocking traits for testable pipelines | `mockall` 0.13, `#[automock]`, `&dyn Trait`, predicate matchers, error simulation | Workshop |
+| 6 | **Insta** — snapshot testing | `insta` 1, inline snapshots, `cargo insta review`, struct Debug snapshots | Workshop |
 
 ## Learning Path
 
 1. Start with **01-Logging** — it's the simplest and most immediately useful
 2. Move to **02-Configuration** — config management is essential for CLI tools and services
 3. Finish with **03-Testing** — build confidence in the testing patterns used across the entire course
+4. **04-Proptest** — generate thousands of inputs, find the counter-example
+5. **05-Mockall** — test a `Transformer` against a fake `DataSource`, no I/O
+6. **06-Insta** — capture pretty-printed output once, review the diff on every PR
