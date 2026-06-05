@@ -80,8 +80,8 @@ Before starting, you should be comfortable with:
 
 - **Basic Rust syntax**: functions, variables, `println!`
   ([01-Foundations/01-Intro](../../01-Foundations/01-Intro/README.md))
-- **Structs and `impl` blocks**: defining types with methods
-  ([01-Foundations/03-MasterMind](../../01-Foundations/03-MasterMind/README.md))
+
+  ([01-Foundations/04-MasterMind](../../01-Foundations/04-MasterMind/README.md))
 - **Ownership basics**: moves, copies, borrowing
   ([02-Ownership/01-TicketV1](../../02-Ownership/01-TicketV1/README.md))
 

@@ -56,7 +56,7 @@ for _ in 0..8 {
 
 - Ownership and borrowing from [TicketV1](../../02-Ownership/01-TicketV1/README.md)
 - `Arc<T>` basics (introduced in [TicketV2](../../02-Ownership/03-TicketV2/README.md))
-- Closures from [MasterMind](../../01-Foundations/03-MasterMind/README.md)
+- Closures from [MasterMind](../../01-Foundations/04-MasterMind/README.md)
 
 ## 3. Concept: Threads — spawn and join
 

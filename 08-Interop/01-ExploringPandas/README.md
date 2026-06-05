@@ -91,7 +91,7 @@ performance — no hidden overhead.
 
 ## 2. Prerequisites
 
-- [01-Foundations/03-MasterMind](../../01-Foundations/03-MasterMind/README.md) --
+- [01-Foundations/04-MasterMind](../../01-Foundations/04-MasterMind/README.md) --
   structs, Vec, Option
 - [02-Ownership/03-TicketV2](../../02-Ownership/03-TicketV2/README.md) -- Result,
   error handling with `?`

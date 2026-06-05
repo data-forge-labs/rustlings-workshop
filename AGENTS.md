@@ -30,8 +30,9 @@ RustTut/
 ├── 01-Foundations/                 ← Section 1: syntax, types, control flow
 │   ├── README.md                   ← Section overview with project table & learning path
 │   ├── 01-Intro/                   ← Rust syntax primer
-│   ├── 02-BasicCalculator/         ← Integers, branching, loops
-│   └── 03-MasterMind/              ← Structs, Vec, Option, console I/O
+│   ├── 02-GuessGame/                ← String vs &str, Result, console I/O, enums, rand crate
+│   ├── 03-BasicCalculator/         ← Integers, branching, loops
+│   └── 04-MasterMind/              ← Structs, Vec, Option, console I/O
 ├── 02-Ownership/                   ← Section 2: ownership, borrowing, traits, enums
 │   ├── 01-TicketV1/                ← Structs, ownership, stack vs heap
 │   ├── 02-Traits/                  ← Trait definitions, derive, bounds

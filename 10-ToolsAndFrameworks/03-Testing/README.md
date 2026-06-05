@@ -91,7 +91,7 @@ Testing is where Rust truly shines. The language bakes testing into the compiler
 ## 2. Prerequisites
 
 - Functions, `Result<T, E>`, `Option<T>`
-- **Projects**: [01-BasicCalculator](../../01-Foundations/01-Intro/README.md), [03-MasterMind](../../01-Foundations/03-MasterMind/README.md) (for pattern matching)
+- **Projects**: [01-Intro](../../01-Foundations/01-Intro/README.md), [04-MasterMind](../../01-Foundations/04-MasterMind/README.md) (for pattern matching)
 
 ## 3. `#[test]` — The Unit Test Attribute
 

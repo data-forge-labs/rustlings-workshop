@@ -112,7 +112,7 @@ for i in 0..3 {
 ## 2. Prerequisites
 
 - Completed ownership ([TicketV1](../../02-Ownership/01-TicketV1/README.md))
-- Understand closures (briefly covered in [MasterMind](../../01-Foundations/03-MasterMind/README.md))
+- Understand closures (briefly covered in [MasterMind](../../01-Foundations/04-MasterMind/README.md))
 
 ---
 

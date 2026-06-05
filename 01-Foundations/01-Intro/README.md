@@ -1,12 +1,12 @@
 # Rust for Python Data Engineers
 
-*A beginner-friendly introduction to Rust, designed for data engineers who already know Python.*
+*A gentle first look at Rust — written for data engineers who already know Python.*
 
 If you've written Python pipelines long enough, you've hit the familiar walls: a job that's too slow to scale, a service eating memory under load, or a bug that only shows up in production at 2 AM. Rust was built to eliminate exactly these problems — and this tutorial is built to make Rust approachable for people who already think in Python.
 
-You don't need any systems programming background. Every concept is introduced alongside its Python equivalent.
+You don't need any systems programming background. **In this first project you'll only learn the gentle basics** — types, variables, functions, control flow, tuples, and fixed-size arrays — each with a Python equivalent beside it. The strict parts (ownership, borrowing, slices, error handling, collections) come one step at a time in later projects.
 
-> **Test-driven approach**: This project includes a Cargo workspace with progressive unit tests. Each function in `workshop/src/lib.rs` starts as a `todo!()` stub. As you work through each section, replace `todo!()` with real code and run `cd workshop && cargo test` to watch the pass count grow. The `workshop/src/main.rs` file provides a runnable demo (calling the same functions) — use `cargo run` to see your code in action. Your goal: **all 31 tests pass**.
+> **Test-driven approach**: This project includes a Cargo workspace with progressive unit tests. Each function in `workshop/src/lib.rs` starts as a `todo!()` stub. As you work through each section, replace `todo!()` with real code and run `cd workshop && cargo test` to watch the pass count grow. The `workshop/src/main.rs` file provides a runnable demo (calling the same functions) — use `cargo run` to see your code in action. Your goal: **all 26 tests pass**.
 
 ---
 
@@ -18,13 +18,14 @@ You don't need any systems programming background. Every concept is introduced a
 4. [Syntax Side-by-Side](#4-syntax-side-by-side)
 5. [Functions](#5-functions)
 6. [Variables and Mutability](#6-variables-and-mutability)
-7. [Expressions vs Statements](#7-expressions-vs-statements)
-8. [Tuples — Grouping Values of Different Types](#8-tuples--grouping-values-of-different-types)
-9. [Arrays and Slices — Fixed and Dynamic Sequences](#9-arrays-and-slices--fixed-and-dynamic-sequences)
-10. [Putting It All Together](#10-putting-it-all-together)
-11. [Cargo Commands](#11-cargo-commands)
-12. [Summary](#12-summary)
-13. [Exercise: Guess the Number Game](#13-exercise-guess-the-number-game)
+7. [If/Else — Making Decisions](#7-ifelse--making-decisions)
+8. [Loops — Repeating Work](#8-loops--repeating-work)
+9. [Tuples — Grouping Values](#9-tuples--grouping-values)
+10. [Arrays — Fixed-Size Sequences](#10-arrays--fixed-size-sequences)
+11. [Putting It All Together](#11-putting-it-all-together)
+12. [Cargo Commands](#12-cargo-commands)
+13. [Summary](#13-summary)
+14. [What's Next](#14-whats-next)
 
 ---
 
@@ -50,9 +51,9 @@ Not every tool in your stack needs to be rewritten in Rust — but some parts be
 
 ### The Trade-off
 
-Rust earns its reputation for being strict. The compiler will push back on code that other languages would silently accept, and concepts like ownership and lifetimes will feel unfamiliar at first. That strictness isn't arbitrary — it's the mechanism behind memory safety without a garbage collector, data races eliminated at compile time, and abstractions that cost nothing at runtime.
+Rust earns its reputation for being strict. The compiler will push back on code that other languages would silently accept. That strictness isn't arbitrary — it's the mechanism behind memory safety without a garbage collector, data races eliminated at compile time, and abstractions that cost nothing at runtime.
 
-This course introduces every Rust concept alongside its Python equivalent, so you're always building on what you already know.
+The good news: **this first project only covers the gentle basics**. By the end of it you'll have written real Rust code, run a program, and passed 26 tests — all mapped to Python equivalents. The strict parts (ownership, borrowing, lifetimes) come in the next section, where they get your full attention.
 
 ---
 
@@ -133,6 +134,7 @@ What each part means:
 ### `main.rs` vs `lib.rs`
 
 The project has two source files:
+
 - **`src/lib.rs`** — contains the public functions (`todo!()` stubs) and all unit tests. This is where you'll do your work.
 - **`src/main.rs`** — a runnable demo that calls the functions from `lib.rs`. It's not tested directly; it just shows your code working end-to-end.
 
@@ -145,42 +147,41 @@ cargo run            # run the main.rs demo
 
 ## 4. Syntax Side-by-Side
 
-A quick reference you can come back to as you work through exercises.
+A quick reference you can come back to. **Only the basics for now** — the advanced rows (collections, error types, references) are covered in later projects.
 
 | Feature | Python | Rust |
 |---|---|---|
 | Comment | `# comment` | `// comment` |
-| Function | `def add(x, y):` | `fn add(x: u32, y: u32) -> u32` |
+| Function | `def add(x, y):` | `fn add(x: i32, y: i32) -> i32` |
 | Variable | `x = 5` | `let x = 5;` |
 | Mutable variable | `x = 5` (always mutable) | `let mut x = 5;` |
 | Constant | `MAX = 100` (convention only) | `const MAX: u32 = 100;` |
 | String | `"hello"` | `"hello"` (type `&str`) |
 | Print | `print("hi")` | `println!("hi")` |
+| Integer | `42` (one big `int`) | `42` (type `i32` by default) |
+| Float | `3.14` (one big `float`) | `3.14` (type `f64` by default) |
+| Boolean | `True` / `False` | `true` / `false` |
 | If | `if x > 0:` | `if x > 0 { }` |
 | For loop | `for i in range(5):` | `for i in 0..5 { }` |
 | While | `while x > 0:` | `while x > 0 { }` |
-| List | `[1, 2, 3]` | `vec![1, 2, 3]` (growable) or `[1, 2, 3]` (fixed) |
 | Tuple | `(1, "hi")` | `(1, "hi")` |
-| Dict | `{"a": 1}` | `HashMap::from([("a", 1)])` |
-| None / null | `None` | `None` (wrapped in `Option`) |
-| Error | `raise ValueError("msg")` | `panic!("msg")` or `Err(...)` |
-| Import | `import os` | `use std::fs;` |
+| Fixed array | `[1, 2, 3]` (size flexible) | `[1, 2, 3]` (size is part of the type) |
 | Package file | `pyproject.toml` | `Cargo.toml` |
 
-The biggest practical difference: Rust requires **explicit types** on function parameters and return values. The compiler uses those types to catch mistakes before your code ever runs.
+> **Coming up in later projects:** `Vec<T>` (growable list), `HashMap` (dict), `&[T]` (slice), `Option<T>` (nullable), `Result<T, E>` (errors), `panic!`, `std::io`. Don't worry about any of these yet.
+
+The biggest practical difference: **Rust requires explicit types on function parameters and return values**. The compiler uses those types to catch mistakes before your code ever runs.
 
 ```python
 # Python — types are optional hints
-def process_data(df, threshold):
-    return df[df["value"] > threshold]
+def is_hot(value, threshold):
+    return value > threshold
 ```
 
 ```rust
 // Rust — types are required and enforced
-fn process_data(data: Vec<f64>, threshold: f64) -> Vec<f64> {
-    data.into_iter()
-        .filter(|&x| x > threshold)
-        .collect()
+fn is_hot(value: f64, threshold: f64) -> bool {
+    value > threshold
 }
 ```
 
@@ -278,6 +279,27 @@ In Python, all variables are mutable. In Rust, you opt in to mutability with `mu
 
 For data pipelines this matters — a value you didn't intend to mutate staying immutable is a guarantee, not a convention.
 
+### Type annotations
+
+You can let the compiler infer the type, or be explicit:
+
+```rust
+let count = 5;             // i32 by default
+let count: i32 = 5;        // explicit
+let ratio = 0.85;          // f64 by default
+let ratio: f64 = 0.85;     // explicit
+let name = "Alice";        // &str
+let name: &str = "Alice";  // explicit
+```
+
+The same syntax `name: type` shows up in function parameters and return types:
+
+```rust
+fn add(a: i32, b: i32) -> i32 {
+    a + b
+}
+```
+
 ### Shadowing
 
 You can redeclare a variable with `let`, creating a new binding under the same name:
@@ -310,19 +332,55 @@ const PI: f64 = 3.14159265359;
 
 ---
 
-## 7. Expressions vs Statements
+## 7. If/Else — Making Decisions
 
-This is one of the more unfamiliar ideas coming from Python, but it directly affects how you write Rust code every day.
+### Basic syntax
 
-| | Statement | Expression |
-|---|---|---|
-| **What it does** | Performs an action | Produces a value |
-| **Ends with `;`** | Yes | No |
-| **Examples** | `let x = 5;` | `x + 1`, `if a { b } else { c }` |
+```rust
+if condition {
+    // ...
+} else if other_condition {
+    // ...
+} else {
+    // ...
+}
+```
 
-The key idea: in Rust, `if` and block `{ }` are expressions — they produce values. This means you can assign their result directly to a variable instead of writing separate mutation logic.
+```python
+# Python
+if x > 0:
+    print("positive")
+elif x == 0:
+    print("zero")
+else:
+    print("negative")
+```
+
+```rust
+// Rust — braces instead of colons, no indentation rules
+if x > 0 {
+    println!("positive");
+} else if x == 0 {
+    println!("zero");
+} else {
+    println!("negative");
+}
+```
+
+### Booleans only — no truthy/falsy
+
+In Python, `if 0:` and `if []:` are valid (everything is "truthy" or "falsy"). In Rust, **conditions must be `bool`**. A bare `0` won't compile:
+
+```rust
+if 0 { }       // ❌ ERROR: expected `bool`, found integer
+if x != 0 { }  // ✅ fine
+```
+
+This is one of the small adjustments when moving from Python — you can't accidentally test an empty list as "false."
 
 ### `if` as an expression
+
+Here's the unique Rust part: `if` *returns a value*, just like Python's ternary `a if cond else b`:
 
 ```python
 # Python ternary
@@ -334,26 +392,151 @@ result = "positive" if x > 0 else "non-positive"
 let result = if x > 0 { "positive" } else { "non-positive" };
 ```
 
-Both branches must return the same type. The compiler will catch a mismatch — this is a common source of early errors to be aware of.
+Both branches must return the same type. The compiler will catch a mismatch.
 
-### Blocks as expressions
+### Example: classify a temperature
 
 ```rust
-let x = {
-    let a = 2;
-    let b = 3;
-    a + b      // no semicolon — this is the block's value
-};
-// x == 5
+/// Return "cold" if temp < 10, "mild" if 10..30, "hot" if >= 30.
+fn classify_temp(temp: i32) -> &'static str {
+    if temp < 10 {
+        "cold"
+    } else if temp < 30 {
+        "mild"
+    } else {
+        "hot"
+    }
+}
 ```
 
-Any block `{ }` is an expression. Its value is the last expression inside it (no semicolon). This is exactly how function return values work — a function body is just a block.
+The whole `if/else if/else` is an expression, and its value is the last expression in the chosen branch. This is the same pattern you'll use throughout the rest of the course.
 
-**Why this matters for data work:** you'll often write transformation logic inline without needing temporary mutable variables. The more functional style Rust encourages maps naturally onto data pipeline thinking.
+### Exercise
+
+```rust
+fn is_adult(age: i32) -> &'static str {
+    // Return "adult" if age >= 18, else "minor"
+    todo!()
+}
+
+fn main() {
+    println!("{}", is_adult(25));  // adult
+    println!("{}", is_adult(15));  // minor
+}
+```
+
+<details>
+<summary>Solution</summary>
+
+```rust
+fn is_adult(age: i32) -> &'static str {
+    if age >= 18 { "adult" } else { "minor" }
+}
+```
+
+</details>
 
 ---
 
-## 8. Tuples — Grouping Values of Different Types
+## 8. Loops — Repeating Work
+
+### `for` with a range
+
+```python
+# Python
+for i in range(5):
+    print(i)
+```
+
+```rust
+// Rust — 0..5 is "0 up to 5, not including"
+for i in 0..5 {
+    println!("{i}");
+}
+// prints 0, 1, 2, 3, 4
+```
+
+Two range forms you'll use:
+
+| Rust | Meaning | Python equivalent |
+|---|---|---|
+| `0..5` | 0, 1, 2, 3, 4 (exclusive end) | `range(5)` |
+| `0..=5` | 0, 1, 2, 3, 4, 5 (inclusive end) | `range(6)` |
+
+### `while`
+
+```python
+# Python
+n = 3
+while n > 0:
+    print(n)
+    n -= 1
+```
+
+```rust
+// Rust
+let mut n = 3;
+while n > 0 {
+    println!("{n}");
+    n -= 1;
+}
+```
+
+### Example: count positive values in a fixed array
+
+```rust
+fn count_positive(values: [i32; 5]) -> usize {
+    let mut count = 0;
+    for v in values {
+        if v > 0 {
+            count += 1;
+        }
+    }
+    count
+}
+
+fn main() {
+    let readings = [10, -3, 25, 0, 7];
+    println!("Positive readings: {}", count_positive(readings));  // 3
+}
+```
+
+Two Rust-specific bits:
+
+- `let mut count` — we *opt in* to mutability so the compiler can track changes
+- The last line `count` (no semicolon) is the return value
+
+### Exercise
+
+```rust
+/// Sum all the values in a fixed array of 5 i32s.
+fn sum_five(values: [i32; 5]) -> i32 {
+    todo!()
+}
+
+fn main() {
+    println!("{}", sum_five([10, 20, 30, 40, 50]));  // 150
+}
+```
+
+<details>
+<summary>Solution</summary>
+
+```rust
+fn sum_five(values: [i32; 5]) -> i32 {
+    let mut total = 0;
+    for v in values {
+        total += v;
+    }
+    total
+}
+```
+
+</details>
+
+---
+
+## 9. Tuples — Grouping Values
 
 A **tuple** is a fixed-size group of values, each with its own type. Python has tuples too; Rust's are similar but type-strict.
 
@@ -366,7 +549,7 @@ name, age = ("Alice", 30)
 ```rust
 // Rust — each position has a fixed type
 let point: (i32, f64, &str) = (3, 4.5, "origin");
-let (name, age) = ("Alice", 30i32);
+let (name, age) = ("Alice", 30);
 ```
 
 ### Why tuples matter for data engineering
@@ -374,23 +557,14 @@ let (name, age) = ("Alice", 30i32);
 Tuples are the simplest way to return **multiple values** from a function — a pattern you'll hit constantly in data work:
 
 ```rust
-/// Returns (min, max, mean) of a dataset.
-/// Python has no direct equivalent — you'd return a dict or unpack via tuple.
-fn describe(values: &[f64]) -> (f64, f64, f64) {
-    let mut min = f64::INFINITY;
-    let mut max = f64::NEG_INFINITY;
-    let mut sum = 0.0;
-    for &v in values {
-        if v < min { min = v; }
-        if v > max { max = v; }
-        sum += v;
-    }
-    (min, max, sum / values.len() as f64)
+/// Returns (label, length) for a piece of text.
+fn describe(text: &str) -> (&str, usize) {
+    let label = if text.is_empty() { "empty" } else { "non-empty" };
+    (label, text.len())
 }
 
-let (lo, hi, avg) = describe(&[1.0, 2.0, 3.0]);
-println!("range: {}..{}, avg: {}", lo, hi, avg);
-// range: 1..3, avg: 2
+let (l, n) = describe("hello");
+println!("{l}, {n} chars");  // non-empty, 5 chars
 ```
 
 ### Tuple syntax
@@ -405,7 +579,7 @@ println!("range: {}..{}, avg: {}", lo, hi, avg);
 
 ### Destructuring
 
-Destructuring assigns each tuple element to a separate variable. It works in `let`, in function parameters, and in `match` arms:
+Destructuring assigns each tuple element to a separate variable. It works in `let`, in function parameters, and (later) in `match` arms:
 
 ```rust
 let (status, code) = ("ok", 200);
@@ -417,27 +591,20 @@ fn print_point((x, y): (i32, i32)) {
 print_point((10, 20));
 ```
 
-You can ignore parts with `_`:
+### Example: classify a data row
 
 ```rust
-let (_, _, avg) = describe(&[1.0, 2.0, 3.0]);  // keep only the mean
-```
-
-### Tuples vs arrays vs structs
-
-| Need | Use | Example |
-|---|---|---|
-| Multiple values of different types, no field names | **tuple** | `(i32, &str, f64)` |
-| Many values of the same type, indexed by number | **array** `[T; N]` | `[1, 2, 3, 4, 5]` |
-| Multiple values of different types, with field names | **struct** | `Point { x: 1, y: 2 }` |
-
-### Exercise
-
-```rust
+/// Classify a row given as (id, value, is_valid).
+/// Return "ok" if is_valid && value > 0, "invalid" if !is_valid, "zero" otherwise.
 fn categorize_row(row: (u32, f64, bool)) -> &'static str {
-    // row.0 = id, row.1 = value, row.2 = is_valid
-    // Return "ok" if is_valid && value > 0, "invalid" if !is_valid, "zero" otherwise
-    todo!()
+    let (_id, value, is_valid) = row;
+    if !is_valid {
+        "invalid"
+    } else if value > 0.0 {
+        "ok"
+    } else {
+        "zero"
+    }
 }
 
 fn main() {
@@ -447,106 +614,67 @@ fn main() {
 }
 ```
 
-<details>
-<summary>Solution</summary>
-
-```rust
-fn categorize_row((_id, value, is_valid): (u32, f64, bool)) -> &'static str {
-    if !is_valid {
-        "invalid"
-    } else if value > 0.0 {
-        "ok"
-    } else {
-        "zero"
-    }
-}
-```
-
-Notice the destructured parameter — it makes the function read like Python's
-`def categorize_row(id, value, is_valid)`.
-
-</details>
+Notice the destructured local — it makes the function read like Python's `def categorize_row(id, value, is_valid)`.
 
 ---
 
-## 9. Arrays and Slices — Fixed and Dynamic Sequences
+## 10. Arrays — Fixed-Size Sequences
 
-Both arrays and slices hold a sequence of values **of the same type**, indexed by `usize`. The difference is **size**:
+An **array** in Rust is a fixed-size sequence of values **all of the same type**. The size is part of the type, written as `[T; N]` where `N` is the count.
 
-| Type | Size | When to use |
-|---|---|---|
-| **Array** `[T; N]` | Fixed at compile time (`N` is part of the type) | Known-length data: `[1, 2, 3]`, `[0u8; 1024]` buffer |
-| **Slice** `&[T]` | Dynamic — a *view* into data already owned by something else | Function parameters that accept any sequence |
-
-### Arrays
+```python
+# Python
+primes = [2, 3, 5, 7]
+zeros = [0] * 1024
+```
 
 ```rust
-// Fixed-size, on the stack
-let primes: [u32; 4] = [2, 3, 5, 7];
-let zeros: [u8; 1024] = [0; 1024];  // 1024 zeros
+// Rust
+let primes: [i32; 4] = [2, 3, 5, 7];
+let zeros: [i32; 1024] = [0; 1024];   // 1024 zeros
+```
 
+### Accessing elements
+
+```rust
+let primes = [2, 3, 5, 7];
 let first = primes[0];   // 2
 let len = primes.len();  // 4
 ```
 
-The size `N` is part of the type — `[u32; 4]` and `[u32; 5]` are different types. Trying to grow an array is a compile error.
+The size `N` is part of the type — `[i32; 4]` and `[i32; 5]` are different types. Trying to grow an array is a compile error:
 
 ```rust
 let mut a: [i32; 3] = [1, 2, 3];
 // a.push(4);   // ❌ ERROR — arrays don't have methods
 ```
 
-For growable sequences, use `Vec<T>` (covered in [03-Collections/01-TicketManagement](../03-Collections/01-TicketManagement/README.md)).
+For growable sequences, you need `Vec<T>` — that's covered in [04-MasterMind](../04-MasterMind/README.md).
 
-### Slices
+### Why fixed-size arrays matter for data engineering
 
-A **slice** is a fat pointer — `(pointer, length)` — that *borrows* a contiguous run of elements. You can take a slice of an array, a `Vec`, or even a `String` (giving a `&str`).
+Many real-world data records are fixed-shape: a sensor reading is always (timestamp, value, unit); a CSV row is always the same number of fields. Fixed arrays are perfect for that — no allocation, no growth, no surprises.
 
-```rust
-let data = [10, 20, 30, 40, 50];
+### Arrays vs tuples
 
-// Borrow the whole array as a slice
-let all: &[i32] = &data;
-
-// Borrow a sub-range
-let middle: &[i32] = &data[1..4];   // [20, 30, 40]
-let head:   &[i32] = &data[..3];    // [10, 20, 30]
-let tail:   &[i32] = &data[3..];    // [40, 50]
-```
-
-> **Why is this useful for data engineering?** A function that takes `&[T]` accepts **any** sequence — array, `Vec`, or sub-range — without copying. This is the Rust equivalent of a Python function taking `Sequence[T]`.
-
-```rust
-fn first_n(values: &[f64], n: usize) -> &[f64] {
-    &values[..n.min(values.len())]
-}
-```
-
-### Slices vs arrays in function signatures
-
-| Signature | Accepts | Rejects |
+| Need | Use | Example |
 |---|---|---|
-| `fn f(arr: [i32; 4])` | Only `[i32; 4]` (size matters) | Other sizes, `Vec`, slices |
-| `fn f(s: &[i32])` | Any `&[i32]` (array, `Vec`, sub-range) | Owned values — caller must borrow |
-| `fn f(s: &Vec<i32>)` | Only `Vec<i32>` (anti-pattern) | Arrays, slices |
-
-> **Idiom**: prefer `&[T]` over `&Vec<T>` in function parameters. It's more flexible (accepts arrays too) and is the convention in the standard library.
+| Multiple values of different types, no field names | **tuple** | `(i32, &str, f64)` |
+| Many values of the same type, fixed size | **array** `[T; N]` | `[1, 2, 3, 4, 5]` |
+| Many values of the same type, growable | **Vec** `<T>` | (next project) |
+| Multiple values of different types, with field names | **struct** | (next project) |
 
 ### Exercise
 
 ```rust
-/// Return the second half of a dataset (rounded up for odd lengths).
-fn second_half(data: &[f64]) -> &[f64] {
-    // TODO: return the slice from len/2 to end
+/// Return the largest value in a fixed array of 5 i32s.
+fn max_of_five(values: [i32; 5]) -> i32 {
     todo!()
 }
 
 fn main() {
-    let values = [1.0, 2.0, 3.0, 4.0, 5.0];
-    println!("{:?}", second_half(&values));   // [3.0, 4.0, 5.0]
-
-    let small = [10.0, 20.0];
-    println!("{:?}", second_half(&small));     // [20.0]
+    println!("{}", max_of_five([3, 1, 4, 1, 5]));   // 5
+    println!("{}", max_of_five([-2, -8, -1, -9]));  // -1
 }
 ```
 
@@ -554,78 +682,75 @@ fn main() {
 <summary>Solution</summary>
 
 ```rust
-fn second_half(data: &[f64]) -> &[f64] {
-    let mid = data.len() / 2;
-    &data[mid..]
+fn max_of_five(values: [i32; 5]) -> i32 {
+    let mut max = values[0];
+    for i in 1..5 {
+        if values[i] > max {
+            max = values[i];
+        }
+    }
+    max
 }
 ```
-
-Note the return type is `&[f64]` — we're returning a borrowed view into the input, not a new collection. The borrow checker guarantees that the returned slice lives at most as long as the input does, so this is safe.
 
 </details>
 
 ---
 
-## 10. Putting It All Together
+## 11. Putting It All Together
 
-Here's a small data processing function that uses everything covered so far:
+Here's a small data processing function that uses everything covered so far — a fixed-size array, a `for` loop, an `if` expression, and a tuple return value:
 
 ```rust
-/// Calculate (min, max, mean) of a slice of f64 values.
-/// Returns a tuple — three values from one function.
-/// &[f64] means "a reference to a sequence of f64 values" —
-/// it works with both arrays and Vecs without copying the data.
-fn describe(values: &[f64]) -> (f64, f64, f64) {
-    let mut min = f64::INFINITY;
-    let mut max = f64::NEG_INFINITY;
-    let mut sum = 0.0;
-
-    for &v in values {
-        if v < min { min = v; }
-        if v > max { max = v; }
-        sum += v;
+/// Count how many readings in a 5-element array are "hot" (>= 30).
+/// Returns (count, label) where label is "few", "some", or "many".
+fn hot_readings_summary(readings: [i32; 5]) -> (usize, &'static str) {
+    let mut count = 0;
+    for v in readings {
+        if v >= 30 {
+            count += 1;
+        }
     }
-
-    (min, max, sum / values.len() as f64)  // tuple returned implicitly
+    let label = if count == 0 {
+        "few"
+    } else if count <= 2 {
+        "some"
+    } else {
+        "many"
+    };
+    (count, label)
 }
 
 fn main() {
-    let data = [1.0, 2.0, 3.0, 4.0, 5.0];
-    let (lo, hi, avg) = describe(&data);  // tuple destructured
-    println!("min: {}, max: {}, mean: {}", lo, hi, avg);
-
-    let status = if avg > 3.0 { "above midpoint" } else { "below midpoint" };
-    println!("Status: {}", status);
+    let monday = [22, 28, 31, 35, 30];
+    let (n, l) = hot_readings_summary(monday);
+    println!("Hot readings: {n} → {l}");  // Hot readings: 3 → many
 }
 ```
 
 Expected output:
 
 ```text
-min: 1, max: 5, mean: 3
-Status: below midpoint
+Hot readings: 3 → many
 ```
-
-> **What is `&[f64]`?** It's a *slice reference* — a view into a contiguous sequence of `f64` values. We covered this in detail in [§9 — Arrays and Slices](#9-arrays-and-slices--fixed-and-dynamic-sequences). The practical point: passing `&data` instead of `data` lets the function read the values without taking ownership of them or copying them. You'll see `&` frequently in Rust; ownership is covered in depth in a later section.
 
 What each concept is doing here:
 
 | Concept | Where it appears |
 |---|---|
-| `fn` | `describe()` and `main()` |
-| `let mut` | `min`, `max`, `sum` — all need to be reassigned |
-| `let` (immutable) | `data`, `status` |
-| `for` loop | Iterating over values |
-| `&[f64]` | Slice reference — a view into the array |
-| `if` as expression | `min`/`max` updates and `status` assignment |
-| `f64::INFINITY` / `f64::NEG_INFINITY` | Initial sentinels for `min`/`max` |
-| Tuple return | `(min, max, sum / values.len() as f64)` |
-| Tuple destructuring | `let (lo, hi, avg) = describe(&data);` |
+| `fn` | `hot_readings_summary()` and `main()` |
+| `let mut` | `count` — needs to be reassigned |
+| `let` (immutable) | `monday`, `n`, `l` |
+| `for` loop | Iterating over the readings |
+| `if` as expression | Counting hot values and the `label` |
+| `[i32; 5]` | Fixed-size array of readings |
+| Tuple return | `(count, label)` |
+| Tuple destructuring | `let (n, l) = hot_readings_summary(monday);` |
 | `println!` | Formatted output |
 
 ---
 
-## 11. Cargo Commands
+## 12. Cargo Commands
 
 Cargo is Rust's all-in-one tool: package manager, build system, test runner, formatter, linter. Think `pip` + `pytest` + `black` + `make` unified into one command.
 
@@ -639,7 +764,6 @@ cargo run              # compile and run
 cargo test             # run all tests
 cargo fmt              # format code
 cargo clippy           # lint
-cargo add rand         # add a dependency to Cargo.toml
 ```
 
 ### The development loop
@@ -665,141 +789,69 @@ cargo test             # more tests should pass now
 | Run one test | `cargo test test_name` |
 | Format | `cargo fmt` |
 | Lint | `cargo clippy` |
-| Add dependency | `cargo add crate_name` |
-| Build optimized | `cargo build --release` |
 | Open docs | `cargo doc --open` |
+
+> **Adding external dependencies** (`cargo add crate_name`) is covered in a later project, when you actually need one. For this intro, the standard library is more than enough.
 
 ---
 
-## 12. Summary
+## 13. Summary
 
 | Concept | Rust | Python equivalent |
 |---|---|---|
 | Define a function | `fn name(x: T) -> R { }` | `def name(x):` |
-| Immutable variable | `let x = 5;` | N/A (Python variables are always mutable) |
 | Mutable variable | `let mut x = 5;` | `x = 5` |
+| Immutable variable | `let x = 5;` | N/A (Python variables are always mutable) |
 | Constant | `const MAX: u32 = 100;` | `MAX = 100` (convention only) |
 | Return type | `-> f64` | Type hints, unenforced |
 | Implicit return | Last expression, no `;` | `return` always required |
 | Print | `println!("val = {}", x)` | `print(f"val = {x}")` |
-| If expression | `if cond { a } else { b }` | `a if cond else b` |
-| For loop | `for i in 0..5 { }` | `for i in range(5):` |
+| If/else | `if cond { } else { }` | `if cond:` |
+| If as expression | `let r = if cond { a } else { b };` | `r = a if cond else b` |
+| For range | `for i in 0..5 { }` | `for i in range(5):` |
+| While | `while cond { }` | `while cond:` |
 | Tuple | `(T1, T2, ...)` | `(1, "x")` |
 | Tuple destructuring | `let (a, b) = t;` | `a, b = t` |
-| Tuple return value | `fn f() -> (i32, &str) { ... }` | Return a dict or unpack via tuple |
-| Array (fixed-size) | `[T; N]`, e.g. `[1, 2, 3]` | `list` (size not enforced) |
-| Slice (borrowed view) | `&[T]`, e.g. `&arr[1..4]` | `Sequence[T]` (no equivalent — pass-by-reference) |
-| `&[T]` in function params | Accepts arrays, `Vec`, sub-ranges | N/A |
+| Array (fixed) | `[T; N]`, e.g. `[1, 2, 3]` | `list` (size not enforced) |
+| Boolean | `true` / `false` | `True` / `False` |
+| Integer | `42` (i32 by default) | `42` (arbitrary precision) |
+| Float | `3.14` (f64 by default) | `3.14` |
 
 ---
 
-## 13. Exercise: Guess the Number Game
+## 14. What's Next
 
-Let's put it all together with a small interactive program. This covers `let`/`mut`, `fn`, `println!`, `std::io`, loops, `if/else`, and using an external crate.
+You now know the Rust basics: variables, functions, control flow, tuples, and fixed-size arrays. That's enough to read and write simple Rust programs.
 
-### What it does
+The next project, [02-GuessGame](../02-GuessGame/README.md), builds your **first interactive Rust program** — the classic "Guess the Number" game. It introduces six new concepts the intro project deliberately skipped:
 
-1. Generates a random 2-digit number ($10$–$99$)
-2. Gives the player $5$ chances to guess
-3. After each guess: "Too high!" or "Too low!"
-4. Correct guess: "You win!" and exit
-5. No guesses left: reveal the number
+- **`String` vs `&str`** — owned growable text vs borrowed views
+- **Custom `enum`** with `#[derive(Debug, PartialEq, Eq, Copy, Clone)]`
+- **`std::io::stdin().read_line(&mut buf)`** for console input
+- **`Result<T, E>`**, `.parse()`, and `.expect("msg")` for fallible operations
+- **Basic `match`** on `Result` and on a custom enum
+- **Adding an external crate** (`rand`) via `Cargo.toml`
 
-### Python version
+After that, [03-BasicCalculator](../03-BasicCalculator/README.md) takes you deeper into **integer-specific Rust**:
 
-```python
-import random
+- Integer types: `i32` vs `u32` vs `i64` vs `usize` (Python only has one int)
+- Integer overflow and the `panic!` macro
+- `while` and `for` loops in practice
+- The `as` keyword for type conversion
+- Built-in unit testing with `#[test]` and `#[should_panic]`
 
-secret = random.randint(10, 99)
-attempts = 5
+Then [04-MasterMind](../04-MasterMind/README.md) introduces **structs**, **`Vec`**, **`Option`**, and **exhaustive `match`** — moving you from "tutorial snippets" to a real game project with multiple files.
 
-print("Guess the 2-digit number!")
-for i in range(attempts):
-    guess = int(input(f"Attempt {i+1}/{attempts}: "))
-    if guess == secret:
-        print("You win!")
-        break
-    elif guess < secret:
-        print("Too low!")
-    else:
-        print("Too high!")
-else:
-    print(f"Game over! The number was {secret}.")
-```
+Topics that come even later:
 
-### Rust version
+- **Ownership and borrowing** ([Section 02: Ownership](../../02-Ownership/README.md)) — Rust's central idea, including the `&` reference and `&[T]` slice
+- **Error handling** with `Result<T, E>` and the `?` operator (deep dive)
+- **Collections** ([Section 03: Collections](../../03-Collections/README.md)) — `Vec`, `HashMap`, `HashSet`, iterators
+- **File I/O** ([Section 04: File I/O](../../04-FileIO/README.md)) — reading CSVs and Parquet
+- **Concurrency** ([Section 05: Concurrency](../../05-Concurrency/README.md)) — threads, async, channels
 
-Create a new project and add the `rand` crate:
-
-```bash
-cargo new guess_game
-cd guess_game
-cargo add rand
-```
-
-> **Version note:** `rand::random_range` is available from `rand 0.10` onward. Running `cargo add rand` will pull the latest version, so this should work as-is. If you see a `no method named gen_range` error, it means an older version was resolved — run `cargo add rand@0.10` to be explicit.
-
-Write `src/main.rs`:
-
-```rust
-use std::io;
-
-fn main() {
-    // Generate a random number between 10 and 99 (inclusive)
-    let secret: u32 = rand::random_range(10..=99);
-    let attempts = 5;
-
-    println!("Guess the 2-digit number!");
-
-    for i in 0..attempts {
-        println!("Attempt {}/{}:", i + 1, attempts);
-
-        // Read a line of input into a mutable String
-        let mut input = String::new();
-        io::stdin().read_line(&mut input).expect("Failed to read line");
-
-        // Trim whitespace and parse to u32
-        let guess: u32 = input.trim().parse().expect("Please enter a number");
-
-        if guess == secret {
-            println!("You win!");
-            return;  // exit main — we're done
-        } else if guess < secret {
-            println!("Too low!");
-        } else {
-            println!("Too high!");
-        }
-    }
-
-    println!("Game over! The number was {}.", secret);
-}
-```
-
-Run it:
-
-```bash
-cargo run
-```
-
-> **What does `.expect()` do?** Both `read_line` and `parse` can fail — `read_line` if there's an IO error, `parse` if the user types something that isn't a number. `.expect("message")` says: "if this fails, crash immediately and print this message." It's the simplest form of error handling and fine for a small exercise. In production Rust you'd handle errors more gracefully — that's covered in a later section.
-
-### Python vs Rust — what changed
-
-| Task | Python | Rust |
-|---|---|---|
-| Random number | `random.randint(10, 99)` | `rand::random_range(10..=99)` |
-| Read input | `input()` | `io::stdin().read_line(&mut String)` |
-| Parse input | `int(input())` | `.trim().parse::<u32>()` |
-| Loop | `for i in range(5)` | `for i in 0..5` |
-| Early exit | `break` | `return` (exits `main`) |
-| Error on bad input | `ValueError` at runtime | `.expect("msg")` — panics with a message |
-
-### Things to try
-
-- Change the range to $100$–$999$ with $8$ attempts
-- Add a "warm/cold" hint: print "Getting warm!" if the guess is within $5$ of the secret
-- Track wins across multiple rounds
+Don't worry about any of these yet. Make sure all **26 tests pass** in `workshop/`, then move on to [02-GuessGame](../02-GuessGame/README.md).
 
 ---
 
-*Next up — Project 1: Basic Calculator. You'll go deeper on integer types, arithmetic operators, control flow, and error handling.*
+*Next up — Project 1.2: Guess the Number Game. You'll learn `String` vs `&str`, custom enums, console I/O, `Result`, and external crates by building a real interactive game.*

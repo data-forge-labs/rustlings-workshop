@@ -6,16 +6,25 @@ fn main() {
     let f = intro::celsius_to_fahrenheit(c);
     println!("{c}°C = {f}°F");
 
-    // §6: Variables (shadowing)
-    let data = [1.0, 2.0, 3.0, 4.0, 5.0];
-    let result = intro::mean(&data);
-    println!("Mean: {result}");
+    // §7: if/else as expression
+    let label = intro::classify_temp(35);
+    println!("35°C is {label}");
 
-    // §7: if as expression
-    let status = if result > 2.0 { "above average" } else { "below average" };
-    println!("Status: {status}");
+    // §8: Loops over a fixed array
+    let readings = [10, -3, 25, 0, 7];
+    let n = intro::count_positive(readings);
+    println!("Positive readings: {n}");
 
-    // §10: Guess game — simulate one round
-    let won = intro::play_guess_game(42, 42);
-    println!("Guess 42 vs secret 42 → won: {won}");
+    // §9: Tuples
+    let row = (1, 5.0, true);
+    let status = intro::categorize_row(row);
+    println!("Row status: {status}");
+
+    // §10: Arrays
+    let max = intro::max_of_five([3, 1, 4, 1, 5]);
+    println!("Max: {max}");
+
+    // §11: Putting it all together
+    let (n, l) = intro::hot_readings_summary([22, 28, 31, 35, 30]);
+    println!("Hot readings: {n} → {l}");
 }

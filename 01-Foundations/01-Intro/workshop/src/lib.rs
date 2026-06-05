@@ -21,50 +21,45 @@ pub fn fahrenheit_to_celsius(f: f64) -> f64 {
     todo!()
 }
 
-/// Doubles an integer (demonstrates return value without `return` keyword).
-/// README §5: The last expression is returned
-pub fn double(x: i32) -> i32 {
-    todo!()
-}
-
-/// Calculate the mean of a slice of f64 values.
-/// README §8: Putting It All Together
-pub fn mean(values: &[f64]) -> f64 {
-    todo!()
-}
-
 /// Classifies a temperature as "cold", "mild", or "hot".
-/// Demonstrates `if` as an expression.
-/// README §7: if/else as expression
+/// Demonstrates `if`/`else` as an expression.
+/// README §7: If/Else
 pub fn classify_temp(temp: i32) -> &'static str {
     todo!()
 }
 
-/// Plays a round of the Guess the Number game.
-/// Returns true if the player wins within the given attempts.
-/// README §12: Exercise
-pub fn play_guess_game(secret: u32, guess: u32) -> bool {
+/// Counts how many values in a fixed array are positive (> 0).
+/// Demonstrates `for` loops and `if`.
+/// README §8: Loops
+pub fn count_positive(values: [i32; 5]) -> usize {
+    todo!()
+}
+
+/// Sums all values in a fixed array of 5 i32s.
+/// README §8: Loops (exercise)
+pub fn sum_five(values: [i32; 5]) -> i32 {
     todo!()
 }
 
 /// Classifies a data row given as a tuple `(id, value, is_valid)`.
-/// Demonstrates tuple destructuring and `if` as an expression.
-/// README §8: Tuples
+/// Demonstrates tuple destructuring.
+/// README §9: Tuples
 pub fn categorize_row(row: (u32, f64, bool)) -> &'static str {
     todo!()
 }
 
-/// Returns (min, max, count) of a slice of values.
-/// Demonstrates tuples as return values.
-/// README §8: Tuples
-pub fn summarize(values: &[f64]) -> (f64, f64, usize) {
+/// Returns the largest value in a fixed array of 5 i32s.
+/// Demonstrates fixed-size arrays and `for` ranges.
+/// README §10: Arrays
+pub fn max_of_five(values: [i32; 5]) -> i32 {
     todo!()
 }
 
-/// Returns the second half of a slice (rounded down).
-/// Demonstrates slice ranges and `&[T]` return values.
-/// README §9: Arrays and Slices
-pub fn second_half(data: &[f64]) -> &[f64] {
+/// Counts how many readings in a 5-element array are "hot" (>= 30).
+/// Returns (count, label) where label is "few", "some", or "many".
+/// Demonstrates combining everything: arrays, loops, if, tuples.
+/// README §11: Putting It All Together
+pub fn hot_readings_summary(readings: [i32; 5]) -> (usize, &'static str) {
     todo!()
 }
 
@@ -76,7 +71,7 @@ pub fn second_half(data: &[f64]) -> &[f64] {
 mod tests {
     use super::*;
 
-    // ---- Step 1: Functions and return values (README §5) ----
+    // ---- Step 1: Functions (README §5) ----
 
     mod step_01_functions {
         use super::super::*;
@@ -105,71 +100,12 @@ mod tests {
         fn test_fahrenheit_to_celsius_boiling() {
             assert!((fahrenheit_to_celsius(212.0) - 100.0).abs() < 1e-10);
         }
-
-        #[test]
-        fn test_double_positive() {
-            assert_eq!(double(5), 10);
-        }
-
-        #[test]
-        fn test_double_negative() {
-            assert_eq!(double(-3), -6);
-        }
-
-        #[test]
-        fn test_double_zero() {
-            assert_eq!(double(0), 0);
-        }
     }
 
-    // ---- Step 2: Variables and mutability (README §6) ----
+    // ---- Step 2: If/Else as expression (README §7) ----
 
-    mod step_02_variables {
+    mod step_02_if_else {
         use super::super::*;
-
-        #[test]
-        fn test_mean_basic() {
-            let data = [1.0, 2.0, 3.0, 4.0, 5.0];
-            assert!((mean(&data) - 3.0).abs() < 1e-10);
-        }
-
-        #[test]
-        fn test_mean_single() {
-            assert!((mean(&[42.0]) - 42.0).abs() < 1e-10);
-        }
-
-        #[test]
-        fn test_mean_zero_values() {
-            let data = [0.0];
-            assert!((mean(&data) - 0.0).abs() < 1e-10);
-        }
-
-        #[test]
-        fn test_mean_empty_returns_nan() {
-            let data: [f64; 0] = [];
-            assert!(mean(&data).is_nan());
-        }
-    }
-
-    // ---- Step 3: if/else as expression (README §7) ----
-
-    mod step_03_control_flow {
-        use super::super::*;
-
-        #[test]
-        fn test_classify_hot() {
-            assert_eq!(classify_temp(35), "hot");
-        }
-
-        #[test]
-        fn test_classify_threshold_hot() {
-            assert_eq!(classify_temp(30), "hot");
-        }
-
-        #[test]
-        fn test_classify_mild() {
-            assert_eq!(classify_temp(20), "mild");
-        }
 
         #[test]
         fn test_classify_cold() {
@@ -180,37 +116,62 @@ mod tests {
         fn test_classify_threshold_cold() {
             assert_eq!(classify_temp(10), "mild"); // 10 is not < 10
         }
+
+        #[test]
+        fn test_classify_mild() {
+            assert_eq!(classify_temp(20), "mild");
+        }
+
+        #[test]
+        fn test_classify_threshold_hot() {
+            assert_eq!(classify_temp(30), "hot"); // 30 is not < 30
+        }
+
+        #[test]
+        fn test_classify_hot() {
+            assert_eq!(classify_temp(35), "hot");
+        }
     }
 
-    // ---- Step 4: Guess the Number (README §12) ----
+    // ---- Step 3: Loops (README §8) ----
 
-    mod step_04_guess_game {
+    mod step_03_loops {
         use super::super::*;
 
         #[test]
-        fn test_correct_guess_wins() {
-            assert!(play_guess_game(42, 42));
+        fn test_count_positive_mixed() {
+            assert_eq!(count_positive([10, -3, 25, 0, 7]), 3);
         }
 
         #[test]
-        fn test_incorrect_guess_loses() {
-            assert!(!play_guess_game(42, 43));
+        fn test_count_positive_all() {
+            assert_eq!(count_positive([1, 2, 3, 4, 5]), 5);
         }
 
         #[test]
-        fn test_guess_zero() {
-            assert!(play_guess_game(0, 0));
+        fn test_count_positive_none() {
+            assert_eq!(count_positive([-1, -2, 0, -3, -4]), 0);
         }
 
         #[test]
-        fn test_guess_boundary() {
-            assert!(play_guess_game(99, 99));
+        fn test_sum_five_basic() {
+            assert_eq!(sum_five([10, 20, 30, 40, 50]), 150);
+        }
+
+        #[test]
+        fn test_sum_five_with_negatives() {
+            assert_eq!(sum_five([5, -2, 3, -1, 0]), 5);
+        }
+
+        #[test]
+        fn test_sum_five_all_zeros() {
+            assert_eq!(sum_five([0, 0, 0, 0, 0]), 0);
         }
     }
 
-    // ---- Step 5: Tuples (README §8) ----
+    // ---- Step 4: Tuples (README §9) ----
 
-    mod step_05_tuples {
+    mod step_04_tuples {
         use super::super::*;
 
         #[test]
@@ -233,51 +194,53 @@ mod tests {
             // Negative value: not invalid (is_valid == true) and not > 0 → "zero"
             assert_eq!(categorize_row((4, -1.0, true)), "zero");
         }
-
-        #[test]
-        fn test_summarize_basic() {
-            let (min, max, count) = summarize(&[1.0, 2.0, 3.0]);
-            assert_eq!(count, 3);
-            assert!((min - 1.0).abs() < 1e-10);
-            assert!((max - 3.0).abs() < 1e-10);
-        }
-
-        #[test]
-        fn test_summarize_single() {
-            let (min, max, count) = summarize(&[42.0]);
-            assert_eq!(count, 1);
-            assert!((min - 42.0).abs() < 1e-10);
-            assert!((max - 42.0).abs() < 1e-10);
-        }
     }
 
-    // ---- Step 6: Slices (README §9) ----
+    // ---- Step 5: Arrays (README §10) ----
 
-    mod step_06_slices {
+    mod step_05_arrays {
         use super::super::*;
 
         #[test]
-        fn test_second_half_odd_length() {
-            let data = [1.0, 2.0, 3.0, 4.0, 5.0];
-            assert_eq!(second_half(&data), &[3.0, 4.0, 5.0]);
+        fn test_max_of_five_positive() {
+            assert_eq!(max_of_five([3, 1, 4, 1, 5]), 5);
         }
 
         #[test]
-        fn test_second_half_even_length() {
-            let data = [10.0, 20.0, 30.0, 40.0];
-            assert_eq!(second_half(&data), &[30.0, 40.0]);
+        fn test_max_of_five_negative() {
+            assert_eq!(max_of_five([-2, -8, -1, -9, -5]), -1);
         }
 
         #[test]
-        fn test_second_half_single_element() {
-            let data = [42.0];
-            assert_eq!(second_half(&data), &[42.0]);
+        fn test_max_of_five_mixed() {
+            assert_eq!(max_of_five([-1, 0, 7, 3, 2]), 7);
+        }
+    }
+
+    // ---- Step 6: Putting It All Together (README §11) ----
+
+    mod step_06_combined {
+        use super::super::*;
+
+        #[test]
+        fn test_hot_readings_few() {
+            let (n, l) = hot_readings_summary([10, 20, 22, 18, 25]);
+            assert_eq!(n, 0);
+            assert_eq!(l, "few");
         }
 
         #[test]
-        fn test_second_half_empty() {
-            let data: [f64; 0] = [];
-            assert_eq!(second_half(&data), &[] as &[f64]);
+        fn test_hot_readings_some() {
+            let (n, l) = hot_readings_summary([25, 30, 28, 22, 18]);
+            assert_eq!(n, 1);
+            assert_eq!(l, "some");
+        }
+
+        #[test]
+        fn test_hot_readings_many() {
+            let (n, l) = hot_readings_summary([22, 28, 31, 35, 30]);
+            assert_eq!(n, 3);
+            assert_eq!(l, "many");
         }
     }
 }

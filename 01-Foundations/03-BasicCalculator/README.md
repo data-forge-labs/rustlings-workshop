@@ -1365,4 +1365,4 @@ This project focused on **integer-specific Rust**. For variables, mutability, `i
 
 ### Next Project
 
-Proceed to [2-MasterMind](../01-Foundations/03-MasterMind/master_mind.md) to solidify these concepts with a game, then [3-TicketV1](../02-Ownership/01-TicketV1/README.md) to learn about **ownership** — Rust's most unique and important feature.
+Proceed to [04-MasterMind](../04-MasterMind/README.md) to solidify these concepts with a game, then [02-Ownership/01-TicketV1](../../02-Ownership/01-TicketV1/README.md) to learn about **ownership** — Rust's most unique and important feature.

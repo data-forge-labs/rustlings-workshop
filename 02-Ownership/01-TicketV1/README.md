@@ -88,7 +88,7 @@ We'll build a **ticket tracking system** (like Jira or Trello) that:
 
 ## 2. Prerequisites
 
-- Completed [Basic Calculator](../01-Foundations/02-BasicCalculator/README.md)
+- Completed [Basic Calculator](../01-Foundations/03-BasicCalculator/README.md)
 - Understand integers, `if/else`, loops
 - Familiar with `cd workshop && cargo run`, `cd workshop && cargo test`
 

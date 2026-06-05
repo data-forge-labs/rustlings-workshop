@@ -266,7 +266,7 @@ match result {
 
 ## Prerequisites
 
-- Rust installed (see [0-Intro](./0-Intro/README.md))
+- Rust installed (see [01-Intro](./01-Intro/README.md))
 - Basic Python knowledge
 - Familiarity with terminal/command line
 
@@ -274,12 +274,14 @@ match result {
 
 | # | Project | Concepts | Format |
 |---|---------|----------|--------|
-| 0 | **Intro** — Rust primer, syntax, `fn main` | `fn main()`, `let`, `mut`, `println!`, basic types, `&str`, arithmetic | Reference |
-| 1 | **BasicCalculator** — integers, branching, loops, overflow | `i32`/`u32`, `if`/`else`, `while`/`for`, panics, overflow, saturating arithmetic, `as` casting | Tutorial |
-| 2 | **MasterMind** — guess a 4-digit secret code | `struct`, `impl`, `Vec<T>`, `Option<T>`, `match`, `String`/`&str`, `rand`, iterators, console I/O | Project |
+| 01 | **Intro** — Rust primer, syntax, `fn main` | `fn main()`, `let`, `mut`, `println!`, basic types, `&str`, tuples, arrays `[T; N]`, `if`/`else`, loops | Reference |
+| 02 | **GuessGame** — interactive "guess the number" with `std::io` and `Result` | `String` vs `&str`, custom `enum`, `derive`, `read_line`, `Result<T, E>`, `.parse()`, `.expect()`, basic `match`, `?` operator, external crates (`rand`) | Tutorial + Project |
+| 03 | **BasicCalculator** — integers, branching, loops, overflow | `i32`/`u32`/`i64`/`usize`, `if`/`else`, `while`/`for`, `panic!`, overflow, saturating/wrapping arithmetic, `as` casting, `#[test]` | Tutorial |
+| 04 | **MasterMind** — guess a 4-digit secret code | `struct`, `impl`, `Vec<T>`, `Option<T>`, exhaustive `match`, `if let`, `String`/`&str` (deeper), `rand`, iterators, console I/O | Project |
 
 ## Learning Path
 
-1. Start with **0-Intro** to get Rust installed and write your first program
-2. Move to **1-BasicCalculator** to learn integers, control flow, and loops
-3. Build **2-MasterMind** to apply everything in a real game
+1. Start with **01-Intro** to get Rust installed and write your first program
+2. Move to **02-GuessGame** to learn I/O, `String` vs `&str`, `Result`, and `match` by building an interactive game
+3. Build **03-BasicCalculator** to deepen integers, control flow, and overflow handling
+4. Build **04-MasterMind** to apply everything in a structured game with `struct`, `Vec`, and `Option`

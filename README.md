@@ -9,7 +9,7 @@ RustTut/
 ├── README.md                        ← this file
 ├── AGENTS.md                        ← AI workshop designer instructions
 ├── .devcontainer/                   ← preconfigured Rust dev environment
-├── 01-Foundations/                  ← Section 1 (projects 01-03)
+├── 01-Foundations/                  ← Section 1 (projects 01-04)
 ├── 02-Ownership/                    ← Section 2 (projects 01-05)
 ├── 03-Collections/                  ← Section 3 (projects 01-13)
 ├── 04-FileIO/                       ← Section 4 (projects 01-03)
@@ -35,7 +35,7 @@ The course is carefully sequenced so each concept is introduced by one source an
 
 | Section | Concept Cluster | Projects |
 |---------|----------------|----------|
-| 1 — Foundations | Syntax, types, control flow, basic I/O | 01 (Intro), 02 (BasicCalculator), 03 (MasterMind) |
+| 1 — Foundations | Syntax, types, control flow, basic I/O, console games | 01 (Intro), 02 (GuessGame), 03 (BasicCalculator), 04 (MasterMind) |
 | 2 — Ownership | Structs, ownership, borrowing, lifetimes, traits, enums, error handling | 01 (TicketV1), 02 (Traits), 03 (TicketV2), 04 (OBRM), 05 (OwnershipLifetimes) |
 | 3 — Collections | Vec, arrays, HashMap, HashSet, BTreeMap, iterators, LinkedList, VecDeque, BinaryHeap | 01 (TicketManagement), 02–13 (Fruit Salad series, HashMap, iterators) |
 | 4 — File I/O | CSV reading/writing, Parquet, Arrow, YAML, JSON/NDJSON, serde, file I/O | 01 (CSVCookbook), 02 (CSVWriter), 03 (Parquet), 04 (Arrow), 05 (YAML), 06 (JsonStream) |
@@ -76,9 +76,10 @@ Projects are grouped into **sections** that map concepts a Python data engineer 
 
 | # | Project | Rust Topics Covered |
 |---|---------|-------------------|
-| 01 | **Intro** — Rust syntax primer (reference) | `fn main()`, `let`, `mut`, macros (`println!`), basic types, `&str`, tuples, arrays `[T;N]`, slices `&[T]`, expressions vs statements, arithmetic |
-| 02 | **BasicCalculator** — integers, arithmetic, loops, overflow | `i32`/`u32`/`u64`/`usize`, `while`/`for`, panics, integer overflow, saturating/wrapping arithmetic, `as` casting, `#[test]` |
-| 03 | **MasterMind** — guess a 4-digit secret code with hints | `struct`, `impl`, `Vec<T>`, `Option<T>`, `if let`, loops, `String`/`&str`, `rand`, iterators |
+| 01 | **Intro** — Rust syntax primer (reference) | `fn main()`, `let`, `mut`, macros (`println!`), basic types, `&str`, tuples, arrays `[T;N]`, `if`/`else`, loops |
+| 02 | **GuessGame** — interactive "guess the number" game | `String` vs `&str`, custom `enum`, `derive`, `read_line`, `Result<T, E>`, `.parse()`, `.expect()`, basic `match`, `?` operator, external crates (`rand`) |
+| 03 | **BasicCalculator** — integers, arithmetic, loops, overflow | `i32`/`u32`/`u64`/`usize`, `while`/`for`, `panic!`, integer overflow, saturating/wrapping arithmetic, `as` casting, `#[test]`, `#[should_panic]` |
+| 04 | **MasterMind** — guess a 4-digit secret code with hints | `struct`, `impl`, `Vec<T>`, `Option<T>`, exhaustive `match`, `if let`, `String`/`&str` (deeper), `rand`, iterators, console I/O |
 
 ### Section 2: Ownership — Rust's Superpower over Python's GC
 
@@ -251,7 +252,7 @@ make run
 
 ```bash
 # Some projects can be compiled without cargo
-cd 01-Foundations/02-BasicCalculator
+cd 01-Foundations/02-GuessGame/workshop
 cargo run
 ```
 
