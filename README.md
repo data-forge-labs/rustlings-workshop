@@ -12,19 +12,20 @@ RustTut/
 ├── 01-Foundations/                  ← Section 1 (projects 01-04)
 ├── 02-Ownership/                    ← Section 2 (projects 01-06)
 ├── 03-Collections/                  ← Section 3 (projects 01-13)
-├── 04-FileIO/                       ← Section 4 (projects 01-03)
-├── 05-Concurrency/                  ← Section 5 (projects 01-11)
-├── 06-CLIAndTools/                  ← Section 6 (projects 01-10)
-├── 07-Security/                     ← Section 7 (projects 01-03)
-├── 08-Interop/                      ← Section 8 (projects 01-02)
-├── 09-ProductionSystems/           ← Section 9 (projects 01-02)
-├── 10-ToolsAndFrameworks/          ← Section 10 (projects 01-03)
-├── 11-Reference/                    ← Section 11 (reference material)
-└── 12-DataEngAnalytics/             ← Section 12 (projects 01-03) — Polars, DuckDB, DataFusion
-└── 13-ActorModel/                   ← Section 13 (projects 01-03) — DIY actor, ractor, ETL pipeline
+├── 04-FileIO/                       ← Section 4 (projects 01-06)
+├── 05-Concurrency/                  ← Section 5 (projects 01-13)
+├── 06-TerminalApps/                 ← Section 6 (projects 01-04) — CLI, TUI, async CLI
+├── 07-GraphAndNetworkScience/       ← Section 7 (projects 01-08) — petgraph, PageRank, Neo4j
+├── 08-Security/                     ← Section 8 (projects 01-06)
+├── 09-ObservabilityAndTesting/      ← Section 9 (projects 01-06) — logging, config, testing, proptest, mockall, insta
+├── 10-ProductionSystems/            ← Section 10 (projects 01-04) — Radish, Axum, JWT, OTel
+├── 11-Interop/                      ← Section 11 (projects 01-04) — PyO3, evcxr, GIL release
+├── 12-DataEngAnalytics/             ← Section 12 (projects 01-03) — Polars, DuckDB, DataFusion
+├── 13-ActorModel/                   ← Section 13 (projects 01-03) — DIY actor, ractor, ETL pipeline
+└── 14-Reference/                    ← Section 14 (reference appendix — no projects)
 ```
 
-The course is organized into **12 sections** designed for a Python data engineer moving to Rust. Each section starts with tutorial-style projects (read `.md` files, write code alongside) and progresses to hands-on Cargo projects (build and run complete programs).
+The course is organized into **14 sections** designed for a Python data engineer moving to Rust. Each section starts with tutorial-style projects (read `.md` files, write code alongside) and progresses to hands-on Cargo projects (build and run complete programs).
 
 **Progression:** Go through sections in order. Within each section, start with lower-numbered projects (introduce concepts) then move to higher-numbered ones (apply and deepen). Concepts from earlier sections are assumed in later ones.
 
@@ -41,14 +42,15 @@ The course is carefully sequenced so each concept is introduced by one source an
 | 3 — Collections | Vec, arrays, HashMap, HashSet, BTreeMap, iterators, LinkedList, VecDeque, BinaryHeap | 01 (TicketManagement), 02–13 (Fruit Salad series, HashMap, iterators) |
 | 4 — File I/O | CSV reading/writing, Parquet, Arrow, YAML, JSON/NDJSON, serde, file I/O | 01 (CSVCookbook), 02 (CSVWriter), 03 (Parquet), 04 (Arrow), 05 (YAML), 06 (JsonStream) |
 | 5 — Concurrency | Threads, async/await, Mutex, Arc, Send/Sync, Rayon, atomics, channels | 01 (Threads), 02 (Futures), 03–11 (DataRace, Atomics, DiningPhilosophers, Rayon, etc.), 12 (AdvancedSync), 13 (AsyncPatterns) |
-| 6 — CLI & Tools | clap, petgraph, Dijkstra, PageRank, Neo4j | 01–10 (CLISalad, CommunityDetection, PageRank, GraphVisualize, etc.) |
-| 7 — Security | Safe vs unsafe, crypto, security model | 01 (SafeAndUnsafe), 02 (DecoderRing), 03 (RustCryptoHashes) |
-| 8 — Interop | evcxr, Jupyter, pandas bridge | 01 (ExploringPandas), 02 (RustJupyterNotebook), 03 (PyO3Bindings), 04 (GILRelease) |
-| 9 — Production Systems | Tokio, async, TCP, RESP protocol, Axum web API | 01 (Radish), 02 (AxumShop), 03 (AxumAuth), 04 (OpenTelemetry) |
-| 10 — Tools & Frameworks | Logging, configuration management, testing frameworks | 01 (Logging), 02 (Configuration), 03 (Testing), 04 (Proptest), 05 (Mockall), 06 (Insta) |
-| 11 — Reference | Quick concept lookup, cheatsheets, memory architecture | (no cargo projects — reference materials only) |
+| 6 — Terminal Apps | clap, ratatui, async CLI subcommands | 01 (CLISalad), 02 (CustomCLIFruitSalad), 03 (RatatuiTUI), 04 (AsyncClap) |
+| 7 — Graph & Network Science | petgraph, SCC, Dijkstra, PageRank, ASCII viz, Neo4j | 01 (CommunityDetection), 02 (UFCGraphCentrality), 03 (GraphVisualize), 04 (LisbonShortestPath), 05 (Neo4jDataScience), 06 (PageRank), 07 (RussianTrollTweets), 08 (FullyConnectedGraph) |
+| 8 — Security | Safe vs unsafe, crypto, security model | 01 (SafeAndUnsafe), 02 (DecoderRing), 03 (RustCryptoHashes), 04 (Argon2), 05 (Ed25519), 06 (RustlsTLS) |
+| 9 — Observability & Testing | Logging, configuration management, testing frameworks (proptest, mockall, insta) | 01 (Logging), 02 (Configuration), 03 (Testing), 04 (Proptest), 05 (Mockall), 06 (Insta) |
+| 10 — Production Systems | Tokio, async, TCP, RESP protocol, Axum web API, JWT, OTel | 01 (Radish), 02 (AxumShop), 03 (AxumAuth), 04 (OpenTelemetry) |
+| 11 — Interop | evcxr, Jupyter, PyO3, GIL release | 01 (ExploringPandas), 02 (RustJupyterNotebook), 03 (PyO3Bindings), 04 (GILRelease) |
 | 12 — DataEng Analytics | Polars DataFrame, DuckDB in-process OLAP, Apache DataFusion query engine | 01 (Polars), 02 (DuckDB), 03 (DataFusion) |
 | 13 — Actor Model | DIY actor with `mpsc` + `oneshot`, `ractor` production crate, ETL pipeline composition | 01 (DIY-Actor), 02 (Ractor), 03 (ETLPipeline) |
+| 14 — Reference | Quick concept lookup, cheatsheets, memory architecture | (no cargo projects — reference appendix) |
 
 **How to use this table:** Start from Section 1 and work forward. Within each section, start with the lower-numbered projects (they introduce the concepts) and then move to the higher-numbered ones (they apply and deepen them).
 
@@ -149,26 +151,33 @@ Projects are grouped into **sections** that map concepts a Python data engineer 
 | 12 | **AdvancedSync** — High-performance concurrency primitives | `parking_lot::Mutex`/`RwLock`, `crossbeam_channel`, `arc_swap` (lock-free), `triomphe::Arc` |
 | 13 | **AsyncPatterns** — Real-world Tokio patterns | `tokio::select!`, `tokio::time::timeout`, `Semaphore`, `Notify`, `JoinSet`, bounded `mpsc`, `CancellationToken` (tokio-util) |
 
-### Section 6: CLI & Data Engineering Tools
+### Section 6: Terminal Apps — CLI, TUI, Async Subcommands
 
-*Building production-ready CLI tools, graph analytics, and connecting Rust to Python data tools.*
+*Building production-grade terminal applications: command-line tools, full-screen TUI dashboards, and async CLI front-ends for ETL pipelines.*
 
 | # | Project | Rust Topics Covered |
 |---|---------|-------------------|
 | 01 | **CLISalad** — CLI with clap arg parsing | `clap` derive, `std::env`, pattern matching, `std::io` |
-| 02 | **CommunityDetection** — Kosaraju's SCC algorithm | `petgraph`, directed graphs, SCC, DFS, graph transposition |
-| 03 | **UFCGraphCentrality** — centrality on UFC data | `UnGraph`, degree/closeness centrality, `NodeIndex` |
-| 04 | **GraphVisualize** — ASCII bar charts | `rasciigraph`, ASCII visualization, data scaling |
-| 05 | **LisbonShortestPath** — Dijkstra's algorithm | Dijkstra, weighted graphs, `BinaryHeap` as priority queue |
-| 06 | **Neo4jDataScience** — Neo4j graph DB | Neo4j integration, centrality algorithms (degree, closeness, betweenness, eigenvector) |
-| 07 | **PageRank** — PageRank algorithm | PageRank, iterative ranking, damping factor, link analysis |
-| 08 | **RussianTrollTweets** — Neo4j analysis | Graph DB analysis, influence detection, social graph modeling |
-| 09 | **FullyConnectedGraph** — graph connectivity | Graph connectivity, `HashMap` memoization |
-| 10 | **CustomCLIFruitSalad** — advanced CLI + CSV | `clap` derive, CSV reading, `lib.rs`/`main.rs` separation, modules |
-| 11 | **RatatuiTUI** — terminal dashboard | `ratatui`, `crossterm`, `TestBackend`, immediate-mode UI, layouts, widgets, event loop |
-| 12 | **AsyncClap** — async CLI with subcommands | `clap` derive, `#[tokio::main]`, `ExitCode`, subcommand trees, JSON config |
+| 02 | **CustomCLIFruitSalad** — advanced CLI + CSV | `clap` derive, CSV reading, `lib.rs`/`main.rs` separation, modules |
+| 03 | **RatatuiTUI** — terminal dashboard | `ratatui`, `crossterm`, `TestBackend`, immediate-mode UI, layouts, widgets, event loop |
+| 04 | **AsyncClap** — async CLI with subcommands | `clap` derive, `#[tokio::main]`, `ExitCode`, subcommand trees, JSON config |
 
-### Section 7: Security & Systems Programming
+### Section 7: Graph & Network Science — `petgraph`, PageRank, Neo4j
+
+*High-performance graph analytics: from a 6-node shortest-path demo to 1M-node PageRank on real social graphs, plus Neo4j integration for graphs that outgrow RAM.*
+
+| # | Project | Rust Topics Covered |
+|---|---------|-------------------|
+| 01 | **CommunityDetection** — Kosaraju's SCC algorithm | `petgraph`, directed graphs, SCC, DFS, graph transposition |
+| 02 | **UFCGraphCentrality** — centrality on UFC data | `UnGraph`, degree/closeness centrality, `NodeIndex` |
+| 03 | **GraphVisualize** — ASCII bar charts | `rasciigraph`, ASCII visualization, data scaling |
+| 04 | **LisbonShortestPath** — Dijkstra's algorithm | Dijkstra, weighted graphs, `BinaryHeap` as priority queue |
+| 05 | **Neo4jDataScience** — Neo4j graph DB | Neo4j integration, centrality algorithms (degree, closeness, betweenness, eigenvector) |
+| 06 | **PageRank** — PageRank algorithm | PageRank, iterative ranking, damping factor, link analysis |
+| 07 | **RussianTrollTweets** — Neo4j analysis | Graph DB analysis, influence detection, social graph modeling |
+| 08 | **FullyConnectedGraph** — graph connectivity | Graph connectivity, `HashMap`/`HashSet` memoization |
+
+### Section 8: Security & Systems Programming
 
 *Why Rust is the safe alternative to C/C++ for data pipelines, and how cryptography fits in.*
 
@@ -181,31 +190,9 @@ Projects are grouped into **sections** that map concepts a Python data engineer 
 | 05 | **Ed25519** — digital signatures | `ed25519-dalek`, `SigningKey`/`VerifyingKey`, hex serialization, tamper detection |
 | 06 | **RustlsTLS** — TLS server & client | `rustls` + `aws-lc-rs`, `ServerConfig`/`ClientConfig`, `tokio-rustls` handshake |
 
-### Section 8: Rust + Python Interop
+### Section 9: Observability & Testing
 
-*Bridge the two worlds: use Rust from Jupyter notebooks, and call pandas from Rust.*
-
-| # | Project | Rust Topics Covered |
-|---|---------|-------------------|
-| 01 | **ExploringPandas** — Rust meets pandas | DataFrame operations, Python/Rust interop, filtering/grouping, matplotlib |
-| 02 | **RustJupyterNotebook** — interactive Rust with evcxr | `evcxr` Jupyter kernel, interactive Rust, `plotters`/`ndarray`/`rayon` |
-| 03 | **PyO3Bindings** — Call Rust from Python | `pyo3 0.23`, `#[pyfunction]` / `#[pymodule]`, `cdylib`, `maturin develop`, feature-gated FFI |
-| 04 | **GILRelease** — Free the GIL, free the CPU | `pyo3::Python::allow_threads`, GIL contention factor, multi-threaded CPU work |
-
-### Section 9: Production Systems — Building Real-World Services
-
-*Production-grade Rust: building networked services, async I/O, wire protocols, and in-memory data stores.*
-
-| # | Project | Rust Topics Covered |
-|---|---------|-------------------|
-| 01 | **Radish** — Redis-compatible KV store | `tokio` async, RESP protocol, TCP networking, `Rc<RefCell>`, `BytesMut`, TTL expiry |
-| 02 | **AxumShop** — Shop Manager API with Axum | `axum::Router`, `tokio` async, `sqlx` async DB, `serde` JSON, `tower-http` CORS, `tower-sessions`, `FromRequestParts` auth, SHA-256 hashing, DB transactions |
-| 03 | **AxumAuth** — JWT + Bearer middleware for Axum 0.8 | `jsonwebtoken` 9, HS256 sign/verify, typed `Claims`, role-based access, refresh tokens, `kid` header inspection |
-| 04 | **OpenTelemetry** — Traces, spans, and correlation IDs | `tracing` 0.1, `tracing-subscriber` JSON output, OTel attribute model, `AtomicU64` pipeline metrics, `Uuid` correlation ids |
-
-### Section 10: Tools & Frameworks
-
-*Logging, configuration management, and testing frameworks — the tools you need for production Rust applications.*
+*Logging, configuration management, and testing frameworks — the practices that turn a working Rust binary into a service you can operate at 3am.*
 
 | # | Project | Rust Topics Covered |
 |---|---------|-------------------|
@@ -216,11 +203,33 @@ Projects are grouped into **sections** that map concepts a Python data engineer 
 | 05 | **Mockall** — mocking traits for testable pipelines | `mockall` 0.13, `#[automock]`, `&dyn Trait`, predicate matchers, error simulation |
 | 06 | **Insta** — snapshot testing | `insta` 1, inline snapshots, `cargo insta review`, struct Debug snapshots |
 
-### Section 11: Reference
+### Section 10: Production Systems — Building Real-World Services
+
+*Production-grade Rust: building networked services, async I/O, wire protocols, and in-memory data stores.*
+
+| # | Project | Rust Topics Covered |
+|---|---------|-------------------|
+| 01 | **Radish** — Redis-compatible KV store | `tokio` async, RESP protocol, TCP networking, `Rc<RefCell>`, `BytesMut`, TTL expiry |
+| 02 | **AxumShop** — Shop Manager API with Axum | `axum::Router`, `tokio` async, `sqlx` async DB, `serde` JSON, `tower-http` CORS, `tower-sessions`, `FromRequestParts` auth, SHA-256 hashing, DB transactions |
+| 03 | **AxumAuth** — JWT + Bearer middleware for Axum 0.8 | `jsonwebtoken` 9, HS256 sign/verify, typed `Claims`, role-based access, refresh tokens, `kid` header inspection |
+| 04 | **OpenTelemetry** — Traces, spans, and correlation IDs | `tracing` 0.1, `tracing-subscriber` JSON output, OTel attribute model, `AtomicU64` pipeline metrics, `Uuid` correlation ids |
+
+### Section 11: Rust + Python Interop
+
+*Bridge the two worlds: use Rust from Jupyter notebooks, and call Rust from Python.*
+
+| # | Project | Rust Topics Covered |
+|---|---------|-------------------|
+| 01 | **ExploringPandas** — Rust meets pandas | DataFrame operations, Python/Rust interop, filtering/grouping, matplotlib |
+| 02 | **RustJupyterNotebook** — interactive Rust with evcxr | `evcxr` Jupyter kernel, interactive Rust, `plotters`/`ndarray`/`rayon` |
+| 03 | **PyO3Bindings** — Call Rust from Python | `pyo3 0.23`, `#[pyfunction]` / `#[pymodule]`, `cdylib`, `maturin develop`, feature-gated FFI |
+| 04 | **GILRelease** — Free the GIL, free the CPU | `pyo3::Python::allow_threads`, GIL contention factor, multi-threaded CPU work |
+
+### Section 14: Reference Appendix
 
 *Quick reference materials for concept lookup — no cargo projects, just cheatsheets and reference documents.*
 
-This section contains reference documents for quick lookup of Rust syntax, idioms, and patterns covered across all 10 prior sections.
+This appendix contains reference documents for quick lookup of Rust syntax, idioms, and patterns covered across all 13 prior sections.
 
 ### Section 12: Data Engineering Analytics — Polars, DuckDB, DataFusion
 
@@ -309,8 +318,8 @@ The table below lists all core Rust concepts a learner should eventually see. **
 | Type casting (`as`) | ✅ | 01-02, 01-03 |
 | Tuples (creation, destructuring, return values) | ✅ | 01-01, 01-02 |
 | `unwrap()` / basic error handling | ✅ | 01-02, 02-03 |
-| `Result<T, E>`, `?` operator | ✅ | 02-03, 06-01, 06-10, 04-01 |
-| `enum` (custom enums) | ✅ | 02-03, 06-01, 07-02, 05-11 |
+| `Result<T, E>`, `?` operator | ✅ | 02-03, 06-01, 06-02, 04-01 |
+| `enum` (custom enums) | ✅ | 02-03, 06-01, 08-02, 05-11 |
 | `impl` with generics and traits | ✅ | 02-02, 03-01, 03-12, 02-04, 05-11 |
 | Arrays `[T; N]` | ✅ | 01-01, 03-01, 03-03 |
 | Slices `&[T]`, `&str` (borrowed views) | ✅ | 01-01, 03-01 |
@@ -319,18 +328,18 @@ The table below lists all core Rust concepts a learner should eventually see. **
 | `BTreeMap` / `BTreeSet` | ✅ | 03-01, 03-04, 03-10 |
 | `LinkedList` | ✅ | 03-05 |
 | `VecDeque` | ✅ | 03-06 |
-| `BinaryHeap` | ✅ | 03-09, 06-05 |
+| `BinaryHeap` | ✅ | 03-09, 07-04 |
 | `Box<T>`, `Rc<T>`, `Arc<T>` (smart pointers) | ✅ | 02-01, 05-03, 02-04, 05-11 |
 | Lifetimes and borrow checker annotations | ✅ | 03-01, 02-05 |
 | Stack vs heap memory | ✅ | 02-01 |
-| Error handling with `Result` and custom error types | ✅ | 02-03, 06-01, 06-10, 04-01 |
+| Error handling with `Result` and custom error types | ✅ | 02-03, 06-01, 06-02, 04-01 |
 | `thiserror` crate | ✅ | 02-03 |
 | `TryFrom` / `TryInto` traits | ✅ | 02-03 |
 | `Option` combinators (`unwrap_or[_default]`, `map_or`, `ok_or`, `filter`, `or_else`, `transpose`) | ✅ | 02-06 |
 | `Result` combinators (`map_err`, `and_then`, `or_else`, `?` operator) | ✅ | 02-06 |
 | `From<E1>` for error conversion + `thiserror` | ✅ | 02-06 |
-| `mod`, `pub`, `use` (modules & visibility) | ✅ | 02-01, 06-10 |
-| External crates beyond `rand` | ✅ | 02-03, 05-01, 06-01, 06-02, 06-10, 04-01 |
+| `mod`, `pub`, `use` (modules & visibility) | ✅ | 02-01, 06-02 |
+| External crates beyond `rand` | ✅ | 02-03, 05-01, 06-01, 07-01, 06-02, 04-01 |
 | File I/O (`std::fs`, `File`, `BufReader`) | ✅ | 04-01, 04-02 |
 | CSV parsing / writing (`csv` crate) | ✅ | 04-01, 04-02 |
 | Serde (serialisation / deserialisation) | ✅ | 04-02, 04-03, 04-05, 04-06 |
@@ -342,11 +351,11 @@ The table below lists all core Rust concepts a learner should eventually see. **
 | Polars DataFrame (eager + lazy, `group_by`, Parquet I/O, predicate pushdown) | ✅ | 12-01 |
 | DuckDB in-process OLAP (`read_csv_auto`, prepared statements, raw SQL) | ✅ | 12-02 |
 | Apache DataFusion (`SessionContext`, async SQL, Arrow zero-copy, Parquet write) | ✅ | 12-03 |
-| Ratatui terminal UIs (`ratatui`, `crossterm`, `TestBackend`, layouts, widgets) | ✅ | 06-11 |
-| Async CLIs with `clap` derive (subcommands, `#[tokio::main]`, `ExitCode`) | ✅ | 06-12 |
+| Ratatui terminal UIs (`ratatui`, `crossterm`, `TestBackend`, layouts, widgets) | ✅ | 06-03 |
+| Async CLIs with `clap` derive (subcommands, `#[tokio::main]`, `ExitCode`) | ✅ | 06-04 |
 | Testing (`#[test]`, `cargo test`) | ✅ | 01-02 |
 | Documentation (`///`, `cargo doc`) | ✅ | 01-02 |
-| `derive` macros (`Debug`, `Clone`, `Copy`, `PartialEq`, etc.) | ✅ | 02-02, 06-01, 06-10, 04-02 |
+| `derive` macros (`Debug`, `Clone`, `Copy`, `PartialEq`, etc.) | ✅ | 02-02, 06-01, 06-02, 04-02 |
 | Trait definitions, bounds, and orphan rule | ✅ | 02-02 |
 | `Deref` / `Sized` / `From` / `Clone` / `Copy` / `Drop` traits | ✅ | 02-02 |
 | Concurrency (`std::thread`, `mpsc`, `Mutex`, `Arc`) | ✅ | 05-01, 05-03, 05-06, 05-08, 05-10 |
@@ -355,38 +364,38 @@ The table below lists all core Rust concepts a learner should eventually see. **
 | `RwLock` | ✅ | 05-01 |
 | Interior mutability (`Cell`, `RefCell`) | ✅ | 05-01, 05-07 |
 | `Send` / `Sync` marker traits | ✅ | 05-01, 05-06, 05-11 |
-| `rayon` parallel iterators | ✅ | 07-02, 05-10 |
+| `rayon` parallel iterators | ✅ | 08-02, 05-10 |
 | Atomics & memory ordering | ✅ | 05-04 |
 | `async` / `.await` basics | ✅ | 05-02 |
 | `Future` trait & `tokio` runtime | ✅ | 05-02 |
 | Spawning async tasks & cancellation | ✅ | 05-02 |
-| Graph algorithms (`petgraph`, Dijkstra, PageRank, SCC) | ✅ | 06-02, 06-03, 06-05, 06-07 |
+| Graph algorithms (`petgraph`, Dijkstra, PageRank, SCC) | ✅ | 07-01, 07-02, 07-04, 07-06 |
 | `HashMap` iteration and entry API | ✅ | 03-04 |
 | Pattern matching with `@` bindings, guards, etc. | ✅ | 01-01 |
-| Package layout (`lib.rs` + `main.rs`) | ✅ | 06-10 |
-| Library re‑exports (`pub use`) | ✅ | 06-10 |
-| CLI argument parsing (`clap` derive) | ✅ | 06-01, 06-10, 07-02 |
-| Safe vs unsafe Rust | ✅ | 07-01 |
+| Package layout (`lib.rs` + `main.rs`) | ✅ | 06-02 |
+| Library re‑exports (`pub use`) | ✅ | 06-02 |
+| CLI argument parsing (`clap` derive) | ✅ | 06-01, 06-02, 08-02 |
+| Safe vs unsafe Rust | ✅ | 08-01 |
 | RAII / `Drop` trait / OBRM | ✅ | 02-04 (canonical), 02-01, 02-02 |
-| Cryptographic hashes (`Digest` trait) | ✅ | 07-03 |
-| Caesar cipher / frequency analysis | ✅ | 07-02 |
-| Argon2 password hashing (`argon2` crate, salt, `PasswordHasher`/`PasswordVerifier`, `subtle::ConstantTimeEq`) | ✅ | 07-04 |
-| Ed25519 digital signatures (`ed25519-dalek`, `SigningKey`/`VerifyingKey`, hex serialization) | ✅ | 07-05 |
-| Rustls TLS (`rustls` + `aws-lc-rs`, `ServerConfig`/`ClientConfig`, `tokio-rustls` handshake) | ✅ | 07-06 |
-| PyO3 bindings (`#[pyfunction]`, `#[pymodule]`, `cdylib`, `maturin develop`, feature-gated FFI) | ✅ | 08-03 |
-| GIL release (`pyo3::Python::allow_threads`, GIL contention factor) | ✅ | 08-04 |
-| JWT auth (`jsonwebtoken` HS256 sign/verify, `Claims`, role checks, refresh tokens) | ✅ | 09-03 |
-| Tracing + OTel data model (`tracing`, `tracing-subscriber` JSON, spans, correlation ids, atomic metrics) | ✅ | 09-04 |
-| Property-based testing (`proptest` strategies, shrinking, invariants) | ✅ | 10-04 |
-| Trait mocking (`mockall` `#[automock]`, `&dyn Trait`, predicate matchers) | ✅ | 10-05 |
-| Snapshot testing (`insta` inline + external snapshots, `cargo insta review`) | ✅ | 10-06 |
+| Cryptographic hashes (`Digest` trait) | ✅ | 08-03 |
+| Caesar cipher / frequency analysis | ✅ | 08-02 |
+| Argon2 password hashing (`argon2` crate, salt, `PasswordHasher`/`PasswordVerifier`, `subtle::ConstantTimeEq`) | ✅ | 08-04 |
+| Ed25519 digital signatures (`ed25519-dalek`, `SigningKey`/`VerifyingKey`, hex serialization) | ✅ | 08-05 |
+| Rustls TLS (`rustls` + `aws-lc-rs`, `ServerConfig`/`ClientConfig`, `tokio-rustls` handshake) | ✅ | 08-06 |
+| PyO3 bindings (`#[pyfunction]`, `#[pymodule]`, `cdylib`, `maturin develop`, feature-gated FFI) | ✅ | 11-03 |
+| GIL release (`pyo3::Python::allow_threads`, GIL contention factor) | ✅ | 11-04 |
+| JWT auth (`jsonwebtoken` HS256 sign/verify, `Claims`, role checks, refresh tokens) | ✅ | 10-03 |
+| Tracing + OTel data model (`tracing`, `tracing-subscriber` JSON, spans, correlation ids, atomic metrics) | ✅ | 10-04 |
+| Property-based testing (`proptest` strategies, shrinking, invariants) | ✅ | 09-04 |
+| Trait mocking (`mockall` `#[automock]`, `&dyn Trait`, predicate matchers) | ✅ | 09-05 |
+| Snapshot testing (`insta` inline + external snapshots, `cargo insta review`) | ✅ | 09-06 |
 | `parking_lot` Mutex/RwLock, `crossbeam_channel` (MPMC), `arc_swap` (lock-free) | ✅ | 05-12 |
 | `tokio::select!`, `Semaphore`, `Notify`, `JoinSet`, bounded `mpsc`, `CancellationToken` | ✅ | 05-13 |
 | DIY actor (`mpsc` mailbox + `oneshot` reply, `tokio::spawn` loop) | ✅ | 13-01 |
 | `ractor` framework (Actor trait, `cast` / `call` / `CallResult`, supervision) | ✅ | 13-02 |
 | Actor pipeline (source → transform → sink with bounded channels + atomic metrics) | ✅ | 13-03 |
-| Jupyter notebook / `evcxr` | ✅ | 08-02 |
-| Pandas / DataFrame operations | ✅ | 08-01 |
+| Jupyter notebook / `evcxr` | ✅ | 11-02 |
+| Pandas / DataFrame operations | ✅ | 11-01 |
 
 ---
 

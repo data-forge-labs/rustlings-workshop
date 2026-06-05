@@ -20,103 +20,125 @@ This repository is a **full Rust data engineering course** — not just a langua
 
 ## 2. Repository Architecture
 
-The repo is organized into **11 numbered concept sections**, each containing related projects:
+The repo is organized into **14 numbered concept sections**, each containing related projects:
 
 ```
 RustTut/
-├── README.md                       ← Main index, project tables, concept coverage checklist
-├── AGENTS.md                       ← This file
-├── .devcontainer/                  ← Preconfigured Rust dev environment
-├── 01-Foundations/                 ← Section 1: syntax, types, control flow
-│   ├── README.md                   ← Section overview with project table & learning path
-│   ├── 01-Intro/                   ← Rust syntax primer
-│   ├── 02-GuessGame/                ← String vs &str, Result, console I/O, enums, rand crate
-│   ├── 03-BasicCalculator/         ← Integers, branching, loops
-│   └── 04-MasterMind/              ← Structs, Vec, Option, console I/O
-├── 02-Ownership/                   ← Section 2: ownership, borrowing, traits, enums
-│   ├── 01-TicketV1/                ← Structs, ownership, stack vs heap
-│   ├── 02-Traits/                  ← Trait definitions, derive, bounds
-│   ├── 03-TicketV2/                ← Enums, match, Result, error handling
-│   ├── 04-OBRM/                    ← RAII / Drop / ownership-based resource mgmt
-│   └── 05-OwnershipLifetimes/      ← Lifetimes, borrow checker
-├── 03-Collections/                 ← Section 3: data structures & iterators
-│   ├── 01-TicketManagement/        ← Vec, arrays, HashMap, BTreeMap, iterators
-│   ├── 02-VectorFruitSalad/        ← Vec<T> dynamic arrays
-│   ├── 03-ArrayFruitSalad/         ← Fixed-size arrays [T; N]
-│   ├── 04-HashMapCount/            ← Word frequency counting
-│   ├── 05-LinkedListFruitSalad/    ← Doubly-linked list
-│   ├── 06-VecDequeFruitSalad/      ← Double-ended queue
-│   ├── 07-HashMapLanguage/         ← Complex HashMap data
-│   ├── 08-RustCollectionsDoc/      ← std::collections reference
-│   ├── 09-BinaryHeapFruit/         ← Priority queue
-│   ├── 10-BTreeSetFruit/           ← Ordered set
-│   ├── 11-HashSetFruit/            ← Unique items / set operations
-│   ├── 12-RustIterators/           ← Lazy functional iteration
-│   └── 13-MutableFruitSalad/       ← Vec mutation patterns
-├── 04-FileIO/                      ← Section 4: file I/O & data formats
-│   ├── 01-CSVCookbook/             ← Read/write CSV with csv crate
-│   ├── 02-CSVWriter/               ← CSV writing with serde
-│   └── 03-Parquet/                 ← Apache Parquet / Arrow
-├── 05-Concurrency/                 ← Section 5: threads, async, atomics
-│   ├── 01-Threads/                 ← Threads, channels, locks
-│   ├── 02-Futures/                 ← async/await, tokio
-│   ├── 03-DataRace/                ← Mutex, Arc, data-race prevention
-│   ├── 04-Atomics/                 ← Lock-free atomics
-│   ├── 05-DistributedChallenges/   ← Consistency models, CAP
-│   ├── 06-ConcurrencyParallelism/  ← Send/Sync, RwLock
-│   ├── 07-DataRacesRaceConditions/ ← Cell/RefCell patterns
-│   ├── 08-DiningPhilosophers/      ← Deadlock prevention
-│   ├── 09-DistributedComputing/    ← Rust for distributed systems
-│   ├── 10-RayonChallenge/          ← Data parallelism with Rayon
-│   └── 11-SendSync/                ← Send/Sync marker traits
-├── 06-CLIAndTools/                 ← Section 6: CLI tools & graph algorithms
-│   ├── 01-CLISalad/                ← clap CLI parsing
-│   ├── 02-CommunityDetection/      ← Kosaraju SCC algorithm
-│   ├── 03-UFCGraphCentrality/      ← Graph centrality
-│   ├── 04-GraphVisualize/          ← ASCII bar charts
-│   ├── 05-LisbonShortestPath/      ← Dijkstra on weighted graphs
-│   ├── 06-Neo4jDataScience/        ← Neo4j graph database
-│   ├── 07-PageRank/                ← PageRank algorithm
-│   ├── 08-RussianTrollTweets/      ← Social graph analysis
-│   ├── 09-FullyConnectedGraph/     ← Graph connectivity
-│   └── 10-CustomCLIFruitSalad/     ← Advanced CLI + modules
-├── 07-Security/                    ← Section 7: safety & cryptography
-│   ├── 01-SafeAndUnsafe/           ← Safe vs unsafe Rust
-│   ├── 02-DecoderRing/             ← Caesar cipher + Rayon
-│   └── 03-RustCryptoHashes/        ← Cryptographic hashes
-├── 08-Interop/                     ← Section 8: Python/Rust interop
-│   ├── 01-ExploringPandas/         ← Pandas + Rust comparison
-│   └── 02-RustJupyterNotebook/     ← evcxr Jupyter kernel
-├── 09-ProductionSystems/          ← Section 9: production-grade systems
-│   ├── 01-Radish/                  ← Redis-compatible KV store (async TCP)
-│   ├── 02-AxumShop/                ← Axum web API (FastAPI-compatible shop)
-│   └── README.md                   ← Section overview
-├── 10-ToolsAndFrameworks/         ← Section 10: essential Rust tools & frameworks
-│   ├── 01-Logging/                 ← Logging with log/env_logger/tracing
-│   ├── 02-Configuration/           ← Configuration with config crate
-│   ├── 03-Testing/                 ← Testing deep dive (property-based)
-│   └── README.md                   ← Section overview
-└── 11-Reference/                   ← Section 11: concept reference & cheatsheets
-    ├── README.md                   ← Section overview
-    ├── collections-guide.md        ← Collections comparison & selection guide
-    ├── concurrency-reference.md    ← Concurrency model review
-    ├── data-management-io.md       ← File I/O & serialization reference
-└── 12-DataEngAnalytics/            ← Section 12: data-eng analytics engines on Arrow
-    ├── README.md                   ← Section overview
-    ├── 01-Polars/                  ← Polars DataFrame (eager + lazy)
-    ├── 02-DuckDB/                  ← DuckDB in-process OLAP
-    └── 03-DataFusion/              ← Apache DataFusion query engine
-    ├── distributed-systems.md      ← Distributed systems concepts (CAP, consistency)
-    ├── memory-safety.md            ← Memory safety & security model
-    ├── safety-reflection.md        ← Rust vs GC languages safety comparison
-    ├── security-model.md           ← Rust security model & best practices
-    └── send-sync.md                ← Send/Sync, thread safety markers
+├── README.md                          ← Main index, project tables, concept coverage checklist
+├── AGENTS.md                          ← This file
+├── .devcontainer/                     ← Preconfigured Rust dev environment
+├── 01-Foundations/                    ← Section 1: syntax, types, control flow
+│   ├── README.md                      ← Section overview with project table & learning path
+│   ├── 01-Intro/                      ← Rust syntax primer
+│   ├── 02-GuessGame/                  ← String vs &str, Result, console I/O, enums, rand crate
+│   ├── 03-BasicCalculator/            ← Integers, branching, loops
+│   └── 04-MasterMind/                 ← Structs, Vec, Option, console I/O
+├── 02-Ownership/                      ← Section 2: ownership, borrowing, traits, enums
+│   ├── 01-TicketV1/                   ← Structs, ownership, stack vs heap
+│   ├── 02-Traits/                     ← Trait definitions, derive, bounds
+│   ├── 03-TicketV2/                   ← Enums, match, Result, error handling
+│   ├── 04-OBRM/                       ← RAII / Drop / ownership-based resource mgmt
+│   ├── 05-OwnershipLifetimes/         ← Lifetimes, borrow checker
+│   └── 06-ConversionErrorHandling/    ← Option/Result combinators, From, ?
+├── 03-Collections/                    ← Section 3: data structures & iterators
+│   ├── 01-TicketManagement/           ← Vec, arrays, HashMap, BTreeMap, iterators
+│   ├── 02-VectorFruitSalad/           ← Vec<T> dynamic arrays
+│   ├── 03-ArrayFruitSalad/            ← Fixed-size arrays [T; N]
+│   ├── 04-HashMapCount/               ← Word frequency counting
+│   ├── 05-LinkedListFruitSalad/       ← Doubly-linked list
+│   ├── 06-VecDequeFruitSalad/         ← Double-ended queue
+│   ├── 07-HashMapLanguage/            ← Complex HashMap data
+│   ├── 08-RustCollectionsDoc/         ← std::collections reference
+│   ├── 09-BinaryHeapFruit/            ← Priority queue
+│   ├── 10-BTreeSetFruit/              ← Ordered set
+│   ├── 11-HashSetFruit/               ← Unique items / set operations
+│   ├── 12-RustIterators/              ← Lazy functional iteration
+│   └── 13-MutableFruitSalad/          ← Vec mutation patterns
+├── 04-FileIO/                         ← Section 4: file I/O & data formats
+│   ├── 01-CSVCookbook/                ← Read/write CSV with csv crate
+│   ├── 02-CSVWriter/                  ← CSV writing with serde
+│   ├── 03-Parquet/                    ← Apache Parquet
+│   ├── 04-Arrow/                      ← Apache Arrow in-memory columnar
+│   ├── 05-YAML/                       ← YAML config & data
+│   └── 06-JsonStream/                 ← JSON & NDJSON streaming
+├── 05-Concurrency/                    ← Section 5: threads, async, atomics
+│   ├── 01-Threads/                    ← Threads, channels, locks
+│   ├── 02-Futures/                    ← async/await, tokio
+│   ├── 03-DataRace/                   ← Mutex, Arc, data-race prevention
+│   ├── 04-Atomics/                    ← Lock-free atomics
+│   ├── 05-DistributedChallenges/      ← Consistency models, CAP
+│   ├── 06-ConcurrencyParallelism/     ← Send/Sync, RwLock
+│   ├── 07-DataRacesRaceConditions/    ← Cell/RefCell patterns
+│   ├── 08-DiningPhilosophers/         ← Deadlock prevention
+│   ├── 09-DistributedComputing/       ← Rust for distributed systems
+│   ├── 10-RayonChallenge/             ← Data parallelism with Rayon
+│   ├── 11-SendSync/                   ← Send/Sync marker traits
+│   ├── 12-AdvancedSync/               ← parking_lot, crossbeam, arc_swap
+│   └── 13-AsyncPatterns/              ← Tokio select!, Semaphore, Notify, JoinSet
+├── 06-TerminalApps/                   ← Section 6: CLI tools & TUI dashboards
+│   ├── 01-CLISalad/                   ← clap CLI parsing
+│   ├── 02-CustomCLIFruitSalad/        ← Advanced CLI + lib/main split
+│   ├── 03-RatatuiTUI/                 ← ratatui TUI dashboards
+│   └── 04-AsyncClap/                  ← Async CLI with subcommands
+├── 07-GraphAndNetworkScience/         ← Section 7: petgraph, algorithms, Neo4j
+│   ├── 01-CommunityDetection/         ← Kosaraju SCC algorithm
+│   ├── 02-UFCGraphCentrality/         ← Graph centrality
+│   ├── 03-GraphVisualize/             ← ASCII bar charts (rasciigraph)
+│   ├── 04-LisbonShortestPath/         ← Dijkstra on weighted graphs
+│   ├── 05-Neo4jDataScience/           ← Neo4j graph database
+│   ├── 06-PageRank/                   ← PageRank algorithm
+│   ├── 07-RussianTrollTweets/         ← Social graph analysis
+│   └── 08-FullyConnectedGraph/        ← Graph connectivity
+├── 08-Security/                       ← Section 8: safety & cryptography
+│   ├── 01-SafeAndUnsafe/              ← Safe vs unsafe Rust
+│   ├── 02-DecoderRing/                ← Caesar cipher + Rayon
+│   ├── 03-RustCryptoHashes/           ← Cryptographic hashes
+│   ├── 04-Argon2/                     ← Password hashing
+│   ├── 05-Ed25519/                    ← Digital signatures
+│   └── 06-RustlsTLS/                  ← TLS server & client
+├── 09-ObservabilityAndTesting/        ← Section 9: observability & testing practices
+│   ├── 01-Logging/                    ← log facade, env_logger, tracing
+│   ├── 02-Configuration/              ← config crate, TOML/YAML/JSON, env override
+│   ├── 03-Testing/                    ← #[test], should_panic, integration tests
+│   ├── 04-Proptest/                   ← Property-based testing
+│   ├── 05-Mockall/                    ← Trait mocking
+│   └── 06-Insta/                      ← Snapshot testing
+├── 10-ProductionSystems/              ← Section 10: production-grade systems
+│   ├── 01-Radish/                     ← Redis-compatible KV store (async TCP)
+│   ├── 02-AxumShop/                   ← Axum web API (FastAPI-compatible shop)
+│   ├── 03-AxumAuth/                   ← JWT + Bearer middleware
+│   └── 04-OpenTelemetry/              ← Traces, spans, correlation IDs
+├── 11-Interop/                        ← Section 11: Python/Rust interop
+│   ├── 01-ExploringPandas/            ← Pandas + Rust comparison
+│   ├── 02-RustJupyterNotebook/        ← evcxr Jupyter kernel
+│   ├── 03-PyO3Bindings/               ← Call Rust from Python
+│   └── 04-GILRelease/                 ← Free the GIL, free the CPU
+├── 12-DataEngAnalytics/               ← Section 12: data-eng analytics engines on Arrow
+│   ├── README.md                      ← Section overview
+│   ├── 01-Polars/                     ← Polars DataFrame (eager + lazy)
+│   ├── 02-DuckDB/                     ← DuckDB in-process OLAP
+│   └── 03-DataFusion/                 ← Apache DataFusion query engine
+├── 13-ActorModel/                     ← Section 13: actor-model concurrent patterns
+│   ├── README.md                      ← Section overview
+│   ├── 01-DIY-Actor/                  ← DIY actor with mpsc + oneshot
+│   ├── 02-Ractor/                     ← Production actor framework
+│   └── 03-ETLPipeline/                ← Source → Transform → Sink as actors
+└── 14-Reference/                      ← Section 14: concept reference & cheatsheets (appendix)
+    ├── README.md                      ← Section overview
+    ├── collections-guide.md           ← Collections comparison & selection guide
+    ├── concurrency-reference.md       ← Concurrency model review
+    ├── data-management-io.md          ← File I/O & serialization reference
+    ├── distributed-systems.md         ← Distributed systems concepts
+    ├── heap-memory.md                 ← Stack vs heap, off-heap, allocators
+    ├── memory-safety.md               ← Memory safety & security model
+    ├── security-model.md              ← Rust security model & best practices
+    └── send-sync.md                   ← Send/Sync, thread safety markers
 ```
 
 ### Section naming convention
-- Sections are numbered `01`–`11` for correct alphabetical ordering.
+- Sections are numbered `01`–`14` for correct alphabetical ordering.
 - Section folder names describe the concept cluster: `01-Foundations`, `02-Ownership`, etc.
-- When a new concept cluster is needed (e.g., `12-Networking`, `13-Databases`), add it as `12-Name/` and update this file.
+- When a new concept cluster is needed (e.g., `15-Networking`, `16-Databases`), add it as `15-Name/` and update this file.
 
 ### Project numbering
 - Projects within a section are numbered sequentially (01, 02, 03...) for correct ordering.

@@ -131,7 +131,7 @@ See [§7 — HashMap](#7-concept-hashmap--key-value-store) below for the full `H
 
 ## 4. Concept: Slices — Views into Data
 
-> **Recap**: Slices `&[T]` and array-vs-slice trade-offs were taught in [01-Intro §9 — Arrays and Slices](../../01-Foundations/01-Intro/README.md#9-arrays-and-slices--fixed-and-dynamic-sequences) and in [11-Reference/collections-guide.md](../../11-Reference/collections-guide.md#arrays-tn-vs-slices-t). Read those first if you have not.
+> **Recap**: Slices `&[T]` and array-vs-slice trade-offs were taught in [01-Intro §9 — Arrays and Slices](../../01-Foundations/01-Intro/README.md#9-arrays-and-slices--fixed-and-dynamic-sequences) and in [14-Reference/collections-guide.md](../../14-Reference/collections-guide.md#arrays-tn-vs-slices-t). Read those first if you have not.
 
 The only slice-specific point that matters for *this* project: the function `get_tickets_by_status(&self, status: Status) -> &[Ticket]` returns a `&[Ticket]` slice borrowed from the `HashMap`'s `Vec` — no allocation, no copy, and the caller can iterate, sort, or filter without us having to clone:
 

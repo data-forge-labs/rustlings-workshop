@@ -409,6 +409,22 @@ fn classify_temp(temp: i32) -> &'static str {
 }
 ```
 
+#### What is `&'static str`?
+
+You might wonder about that return type. Let's break it down:
+
+| Piece | Meaning |
+|-------|---------|
+| `&` | **Borrow / reference** — "I'm pointing to data owned by someone else." Not a C pointer — it's a *safe, non-null reference* with compile-time guarantees. |
+| `'static` | **Lifetime** — the data lives for the entire program. String literals like `"cold"` are baked into the binary, so they live forever. |
+| `str` | **String slice** — an unsized view into UTF-8 text. You can't have a `str` by itself; you always access it via `&str` (borrowed) or `Box<str>` (owned). |
+
+**Python analogy:** `&'static str` ≈ a Python string literal that never gets garbage collected. The `&` means "I'm borrowing this, not owning it" — similar to passing a string to a function in Python (you don't copy it, you just use it).
+
+**Why not `String`?** `String` is an *owned*, growable, heap-allocated buffer (like Python's `list` of characters). `&str` is a *view* into existing text — zero allocation, just a pointer + length. For returning constant labels like `"cold"`, `&'static str` is the right choice: no heap allocation, no copy, and the compiler guarantees the data lives long enough.
+
+> **The `&` symbol** — In C, `&` takes the address of a variable. In Rust, `&` creates a **reference** (a safe pointer) that the borrow checker tracks. Unlike C pointers, Rust references can never be null, never dangle, and can't outlive the data they point to — all enforced at compile time.
+
 The whole `if/else if/else` is an expression, and its value is the last expression in the chosen branch. This is the same pattern you'll use throughout the rest of the course.
 
 ### Exercise
