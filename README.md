@@ -43,7 +43,7 @@ The course is carefully sequenced so each concept is introduced by one source an
 | 6 — CLI & Tools | clap, petgraph, Dijkstra, PageRank, Neo4j | 01–10 (CLISalad, CommunityDetection, PageRank, GraphVisualize, etc.) |
 | 7 — Security | Safe vs unsafe, crypto, security model | 01 (SafeAndUnsafe), 02 (DecoderRing), 03 (RustCryptoHashes) |
 | 8 — Interop | evcxr, Jupyter, pandas bridge | 01 (ExploringPandas), 02 (RustJupyterNotebook), 03 (PyO3Bindings), 04 (GILRelease) |
-| 9 — Production Systems | Tokio, async, TCP, RESP protocol, Axum web API | 01 (Radish), 02 (AxumShop) |
+| 9 — Production Systems | Tokio, async, TCP, RESP protocol, Axum web API | 01 (Radish), 02 (AxumShop), 03 (AxumAuth), 04 (OpenTelemetry) |
 | 10 — Tools & Frameworks | Logging, configuration management, testing frameworks | 01 (Logging), 02 (Configuration), 03 (Testing) |
 | 11 — Reference | Quick concept lookup, cheatsheets, memory architecture | (no cargo projects — reference materials only) |
 | 12 — DataEng Analytics | Polars DataFrame, DuckDB in-process OLAP, Apache DataFusion query engine | 01 (Polars), 02 (DuckDB), 03 (DataFusion) |
@@ -195,6 +195,8 @@ Projects are grouped into **sections** that map concepts a Python data engineer 
 |---|---------|-------------------|
 | 01 | **Radish** — Redis-compatible KV store | `tokio` async, RESP protocol, TCP networking, `Rc<RefCell>`, `BytesMut`, TTL expiry |
 | 02 | **AxumShop** — Shop Manager API with Axum | `axum::Router`, `tokio` async, `sqlx` async DB, `serde` JSON, `tower-http` CORS, `tower-sessions`, `FromRequestParts` auth, SHA-256 hashing, DB transactions |
+| 03 | **AxumAuth** — JWT + Bearer middleware for Axum 0.8 | `jsonwebtoken` 9, HS256 sign/verify, typed `Claims`, role-based access, refresh tokens, `kid` header inspection |
+| 04 | **OpenTelemetry** — Traces, spans, and correlation IDs | `tracing` 0.1, `tracing-subscriber` JSON output, OTel attribute model, `AtomicU64` pipeline metrics, `Uuid` correlation ids |
 
 ### Section 10: Tools & Frameworks
 
@@ -362,6 +364,8 @@ The table below lists all core Rust concepts a learner should eventually see. **
 | Rustls TLS (`rustls` + `aws-lc-rs`, `ServerConfig`/`ClientConfig`, `tokio-rustls` handshake) | ✅ | 07-06 |
 | PyO3 bindings (`#[pyfunction]`, `#[pymodule]`, `cdylib`, `maturin develop`, feature-gated FFI) | ✅ | 08-03 |
 | GIL release (`pyo3::Python::allow_threads`, GIL contention factor) | ✅ | 08-04 |
+| JWT auth (`jsonwebtoken` HS256 sign/verify, `Claims`, role checks, refresh tokens) | ✅ | 09-03 |
+| Tracing + OTel data model (`tracing`, `tracing-subscriber` JSON, spans, correlation ids, atomic metrics) | ✅ | 09-04 |
 | Jupyter notebook / `evcxr` | ✅ | 08-02 |
 | Pandas / DataFrame operations | ✅ | 08-01 |
 
