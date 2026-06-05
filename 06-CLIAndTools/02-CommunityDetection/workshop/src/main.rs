@@ -8,8 +8,10 @@ fn main() {
     for pair in TWITTER_USERNAMES.windows(2) {
         let a = pair[0];
         let b = pair[1];
-        let id_a = *name_to_id.entry(a).or_insert_with(|| name_to_id.len());
-        let id_b = *name_to_id.entry(b).or_insert_with(|| name_to_id.len());
+        let next_a = name_to_id.len();
+        let id_a = *name_to_id.entry(a).or_insert(next_a);
+        let next_b = name_to_id.len();
+        let id_b = *name_to_id.entry(b).or_insert(next_b);
         edges.push((id_a, id_b));
     }
 

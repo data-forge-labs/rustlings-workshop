@@ -61,7 +61,7 @@ pub fn parallel_sum(data: Vec<i32>) -> i32 {
             handles.push(s.spawn(|| chunk.iter().sum::<i32>()));
         }
 
-        handles.into_iter().map(|h| h.join()).sum()
+        handles.into_iter().map(|h| h.join().unwrap_or(0)).sum()
     })
 }
 
@@ -83,7 +83,7 @@ pub fn parallel_map(data: Vec<i32>, mapper: fn(i32) -> i32) -> Vec<i32> {
 
         let mut results = Vec::with_capacity(data.len());
         for handle in handles {
-            results.extend(handle.join());
+            results.extend(handle.join().unwrap_or_default());
         }
         results
     })

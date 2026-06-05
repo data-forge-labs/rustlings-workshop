@@ -6,7 +6,7 @@ pub fn simulate_eventual_consistency(writes: Vec<&str>) -> Vec<&str> {
     todo!()
 }
 
-pub fn merge_crdt_values(local: Vec<&str>, remote: Vec<&str>) -> Vec<&str> {
+pub fn merge_crdt_values<'a>(local: Vec<&'a str>, remote: Vec<&'a str>) -> Vec<&'a str> {
     todo!()
 }
 

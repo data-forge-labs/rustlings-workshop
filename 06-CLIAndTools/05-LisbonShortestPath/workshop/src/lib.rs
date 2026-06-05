@@ -1,5 +1,16 @@
 use std::collections::HashMap;
 
+#[derive(Debug, Clone, Copy, PartialEq, PartialOrd)]
+struct Dist(f64);
+
+impl Eq for Dist {}
+
+impl Ord for Dist {
+    fn cmp(&self, other: &Self) -> std::cmp::Ordering {
+        self.0.total_cmp(&other.0)
+    }
+}
+
 /// An edge with weight
 #[derive(Debug, Clone, PartialEq)]
 pub struct WeightedEdge {
@@ -30,22 +41,22 @@ pub fn dijkstra(
     let mut heap = BinaryHeap::new();
 
     distances.insert(start, 0.0);
-    heap.push(Reverse((0.0_f64, start)));
+    heap.push(Reverse((Dist(0.0), start)));
 
-    while let Some(Reverse((dist, node))) = heap.pop() {
-        if dist > distances.get(&node).copied().unwrap_or(f64::INFINITY) {
+    while let Some(Reverse((Dist(d), node))) = heap.pop() {
+        if d > distances.get(&node).copied().unwrap_or(f64::INFINITY) {
             continue;
         }
         if let Some(neighbors) = adj.get(&node) {
             for &(neighbor, weight) in neighbors {
-                let new_dist = dist + weight;
+                let new_dist = d + weight;
                 let current = distances
                     .get(&neighbor)
                     .copied()
                     .unwrap_or(f64::INFINITY);
                 if new_dist < current {
                     distances.insert(neighbor, new_dist);
-                    heap.push(Reverse((new_dist, neighbor)));
+                    heap.push(Reverse((Dist(new_dist), neighbor)));
                 }
             }
         }
@@ -71,18 +82,18 @@ pub fn shortest_path(
     let mut heap = BinaryHeap::new();
 
     distances.insert(start, 0.0);
-    heap.push(Reverse((0.0_f64, start)));
+    heap.push(Reverse((Dist(0.0), start)));
 
-    while let Some(Reverse((dist, node))) = heap.pop() {
+    while let Some(Reverse((Dist(d), node))) = heap.pop() {
         if node == end {
             break;
         }
-        if dist > distances.get(&node).copied().unwrap_or(f64::INFINITY) {
+        if d > distances.get(&node).copied().unwrap_or(f64::INFINITY) {
             continue;
         }
         if let Some(neighbors) = adj.get(&node) {
             for &(neighbor, weight) in neighbors {
-                let new_dist = dist + weight;
+                let new_dist = d + weight;
                 let current = distances
                     .get(&neighbor)
                     .copied()
@@ -90,7 +101,7 @@ pub fn shortest_path(
                 if new_dist < current {
                     distances.insert(neighbor, new_dist);
                     prev.insert(neighbor, node);
-                    heap.push(Reverse((new_dist, neighbor)));
+                    heap.push(Reverse((Dist(new_dist), neighbor)));
                 }
             }
         }

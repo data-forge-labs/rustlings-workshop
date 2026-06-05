@@ -90,7 +90,7 @@ use textwrap::fill;
 fn main() {
     // Graph edges: (from, to) — sports website links
     // 0: ESPN, 1: NFL, 2: NBA, 3: UFC, 4: MLB
-    let edges: [(usize, usize); 7] = [
+    let edges: [(usize, usize); 8] = [
         (0, 1), (0, 2),
         (1, 0),
         (2, 0), (2, 3),

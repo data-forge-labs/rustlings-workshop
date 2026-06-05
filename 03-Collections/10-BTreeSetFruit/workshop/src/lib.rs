@@ -1,14 +1,14 @@
 use std::collections::{BTreeSet, HashMap};
 
-pub fn generate_fruit_set(fruits: &[&str], amount: usize, rng: &mut impl rand::Rng) -> (BTreeSet<&str>, HashMap<&str, u32>) {
+pub fn generate_fruit_set<'a>(fruits: &'a [&'a str], amount: usize, rng: &mut impl rand::Rng) -> (BTreeSet<&'a str>, HashMap<&'a str, u32>) {
     todo!()
 }
 
-pub fn format_set_sorted(set: &BTreeSet<&str>) -> Vec<&str> {
+pub fn format_set_sorted<'a>(set: &'a BTreeSet<&'a str>) -> Vec<&'a str> {
     todo!()
 }
 
-pub fn format_set_reverse(set: &BTreeSet<&str>) -> Vec<&str> {
+pub fn format_set_reverse<'a>(set: &'a BTreeSet<&'a str>) -> Vec<&'a str> {
     todo!()
 }
 

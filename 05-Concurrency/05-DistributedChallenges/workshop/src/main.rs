@@ -457,12 +457,12 @@ fn main() {
 
     println!("\n--- Eventual Consistency ---");
     let writes = vec!["write_a", "write_b", "write_a", "write_c"];
-    println!("Writes: {:?} => Converged: {:?}", writes, simulate_eventual_consistency(writes));
+    println!("Writes: {:?} => Converged: {:?}", writes, simulate_eventual_consistency(writes.clone()));
 
     println!("\n--- CRDT Merge ---");
     let local = vec!["x", "y"];
     let remote = vec!["y", "z"];
-    println!("Local: {:?} + Remote: {:?} => Merged: {:?}", local, remote, merge_crdt_values(local, remote));
+    println!("Local: {:?} + Remote: {:?} => Merged: {:?}", local, remote, merge_crdt_values(local.clone(), remote.clone()));
 
     println!("\n--- Leader Election ---");
     let nodes = 5;

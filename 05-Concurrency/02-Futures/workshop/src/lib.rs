@@ -8,8 +8,6 @@
 
 #![allow(unused_variables)]
 
-use std::time::Duration;
-
 /// An async function that returns a greeting.
 /// README §1: async fn — lazy futures
 pub async fn async_hello() -> String {
