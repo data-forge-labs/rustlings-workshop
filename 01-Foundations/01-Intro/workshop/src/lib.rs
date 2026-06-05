@@ -42,8 +42,29 @@ pub fn classify_temp(temp: i32) -> &'static str {
 
 /// Plays a round of the Guess the Number game.
 /// Returns true if the player wins within the given attempts.
-/// README §10: Exercise
+/// README §12: Exercise
 pub fn play_guess_game(secret: u32, guess: u32) -> bool {
+    todo!()
+}
+
+/// Classifies a data row given as a tuple `(id, value, is_valid)`.
+/// Demonstrates tuple destructuring and `if` as an expression.
+/// README §8: Tuples
+pub fn categorize_row(row: (u32, f64, bool)) -> &'static str {
+    todo!()
+}
+
+/// Returns (min, max, count) of a slice of values.
+/// Demonstrates tuples as return values.
+/// README §8: Tuples
+pub fn summarize(values: &[f64]) -> (f64, f64, usize) {
+    todo!()
+}
+
+/// Returns the second half of a slice (rounded down).
+/// Demonstrates slice ranges and `&[T]` return values.
+/// README §9: Arrays and Slices
+pub fn second_half(data: &[f64]) -> &[f64] {
     todo!()
 }
 
@@ -161,7 +182,7 @@ mod tests {
         }
     }
 
-    // ---- Step 4: Guess the Number (README §10) ----
+    // ---- Step 4: Guess the Number (README §12) ----
 
     mod step_04_guess_game {
         use super::super::*;
@@ -184,6 +205,79 @@ mod tests {
         #[test]
         fn test_guess_boundary() {
             assert!(play_guess_game(99, 99));
+        }
+    }
+
+    // ---- Step 5: Tuples (README §8) ----
+
+    mod step_05_tuples {
+        use super::super::*;
+
+        #[test]
+        fn test_categorize_row_ok() {
+            assert_eq!(categorize_row((1, 5.0, true)), "ok");
+        }
+
+        #[test]
+        fn test_categorize_row_zero() {
+            assert_eq!(categorize_row((2, 0.0, true)), "zero");
+        }
+
+        #[test]
+        fn test_categorize_row_invalid() {
+            assert_eq!(categorize_row((3, 5.0, false)), "invalid");
+        }
+
+        #[test]
+        fn test_categorize_row_negative_value() {
+            // Negative value: not invalid (is_valid == true) and not > 0 → "zero"
+            assert_eq!(categorize_row((4, -1.0, true)), "zero");
+        }
+
+        #[test]
+        fn test_summarize_basic() {
+            let (min, max, count) = summarize(&[1.0, 2.0, 3.0]);
+            assert_eq!(count, 3);
+            assert!((min - 1.0).abs() < 1e-10);
+            assert!((max - 3.0).abs() < 1e-10);
+        }
+
+        #[test]
+        fn test_summarize_single() {
+            let (min, max, count) = summarize(&[42.0]);
+            assert_eq!(count, 1);
+            assert!((min - 42.0).abs() < 1e-10);
+            assert!((max - 42.0).abs() < 1e-10);
+        }
+    }
+
+    // ---- Step 6: Slices (README §9) ----
+
+    mod step_06_slices {
+        use super::super::*;
+
+        #[test]
+        fn test_second_half_odd_length() {
+            let data = [1.0, 2.0, 3.0, 4.0, 5.0];
+            assert_eq!(second_half(&data), &[3.0, 4.0, 5.0]);
+        }
+
+        #[test]
+        fn test_second_half_even_length() {
+            let data = [10.0, 20.0, 30.0, 40.0];
+            assert_eq!(second_half(&data), &[30.0, 40.0]);
+        }
+
+        #[test]
+        fn test_second_half_single_element() {
+            let data = [42.0];
+            assert_eq!(second_half(&data), &[42.0]);
+        }
+
+        #[test]
+        fn test_second_half_empty() {
+            let data: [f64; 0] = [];
+            assert_eq!(second_half(&data), &[] as &[f64]);
         }
     }
 }

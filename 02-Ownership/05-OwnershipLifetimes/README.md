@@ -420,52 +420,9 @@ The `display` method does **not** need a lifetime parameter on its return type b
 
 ## 7. Concept: Move vs Copy Semantics
 
-### Explanation
+> **Recap**: Move vs Copy semantics were introduced in [01-TicketV1 §9 — Ownership](../01-TicketV1/README.md#9-concept-ownership--the-key-to-rust) and the data-engineering deep-dive there. Read that section first if you have not.
 
-Rust has two kinds of value semantics:
-
-- **Move semantics**: When you assign or pass a value, ownership is **moved** from the source to the destination. The source is no longer valid. This applies to types like `String`, `Vec`, and any struct that owns heap data.
-
-- **Copy semantics**: When you assign or pass a value, the bits are **copied** and both the source and destination are valid. This applies to types that implement the `Copy` trait, like integers, booleans, floats, and chars.
-
-```
-                Move                          Copy
-           ┌──────────────┐            ┌──────────────┐
-Before:    │  owner: s    │            │  owner: x    │
-           │  [heap data] │            │  [value: 42] │
-           └──────────────┘            └──────────────┘
-
-Pass to:   fn move_demo(s)             fn copy_demo(x)
-
-After:     s is INVALID                x is still VALID
-           ┌──────────────┐            ┌──────────────┐
-           │  // s unusable│           │  owner: x    │
-           │  fn owns data │            │  [value: 42] │
-           └──────────────┘            └──────────────┘
-                                       ┌──────────────┐
-                                       │  y: 42 (copy)│
-                                       └──────────────┘
-```
-
-### Python Comparison
-
-```python
-# Python: everything is a reference
-a = [1, 2, 3]
-b = a          # b refers to the same list
-b.append(4)    # a is also affected -- mutation visible through a
-
-# Python integers are immutable -- assignment creates a new binding
-x = 42
-y = x          # y now refers to 42
-x = 43         # x points to a new object; y still points to 42
-```
-
-Python does not distinguish between move and copy at the language level -- everything is a reference to an object, and the GC tracks all references. In Rust:
-
-- `String` is moved by default (like passing a unique reference).
-- `i32` is copied by default (because it implements `Copy`).
-- If you want to copy a `String`, you must call `.clone()` explicitly.
+In this project we only need the practical consequence: when we pass data into a function, types like `String` and `Vec` move (the source is consumed), while primitives like `i32` and `bool` are copied (the source is still usable).
 
 ### Applying to Our Project
 

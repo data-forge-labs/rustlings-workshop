@@ -357,80 +357,20 @@ Resource 1 was dropped
 
 ## 5. Concept: Ownership and Resource Lifecycle
 
+> **Recap**: Basic ownership (move, copy, single-owner rule) was taught in [01-TicketV1 §9 — Ownership](../01-TicketV1/README.md#9-concept-ownership--the-key-to-rust). Read that first if you have not.
+
+This section focuses on the **RAII twist**: when a value owns a *resource* (file handle, socket, DB connection, timer), moving the value transfers **cleanup responsibility** along with it.
+
 ### Moving a Resource Transfers Cleanup Responsibility
 
-In Rust, when you **move** a value, ownership transfers to the new owner. The
-new owner becomes responsible for cleanup. The old owner can no longer use it.
-
 ```rust
-fn ownership_transfer() -> u32 {
-    let res = Resource::new(10);  // We own res
-
-    take_ownership(res);  // Ownership moves to the function
-    // Can't use res here — compiler error!
-    // res.is_open();  // ❌ borrow of moved value
-
-    10
-}
-
 fn take_ownership(r: Resource) {
     // r owns the resource now
     println!("Got resource {}", r.id);
 } // r goes out of scope here — Drop runs, resource is cleaned up
 ```
 
-### Python Comparison: No Equivalent
-
-Python does not have move semantics. Variables are references:
-
-```python
-# Python — multiple names can refer to the same object
-def process(f):
-    data = f.read()  # f is a reference, not a moved value
-    # caller's f still points to the same file
-
-f = open("data.csv", "r")
-process(f)
-f.seek(0)  # Still works — f was not consumed
-```
-
-In Rust, passing a value to a function **moves** it. The function becomes the
-new owner. This prevents:
-- **Use-after-free**: The old owner can't accidentally use the resource after
-  it's been cleaned up
-- **Double-free**: Only one owner exists, so `drop` is called exactly once
-- **Dangling references**: The resource lives exactly as long as its current
-  owner needs it
-
-### Ownership Transfer Diagram
-
-```
-┌──────────────────┐         ┌──────────────────────────┐
-│   Before Move    │         │      After Move          │
-│                  │         │                          │
-│  main()          │         │  main()                  │
-│  ┌──────────┐    │         │  ┌──────────┐            │
-│  │ res      │    │         │  │ res      │  (INVALID) │
-│  │ (owner)──┼────┼──┐      │  │ (MOVED)  │            │
-│  └──────────┘    │  │      │  └──────────┘            │
-│                  │  │      │                          │
-│                  │  │      │  take_ownership()        │
-│                  │  │      │  ┌──────────┐            │
-│                  │  └──────┼──│ r        │            │
-│                  │         │  │ (owner)──┼──┐         │
-│                  │         │  └──────────┘  │         │
-│                  │         │                │         │
-│                  │         │                ▼         │
-│                  │         │         Resource{id:10}  │
-│                  │         │                │         │
-│                  │         │                ▼         │
-│                  │         │           drop()         │
-└──────────────────┘         └──────────────────────────┘
-  Ownership: main()              Ownership: take_ownership()
-
-  The value moves from `res` to `r`. When `r` goes out of
-  scope, Drop runs. `res` is no longer valid.
-```
+This is the same move rule as before — but now the value it moves is something that needs *deterministic* cleanup, not just memory. The compiler still prevents use-after-move, double-free, and dangling references, but the practical effect is "the file is closed exactly once, at exactly the right moment".
 
 ### Why This Matters for Data Engineering
 
@@ -454,96 +394,21 @@ runtime overhead.
 
 ## 6. Concept: Borrowing Resources
 
-### What Is Borrowing?
+> **Recap**: Basic borrowing (`&T` vs `&mut T`, aliasing rules) was taught in [01-TicketV1 §11 — References and Borrowing](../01-TicketV1/README.md#11-concept-references-and-borrowing). Read that first if you have not.
 
-Sometimes you need to let another function **use** a resource without giving up
-ownership. This is called **borrowing**. You pass a reference (`&Resource`)
-instead of the value itself.
+This section focuses on the **RAII twist for borrowing**: when you lend out a resource through a reference, the *original owner* is still responsible for cleanup. The borrower's `Drop` is **not** called.
 
 ```rust
 fn borrow_resource(res: &Resource) -> u32 {
-    // res is a reference — we're borrowing it
     println!("Borrowing resource {}", res.id);
-    res.id  // We can read data, but we don't own it
-}  // res goes out of scope, but since it's a reference,
-   // Drop is NOT called — the original owner still has it
+    res.id
+}  // res (the reference) goes out of scope, but the Resource is NOT dropped.
+   // The original owner is still responsible.
 ```
 
-### Key Difference: Borrowing vs Moving
+For a data engineer this means: you can pass `&file_handle` into a function that needs to read from it, and the caller's `Drop` will close the file at the right time. The borrower cannot accidentally close or consume it.
 
-```rust
-fn main() {
-    let res = Resource::new(42);
-
-    // BORROWING: pass a reference
-    let id = borrow_resource(&res);
-    println!("Still have res: {}", res.is_open());  // ✅ Works!
-
-    // MOVING: pass ownership
-    let id = consume_resource(res);
-    // println!("{:?}", res);  // ❌ Compiler error — res was moved!
-}
-```
-
-### Borrowing Rules
-
-1. **At any time**, you can have **one mutable reference** or **any number of
-   immutable references**
-2. **References must never outlive their owner**
-3. **The owner is still responsible for cleanup** — `Drop` runs when the
-   original owner's scope ends, not when the reference goes out of scope
-
-### Borrowing Diagram
-
-```
-┌──────────────────────────────────────────────────────────┐
-│                        main()                             │
-│                                                            │
-│   let res = Resource::new(42);  ──┐                        │
-│                                  │  owns                   │
-│                                  ▼                         │
-│   ┌──────────────────────────────────────┐                 │
-│   │  Resource { id: 42, is_open: true }   │                 │
-│   └──────────────────────────────────────┘                 │
-│          ▲                                                 │
-│          │ borrows (&Resource)                             │
-│          │                                                 │
-│   borrow_resource(res: &Resource)                          │
-│       ┌──────────────────────────┐                         │
-│       │  res is a reference ─────┼──(points to same data)  │
-│       │  res.id → 42            │                         │
-│       └──────────────────────────┘                         │
-│                                                            │
-│   }  ←── main() ends                                       │
-│        │                                                   │
-│        ▼                                                   │
-│   drop(res) is called — the ORIGINAL owner cleans up       │
-└──────────────────────────────────────────────────────────┘
-```
-
-### Python Comparison
-
-In Python, everything is a reference by default, so the concept of "borrowing"
-doesn't really exist:
-
-```python
-# Python — all variables are references
-def process(f):
-    data = f.read()  # f is a reference
-    # The caller's variable still points to the same object
-
-f = open("data.csv", "r")
-process(f)  # f is not consumed
-f.seek(0)   # Still works — but is it safe? Who closed it?
-del f       # f might still be referenced elsewhere
-```
-
-Python gives you flexibility but no guarantees. Rust's borrowing gives you
-compile-time guarantees:
-- The borrower can't outlive the owner
-- The owner can't move or close the resource while it's borrowed (for
-  `&mut` references)
-- The resource is cleaned up exactly once, when the owner drops
+See [01-TicketV1 §11](../01-TicketV1/README.md#11-concept-references-and-borrowing) for the full borrowing rules (`&T` vs `&mut T`, the "one mutable OR many immutable" rule, deref coercion).
 
 ---
 

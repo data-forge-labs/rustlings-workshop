@@ -1,6 +1,6 @@
 # Workshop: Intro — Rust Syntax Primer
 
-**Goal**: Implement all functions in `src/lib.rs` to pass all **21** tests.
+**Goal**: Implement all functions in `src/lib.rs` to pass all **31** tests.
 
 ## Functions to Implement
 
@@ -34,6 +34,21 @@
 - **Task**: Return `true` if guess matches secret
 - **Tests**: test_correct_guess_wins, test_incorrect_guess_loses, test_guess_zero, test_guess_boundary
 
+### `categorize_row`
+- **Signature**: `pub fn categorize_row(row: (u32, f64, bool)) -> &'static str`
+- **Task**: Return `"ok"` if `is_valid && value > 0`, `"invalid"` if `!is_valid`, `"zero"` otherwise
+- **Tests**: test_categorize_row_ok, test_categorize_row_zero, test_categorize_row_invalid, test_categorize_row_negative_value
+
+### `summarize`
+- **Signature**: `pub fn summarize(values: &[f64]) -> (f64, f64, usize)`
+- **Task**: Return `(min, max, count)` of a slice of values
+- **Tests**: test_summarize_basic, test_summarize_single
+
+### `second_half`
+- **Signature**: `pub fn second_half(data: &[f64]) -> &[f64]`
+- **Task**: Return the slice from `len/2` to end
+- **Tests**: test_second_half_odd_length, test_second_half_even_length, test_second_half_single_element, test_second_half_empty
+
 ## Test Modules
 
 | Module | Tests | What It Tests |
@@ -42,6 +57,8 @@
 | step_02_variables | 4 | Variables, slices, edge cases (empty) |
 | step_03_control_flow | 5 | if/else as expression, branching |
 | step_04_guess_game | 4 | Boolean return values, equality |
+| step_05_tuples | 6 | Tuple destructuring, tuples as return values |
+| step_06_slices | 4 | Slice ranges, `&[T]` return values, empty handling |
 
 ## How to Run Tests
 ```bash

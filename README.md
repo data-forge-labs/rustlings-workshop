@@ -74,8 +74,8 @@ Projects are grouped into **sections** that map concepts a Python data engineer 
 
 | # | Project | Rust Topics Covered |
 |---|---------|-------------------|
-| 01 | **Intro** — Rust syntax primer (reference) | `fn main()`, `let`, `mut`, macros (`println!`), basic types, `&str`, arithmetic |
-| 02 | **BasicCalculator** — integers, branching, loops, overflow | `i32`/`u32`, `if`/`else`, `while`/`for`, panics, overflow, saturating arithmetic, `as` casting |
+| 01 | **Intro** — Rust syntax primer (reference) | `fn main()`, `let`, `mut`, macros (`println!`), basic types, `&str`, tuples, arrays `[T;N]`, slices `&[T]`, expressions vs statements, arithmetic |
+| 02 | **BasicCalculator** — integers, arithmetic, loops, overflow | `i32`/`u32`/`u64`/`usize`, `while`/`for`, panics, integer overflow, saturating/wrapping arithmetic, `as` casting, `#[test]` |
 | 03 | **MasterMind** — guess a 4-digit secret code with hints | `struct`, `impl`, `Vec<T>`, `Option<T>`, `if let`, loops, `String`/`&str`, `rand`, iterators |
 
 ### Section 2: Ownership — Rust's Superpower over Python's GC
@@ -84,11 +84,11 @@ Projects are grouped into **sections** that map concepts a Python data engineer 
 
 | # | Project | Rust Topics Covered |
 |---|---------|-------------------|
-| 01 | **TicketV1** — structs, ownership, stack vs heap | `struct`, validation, `mod`/`pub`, encapsulation, ownership, setters, stack/heap, destructors (`Drop`) |
-| 02 | **Traits** — trait definitions, derive, bounds | `trait`, orphan rule, operator overloading, `derive`, trait bounds, `Deref`, `Sized`, `From` |
+| 01 | **TicketV1** — structs, ownership, stack vs heap | `struct`, validation, `mod`/`pub`, encapsulation, ownership, setters, stack/heap, `Drop` recap (see OBRM) |
+| 02 | **Traits** — trait definitions, derive, bounds | `trait`, orphan rule, operator overloading, `derive`, trait bounds, `Deref`, `Sized`, `From`, `Drop` recap (see OBRM) |
 | 03 | **TicketV2** — enums, match, error handling | `enum`, `match`, `if let`, `Option`, `Result`, error enums, `Error` trait, `thiserror`, `TryFrom` |
-| 04 | **OBRM** — ownership-based resource management | Ownership rules, `Drop` trait, RAII, borrowing, resource lifecycle |
-| 05 | **OwnershipLifetimes** — lifetimes & borrow checker | Ownership (move semantics), borrowing (`&T`/`&mut T`), lifetimes (`'a`), `Copy`/`Clone` |
+| 04 | **OBRM** — ownership-based resource management | **Canonical** `Drop` trait, RAII, resource lifecycle; ownership/borrowing recap (see TicketV1) |
+| 05 | **OwnershipLifetimes** — lifetimes & borrow checker | Lifetimes (`'a`), lifetime elision, struct lifetimes; move/copy recap (see TicketV1) |
 
 ### Section 3: Collections — Faster Than Python Lists & Dicts
 
@@ -96,7 +96,7 @@ Projects are grouped into **sections** that map concepts a Python data engineer 
 
 | # | Project | Rust Topics Covered |
 |---|---------|-------------------|
-| 01 | **TicketManagement** — Vec, arrays, HashMap, BTreeMap | `Vec`, arrays `[T;N]`, iterators, lifetimes, `impl Trait`, slices, `HashMap`, `BTreeMap`, `Index` |
+| 01 | **TicketManagement** — Vec, arrays, HashMap, BTreeMap | `Vec` recap, arrays `[T;N]`, iterators, lifetimes, `impl Trait`, slices recap, `HashMap`, `BTreeMap`, `Index` |
 | 02 | **VectorFruitSalad** — dynamic arrays with Vec | `Vec<T>`, `SliceRandom`, `rand`, iteration, `&str`, mutable refs |
 | 03 | **ArrayFruitSalad** — fixed-size vs dynamic arrays | Arrays `[T;N]`, `Vec`/`VecDeque`/`LinkedList` comparison |
 | 04 | **HashMapCount** — frequency counting | `HashMap`, `entry`/`or_insert`, `BTreeMap`, sorting by value |
@@ -274,12 +274,13 @@ The table below lists all core Rust concepts a learner should eventually see. **
 | Ranges (`0..=9`) | ✅ | 01-02, 01-03 |
 | `rand` crate (`rng`, `shuffle`, `choose`) | ✅ | 01-02, 03-02 |
 | Type casting (`as`) | ✅ | 01-02, 01-03 |
-| Tuples | ✅ | 01-02 |
+| Tuples (creation, destructuring, return values) | ✅ | 01-01, 01-02 |
 | `unwrap()` / basic error handling | ✅ | 01-02, 02-03 |
 | `Result<T, E>`, `?` operator | ✅ | 02-03, 06-01, 06-10, 04-01 |
 | `enum` (custom enums) | ✅ | 02-03, 06-01, 07-02, 05-11 |
 | `impl` with generics and traits | ✅ | 02-02, 03-01, 03-12, 02-04, 05-11 |
-| Arrays `[T; N]` | ✅ | 03-01, 03-03 |
+| Arrays `[T; N]` | ✅ | 01-01, 03-01, 03-03 |
+| Slices `&[T]`, `&str` (borrowed views) | ✅ | 01-01, 03-01 |
 | `HashMap` | ✅ | 03-01, 03-04, 03-07 |
 | `HashSet` | ✅ | 03-11 |
 | `BTreeMap` / `BTreeSet` | ✅ | 03-01, 03-04, 03-10 |
@@ -321,7 +322,7 @@ The table below lists all core Rust concepts a learner should eventually see. **
 | Library re‑exports (`pub use`) | ✅ | 06-10 |
 | CLI argument parsing (`clap` derive) | ✅ | 06-01, 06-10, 07-02 |
 | Safe vs unsafe Rust | ✅ | 07-01 |
-| RAII / `Drop` trait / OBRM | ✅ | 02-01, 02-04 |
+| RAII / `Drop` trait / OBRM | ✅ | 02-04 (canonical), 02-01, 02-02 |
 | Cryptographic hashes (`Digest` trait) | ✅ | 07-03 |
 | Caesar cipher / frequency analysis | ✅ | 07-02 |
 | Jupyter notebook / `evcxr` | ✅ | 08-02 |

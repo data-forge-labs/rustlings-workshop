@@ -98,69 +98,52 @@ struct Color([u8; 3]);  // [R, G, B]
 
 ## 3. Concept: Vec — Dynamic Arrays
 
-### Creating and Using Vectors
+> **Recap**: `Vec<T>` is taught in depth in [02-VectorFruitSalad](../02-VectorFruitSalad/README.md) (creation, push/pop, indexing, iteration, Python-list parallels) and [13-MutableFruitSalad](../13-MutableFruitSalad/README.md) covers the mutation patterns (insert, remove, sort, dedup, capacity). Read those first if you have not.
+
+The only Vec-specific point that matters for *this* project: `Vec<T>` is the right type when you need an *owned, growable sequence* — which is exactly what we need as the **value type** in our `HashMap<Status, Vec<Ticket>>` index below.
 
 ```rust
-let mut v: Vec<i32> = Vec::new();    // Empty vector
-let mut v = vec![1, 2, 3];           // With initial values (macro)
+use std::collections::HashMap;
 
-v.push(4);                            // Add to end
-v.push(5);
-let last = v.pop();                   // Remove and return last element (Some(5))
+#[derive(Clone, PartialEq, Eq, Hash)]
+enum Status { ToDo, InProgress, Done }
 
-let first = v[0];                     // Index access
-v[0] = 10;                            // Modify (if mutable)
+struct TicketStore {
+    by_status: HashMap<Status, Vec<Ticket>>,
+}
 
-println!("Length: {}", v.len());       // 4
-println!("Capacity: {}", v.capacity()); // 8 (may over-allocate)
+impl TicketStore {
+    fn add(&mut self, ticket: Ticket) {
+        // entry().or_insert_with(Vec::new) gives us a Vec to push into
+        self.by_status
+            .entry(ticket.status.clone())
+            .or_insert_with(Vec::new)
+            .push(ticket);
+    }
+}
 ```
 
-### Vec Memory Layout
+> **Python comparison**: A `dict[Status, list[Ticket]]` in Python would work the same way. The Rust version catches key errors at compile time (the `Status` enum is exhaustive) and gives O(1) `entry` access.
 
-```
-let mut v = vec![1, 2, 3];
+See [§7 — HashMap](#7-concept-hashmap--key-value-store) below for the full `HashMap` / `Vec` interplay in this project.
 
-Stack (24 bytes):          Heap (capacity × 4 bytes):
-┌────────────────┐        ┌────┬────┬────┬────┬────┬────┬────┬────┐
-│ ptr: ────────────────→   │  1 │  2 │  3 │  ? │  ? │  ? │  ? │  ? │
-│ len: 3          │        └────┴────┴────┴────┴────┴────┴────┴────┘
-│ cap: 8          │         ↑              ↑
-└────────────────┘         data           unused capacity
+---
 
-v.push(4):          cap stays 8 (no reallocation needed)
-                    ┌────┬────┬────┬────┬────┬────┬────┬────┐
-                    │  1 │  2 │  3 │  4 │  ? │  ? │  ? │  ? │
-                    └────┴────┴────┴────┴────┴────┴────┴────┘
-                    len: 4
-```
+## 4. Concept: Slices — Views into Data
 
-### Python List vs Rust Vec
+> **Recap**: Slices `&[T]` and array-vs-slice trade-offs were taught in [01-Intro §9 — Arrays and Slices](../../01-Foundations/01-Intro/README.md#9-arrays-and-slices--fixed-and-dynamic-sequences) and in [11-Reference/collections-guide.md](../../11-Reference/collections-guide.md#arrays-tn-vs-slices-t). Read those first if you have not.
 
-| Operation | Python | Rust |
-|---|---|---|
-| Create | `items = []` | `let items: Vec<T> = Vec::new();` |
-| With values | `items = [1, 2, 3]` | `let items = vec![1, 2, 3];` |
-| Add | `items.append(x)` | `items.push(x);` |
-| Insert at index | `items.insert(i, x)` | `items.insert(i, x);` |
-| Remove last | `items.pop()` | `items.pop();` |
-| Remove at index | `items.pop(i)` | `items.remove(i);` |
-| Length | `len(items)` | `items.len()` |
-| Sort in place | `items.sort()` | `items.sort()` |
-| Iterate | `for x in items:` | `for x in items { }` (consumes) |
-| Iterate (borrow) | `for x in items:` (same) | `for x in &items { }` |
-
-### Ownership and Vectors
+The only slice-specific point that matters for *this* project: the function `get_tickets_by_status(&self, status: Status) -> &[Ticket]` returns a `&[Ticket]` slice borrowed from the `HashMap`'s `Vec` — no allocation, no copy, and the caller can iterate, sort, or filter without us having to clone:
 
 ```rust
-let v = vec![1, 2, 3];
-let first = v[0];  // ✅ i32 is Copy
-// v[0] still valid
-
-let v = vec![String::from("a"), String::from("b")];
-// let first = v[0];  // ❌ ERROR: cannot move out of Vec
-let first = v[0].clone();  // ✅ Explicit clone
-let first = &v[0];         // ✅ Borrow (most common)
+impl TicketStore {
+    fn get_tickets_by_status(&self, status: Status) -> &[Ticket] {
+        self.by_status.get(&status).map(Vec::as_slice).unwrap_or(&[])
+    }
+}
 ```
+
+The `&[]` literal is an empty slice — a zero-length borrow that always works, used as the "no such key" return value.
 
 ---
 

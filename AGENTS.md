@@ -398,3 +398,98 @@ Before finalising any change:
 - [ ] All changes are committed and pushed.
 
 ---
+
+## 10. Running Code via WSL
+
+This repository is developed on Windows. All Rust compilation and testing is done through **WSL (Windows Subsystem for Linux)** using the `wsl` CLI.
+
+### Quick start
+
+```powershell
+# Navigate to a workshop directory (via WSL's /mnt/ mount)
+cd E:\MyProjects\RustTut\01-Foundations\01-Intro\workshop
+
+# Run cargo commands via WSL
+wsl -d ubuntu bash -c "cd /mnt/e/MyProjects/RustTut/01-Foundations/01-Intro/workshop && cargo check"
+wsl -d ubuntu bash -c "cd /mnt/e/MyProjects/RustTut/01-Foundations/01-Intro/workshop && cargo test"
+wsl -d ubuntu bash -c "cd /mnt/e/MyProjects/RustTut/01-Foundations/01-Intro/workshop && cargo run"
+```
+
+### Shorthand helper
+
+Create a reusable alias in PowerShell to avoid repeating the full path:
+
+```powershell
+function crun { wsl -d ubuntu bash -c "cd /mnt/e/MyProjects/RustTut/$args[0] && cargo $args[1]" }
+# Usage: crun "01-Foundations/01-Intro/workshop" test
+```
+
+### Working directory shortcut
+
+Pass the project-relative path from the repo root:
+
+```powershell
+function ck { wsl -d ubuntu bash -c "cd /mnt/e/MyProjects/RustTut/$args && cargo check" }
+function ct { wsl -d ubuntu bash -c "cd /mnt/e/MyProjects/RustTut/$args && cargo test" }
+
+# Usage
+ck "01-Foundations/01-Intro/workshop"
+ct "03-Collections/02-VectorFruitSalad/workshop"
+```
+
+### Copying the repo into WSL
+
+For faster filesystem performance (avoiding `/mnt/` overhead):
+
+```bash
+# From within WSL
+cp -r /mnt/e/MyProjects/RustTut ~/RustTut
+cd ~/RustTut
+cargo check
+```
+
+> **Note**: After copying, run `git pull` or re-copy to sync changes made from Windows.
+
+### Line endings
+
+Windows CRLF line endings can cause "no such file or directory" or "`\r`: command not found" errors in WSL. To fix:
+
+```bash
+# Convert all .sh files to LF
+find . -name "*.sh" -exec sed -i 's/\r$//' {} \;
+```
+
+`.rs` and `.md` files are generally fine regardless of line endings.
+
+### Running a single project's tests
+
+```powershell
+wsl -d ubuntu bash -c "cd /mnt/e/MyProjects/RustTut/01-Foundations/01-Intro/workshop && cargo test"
+```
+
+### Running all projects' checks
+
+```powershell
+wsl -d ubuntu bash -c "
+  for f in /mnt/e/MyProjects/RustTut/*/workshop /mnt/e/MyProjects/RustTut/*/*/workshop; do
+    [ -f \"\$f/Cargo.toml\" ] || continue
+    echo \"=== \$f ===\"
+    cd \"\$f\" && cargo check 2>&1 | tail -3
+  done
+"
+```
+
+### Debugging compilation failures
+
+When a project fails to compile, always run `cargo check` (not `cargo build`) for the fastest feedback. Common failure patterns:
+
+| Error | Likely cause | Fix |
+|-------|-------------|-----|
+| `E0106` (missing lifetime) | Return type contains `&str` or `&[T]` without linking to inputs | Add `<'a>` lifetime parameter |
+| `E0502` (borrow conflict) | Closure or method call borrows a value both mutably and immutably | Pre-compute values before `entry().or_insert()` or use `.clone()` |
+| `E0308` (mismatched types) | Function body returns a wrong type | Check return type vs actual value |
+| `does not satisfy trait bound: f64: Ord` | `f64` used in `BinaryHeap` or `BTreeMap` | Add a wrapper type with `total_cmp`-based `Ord` or use `ordered-float` crate |
+| `the rt-multi-thread feature is disabled` | `#[tokio::main]` or `#[tokio::test]` without the required feature | Add `features = ["rt", "rt-multi-thread", "macros"]` to tokio in `Cargo.toml` |
+| crate download fails | Network blocks crates.io (corporate VPN/firewall) | Try `cargo check --offline` if deps are already cached, or use a different network |
+
+---

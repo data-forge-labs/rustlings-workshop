@@ -6,7 +6,7 @@ If you've written Python pipelines long enough, you've hit the familiar walls: a
 
 You don't need any systems programming background. Every concept is introduced alongside its Python equivalent.
 
-> **Test-driven approach**: This project includes a Cargo workspace with progressive unit tests. Each function in `workshop/src/lib.rs` starts as a `todo!()` stub. As you work through each section, replace `todo!()` with real code and run `cd workshop && cargo test` to watch the pass count grow. The `workshop/src/main.rs` file provides a runnable demo (calling the same functions) — use `cargo run` to see your code in action. Your goal: **all 21 tests pass**.
+> **Test-driven approach**: This project includes a Cargo workspace with progressive unit tests. Each function in `workshop/src/lib.rs` starts as a `todo!()` stub. As you work through each section, replace `todo!()` with real code and run `cd workshop && cargo test` to watch the pass count grow. The `workshop/src/main.rs` file provides a runnable demo (calling the same functions) — use `cargo run` to see your code in action. Your goal: **all 31 tests pass**.
 
 ---
 
@@ -19,10 +19,12 @@ You don't need any systems programming background. Every concept is introduced a
 5. [Functions](#5-functions)
 6. [Variables and Mutability](#6-variables-and-mutability)
 7. [Expressions vs Statements](#7-expressions-vs-statements)
-8. [Putting It All Together](#8-putting-it-all-together)
-9. [Cargo Commands](#9-cargo-commands)
-10. [Summary](#10-summary)
-11. [Exercise: Guess the Number Game](#11-exercise-guess-the-number-game)
+8. [Tuples — Grouping Values of Different Types](#8-tuples--grouping-values-of-different-types)
+9. [Arrays and Slices — Fixed and Dynamic Sequences](#9-arrays-and-slices--fixed-and-dynamic-sequences)
+10. [Putting It All Together](#10-putting-it-all-together)
+11. [Cargo Commands](#11-cargo-commands)
+12. [Summary](#12-summary)
+13. [Exercise: Guess the Number Game](#13-exercise-guess-the-number-game)
 
 ---
 
@@ -351,31 +353,248 @@ Any block `{ }` is an expression. Its value is the last expression inside it (no
 
 ---
 
-## 8. Putting It All Together
+## 8. Tuples — Grouping Values of Different Types
+
+A **tuple** is a fixed-size group of values, each with its own type. Python has tuples too; Rust's are similar but type-strict.
+
+```python
+# Python — heterogeneous types, no type enforcement
+point = (3, 4.5, "origin")
+name, age = ("Alice", 30)
+```
+
+```rust
+// Rust — each position has a fixed type
+let point: (i32, f64, &str) = (3, 4.5, "origin");
+let (name, age) = ("Alice", 30i32);
+```
+
+### Why tuples matter for data engineering
+
+Tuples are the simplest way to return **multiple values** from a function — a pattern you'll hit constantly in data work:
+
+```rust
+/// Returns (min, max, mean) of a dataset.
+/// Python has no direct equivalent — you'd return a dict or unpack via tuple.
+fn describe(values: &[f64]) -> (f64, f64, f64) {
+    let mut min = f64::INFINITY;
+    let mut max = f64::NEG_INFINITY;
+    let mut sum = 0.0;
+    for &v in values {
+        if v < min { min = v; }
+        if v > max { max = v; }
+        sum += v;
+    }
+    (min, max, sum / values.len() as f64)
+}
+
+let (lo, hi, avg) = describe(&[1.0, 2.0, 3.0]);
+println!("range: {}..{}, avg: {}", lo, hi, avg);
+// range: 1..3, avg: 2
+```
+
+### Tuple syntax
+
+| Operation | Syntax | Example |
+|---|---|---|
+| Create | `(T1, T2, ...)` | `let t: (i32, &str) = (1, "x");` |
+| Access by index | `t.0`, `t.1`, ... | `let n = t.0;` |
+| Destructure | `let (a, b) = t;` | `let (x, y) = (1.0, 2.0);` |
+| Empty / unit | `()` | The "no return value" type |
+| Single-element | `(T,)` | Note the trailing comma — `(5)` is just `5` |
+
+### Destructuring
+
+Destructuring assigns each tuple element to a separate variable. It works in `let`, in function parameters, and in `match` arms:
+
+```rust
+let (status, code) = ("ok", 200);
+
+// In a function parameter
+fn print_point((x, y): (i32, i32)) {
+    println!("({}, {})", x, y);
+}
+print_point((10, 20));
+```
+
+You can ignore parts with `_`:
+
+```rust
+let (_, _, avg) = describe(&[1.0, 2.0, 3.0]);  // keep only the mean
+```
+
+### Tuples vs arrays vs structs
+
+| Need | Use | Example |
+|---|---|---|
+| Multiple values of different types, no field names | **tuple** | `(i32, &str, f64)` |
+| Many values of the same type, indexed by number | **array** `[T; N]` | `[1, 2, 3, 4, 5]` |
+| Multiple values of different types, with field names | **struct** | `Point { x: 1, y: 2 }` |
+
+### Exercise
+
+```rust
+fn categorize_row(row: (u32, f64, bool)) -> &'static str {
+    // row.0 = id, row.1 = value, row.2 = is_valid
+    // Return "ok" if is_valid && value > 0, "invalid" if !is_valid, "zero" otherwise
+    todo!()
+}
+
+fn main() {
+    println!("{}", categorize_row((1, 5.0, true)));    // ok
+    println!("{}", categorize_row((2, 0.0, true)));    // zero
+    println!("{}", categorize_row((3, 5.0, false)));   // invalid
+}
+```
+
+<details>
+<summary>Solution</summary>
+
+```rust
+fn categorize_row((_id, value, is_valid): (u32, f64, bool)) -> &'static str {
+    if !is_valid {
+        "invalid"
+    } else if value > 0.0 {
+        "ok"
+    } else {
+        "zero"
+    }
+}
+```
+
+Notice the destructured parameter — it makes the function read like Python's
+`def categorize_row(id, value, is_valid)`.
+
+</details>
+
+---
+
+## 9. Arrays and Slices — Fixed and Dynamic Sequences
+
+Both arrays and slices hold a sequence of values **of the same type**, indexed by `usize`. The difference is **size**:
+
+| Type | Size | When to use |
+|---|---|---|
+| **Array** `[T; N]` | Fixed at compile time (`N` is part of the type) | Known-length data: `[1, 2, 3]`, `[0u8; 1024]` buffer |
+| **Slice** `&[T]` | Dynamic — a *view* into data already owned by something else | Function parameters that accept any sequence |
+
+### Arrays
+
+```rust
+// Fixed-size, on the stack
+let primes: [u32; 4] = [2, 3, 5, 7];
+let zeros: [u8; 1024] = [0; 1024];  // 1024 zeros
+
+let first = primes[0];   // 2
+let len = primes.len();  // 4
+```
+
+The size `N` is part of the type — `[u32; 4]` and `[u32; 5]` are different types. Trying to grow an array is a compile error.
+
+```rust
+let mut a: [i32; 3] = [1, 2, 3];
+// a.push(4);   // ❌ ERROR — arrays don't have methods
+```
+
+For growable sequences, use `Vec<T>` (covered in [03-Collections/01-TicketManagement](../03-Collections/01-TicketManagement/README.md)).
+
+### Slices
+
+A **slice** is a fat pointer — `(pointer, length)` — that *borrows* a contiguous run of elements. You can take a slice of an array, a `Vec`, or even a `String` (giving a `&str`).
+
+```rust
+let data = [10, 20, 30, 40, 50];
+
+// Borrow the whole array as a slice
+let all: &[i32] = &data;
+
+// Borrow a sub-range
+let middle: &[i32] = &data[1..4];   // [20, 30, 40]
+let head:   &[i32] = &data[..3];    // [10, 20, 30]
+let tail:   &[i32] = &data[3..];    // [40, 50]
+```
+
+> **Why is this useful for data engineering?** A function that takes `&[T]` accepts **any** sequence — array, `Vec`, or sub-range — without copying. This is the Rust equivalent of a Python function taking `Sequence[T]`.
+
+```rust
+fn first_n(values: &[f64], n: usize) -> &[f64] {
+    &values[..n.min(values.len())]
+}
+```
+
+### Slices vs arrays in function signatures
+
+| Signature | Accepts | Rejects |
+|---|---|---|
+| `fn f(arr: [i32; 4])` | Only `[i32; 4]` (size matters) | Other sizes, `Vec`, slices |
+| `fn f(s: &[i32])` | Any `&[i32]` (array, `Vec`, sub-range) | Owned values — caller must borrow |
+| `fn f(s: &Vec<i32>)` | Only `Vec<i32>` (anti-pattern) | Arrays, slices |
+
+> **Idiom**: prefer `&[T]` over `&Vec<T>` in function parameters. It's more flexible (accepts arrays too) and is the convention in the standard library.
+
+### Exercise
+
+```rust
+/// Return the second half of a dataset (rounded up for odd lengths).
+fn second_half(data: &[f64]) -> &[f64] {
+    // TODO: return the slice from len/2 to end
+    todo!()
+}
+
+fn main() {
+    let values = [1.0, 2.0, 3.0, 4.0, 5.0];
+    println!("{:?}", second_half(&values));   // [3.0, 4.0, 5.0]
+
+    let small = [10.0, 20.0];
+    println!("{:?}", second_half(&small));     // [20.0]
+}
+```
+
+<details>
+<summary>Solution</summary>
+
+```rust
+fn second_half(data: &[f64]) -> &[f64] {
+    let mid = data.len() / 2;
+    &data[mid..]
+}
+```
+
+Note the return type is `&[f64]` — we're returning a borrowed view into the input, not a new collection. The borrow checker guarantees that the returned slice lives at most as long as the input does, so this is safe.
+
+</details>
+
+---
+
+## 10. Putting It All Together
 
 Here's a small data processing function that uses everything covered so far:
 
 ```rust
-/// Calculate the mean of a slice of f64 values.
+/// Calculate (min, max, mean) of a slice of f64 values.
+/// Returns a tuple — three values from one function.
 /// &[f64] means "a reference to a sequence of f64 values" —
 /// it works with both arrays and Vecs without copying the data.
-fn mean(values: &[f64]) -> f64 {
+fn describe(values: &[f64]) -> (f64, f64, f64) {
+    let mut min = f64::INFINITY;
+    let mut max = f64::NEG_INFINITY;
     let mut sum = 0.0;
-    let count = values.len() as f64;
 
-    for value in values {
-        sum += value;
+    for &v in values {
+        if v < min { min = v; }
+        if v > max { max = v; }
+        sum += v;
     }
 
-    sum / count  // last expression — returned implicitly
+    (min, max, sum / values.len() as f64)  // tuple returned implicitly
 }
 
 fn main() {
     let data = [1.0, 2.0, 3.0, 4.0, 5.0];
-    let result = mean(&data);
-    println!("Mean: {}", result);
+    let (lo, hi, avg) = describe(&data);  // tuple destructured
+    println!("min: {}, max: {}, mean: {}", lo, hi, avg);
 
-    let status = if result > 2.0 { "above average" } else { "below average" };
+    let status = if avg > 3.0 { "above midpoint" } else { "below midpoint" };
     println!("Status: {}", status);
 }
 ```
@@ -383,27 +602,30 @@ fn main() {
 Expected output:
 
 ```text
-Mean: 3
-Status: above average
+min: 1, max: 5, mean: 3
+Status: below midpoint
 ```
 
-> **What is `&[f64]`?** It's a *slice reference* — a view into a contiguous sequence of `f64` values. You don't need to fully understand it yet. The practical point: passing `&data` instead of `data` lets the function read the values without taking ownership of them or copying them. You'll see `&` frequently in Rust; ownership is covered in depth in a later section.
+> **What is `&[f64]`?** It's a *slice reference* — a view into a contiguous sequence of `f64` values. We covered this in detail in [§9 — Arrays and Slices](#9-arrays-and-slices--fixed-and-dynamic-sequences). The practical point: passing `&data` instead of `data` lets the function read the values without taking ownership of them or copying them. You'll see `&` frequently in Rust; ownership is covered in depth in a later section.
 
 What each concept is doing here:
 
 | Concept | Where it appears |
 |---|---|
-| `fn` | `mean()` and `main()` |
-| `let mut` | `sum` — needs to accumulate |
-| `let` (immutable) | `count`, `data`, `result`, `status` |
+| `fn` | `describe()` and `main()` |
+| `let mut` | `min`, `max`, `sum` — all need to be reassigned |
+| `let` (immutable) | `data`, `status` |
 | `for` loop | Iterating over values |
 | `&[f64]` | Slice reference — a view into the array |
-| `if` as expression | Assigning `status` based on condition |
+| `if` as expression | `min`/`max` updates and `status` assignment |
+| `f64::INFINITY` / `f64::NEG_INFINITY` | Initial sentinels for `min`/`max` |
+| Tuple return | `(min, max, sum / values.len() as f64)` |
+| Tuple destructuring | `let (lo, hi, avg) = describe(&data);` |
 | `println!` | Formatted output |
 
 ---
 
-## 9. Cargo Commands
+## 11. Cargo Commands
 
 Cargo is Rust's all-in-one tool: package manager, build system, test runner, formatter, linter. Think `pip` + `pytest` + `black` + `make` unified into one command.
 
@@ -449,7 +671,7 @@ cargo test             # more tests should pass now
 
 ---
 
-## 10. Summary
+## 12. Summary
 
 | Concept | Rust | Python equivalent |
 |---|---|---|
@@ -462,10 +684,16 @@ cargo test             # more tests should pass now
 | Print | `println!("val = {}", x)` | `print(f"val = {x}")` |
 | If expression | `if cond { a } else { b }` | `a if cond else b` |
 | For loop | `for i in 0..5 { }` | `for i in range(5):` |
+| Tuple | `(T1, T2, ...)` | `(1, "x")` |
+| Tuple destructuring | `let (a, b) = t;` | `a, b = t` |
+| Tuple return value | `fn f() -> (i32, &str) { ... }` | Return a dict or unpack via tuple |
+| Array (fixed-size) | `[T; N]`, e.g. `[1, 2, 3]` | `list` (size not enforced) |
+| Slice (borrowed view) | `&[T]`, e.g. `&arr[1..4]` | `Sequence[T]` (no equivalent — pass-by-reference) |
+| `&[T]` in function params | Accepts arrays, `Vec`, sub-ranges | N/A |
 
 ---
 
-## 11. Exercise: Guess the Number Game
+## 13. Exercise: Guess the Number Game
 
 Let's put it all together with a small interactive program. This covers `let`/`mut`, `fn`, `println!`, `std::io`, loops, `if/else`, and using an external crate.
 

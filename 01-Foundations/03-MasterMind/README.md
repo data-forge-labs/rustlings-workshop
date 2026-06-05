@@ -366,18 +366,10 @@ Build the core MasterMind game. Work in the `workshop/` directory.
 
 1. [Prerequisites & Setup](#1-prerequisites--setup)
 2. [Adding Dependencies](#2-adding-dependencies)
-3. [Concept 1: Variables, Mutability, and Basic Data Types](#3-concept-1-variables-mutability-and-basic-data-types)
-4. [Concept 2: Strings â€“ `String` vs `&str`](#4-concept-2-strings--string-vs-str)
-5. [Concept 3: Ownership, Borrowing, and References](#5-concept-3-ownership-borrowing-and-references)
-6. [Concept 4: Vectors â€“ `Vec<T>`](#6-concept-4-vectors--vect)
-7. [Concept 5: Structs and Methods â€“ `struct` + `impl`](#7-concept-5-structs-and-methods--struct--impl)
-8. [Concept 6: `Option<T>` and Pattern Matching](#8-concept-6-optiont-and-pattern-matching)
-9. [Concept 7: Iterators and Closures](#9-concept-7-iterators-and-closures)
-10. [Concept 8: Constants (`const`)](#10-concept-8-constants-const)
-11. [Concept 9: Input/Output â€“ Reading from the Console](#11-concept-9-inputoutput--reading-from-the-console)
-12. [Putting It All Together: The Complete `main.rs`](#12-putting-it-all-together-the-complete-mainrs)
-13. [Running the Game](#13-running-the-game)
-14. [Summary of Rust Concepts Used](#14-summary-of-rust-concepts-used)
+3. [Concept Recap — Where to Learn Each Concept](#3-concept-recap--where-to-learn-each-concept)
+4. [Putting It All Together: The Complete `main.rs`](#4-putting-it-all-together-the-complete-mainrs)
+5. [Running the Game](#5-running-the-game)
+6. [Summary of Rust Concepts Used](#6-summary-of-rust-concepts-used)
 
 ### 1. Prerequisites & Setup
 
@@ -423,382 +415,24 @@ Now run `cargo build`. Cargo downloads the `rand` crate and compiles your projec
 
 > **Comparison:** In Python, `import random` gives you random functions. In Rust, you declare the dependency in `Cargo.toml` and then `use rand::...` in your code.
 
-### 3. Concept 1: Variables, Mutability, and Basic Data Types
-
-In Rust, a variable is declared with `let`. **By default, variables are immutable** â€“ once assigned, you cannot change their value. To allow mutation, you must add the `mut` keyword.
-
-Rust is statically typed, but the compiler can often *infer* the type. You can also explicitly annotate types.
-
-```rust
-fn main() {
-    let x = 5;            // immutable, type i32 (inferred)
-    // x = 6;             // ERROR: cannot assign twice to immutable variable
-
-    let mut y = 10;       // mutable
-    y = 20;               // OK
-
-    let a: u32 = 100;     // unsigned 32-bit integer
-    let b: i32 = -50;     // signed 32-bit integer
-    let c: f64 = 3.14;    // 64-bit floating point
-    let d: bool = true;   // boolean
-    let e: char = 'A';    // Unicode character (4 bytes)
-}
-```
-
-#### Python Comparison
-
-```python
-x = 5   # always rebindable
-x = 6   # works fine
-```
-
-#### Applying to Mastermind
-
-```rust
-let mut attempts_left: u32 = 20;   // mutable, because we decrement it
-let guess_count: u32 = 0;         // immutable, but we'll reassign with let mut later
-```
-
-### 4. Concept 2: Strings â€“ `String` vs `&str`
-
-Rust has two main string types:
-
-- **`String`** â€“ an *owned*, growable, heap-allocated string. You can modify it (e.g., push characters).
-- **`&str`** â€“ a *string slice*, a reference to a sequence of UTF-8 bytes. It can point to a part of a `String` or to a string literal.
-
-String literals like `"hello"` are of type `&str`.
-
-```rust
-fn main() {
-    let s1: String = String::from("hello");  // heap-allocated String
-    let s2: &str = "world";                  // string literal (&str)
-    let s3: &str = &s1;                      // borrow String as &str
-    println!("{} {}", s1, s3);               // hello hello
-
-    let mut s4 = String::from("foo");
-    s4.push_str("bar");
-    println!("{}", s4);                      // foobar
-}
-```
-
-#### Python Comparison
-
-Python's `str` is like Rust's `String` â€“ it's immutable but managed for you. There is no separate slice type.
-
-#### Applying to Mastermind
-
-```rust
-let mut input = String::new();
-std::io::stdin().read_line(&mut input).unwrap();
-let input = input.trim().to_lowercase();
-
-fn evaluate_guess(&self, guess: &str) -> (usize, usize, usize) { ... }
-```
-
-### 5. Concept 3: Ownership, Borrowing, and References
-
-Every value in Rust has exactly one *owner*. When the owner goes out of scope, the value is dropped (memory freed). You can **move** ownership or **borrow** it via references.
-
-- **Move** â€“ the old owner is invalidated.
-- **Borrow** â€“ you temporarily get a reference, but the owner retains ownership.
-
-```rust
-fn main() {
-    let s1 = String::from("hello");
-    let s2 = s1;             // s1 is moved to s2; s1 can no longer be used!
-    // println!("{}", s1);   // ERROR
-
-    let s3 = String::from("world");
-    let len = calculate_length(&s3);   // borrow s3 immutably
-    println!("{} has length {}", s3, len); // s3 is still valid
-}
-
-fn calculate_length(s: &String) -> usize {
-    s.len()
-}
-```
-
-#### Python Comparison
-
-Python never moves ownership; everything is a reference, and the garbage collector frees memory. Rust does all this at compile time with zero runtime overhead.
-
-#### Applying to Mastermind
-
-```rust
-impl SecretCode {
-    fn evaluate_guess(&self, guess: &str) -> (usize, usize, usize) { ... }
-    fn give_position_hint(&mut self) -> Option<(usize, u8)> { ... }
-}
-```
-
-### 6. Concept 4: Vectors â€“ `Vec<T>`
-
-`Vec<T>` is a resizable, heap-allocated array. It's similar to Python's `list`. You can push elements, iterate, and index into it.
-
-```rust
-fn main() {
-    let mut numbers: Vec<i32> = Vec::new();
-    numbers.push(10);
-    numbers.push(20);
-
-    let names = vec!["Alice", "Bob"];       // Vec<&str>
-
-    println!("{:?}", numbers);              // [10, 20]
-    println!("{}", numbers[0]);             // 10
-
-    for n in &numbers {
-        println!("{}", n);
-    }
-}
-```
-
-#### Python Comparison
-
-```python
-nums = [10, 20]     # dynamic list
-```
-
-#### Applying to Mastermind
-
-```rust
-let digits: Vec<u8> = vec![1, 4, 2, 7];
-let revealed_positions: Vec<bool> = vec![false; 4];
-let revealed_digits: Vec<bool> = vec![false; 10];
-```
-
-### 7. Concept 5: Structs and Methods â€“ `struct` + `impl`
-
-Rust groups data into **structs** (like Python classes without inheritance). The behaviour (methods) is defined in a separate `impl` block.
-
-```rust
-struct Rectangle {
-    width: u32,
-    height: u32,
-}
-
-impl Rectangle {
-    fn new(w: u32, h: u32) -> Self {
-        Self { width: w, height: h }
-    }
-
-    fn area(&self) -> u32 {
-        self.width * self.height
-    }
-
-    fn double_size(&mut self) {
-        self.width *= 2;
-        self.height *= 2;
-    }
-}
-
-fn main() {
-    let mut rect = Rectangle::new(10, 20);
-    println!("Area: {}", rect.area());   // 200
-    rect.double_size();
-    println!("Area: {}", rect.area());   // 800
-}
-```
-
-#### Python Comparison
-
-```python
-class Rectangle:
-    def __init__(self, w, h):
-        self.width = w
-        self.height = h
-    def area(self):
-        return self.width * self.height
-```
-
-#### Applying to Mastermind
-
-```rust
-struct SecretCode {
-    digits: Vec<u8>,
-    revealed_positions: Vec<bool>,
-    revealed_digits: Vec<bool>,
-}
-
-impl SecretCode {
-    fn new() -> Self { ... }
-    fn evaluate_guess(&self, guess: &str) -> (usize, usize, usize) { ... }
-    fn give_position_hint(&mut self) -> Option<(usize, u8)> { ... }
-}
-```
-
-### 8. Concept 6: `Option<T>` and Pattern Matching
-
-Rust has no `null`. Instead, optional values are expressed using the `Option<T>` enum, which can be either `Some(value)` or `None`.
-
-```rust
-fn divide(a: f64, b: f64) -> Option<f64> {
-    if b == 0.0 {
-        None
-    } else {
-        Some(a / b)
-    }
-}
-
-fn main() {
-    let result = divide(10.0, 2.0);
-
-    match result {
-        Some(val) => println!("Result: {}", val),
-        None => println!("Cannot divide by zero"),
-    }
-
-    if let Some(val) = result {
-        println!("Got value: {}", val);
-    }
-}
-```
-
-#### Python Comparison
-
-```python
-def divide(a, b):
-    if b == 0:
-        return None
-    return a / b
-
-result = divide(10, 2)
-if result is not None:
-    print(f"Got value: {result}")
-```
-
-#### Applying to Mastermind
-
-```rust
-fn give_position_hint(&mut self) -> Option<(usize, u8)> {
-    if !self.can_give_position_hint() {
-        return None;
-    }
-    Some((chosen_index, digit))
-}
-
-if let Some((pos, digit)) = self.secret.give_position_hint() {
-    // use pos and digit
-}
-```
-
-### 9. Concept 7: Iterators and Closures
-
-Iterators allow you to process collections in a functional style. A **closure** is an anonymous function that can capture variables from its environment.
-
-```rust
-fn main() {
-    let nums = vec![1, 2, 3, 4, 5];
-
-    let doubled: Vec<i32> = nums.iter()
-        .map(|x| x * 2)
-        .collect();
-    println!("{:?}", doubled);  // [2, 4, 6, 8, 10]
-
-    let evens: Vec<&i32> = nums.iter().filter(|&&x| x % 2 == 0).collect();
-    println!("{:?}", evens);    // [2, 4]
-
-    let a = [1, 2, 3];
-    let b = [4, 5, 6];
-    for (x, y) in a.iter().zip(b.iter()) {
-        println!("{} {}", x, y);
-    }
-}
-```
-
-#### Python Comparison
-
-```python
-nums = [1, 2, 3, 4, 5]
-doubled = [x * 2 for x in nums]
-evens = [x for x in nums if x % 2 == 0]
-```
-
-#### Applying to Mastermind
-
-```rust
-// Count exact matches
-let green = self.digits.iter()
-    .zip(guess_digits.iter())
-    .filter(|(s, g)| s == g)
-    .count();
-
-// Find unrevealed positions
-let available: Vec<usize> = self.revealed_positions.iter()
-    .enumerate()
-    .filter(|(_, &revealed)| !revealed)
-    .map(|(i, _)| i)
-    .collect();
-```
-
-### 10. Concept 8: Constants (`const`)
-
-Constants are always immutable and must be type-annotated. They can be declared in any scope and are inlined at compile time.
-
-```rust
-const MAX_SCORE: u32 = 100;
-
-fn main() {
-    println!("Maximum score: {}", MAX_SCORE);
-}
-```
-
-#### Python Comparison
-
-Python uses variables in `UPPER_CASE` by convention, but Rust enforces immutability.
-
-#### Applying to Mastermind
-
-```rust
-const DEFAULT_ATTEMPTS: u32 = 20;
-const HINT_POSITION_COST: u32 = 5;
-const HINT_DIGIT_COST: u32 = 3;
-```
-
-### 11. Concept 9: Input/Output â€“ Reading from the Console
-
-To read a line from standard input, use `std::io::stdin().read_line(&mut some_string)`. For prompts without a newline, you must `flush` the output.
-
-```rust
-use std::io::{self, Write};
-
-fn main() {
-    let mut input = String::new();
-    print!("Enter something: ");
-    io::stdout().flush().unwrap();
-
-    io::stdin().read_line(&mut input).unwrap();
-    let input = input.trim();
-    println!("You typed: {}", input);
-}
-```
-
-#### Python Comparison
-
-```python
-input("Enter something: ")   # automatically prints prompt and reads line
-```
-
-#### Applying to Mastermind
-
-```rust
-fn get_user_input(&self) -> String {
-    loop {
-        print!("Enter guess (or 'help'): ");
-        io::stdout().flush().unwrap();
-
-        let mut input = String::new();
-        io::stdin().read_line(&mut input).unwrap();
-        let input = input.trim().to_lowercase();
-
-        if input == "help" {
-            return input.to_string();
-        }
-        // validation ...
-    }
-}
-```
-
-### 12. Putting It All Together: The Complete `main.rs`
+### 3. Concept Recap — Where to Learn Each Concept
+
+The 8 concepts below are covered in detail in earlier projects. The full teaching with Python comparisons, ASCII diagrams, and exercises lives there. Below is **only the MasterMind-specific application** of each.
+
+| # | Concept | Canonical Source | Used in MasterMind as |
+|---|---------|------------------|----------------------|
+| 1 | Variables, mutability, basic types | [01-Intro §6](../01-Intro/README.md#6-variables-and-mutability) | `let mut attempts_left: u32 = 20;` |
+| 2 | `String` vs `&str` | [01-Intro §4](../01-Intro/README.md#4-syntax-side-by-side) (mention) — full teaching in this project §4 below | `let mut input = String::new();` and `fn evaluate_guess(&self, guess: &str) -> ...` |
+| 3 | Ownership, borrowing, references | [02-Ownership/01-TicketV1](../02-Ownership/01-TicketV1/README.md) | `&self` for read-only methods, `&mut self` for hint methods |
+| 4 | `Vec<T>` | [03-Collections/01-TicketManagement](../03-Collections/01-TicketManagement/README.md) | `let digits: Vec<u8> = vec![1, 4, 2, 7];` |
+| 5 | `struct` + `impl` | This project §4 (Python vs Rust Concepts) above | `struct SecretCode { ... } impl SecretCode { ... }` |
+| 6 | `Option<T>`, `if let`, `match` | This project §4 above | `fn give_position_hint(&mut self) -> Option<(usize, u8)>` |
+| 7 | Iterators, closures | This project §4 above | `.iter().zip().filter().count()` chains for guess evaluation |
+| 8 | `const` | [01-Intro §6](../01-Intro/README.md#6-variables-and-mutability) (Constants) | `const DEFAULT_ATTEMPTS: u32 = 20;` |
+
+**If you haven't completed the Intro and BasicCalculator projects, do that first** — this project assumes you know how to declare variables, write functions, read input, and match on `Option`. If you have, just skim the recap table above and skip to the next section.
+
+### 4. Putting It All Together: The Complete `main.rs`
 
 Now build the entire game file step by step. Replace the content of `src/main.rs` with the following blocks.
 
@@ -1094,7 +728,7 @@ fn main() {
 }
 ```
 
-### 13. Running the Game
+### 5. Running the Game
 
 Inside the `mastermind` directory, run:
 
@@ -1102,7 +736,7 @@ Inside the `mastermind` directory, run:
 cargo run
 ```
 
-### 14. Summary of Rust Concepts Used
+### 6. Summary of Rust Concepts Used
 
 | Concept | Where Used |
 |---------|------------|

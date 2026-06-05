@@ -58,65 +58,53 @@ Rust's `#[test]` system ensures correctness through built-in, zero-dependency te
 
 ## What You'll Learn
 
+This project focuses on **integer-specific Rust** that the Intro project didn't cover. For variables, mutability, `if`/`else` expressions, and `bool` rules, see [Project 0: Intro](../01-Intro/README.md).
+
 | # | Concept | Rust Type / Module | Python Equivalent | Purpose |
 |---|---------|--------------------|------------------|---------|
 | 1 | Integer types | `u8`, `i32`, `u64`, `usize` | `int` (arbitrary precision) | Fixed-size integers matching hardware |
-| 2 | Mutability | `let` vs `let mut` | `x = value` (always mutable) | Opt-in to mutation for safety |
-| 3 | Shadowing | `let x = x + 1` | `x = x + 1` | Rebind variable with same name |
-| 4 | Arithmetic operators | `+`, `-`, `*`, `/`, `%` | Same operators | Integer math operations |
-| 5 | Integer division | `/` on integers | `//` (floor division) | Truncates toward zero |
-| 6 | `if`/`else` expression | `if` / `else` blocks | Ternary `a if cond else b` | Branching that produces a value |
-| 7 | `bool` type only | `bool` in conditions | Truthy/falsy allowed | Conditions must be explicit boolean |
-| 8 | `panic!` | `panic!("msg")` | `raise Exception("msg")` | Unrecoverable runtime error |
-| 9 | `while` loop | `while cond {}` | `while cond:` | Condition-controlled loop |
-| 10 | `for` with ranges | `0..n` / `0..=n` | `for i in range(n):` | Range-based iteration |
-| 11 | Integer overflow | Debug: panics, Release: wraps | Not possible | Fixed-precision overflow behavior |
-| 12 | Wrapping/saturating | `.wrapping_add()`, `.saturating_add()` | N/A | Controlled overflow handling |
-| 13 | Type casting | `as` operator | Implicit conversion | Explicit type conversion |
-| 14 | Unit testing | `#[test]`, `#[should_panic]`, `#[cfg(test)]` | `pytest` / `unittest` | First-class built-in testing |
+| 2 | Arithmetic operators | `+`, `-`, `*`, `/`, `%` | Same operators | Integer math operations |
+| 3 | Integer division | `/` on integers | `//` (floor division) | Truncates toward zero |
+| 4 | `panic!` | `panic!("msg")` | `raise Exception("msg")` | Unrecoverable runtime error |
+| 5 | `while` loop | `while cond {}` | `while cond:` | Condition-controlled loop |
+| 6 | `for` with ranges | `0..n` / `0..=n` | `for i in range(n):` | Range-based iteration |
+| 7 | Integer overflow | Debug: panics, Release: wraps | Not possible | Fixed-precision overflow behavior |
+| 8 | Wrapping/saturating | `.wrapping_add()`, `.saturating_add()` | N/A | Controlled overflow handling |
+| 9 | Type casting | `as` operator | Implicit conversion | Explicit type conversion |
+| 10 | Unit testing | `#[test]`, `#[should_panic]`, `#[cfg(test)]` | `pytest` / `unittest` | First-class built-in testing |
 
 ## Concepts at a Glance
+
+This project teaches **what's unique to integer arithmetic in Rust**. For variables, mutability, `if`/`else` as expressions, and the `bool`-only rule, see [Project 0: Intro](../01-Intro/README.md#6-variables-and-mutability).
 
 ### 1. Integer types
 Rust provides signed (`i8`, `i16`, `i32`, `i64`) and unsigned (`u8`, `u16`, `u32`, `u64`) integers of fixed bit widths, plus `usize`/`isize` matching your system pointer size. **Python:** a single `int` with arbitrary precision.
 
-### 2. Mutability
-`let` creates an immutable binding. `let mut` creates a mutable one. **Python:** all variables are mutable by default — Rust makes you opt in.
-
-### 3. Shadowing
-Declaring `let x = ...` a second time creates a new variable that shadows the old one, potentially with a different type. **Python:** reassignment `x = "hello"` keeps the same variable; type is not enforced.
-
-### 4. Arithmetic operators
+### 2. Arithmetic operators
 `+`, `-`, `*`, `/`, `%` work on integers. Both operands must have the same type. **Python:** implicit type promotion (int + float = float).
 
-### 5. Integer division
+### 3. Integer division
 In Rust, `5 / 2` = `2` (truncates toward zero). For floating-point, use `5.0 / 2.0`. **Python:** `/` returns float; `//` does floor division.
 
-### 6. `if`/`else` expression
-`let result = if x > 0 { "pos" } else { "neg" };` — the `if` block returns a value. **Python:** only the ternary `"pos" if x > 0 else "neg"` achieves this.
-
-### 7. `bool` type only
-`if x { }` fails if `x` is not a `bool`. No truthy/falsy coercion. **Python:** any value can be truthy or falsy (`0`, `None`, `""`, `[]`).
-
-### 8. `panic!`
+### 4. `panic!`
 `panic!("msg")` stops execution with a stack trace. Used for programmer bugs. **Python:** `raise Exception("msg")` — but panics can't be caught in normal flow.
 
-### 9. `while` loop
+### 5. `while` loop
 `while cond { body }` repeats as long as the condition is true. **Python:** `while cond:`.
 
-### 10. `for` with ranges
+### 6. `for` with ranges
 `for i in 0..5` iterates `0,1,2,3,4` (exclusive). `0..=5` includes 5. **Python:** `for i in range(5):`.
 
-### 11. Integer overflow
+### 7. Integer overflow
 In debug mode, overflow panics. In release mode, overflow wraps silently. Enable `overflow-checks = true` in `Cargo.toml` for safety. **Python:** arbitrary precision — overflow never happens.
 
-### 12. Wrapping and saturating arithmetic
+### 8. Wrapping and saturating arithmetic
 `.wrapping_add(n)` wraps on overflow; `.saturating_add(n)` clamps at the type's min/max. **Python:** N/A.
 
-### 13. Type casting
+### 9. Type casting
 Use `x as u64` to convert between types. Safe when going smaller to larger; truncates going larger to smaller. **Python:** implicit type conversion.
 
-### 14. Unit testing
+### 10. Unit testing
 Annotate tests with `#[test]`, use `assert_eq!`/`assert!`, and `#[should_panic]` for expected failures. Tests live in `#[cfg(test)]` modules. **Python:** requires external `pytest` or `unittest`.
 
 ---
@@ -127,10 +115,10 @@ Annotate tests with `#[test]`, use `assert_eq!`/`assert!`, and `#[should_panic]`
 2. [Prerequisites](#2-prerequisites)
 3. [Running the Python Version](#3-running-the-python-version)
 4. [Concept: Integer Types in Rust](#4-concept-integer-types-in-rust)
-5. [Concept: Variables and Mutability](#5-concept-variables-and-mutability)
+5. [Concept: Variables and Mutability (Recap)](#5-concept-variables-and-mutability-recap)
 6. [Concept: Arithmetic Operators](#6-concept-arithmetic-operators)
-7. [Concept: Control Flow — `if`/`else`](#7-concept-control-flow--ifelse)
-8. [Concept: No Truthy/Falsy — the `bool` Type](#8-concept-no-truthyfalsy--the-bool-type)
+7. [Concept: Control Flow — `if`/`else` (Recap)](#7-concept-control-flow--ifelse-recap)
+8. [Concept: No Truthy/Falsy — the `bool` Type (Recap)](#8-concept-no-truthyfalsy--the-bool-type-recap)
 9. [Concept: Panics — Unrecoverable Errors](#9-concept-panics--unrecoverable-errors)
 10. [Concept: Loops — `while` and `for`](#10-concept-loops--while-and-for)
 11. [Concept: Integer Overflow](#11-concept-integer-overflow)
@@ -155,14 +143,15 @@ We'll build a **command-line calculator** that can:
 | Rust Concept | Why It Matters for Data Engineering |
 |---|---|
 | Integer types (`u32`, `i32`, `i64`) | Choosing the right type for counts, IDs, timestamps |
-| `let`, `let mut` | Controlling mutability for safety |
-| `if`/`else` expressions | Branching logic in data pipelines |
+| Arithmetic operators & integer division | Predictable, deterministic math on fixed-precision types |
 | `while` and `for` loops | Iterating over data |
 | `panic!` | Error handling basics |
 | Integer overflow | Avoiding silent data corruption |
 | `wrapping_` / `saturating_` | Safe arithmetic in production |
 | `as` casting | Converting between types |
 | `#[test]`, `assert_eq!`, `#[should_panic]` | Unit testing — first-class language feature |
+
+> Variables, mutability, and `if`/`else` expressions are covered in [Project 0: Intro](../01-Intro/README.md).
 
 ---
 
@@ -285,67 +274,27 @@ fn main() {
 
 ---
 
-## 5. Concept: Variables and Mutability
+## 5. Concept: Variables and Mutability (Recap)
 
-### `let` — Immutable by Default
+> **Already covered in [Project 0: Intro](../01-Intro/README.md#6-variables-and-mutability).** Below is a quick refresher — open the Intro project for the full teaching with Python comparison, ASCII diagram, and shadowing example.
 
-```rust
-let x = 5;
-x = 6;  // ❌ Compile error: "cannot assign twice to immutable variable"
-```
-
-### `let mut` — Opt In to Mutation
+Variables are **immutable by default**. Use `mut` to opt in:
 
 ```rust
-let mut x = 5;
-x = 6;  // ✅ Allowed because x is mutable
+let x = 5;        // immutable
+let mut y = 5;    // mutable
+y += 1;           // ✅ works because y is mut
+// x += 1;        // ❌ compile error
 ```
 
-### Why Does This Matter for Data Engineering?
-
-In data pipelines, **shared mutable state** is the #1 cause of bugs. Rust forces you to be explicit about what can change, making your code easier to reason about.
-
-```python
-# Python — everything can be mutated anywhere
-def clean_data(df):
-    df["value"] = df["value"].fillna(0)  # Mutates the original!
-```
+You can also **shadow** a variable with a new `let` binding, even changing its type:
 
 ```rust
-// Rust — you control mutability
-fn clean_data(df: &mut DataFrame) {   // &mut = explicit permission to mutate
-    // ... do the cleaning
-}
+let data = "42";                  // &str
+let data: i32 = data.parse().unwrap();  // i32 — shadowed with new type
 ```
 
-### Shadowing
-
-Rust lets you reuse variable names by **shadowing**:
-
-```rust
-let x = 5;
-let x = x + 1;    // Shadow — creates new variable
-let x = x * 2;    // Shadow again
-// x = 12
-```
-
-Shadowing is **not** mutation — it creates a new variable with the same name. You can even change the type:
-
-```rust
-let data = "42";       // data: &str
-let data: i32 = data.parse().unwrap();  // data: i32
-// data is now an integer!
-```
-
-### Python vs Rust — Variable Rules
-
-| Operation | Python | Rust |
-|---|---|---|
-| Create variable | `x = 5` | `let x = 5;` |
-| Make mutable | Always mutable | `let mut x = 5;` |
-| Reassign | `x = 6` | `x = 6` (only if `mut`) |
-| Reassign with type change | `x = "hello"` | Not allowed unless shadowed |
-| Change type via shadow | N/A | `let x = x.to_string();` |
+In data engineering, **explicit mutability is a feature, not a restriction** — it makes code easier to reason about and prevents bugs from shared mutable state. The full Python comparison and detailed examples live in the Intro project.
 
 ---
 
@@ -417,154 +366,57 @@ fn main() {
 
 ---
 
-## 7. Concept: Control Flow — `if`/`else`
+## 7. Concept: Control Flow — `if`/`else` (Recap)
 
-### Basic `if`/`else`
+> **Already covered in [Project 0: Intro](../01-Intro/README.md#7-expressions-vs-statements).** Quick refresher:
+
+In Rust, `if` is an **expression** (it returns a value), not a statement:
 
 ```rust
-let number = 7;
+let label = if temp > 30 { "hot" } else { "cold" };
+```
 
-if number < 10 {
-    println!("Small number");
+Both branches must return the same type. The compiler enforces this.
+
+```rust
+// if/else chain
+let category = if temp > 30 {
+    "hot"
+} else if temp < 10 {
+    "cold"
 } else {
-    println!("Big number");
-}
+    "mild"
+};
 ```
 
-### `else if` Chains
-
-```rust
-if number < 5 {
-    println!("Very small");
-} else if number < 10 {
-    println!("Small");
-} else {
-    println!("Big");
-}
-```
-
-### `if` is an Expression in Rust (Key Difference!)
-
-**Python:** `if` is a **statement** — it doesn't produce a value:
-
-```python
-# Python — this is a statement
-if x > 0:
-    result = "positive"
-else:
-    result = "non-positive"
-```
-
-**Rust:** `if` is an **expression** — it produces a value:
-
-```rust
-// Rust — this is an expression
-let result = if x > 0 { "positive" } else { "non-positive" };
-```
-
-### Expression vs Statement — Memory Diagram
-
-```
-Python:                        Rust:
-┌────────────────┐           ┌──────────────────────┐
-│ x = 5          │◄──stmt    │ let x: i32 = 5;      │◄──stmt
-│ if x > 0:      │◄──stmt    │ let label = if x > 0 {│◄──expr returns value
-│   y = "pos"    │           │     "positive"         │
-│ else:          │           │ } else {              │
-│   y = "neg"    │           │     "negative"        │
-└────────────────┘           │ };                    │
-                              └──────────────────────┘
-```
-
-### Exercise: Categorize Temperature
-
-```rust
-fn categorize_temp(temp: i32) -> &'static str {
-    // Return "hot" if temp > 30, "cold" if temp < 10, "mild" otherwise
-    if temp > 30 {
-        "hot"
-    } else if temp < 10 {
-        "cold"
-    } else {
-        "mild"
-    }
-}
-
-fn main() {
-    println!("{}", categorize_temp(35));  // hot
-    println!("{}", categorize_temp(5));   // cold
-    println!("{}", categorize_temp(20));  // mild
-}
-```
+Use this in the calculator's `divide` function (next section) to guard against division by zero. See Intro §7 for the full Python comparison and memory diagram.
 
 ---
 
-## 8. Concept: No Truthy/Falsy — the `bool` Type
+## 8. Concept: No Truthy/Falsy — the `bool` Type (Recap)
 
-### Python Truthy/Falsy
+> **Already covered in [Project 0: Intro](../01-Intro/README.md#4-syntax-side-by-side).** Quick refresher:
 
-```python
-# Python — many types are "truthy" or "falsy"
-if "":       # False (empty string)
-if []:       # False (empty list)
-if 0:        # False (zero)
-if None:     # False
-if [1, 2]:   # True (non-empty list)
-```
-
-### Rust Only Accepts `bool`
+Rust conditions must be `bool` — there are no truthy/falsy values like Python:
 
 ```rust
-let x = 5;
-// if x { }  // ❌ ERROR: expected `bool`, found integer
-if x > 0 { }  // ✅ Must be a boolean condition
-if true { }   // ✅ Literal bool
-if false { }  // ✅
-```
-
-### Why This Matters
-
-In data engineering pipelines, truthy/falsy bugs are common:
-
-```python
-# Python — subtle bug
-count = 0
-if count:        # False! Skips processing even though 0 is valid
-    process(count)
-```
-
-```rust
-// Rust — explicit, no ambiguity
 let count: u32 = 0;
-if count > 0 {    // Must write the explicit condition
-    process(count);
-}
-if count != 0 {   // Another option
-    process(count);
-}
+// if count { }    // ❌ ERROR: expected `bool`, found integer
+if count > 0 { }   // ✅ must use an explicit comparison
 ```
 
-### Comparisons Produce `bool`
+This eliminates a whole class of Python bugs where `if 0:` or `if None:` silently does the wrong thing.
 
-```rust
-let a = 5;
-let b = 10;
-let is_greater: bool = a > b;  // false
-let is_equal: bool = a == b;   // false
-let is_not_equal: bool = a != b; // true
-```
+### Comparison operators
 
-| Operator | Meaning | Python |
-|---|---|---|
-| `==` | Equal | `==` |
-| `!=` | Not equal | `!=` |
-| `<` | Less than | `<` |
-| `>` | Greater than | `>` |
-| `<=` | Less or equal | `<=` |
-| `>=` | Greater or equal | `>=` |
-| `&&` | Logical AND | `and` |
-| `\|\|` | Logical OR | `or` |
-| `!` | Logical NOT | `not` |
+| Rust | Python | Meaning |
+|------|--------|---------|
+| `==` | `==` | Equal |
+| `!=` | `!=` | Not equal |
+| `<`, `>`, `<=`, `>=` | same | Ordering |
+| `&&` | `and` | Logical AND |
+| `\|\|` | `or` | Logical OR |
+| `!` | `not` | Logical NOT |
 
 ---
 
@@ -1572,12 +1424,12 @@ fn main() {
 
 ## 17. Summary
 
+This project focused on **integer-specific Rust**. For variables, mutability, `if`/`else` expressions, and `bool` rules, see [Project 0: Intro](../01-Intro/README.md).
+
 | Concept | Description | Python Equivalent |
 |---|---|---|
 | Integer types | `u8`, `i32`, `u64`, etc. — choose precision | Single `int` type |
-| `mut` | Opt-in mutability | Everything is mutable |
-| `if` as expression | `if` returns a value | `if` is a statement |
-| No truthy/falsy | Conditions must be `bool` | Any value can be truthy/falsy |
+| Arithmetic operators | `+`, `-`, `*`, `/`, `%` on integers | Same operators, with implicit promotion |
 | `panic!` | Unrecoverable error | `raise Exception` |
 | `while` loop | Loop with condition | `while` |
 | `for` + range | Loop over range | `for i in range(n)` |
@@ -1587,274 +1439,6 @@ fn main() {
 | `as` casting | Explicit type conversion | Implicit conversion |
 | `#[test]`, `#[should_panic]`, `assert_eq!` | First-class unit testing | `pytest`, `unittest` (external) |
 
-### Further Reading
-
-The detailed step-by-step guides that were previously in individual files have been merged into the [Appendix: Original Step-by-Step Guide](#18-appendix-original-step-by-step-guide) section below.
-
-| Appendix Section | Topics |
-|------------------|--------|
-| Intro | Project introduction and roadmap |
-| Integer types | Integer types, literals, type inference |
-| Variables | `let` bindings, shadowing, scope |
-| Control Flow | `if`/`else` expressions, booleans, comparison |
-| Panics | The `panic!` macro, unrecoverable errors |
-| Factorial | Recursive factorial exercise |
-| While loops | `while` loops, `mut` keyword |
-| For loops | `for` loops, range types |
-| Overflow | Integer overflow, profiles, `overflow-checks` |
-| Saturating | `wrapping_` and `saturating_` methods |
-| Type Casting | `as` operator, truncation, type conversion |
-
 ### Next Project
 
 Proceed to [2-MasterMind](../01-Foundations/03-MasterMind/master_mind.md) to solidify these concepts with a game, then [3-TicketV1](../02-Ownership/01-TicketV1/README.md) to learn about **ownership** — Rust's most unique and important feature.
-
----
-
-## 18. Appendix: Original Step-by-Step Guide
-
-### Intro
-
-In this chapter we'll learn how to use Rust as a **calculator**. It might not sound like much, but it'll give us a chance to cover a lot of Rust's basics, such as:
-
-- How to define and call functions
-- How to declare and use variables
-- Primitive types (integers and booleans)
-- Arithmetic operators (including overflow and underflow behavior)
-- Comparison operators
-- Control flow
-- Panics
-
-Nailing the basics with a few exercises will get the language flowing under your fingers. When we move on to more complex topics, such as traits and ownership, you'll be able to focus on the new concepts without getting bogged down by the syntax or other trivial details.
-
-### Integer Types
-
-Rust provides several primitive integer types. `u32` is an **unsigned 32-bit integer**. An integer can be **signed** or **unsigned**. An unsigned integer can only represent non-negative numbers (i.e. `0` or greater). A signed integer can represent both positive and negative numbers (e.g. `-1`, `12`, etc.).
-
-The `u` in `u32` stands for **unsigned**. The equivalent type for signed integer is `i32`, where the `i` stands for integer (i.e. any integer, positive or negative).
-
-The `32` in `u32` refers to the **number of bits** used to represent the number in memory. The more bits, the larger the range of numbers that can be represented. Rust supports multiple bit widths for integers: `8`, `16`, `32`, `64`, `128`.
-
-With 32 bits, `u32` can represent numbers from `0` to `2^32 - 1` (a.k.a. `u32::MAX`). With the same number of bits, a signed integer (`i32`) can represent numbers from `-2^31` to `2^31 - 1` (i.e. from `i32::MIN` to `i32::MAX`).
-
-Combining the two variables (signed/unsigned and bit width), we get the following integer types:
-
-| Bit width | Signed | Unsigned |
-| --------- | ------ | -------- |
-| 8-bit     | `i8`   | `u8`     |
-| 16-bit    | `i16`  | `u16`    |
-| 32-bit    | `i32`  | `u32`    |
-| 64-bit    | `i64`  | `u64`    |
-| 128-bit   | `i128` | `u128`   |
-
-**Literals:** `42` is a Rust literal for the number forty-two. The compiler defaults to `i32` for integer literals. Use suffixes like `2u64` to specify a different type. Underscores improve readability: `1_000_000`.
-
-**Arithmetic operators:** `+` for addition, `-` for subtraction, `*` for multiplication, `/` for division, `%` for remainder. Division with integers truncates toward zero (e.g., `5 / 2` = `2`).
-
-**No automatic type coercion:** Rust won't automatically convert between types, even for lossless conversions:
-
-```rust
-let b: u8 = 100;
-let a: u32 = b;  // ERROR: mismatched types
-```
-
-### Variables
-
-The `let` keyword declares **variables**:
-
-```rust
-let x = 42;
-```
-
-Every variable must have a type, either inferred or explicitly annotated:
-
-```rust
-let x: u32 = 42;   // Explicit annotation
-let x = 42;        // Inferred as i32
-let y: u32 = x;    // x inferred as u32 from context
-```
-
-Function arguments are variables too:
-
-```rust
-fn add_one(x: u32) -> u32 {
-    x + 1
-}
-```
-
-You don't have to initialize a variable when you declare it, but you must before using it:
-
-```rust
-let x: u32;
-let y = x + 1;  // ERROR: used binding `x` isn't initialized
-```
-
-### Control Flow — `if`/`else`
-
-The `if` keyword executes a block only if a condition is true:
-
-```rust
-let number = 3;
-if number < 5 {
-    println!("`number` is smaller than 5");
-} else {
-    println!("`number` is greater than or equal to 5");
-}
-```
-
-Use `else if` for multiple conditions:
-
-```rust
-if number < 5 {
-    println!("smaller than 5");
-} else if number >= 3 {
-    println!("between 3 and 5");
-} else {
-    println!("smaller than 3");
-}
-```
-
-**Booleans:** The condition must be `bool`. No truthy/falsy values:
-
-```rust
-let number = 3;
-if number { }  // ERROR: expected `bool`, found integer
-if number > 0 { }  // ✅
-```
-
-**Comparison operators:** `==`, `!=`, `<`, `>`, `<=`, `>=`.
-
-**`if`/`else` is an expression:** It returns a value:
-
-```rust
-let message = if number < 5 { "small" } else { "big" };
-```
-
-### Panics
-
-A **panic** is Rust's way to signal an unrecoverable error:
-
-```rust
-fn main() {
-    panic!("This is a panic!");
-}
-```
-
-Division by zero triggers a panic:
-
-```
-thread 'main' panicked at src/main.rs:3:5:
-attempt to divide by zero
-```
-
-Use the `panic!` macro to trigger panics intentionally. Panics are for programmer bugs — use `Result<T, E>` (covered later) for recoverable errors like file not found or invalid input.
-
-### Factorial
-
-After learning functions, integer types, arithmetic operators, and control flow, you're ready to tackle factorials — a classic exercise that combines all these concepts.
-
-### While Loops
-
-A `while` loop executes a block as long as a condition is true:
-
-```rust
-while <condition> {
-    // code to execute
-}
-```
-
-Example — summing numbers 1 to 5:
-
-```rust
-let mut sum = 0;
-let mut i = 1;
-while i <= 5 {
-    sum += i;
-    i += 1;
-}
-```
-
-**The `mut` keyword:** Variables in Rust are **immutable by default**. To modify a variable, declare it with `mut`. Attempting to modify an immutable variable causes a compile error.
-
-### For Loops
-
-A `for` loop iterates over each element in an iterator:
-
-```rust
-for <element> in <iterator> {
-    // code to execute
-}
-```
-
-**Ranges** provide a concise way to iterate over sequences:
-
-```rust
-// Half-open: 1..5 = 1, 2, 3, 4 (excludes 5)
-for i in 1..5 { }
-
-// Inclusive: 1..=5 = 1, 2, 3, 4, 5
-for i in 1..=5 { }
-```
-
-Range types:
-- `1..5` — half-open (excludes end)
-- `1..=5` — inclusive
-- `1..` — open-ended (to infinity)
-- `..5` — from minimum to 4
-- `..=5` — from minimum to 5
-
-### Integer Overflow
-
-When the result of an arithmetic operation exceeds the maximum value for a given integer type, **integer overflow** occurs. Underflow is the same problem in the opposite direction.
-
-Rust does not automatically promote to a larger type. Instead, two approaches are used:
-- **Reject the operation** — panic at runtime
-- **Wrap around** — produce a "sensible" result within the type's range
-
-The behavior is controlled by the `overflow-checks` profile setting:
-- `true` for `dev` profile (panics on overflow)
-- `false` for `release` profile (wraps silently)
-
-Recommendation: enable `overflow-checks = true` for both profiles to avoid silent data corruption.
-
-**Profiles** are configuration sets that customize compilation. Cargo provides four built-in profiles: `dev`, `release`, `test`, and `bench`.
-
-### Saturating and Wrapping Arithmetic
-
-Per-operation control over overflow behavior:
-
-**Wrapping methods** wrap around like a clock:
-
-```rust
-let x: u8 = 255;
-let y = x.wrapping_add(1);  // 255 + 1 = 0
-```
-
-**Saturating methods** clamp at the type's minimum or maximum:
-
-```rust
-let x: u8 = 255;
-let y = x.saturating_add(1);  // 255 + 1 = 255 (stays at max)
-let z: u8 = 0;
-let w = z.saturating_sub(1);  // 0 - 1 = 0 (stays at min)
-```
-
-Available methods: `wrapping_add`, `wrapping_sub`, `wrapping_mul`, `saturating_add`, `saturating_sub`, `saturating_mul`.
-
-### Type Casting with `as`
-
-Use the `as` operator for explicit type conversion:
-
-```rust
-let a: u32 = 10;
-let b = a as u64;  // Safe: all u32 values fit in u64
-```
-
-**Truncation** occurs when going from larger to smaller types:
-
-```rust
-let a: u16 = 256;
-let b = a as u8;  // b = 0 — only the last 8 bits are kept
-```
-
-Recommendation: use `as` exclusively for smaller-to-larger conversions. For larger-to-smaller conversions, use fallible conversion methods (`try_into`, covered later in the course).

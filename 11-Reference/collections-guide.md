@@ -99,3 +99,42 @@ deque.push_back(1);
 deque.push_front(2);
 assert_eq!(deque.pop_front(), Some(2));
 ```
+
+## Arrays `[T; N]` vs Slices `&[T]`
+
+| | Array `[T; N]` | Slice `&[T]` |
+|---|---|---|
+| **Size** | Fixed at compile time (`N` is part of the type) | Dynamic (a `(ptr, len)` fat pointer) |
+| **Owns its data** | Yes — stack-allocated | No — borrows from a `Vec`, array, or other slice |
+| **Use as parameter** | `fn f(a: [i32; 4])` — only accepts that exact size | `fn f(s: &[i32])` — accepts any sequence |
+| **Mutation** | Only via indexing or whole-array assignment | Through `&mut [T]` |
+| **Python analog** | `tuple` (immutable, fixed-ish) | `Sequence[T]` (a view, not a copy) |
+| **When to use** | Known-size, hot-path data; small fixed buffers | Function parameters; sub-ranges of larger data |
+
+### Slices in practice
+
+```rust
+// Borrow the whole array
+let data = [1, 2, 3, 4, 5];
+let all: &[i32] = &data;
+
+// Sub-ranges — note the half-open syntax
+let middle: &[i32] = &data[1..4];   // [2, 3, 4]
+let head:   &[i32] = &data[..3];    // [1, 2, 3]
+let tail:   &[i32] = &data[3..];    // [4, 5]
+let last:   &[i32] = &data[..];     // [1, 2, 3, 4, 5]
+```
+
+### `&[T]` vs `&Vec<T>` in function signatures
+
+**Always prefer `&[T]`** — it accepts arrays, `Vec`s, and sub-ranges:
+
+```rust
+// Idiomatic — accepts anything that can be viewed as a sequence
+fn process(data: &[i32]) { /* ... */ }
+
+// Anti-pattern — forces caller to allocate a Vec
+fn process(data: &Vec<i32>) { /* ... */ }
+```
+
+This is the Rust equivalent of typing a Python parameter as `Sequence[int]` instead of `list[int]`.

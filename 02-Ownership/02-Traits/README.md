@@ -473,61 +473,19 @@ let b = a.clone();  // Explicit deep copy — a still valid
 
 ## 8. Concept: `Drop` — Cleanup
 
-```rust
-struct DatabaseConnection {
-    url: String,
-}
+> **Recap**: The `Drop` trait is taught in depth in [04-OBRM §4 — The Drop Trait](../04-OBRM/README.md#4-concept-the-drop-trait--automatic-cleanup), which covers 4 worked examples, the resource-lifecycle diagram, and the data-engineering cleanup patterns. Read that section first if you have not.
 
-impl Drop for DatabaseConnection {
-    fn drop(&mut self) {
-        println!("Closing connection to {}", self.url);
-        // Release resources here
-    }
-}
-
-fn main() {
-    let conn = DatabaseConnection {
-        url: String::from("postgres://localhost:5432/mydb"),
-    };
-    // ... use conn ...
-    // conn.drop() is called automatically here
-}
-```
-
-### Python vs Rust Cleanup
-
-```python
-# Python — __del__ is unreliable (may never be called)
-class Connection:
-    def __del__(self):
-        self.close()  # Not guaranteed!
-```
+The trait-mechanic view (the angle this Traits file adds): `Drop` is a trait with one method, `drop(&mut self)`, and the compiler calls it automatically at end of scope. That is the whole trait surface — there is no `derive` for `Drop`, you must `impl` it by hand.
 
 ```rust
-// Rust — Drop is deterministic (always called at scope end)
-impl Drop for Connection {
-    fn drop(&mut self) {
-        self.close();  // Guaranteed!
-    }
+trait Drop {
+    fn drop(&mut self);
 }
 ```
 
-### For Data Engineers
+> **Note**: You can move values *into* a `Drop` impl but you cannot return them — `drop` takes `&mut self`, not `self`. If you need to consume the value in cleanup, use the [`mem::take`](https://doc.rust-lang.org/std/mem/fn.take.html) or [`ManuallyDrop`](https://doc.rust-lang.org/std/mem/struct.ManuallyDrop.html) escape hatches.
 
-```rust
-struct LargeDataset {
-    data: Vec<Vec<f64>>,
-    path: String,
-}
-
-impl Drop for LargeDataset {
-    fn drop(&mut self) {
-        println!("Freeing {} MB dataset", 
-            self.data.len() * std::mem::size_of::<Vec<f64>>() / 1_048_576);
-        self.data.clear();  // Free memory NOW, not when GC decides
-    }
-}
-```
+See [04-OBRM](../04-OBRM/README.md) for the full RAII story, including the borrowing-vs-owning cleanup distinction and the data-engineering ETL pipeline pattern.
 
 ---
 

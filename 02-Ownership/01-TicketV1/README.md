@@ -887,78 +887,21 @@ impl Ticket {
 
 ## 12. Concept: Destructors and Drop
 
-### Scopes and Lifetime
+> **Recap**: The `Drop` trait and RAII cleanup were taught in depth in [04-OBRM §4 — The Drop Trait](../04-OBRM/README.md#4-concept-the-drop-trait--automatic-cleanup). Read that first for the full conceptual coverage (4 worked examples, ASCII lifecycle diagram, data-engineering patterns).
+
+The only point that matters for *this* project is: **Rust calls `drop` on every value when it goes out of scope, in reverse order of declaration.** This is what makes the `Ticket` type's resource cleanup automatic — we never had to write a `close()` call.
 
 ```rust
-fn main() {
-    let x = 5;     // x's scope starts
-    {              // inner block starts
-        let y = 10;  // y's scope starts
-        println!("{}", y);
-    }              // y goes out of scope — DROPPED
-    println!("{}", x);
-}                  // x goes out of scope — DROPPED
-```
-
-### The `Drop` Trait
-
-Rust calls `drop` on every value when it goes out of scope:
-
-```rust
-// Equivalent to what the compiler does:
+// What the compiler does behind the scenes for any `let`:
 fn main() {
     let x = String::from("hello");
     let y = String::from("world");
-    drop(y);  // compiler inserts this at end of scope
+    drop(y);  // inserted at end of scope
     drop(x);  // in reverse order of declaration
 }
 ```
 
-### Python Comparison
-
-```python
-# Python — __del__ is unreliable
-class File:
-    def __del__(self):    # May never be called!
-        self.handle.close()
-```
-
-```rust
-// Rust — Drop is deterministic
-struct File {
-    handle: i32,
-}
-
-impl Drop for File {
-    fn drop(&mut self) {
-        println!("File {} closed immediately!", self.handle);
-    }
-}
-
-fn main() {
-    let f = File { handle: 42 };
-    // ... use file ...
-    // f is dropped HERE, not whenever GC decides
-}
-```
-
-### For Data Engineers: Predictable Cleanup
-
-```rust
-struct Dataset {
-    rows: Vec<Vec<f64>>,
-    path: String,
-}
-
-impl Drop for Dataset {
-    fn drop(&mut self) {
-        println!("Closing dataset: {}", self.path);
-        self.rows.clear();  // Free memory immediately
-    }
-}
-```
-
-No `with` statement, no `finally` block — Rust handles it automatically.
+The [04-OBRM workshop](../04-OBRM/README.md) covers the `impl Drop for YourType { fn drop(&mut self) { ... } }` syntax, the resource-lifecycle diagram, and the data-engineering cleanup patterns. The two `impl Drop` examples in this file's `Putting It All Together` (the `File` and `Dataset` types) come directly from that teaching.
 
 ---
 

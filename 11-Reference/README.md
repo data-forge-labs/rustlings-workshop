@@ -16,7 +16,7 @@ Each reference is designed as a **cheatsheet**: dense, structured, and linked to
 
 | # | File | Covers | Best When You Need |
 |---|------|--------|--------------------|
-| 1 | `collections-guide.md` | Vec, HashMap, HashSet, BTreeMap, VecDeque, LinkedList, BinaryHeap — when to use what, time complexity, Python equivalents | "Should I use a Vec or a VecDeque?" |
+| 1 | `collections-guide.md` | Vec, HashMap, HashSet, BTreeMap, VecDeque, LinkedList, BinaryHeap, arrays `[T;N]`, slices `&[T]` — when to use what, time complexity, Python equivalents | "Should I use a Vec or a VecDeque?" |
 | 2 | `concurrency-reference.md` | Send/Sync, Arc, Mutex, RwLock, channels, async/await (Tokio), Rayon, atomics, deadlock prevention | "Is this type Send?" or "How do I share state across threads?" |
 | 3 | `data-management-io.md` | File I/O, BufReader/BufWriter, csv crate, Serde, Parquet/Arrow, Result-based error handling | "How do I read this CSV/Parquet file?" |
 | 4 | `distributed-systems.md` | CAP theorem, consistency models, CRDTs, leader election, quorum, Rust's advantages | "What's the difference between strong and eventual consistency?" |
@@ -41,6 +41,7 @@ Each reference is designed as a **cheatsheet**: dense, structured, and linked to
   Need to know...                    Open this file
   ─────────────────────────────────────────────────
   Which collection?                  collections-guide.md
+  Array vs slice in fn signature?    collections-guide.md (§"Arrays vs Slices")
   Thread safety?                     send-sync.md
   File I/O pattern?                  data-management-io.md
   Consistency model?                 distributed-systems.md
