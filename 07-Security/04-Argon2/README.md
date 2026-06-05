@@ -1,0 +1,177 @@
+# 🦀 Argon2 Password Hashing — Python to Rust Workshop
+
+*Subtitle: Hash and verify passwords with the Argon2id algorithm — the OWASP-recommended standard.*
+
+> **Test-driven approach**: This project includes a Cargo project with progressive
+> unit tests. Each function in `src/lib.rs` starts as a `todo!()` stub. As you
+> follow each section, replace `todo!()` with real code and run `cargo test` to
+> watch the pass count grow. Your goal: **all 10 tests pass**.
+
+---
+
+## Why Argon2 for Password Hashing?
+
+**Python pain:** `hashlib` gives you SHA-256, but SHA-256 is **fast**, and fast is bad for password hashing. A modern GPU computes 10 billion SHA-256 hashes per second. A user with a 6-character password gets cracked in seconds. `bcrypt` is better, but it has a 72-byte password limit and is not the modern standard.
+
+**Rust fix:** Argon2id is the **OWASP-recommended** password hashing algorithm. It has three knobs (memory, iterations, parallelism) that you crank up over time as hardware gets faster. The `argon2` crate gives you a clean API:
+
+```rust
+use argon2::Argon2;
+use password_hash::{PasswordHasher, SaltString, rand_core::OsRng};
+
+let salt = SaltString::generate(&mut OsRng);
+let hash = Argon2::default().hash_password(b"hunter2", &salt)?.to_string();
+```
+
+The output is a self-describing string: `$argon2id$v=19$m=19456,t=2,p=1$...salt...$...hash...`. You can verify it with no extra metadata.
+
+## At a Glance
+
+| # | Concept | Rust | Python | Why it matters |
+|---|---------|------|--------|----------------|
+| 1 | Argon2id | `argon2::Argon2` | `argon2-cffi` | OWASP-recommended |
+| 2 | Random salt | `SaltString::generate(&mut OsRng)` | `os.urandom(16)` | One salt per password |
+| 3 | Hash + encode | `hash_password(...).to_string()` | `ph.hash(...).encode()` | Self-describing format |
+| 4 | Verify | `verify_password(...)` | `ph.verify(...)` | Constant-time |
+| 5 | Constant-time compare | `subtle::ConstantTimeEq` | `hmac.compare_digest` | Prevents timing attacks |
+
+---
+
+## Table of Contents
+1. [Introduction](#1-introduction)
+2. [Prerequisites](#2-prerequisites)
+3. [Concept: The Argon2id Algorithm](#3-concept-the-argon2id-algorithm)
+4. [Concept: Hashing and Salting](#4-concept-hashing-and-salting)
+5. [Concept: Verification](#5-concept-verification)
+6. [Concept: Constant-Time Comparison](#6-concept-constant-time-comparison)
+7. [Putting It All Together](#7-putting-it-all-together)
+8. [Complete Code Reference](#8-complete-code-reference)
+9. [Summary](#9-summary)
+
+## 1. Introduction
+
+Argon2 won the [Password Hashing Competition](https://www.password-hashing.net/) in 2015. It comes in three variants:
+- **Argon2d** — data-dependent, fastest, side-channel vulnerable
+- **Argon2i** — data-independent, slower, side-channel resistant
+- **Argon2id** — hybrid (recommended; first pass is Argon2i, then Argon2d)
+
+**Python to Rust:** `argon2-cffi` is the standard Python binding. The Rust `argon2` crate wraps `RustCrypto`'s pure-Rust implementation. The two have the same hash format, so hashes are interoperable.
+
+**Data-engineering motivation:** When you build a user-facing system, you hash passwords. Argon2id with proper cost parameters is the modern standard.
+
+## 2. Prerequisites
+
+- Completed [07-Security/03-RustCryptoHashes](../03-RustCryptoHashes/README.md) — familiar with hashing.
+- Comfortable with `Result` and `Box<dyn Error>`.
+
+## 3. Concept: The Argon2id Algorithm
+
+Argon2id takes three parameters:
+- `m_cost` (memory, in KB) — how much RAM to use per hash
+- `t_cost` (iterations) — how many passes
+- `p_cost` (parallelism) — how many threads
+
+OWASP's 2024 recommendation: `m_cost = 19456 (19 MB), t_cost = 2, p_cost = 1`. The `Argon2::default()` uses these.
+
+**Why these matter:** Each parameter adds cost. `m_cost = 65536 (64 MB)` and `t_cost = 3` would make a single hash take ~300ms. A 6-character password becomes 1000x harder to brute-force than SHA-256.
+
+## 4. Concept: Hashing and Salting
+
+```rust
+use argon2::Argon2;
+use password_hash::{PasswordHasher, SaltString};
+use rand::rngs::OsRng;
+
+let salt = SaltString::generate(&mut OsRng);
+let hash = Argon2::default()
+    .hash_password(b"hunter2", &salt)
+    .map(|h| h.to_string())?;
+```
+
+The output string contains everything needed to verify later:
+```
+$argon2id$v=19$m=19456,t=2,p=1$<salt-b64>$<hash-b64>
+```
+
+**No separate salt storage needed** — the salt is in the hash.
+
+**In Python (`argon2-cffi`):**
+
+```python
+from argon2 import PasswordHasher
+ph = PasswordHasher()
+hash = ph.hash("hunter2")
+```
+
+Same output format, same security.
+
+## 5. Concept: Verification
+
+```rust
+use argon2::Argon2;
+use password_hash::{PasswordHash, PasswordVerifier};
+
+let parsed = PasswordHash::new(&hash)?;
+Argon2::default().verify_password(b"hunter2", &parsed)?;
+```
+
+`verify_password` returns:
+- `Ok(())` — correct password
+- `Err(password_hash::Error::Password)` — wrong password
+- `Err(other)` — malformed hash or other error
+
+The library's verification is **constant-time**: it always does the full Argon2 computation, so an attacker can't time the response to guess the password.
+
+## 6. Concept: Constant-Time Comparison
+
+Sometimes you have a pre-computed hash (e.g., a session token) and need to compare it to a candidate. Use `subtle::ConstantTimeEq` to prevent timing attacks:
+
+```rust
+use subtle::ConstantTimeEq;
+let a = b"secret_token_abc";
+let b = b"secret_token_xyz";
+let eq = a.ct_eq(b).into(); // bool, but constant-time
+```
+
+**Never use `==` for security-sensitive comparisons.** `==` short-circuits on the first differing byte, leaking timing information.
+
+**In Python:** `hmac.compare_digest(a, b)`.
+
+## 7. Putting It All Together
+
+`lib.rs` is organized in four progressive steps:
+
+1. **Step 1 (`step_01_hash_and_verify`)** — hash_password, verify_password.
+2. **Step 2 (`step_02_salt`)** — generate_salt, hash_with_salt (deterministic with fixed salt).
+3. **Step 3 (`step_03_validation`)** — is_password_valid (length check).
+4. **Step 4 (`step_04_constant_time`)** — constant_time_eq via `subtle`.
+
+`main.rs` ties it together: validate, hash, verify, reject wrong.
+
+## 8. Complete Code Reference
+
+See [`workshop/src/lib.rs`](workshop/src/lib.rs) and [`workshop/src/main.rs`](workshop/src/main.rs).
+
+## 9. Summary
+
+| Concept | Used In |
+|---------|---------|
+| `Argon2::default()` | `hash_password`, `verify_password` |
+| `SaltString::generate(&mut OsRng)` | `generate_salt` |
+| `PasswordHash::new` + `verify_password` | `verify_password` |
+| `subtle::ConstantTimeEq` | `constant_time_eq` |
+| Length validation | `is_password_valid` |
+
+## Further Reading
+
+- [OWASP Password Storage Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheatsheet.html)
+- [Argon2 RFC 9106](https://datatracker.ietf.org/doc/html/rfc9106)
+- [RustCrypto Argon2 docs](https://docs.rs/argon2/)
+- ssojet.com, "Argon2 in Rust for password hashing" (Medium, Oct 2025)
+- compile7.org, "Implementing Argon2id" (Medium, Aug 2025)
+
+## Exercises
+
+1. **Easy**: Add a `hash_password_with_params(password, m_cost, t_cost)` function that uses custom parameters, and 1 test.
+2. **Medium**: Add a `verify_password_with_old_params(password, hash, m_cost)` that detects when a hash uses old parameters and returns `Ok(false)` instead of erroring.
+3. **Hard**: Add a `needs_rehash(hash, m_cost, t_cost)` function that returns `true` if the stored hash was made with cost parameters below the current minimum (forcing a rehash on next login).

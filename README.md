@@ -172,6 +172,9 @@ Projects are grouped into **sections** that map concepts a Python data engineer 
 | 01 | **SafeAndUnsafe** — safe vs unsafe Rust | `unsafe` keyword, raw pointers, FFI, safety invariants |
 | 02 | **DecoderRing** — crack Caesar cipher | Frequency analysis, statistical scoring, `rayon` parallelism |
 | 03 | **RustCryptoHashes** — cryptographic hashes | SHA-2/3, BLAKE2, `Digest` trait, RustCrypto |
+| 04 | **Argon2** — password hashing | `argon2`, `SaltString`, `PasswordHasher`/`PasswordVerifier`, `subtle::ConstantTimeEq` |
+| 05 | **Ed25519** — digital signatures | `ed25519-dalek`, `SigningKey`/`VerifyingKey`, hex serialization, tamper detection |
+| 06 | **RustlsTLS** — TLS server & client | `rustls` + `aws-lc-rs`, `ServerConfig`/`ClientConfig`, `tokio-rustls` handshake |
 
 ### Section 8: Rust + Python Interop
 
@@ -352,6 +355,9 @@ The table below lists all core Rust concepts a learner should eventually see. **
 | RAII / `Drop` trait / OBRM | ✅ | 02-04 (canonical), 02-01, 02-02 |
 | Cryptographic hashes (`Digest` trait) | ✅ | 07-03 |
 | Caesar cipher / frequency analysis | ✅ | 07-02 |
+| Argon2 password hashing (`argon2` crate, salt, `PasswordHasher`/`PasswordVerifier`, `subtle::ConstantTimeEq`) | ✅ | 07-04 |
+| Ed25519 digital signatures (`ed25519-dalek`, `SigningKey`/`VerifyingKey`, hex serialization) | ✅ | 07-05 |
+| Rustls TLS (`rustls` + `aws-lc-rs`, `ServerConfig`/`ClientConfig`, `tokio-rustls` handshake) | ✅ | 07-06 |
 | Jupyter notebook / `evcxr` | ✅ | 08-02 |
 | Pandas / DataFrame operations | ✅ | 08-01 |
 

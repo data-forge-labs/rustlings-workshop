@@ -216,6 +216,9 @@ Rust's **ownership model** eliminates 70% of the bugs that plague C/C++ — the 
 | 41 | **RustCryptoHashes** — cryptographic hashes | SHA-2/3, BLAKE2, `Digest` trait, RustCrypto | Project |
 | 42 | **RustSoftwareSecurity** — Rust vs C/C++/Java | Ownership/borrowing safety, compile-time vs runtime safety | Project |
 | 43 | **SecurityLessonReflection** — high-availability security | Redundancy, encryption, access control, disaster recovery | Reflection |
+| 60 | **Argon2** — password hashing | `argon2` crate, `SaltString`, `PasswordHasher`/`PasswordVerifier`, `subtle::ConstantTimeEq` | Project |
+| 61 | **Ed25519** — digital signatures | `ed25519-dalek`, `SigningKey`/`VerifyingKey`, hex serialization, tamper detection | Project |
+| 62 | **RustlsTLS** — TLS server & client | `rustls` + `aws-lc-rs`, `ServerConfig`/`ClientConfig`, `tokio-rustls` handshake | Project |
 
 ## Learning Path
 
@@ -223,4 +226,7 @@ Rust's **ownership model** eliminates 70% of the bugs that plague C/C++ — the 
 2. Build **02-DecoderRing** for a practical crypto application
 3. Explore **03-RustCryptoHashes** for hashing algorithms
 4. Compare safety models with **RustSoftwareSecurity**
-5. Reflect with **SafetyLessonReflection** and **SecurityLessonReflection**
+5. **04-Argon2** for production password hashing (OWASP-recommended)
+6. **05-Ed25519** for digital signatures (JWT, software updates, blockchain)
+7. **06-RustlsTLS** for memory-safe TLS (no OpenSSL CVEs)
+8. Reflect with **SafetyLessonReflection** and **SecurityLessonReflection**
