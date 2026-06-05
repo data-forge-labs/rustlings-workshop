@@ -198,6 +198,108 @@ Why this matters:
 - SIMD-friendly columnar layout → 10-100x faster than pandas
 - Self-describing (schema travels with the data)
 
+## Parquet Write/Read Round-Trip, Projection, Statistics
+
+```rust
+use parquet::arrow::ArrowWriter;
+use parquet::arrow::arrow_reader::ParquetRecordBatchReaderBuilder;
+
+let file = std::fs::File::create("data.parquet")?;
+let mut writer = ArrowWriter::try_new(file, batch.schema(), Default::default())?;
+writer.write(&batch)?;
+writer.close()?;
+
+let file = std::fs::File::open("data.parquet")?;
+let builder = ParquetRecordBatchReaderBuilder::try_new(file)?;
+let reader = builder.with_batch_size(1024).build()?;
+for batch in reader { let b = batch?; /* ... */ }
+```
+
+Projection pushdown (read only the columns you need):
+
+```rust
+let projection = parquet::arrow::ProjectionMask::columns(
+    builder.schema(),
+    &[0, 2],   // column indices
+);
+let reader = builder.with_projection(projection).build()?;
+```
+
+Statistics (min/max/null_count per column chunk — the magic behind 100x speedups on `WHERE col BETWEEN a AND b`):
+
+```rust
+use parquet::file::reader::SerializedFileReader;
+let reader = SerializedFileReader::new(file)?;
+let row_group = reader.metadata().row_group(0);
+let col = row_group.columns()[0];
+if let Some(stats) = col.statistics() {
+    println!("min={:?} max={:?} nulls={:?}", stats.min(), stats.max(), stats.null_count());
+}
+```
+
+## YAML Configuration with `serde_yaml`
+
+```rust
+use serde::{Deserialize, Serialize};
+
+#[derive(Serialize, Deserialize)]
+struct Config {
+    database: Database,
+    sources: Vec<Source>,
+}
+
+let cfg: Config = serde_yaml::from_str(yaml_str)?;
+let yaml = serde_yaml::to_string(&cfg)?;
+```
+
+Custom enums with case conversion:
+
+```rust
+#[derive(Serialize, Deserialize)]
+#[serde(rename_all = "lowercase")]
+enum Status { Success, Failed, Skipped }
+```
+
+YAML → `Status::Success` via `"status: success"`.
+
+## JSON & NDJSON with `serde_json`
+
+Typed parse:
+
+```rust
+let u: User = serde_json::from_str(line)?;
+let s = serde_json::to_string(&u)?;  // compact
+let p = serde_json::to_string_pretty(&u)?;  // 2-space indent
+```
+
+Untyped walk:
+
+```rust
+use serde_json::Value;
+let v: Value = serde_json::from_str(json)?;
+let n = v["user"]["profile"]["name"].as_str();  // Option<&str>
+```
+
+NDJSON streaming (one JSON per line):
+
+```rust
+use std::io::{BufRead, BufReader, Write, BufWriter};
+
+let file = std::fs::File::open("events.ndjson")?;
+for line in BufReader::new(file).lines() {
+    let line = line?;
+    if line.trim().is_empty() { continue; }
+    let evt: Event = serde_json::from_str(&line)?;
+    process(evt);
+}
+```
+
+Why NDJSON:
+- Line-buffered, no closing bracket to wait for
+- Trivially splittable across cores / machines
+- Used by Datadog, Splunk, Elasticsearch Bulk API, BigQuery streaming
+- O(1) memory per record
+
 ## Error Handling with `Result`
 
 ```rust

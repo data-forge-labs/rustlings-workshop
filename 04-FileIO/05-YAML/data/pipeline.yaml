@@ -1,0 +1,17 @@
+database:
+  host: localhost
+  port: 5432
+  username: dataeng
+  pool_size: 10
+
+sources:
+  - name: sales
+    path: /data/sales.csv
+    format: csv
+  - name: users
+    path: /data/users.parquet
+    format: parquet
+
+schedule:
+  cron: "0 */6 * * *"
+  enabled: true

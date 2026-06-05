@@ -37,7 +37,7 @@ The course is carefully sequenced so each concept is introduced by one source an
 | 1 — Foundations | Syntax, types, control flow, basic I/O | 01 (Intro), 02 (BasicCalculator), 03 (MasterMind) |
 | 2 — Ownership | Structs, ownership, borrowing, lifetimes, traits, enums, error handling | 01 (TicketV1), 02 (Traits), 03 (TicketV2), 04 (OBRM), 05 (OwnershipLifetimes) |
 | 3 — Collections | Vec, arrays, HashMap, HashSet, BTreeMap, iterators, LinkedList, VecDeque, BinaryHeap | 01 (TicketManagement), 02–13 (Fruit Salad series, HashMap, iterators) |
-| 4 — File I/O | CSV reading/writing, Parquet, Arrow, serde, file I/O | 01 (CSVCookbook), 02 (CSVWriter), 03 (Parquet), 04 (Arrow) |
+| 4 — File I/O | CSV reading/writing, Parquet, Arrow, YAML, JSON/NDJSON, serde, file I/O | 01 (CSVCookbook), 02 (CSVWriter), 03 (Parquet), 04 (Arrow), 05 (YAML), 06 (JsonStream) |
 | 5 — Concurrency | Threads, async/await, Mutex, Arc, Send/Sync, Rayon, atomics, channels | 01 (Threads), 02 (Futures), 03–11 (DataRace, Atomics, DiningPhilosophers, Rayon, etc.) |
 | 6 — CLI & Tools | clap, petgraph, Dijkstra, PageRank, Neo4j | 01–10 (CLISalad, CommunityDetection, PageRank, GraphVisualize, etc.) |
 | 7 — Security | Safe vs unsafe, crypto, security model | 01 (SafeAndUnsafe), 02 (DecoderRing), 03 (RustCryptoHashes) |
@@ -118,8 +118,10 @@ Projects are grouped into **sections** that map concepts a Python data engineer 
 |---|---------|-------------------|
 | 01 | **CSVCookbook** — read, write, transform CSV | `csv` crate, deserialization, record iteration, error handling |
 | 02 | **CSVWriter** — programmatic CSV writing | `csv::Writer`, custom delimiters, `serde` (`Deserialize`/`Serialize`) |
-| 03 | **Parquet** — Apache Parquet columnar format | Parquet format, columnar storage, Arrow integration |
+| 03 | **Parquet** — Apache Parquet columnar format | Parquet format, columnar storage, Arrow integration, projection pushdown, statistics, schema evolution |
 | 04 | **Arrow** — Apache Arrow in-memory columnar format | `arrow` crate, `RecordBatch`, primitive arrays, builders, schema, CSV→Arrow, IPC, `compute` kernels |
+| 05 | **YAML** — pipeline configuration files | `serde_yaml`, `#[derive(Deserialize)]`, custom enums, `rename_all`, config merge, NDJSON-style queries |
+| 06 | **JsonStream** — JSON & NDJSON streaming | `serde_json`, typed `Value` walking, NDJSON read/write, pretty-print, object merge |
 
 ### Section 5: Concurrency — Beyond Python's GIL
 
@@ -298,9 +300,12 @@ The table below lists all core Rust concepts a learner should eventually see. **
 | External crates beyond `rand` | ✅ | 02-03, 05-01, 06-01, 06-02, 06-10, 04-01 |
 | File I/O (`std::fs`, `File`, `BufReader`) | ✅ | 04-01, 04-02 |
 | CSV parsing / writing (`csv` crate) | ✅ | 04-01, 04-02 |
-| Serde (serialisation / deserialisation) | ✅ | 04-02, 04-03 |
+| Serde (serialisation / deserialisation) | ✅ | 04-02, 04-03, 04-05, 04-06 |
 | Parquet / Arrow columnar format | ✅ | 04-03, 04-04 |
 | Apache Arrow `RecordBatch`, primitive arrays, builders, schema, CSV→Arrow, IPC streaming | ✅ | 04-04 |
+| Parquet write→read round-trip, projection pushdown, statistics, schema evolution | ✅ | 04-03 |
+| YAML config (`serde_yaml`, `rename_all` enums, config merge) | ✅ | 04-05 |
+| JSON & NDJSON streaming (`serde_json`, `Value` walking, NDJSON read/write) | ✅ | 04-06 |
 | Testing (`#[test]`, `cargo test`) | ✅ | 01-02 |
 | Documentation (`///`, `cargo doc`) | ✅ | 01-02 |
 | `derive` macros (`Debug`, `Clone`, `Copy`, `PartialEq`, etc.) | ✅ | 02-02, 06-01, 06-10, 04-02 |

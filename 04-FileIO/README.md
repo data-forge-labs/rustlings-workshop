@@ -211,9 +211,11 @@ Query "AVG(val)"     → read full file   → read one column
 |---|---------|----------|--------|
 | 53 | **CSVCookbook** — read, write, transform CSV | `csv` crate, deserialization, record iteration, error handling | Project |
 | 54 | **CSVWriter** — programmatic CSV writing | `csv::Writer`, custom delimiters, `serde` (`Deserialize`/`Serialize`) | Project |
-| 55 | **Parquet** — Apache Parquet columnar format | Parquet format, columnar storage, Arrow integration | Project |
+| 55 | **Parquet** — Apache Parquet columnar format | Parquet format, columnar storage, Arrow integration, projection pushdown, statistics, schema evolution | Project |
 | 56 | **Arrow** — Apache Arrow in-memory columnar format | `arrow` crate, `RecordBatch`, primitive arrays, builders, schema, CSV→Arrow, IPC, `compute` kernels (sum/filter/cast/slice) | Project |
-| 57 | **DataManagementLessonReflection** — I/O reflection | File I/O, serialization, columnar vs row-oriented | Reflection |
+| 57 | **YAML** — pipeline config files | `serde_yaml`, `#[derive(Deserialize)]`, custom enums with `rename_all`, config merge, NDJSON-style queries | Project |
+| 58 | **JsonStream** — JSON & NDJSON streaming | `serde_json`, typed `Value` walking, NDJSON read/write, pretty-print, object merge | Project |
+| 59 | **DataManagementLessonReflection** — I/O reflection | File I/O, serialization, columnar vs row-oriented | Reflection |
 
 ## Learning Path
 
@@ -221,4 +223,6 @@ Query "AVG(val)"     → read full file   → read one column
 2. Move to **02-CSVWriter** for writing CSV data
 3. Explore **03-Parquet** for columnar storage
 4. Try **04-Arrow** for the in-memory columnar format that Polars, DuckDB, and DataFusion all build on
-5. Reflect with **DataManagementLessonReflection**
+5. Configure pipelines with **05-YAML**
+6. Stream events with **06-JsonStream**
+7. Reflect with **DataManagementLessonReflection**
