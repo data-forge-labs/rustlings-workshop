@@ -271,6 +271,8 @@ These marker traits tell the compiler what's safe to share:
 | 50 | **RayonChallenge** — data parallelism with Rayon | `rayon` parallel iterators, speedup benchmarking | Project |
 | 51 | **SendSync** — Send and Sync marker traits | `Send`, `Sync`, thread safety markers, `unsafe impl` | Project |
 | 52 | **ConcurrencyLessonReflection** — concurrency review | Ownership + concurrency, data-race freedom, `mpsc` | Reflection |
+| 53 | **AdvancedSync** — High-performance concurrency primitives | `parking_lot::Mutex`/`RwLock`, `crossbeam_channel` (MPMC), `arc_swap` (lock-free), `triomphe::Arc` | Workshop |
+| 54 | **AsyncPatterns** — Real-world Tokio patterns | `tokio::select!`, `tokio::time::timeout`, `Semaphore`, `Notify`, `JoinSet`, bounded `mpsc`, `CancellationToken` (tokio-util) | Workshop |
 
 ## Learning Path
 

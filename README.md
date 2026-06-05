@@ -21,6 +21,7 @@ RustTut/
 ├── 10-ToolsAndFrameworks/          ← Section 10 (projects 01-03)
 ├── 11-Reference/                    ← Section 11 (reference material)
 └── 12-DataEngAnalytics/             ← Section 12 (projects 01-03) — Polars, DuckDB, DataFusion
+└── 13-ActorModel/                   ← Section 13 (projects 01-03) — DIY actor, ractor, ETL pipeline
 ```
 
 The course is organized into **12 sections** designed for a Python data engineer moving to Rust. Each section starts with tutorial-style projects (read `.md` files, write code alongside) and progresses to hands-on Cargo projects (build and run complete programs).
@@ -39,7 +40,7 @@ The course is carefully sequenced so each concept is introduced by one source an
 | 2 — Ownership | Structs, ownership, borrowing, lifetimes, traits, enums, error handling | 01 (TicketV1), 02 (Traits), 03 (TicketV2), 04 (OBRM), 05 (OwnershipLifetimes) |
 | 3 — Collections | Vec, arrays, HashMap, HashSet, BTreeMap, iterators, LinkedList, VecDeque, BinaryHeap | 01 (TicketManagement), 02–13 (Fruit Salad series, HashMap, iterators) |
 | 4 — File I/O | CSV reading/writing, Parquet, Arrow, YAML, JSON/NDJSON, serde, file I/O | 01 (CSVCookbook), 02 (CSVWriter), 03 (Parquet), 04 (Arrow), 05 (YAML), 06 (JsonStream) |
-| 5 — Concurrency | Threads, async/await, Mutex, Arc, Send/Sync, Rayon, atomics, channels | 01 (Threads), 02 (Futures), 03–11 (DataRace, Atomics, DiningPhilosophers, Rayon, etc.) |
+| 5 — Concurrency | Threads, async/await, Mutex, Arc, Send/Sync, Rayon, atomics, channels | 01 (Threads), 02 (Futures), 03–11 (DataRace, Atomics, DiningPhilosophers, Rayon, etc.), 12 (AdvancedSync), 13 (AsyncPatterns) |
 | 6 — CLI & Tools | clap, petgraph, Dijkstra, PageRank, Neo4j | 01–10 (CLISalad, CommunityDetection, PageRank, GraphVisualize, etc.) |
 | 7 — Security | Safe vs unsafe, crypto, security model | 01 (SafeAndUnsafe), 02 (DecoderRing), 03 (RustCryptoHashes) |
 | 8 — Interop | evcxr, Jupyter, pandas bridge | 01 (ExploringPandas), 02 (RustJupyterNotebook), 03 (PyO3Bindings), 04 (GILRelease) |
@@ -47,6 +48,7 @@ The course is carefully sequenced so each concept is introduced by one source an
 | 10 — Tools & Frameworks | Logging, configuration management, testing frameworks | 01 (Logging), 02 (Configuration), 03 (Testing), 04 (Proptest), 05 (Mockall), 06 (Insta) |
 | 11 — Reference | Quick concept lookup, cheatsheets, memory architecture | (no cargo projects — reference materials only) |
 | 12 — DataEng Analytics | Polars DataFrame, DuckDB in-process OLAP, Apache DataFusion query engine | 01 (Polars), 02 (DuckDB), 03 (DataFusion) |
+| 13 — Actor Model | DIY actor with `mpsc` + `oneshot`, `ractor` production crate, ETL pipeline composition | 01 (DIY-Actor), 02 (Ractor), 03 (ETLPipeline) |
 
 **How to use this table:** Start from Section 1 and work forward. Within each section, start with the lower-numbered projects (they introduce the concepts) and then move to the higher-numbered ones (they apply and deepen them).
 
@@ -143,6 +145,8 @@ Projects are grouped into **sections** that map concepts a Python data engineer 
 | 09 | **DistributedComputing** — Rust for distributed systems | GC overhead, compiled vs interpreted, distributed challenges |
 | 10 | **RayonChallenge** — data parallelism with Rayon | `rayon` parallel iterators, speedup benchmarking |
 | 11 | **SendSync** — Send and Sync marker traits | `Send`, `Sync`, thread safety markers, `unsafe impl` |
+| 12 | **AdvancedSync** — High-performance concurrency primitives | `parking_lot::Mutex`/`RwLock`, `crossbeam_channel`, `arc_swap` (lock-free), `triomphe::Arc` |
+| 13 | **AsyncPatterns** — Real-world Tokio patterns | `tokio::select!`, `tokio::time::timeout`, `Semaphore`, `Notify`, `JoinSet`, bounded `mpsc`, `CancellationToken` (tokio-util) |
 
 ### Section 6: CLI & Data Engineering Tools
 
@@ -372,6 +376,11 @@ The table below lists all core Rust concepts a learner should eventually see. **
 | Property-based testing (`proptest` strategies, shrinking, invariants) | ✅ | 10-04 |
 | Trait mocking (`mockall` `#[automock]`, `&dyn Trait`, predicate matchers) | ✅ | 10-05 |
 | Snapshot testing (`insta` inline + external snapshots, `cargo insta review`) | ✅ | 10-06 |
+| `parking_lot` Mutex/RwLock, `crossbeam_channel` (MPMC), `arc_swap` (lock-free) | ✅ | 05-12 |
+| `tokio::select!`, `Semaphore`, `Notify`, `JoinSet`, bounded `mpsc`, `CancellationToken` | ✅ | 05-13 |
+| DIY actor (`mpsc` mailbox + `oneshot` reply, `tokio::spawn` loop) | ✅ | 13-01 |
+| `ractor` framework (Actor trait, `cast` / `call` / `CallResult`, supervision) | ✅ | 13-02 |
+| Actor pipeline (source → transform → sink with bounded channels + atomic metrics) | ✅ | 13-03 |
 | Jupyter notebook / `evcxr` | ✅ | 08-02 |
 | Pandas / DataFrame operations | ✅ | 08-01 |
 

@@ -1,0 +1,10 @@
+[package]
+name = "advanced_sync_workshop"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+parking_lot = "0.12"
+crossbeam-channel = "0.5"
+arc-swap = "1"
+triomphe = "0.1"
