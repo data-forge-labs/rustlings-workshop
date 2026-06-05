@@ -19,10 +19,11 @@ RustTut/
 ├── 08-Interop/                      ← Section 8 (projects 01-02)
 ├── 09-ProductionSystems/           ← Section 9 (projects 01-02)
 ├── 10-ToolsAndFrameworks/          ← Section 10 (projects 01-03)
-└── 11-Reference/                    ← Section 11 (reference material)
+├── 11-Reference/                    ← Section 11 (reference material)
+└── 12-DataEngAnalytics/             ← Section 12 (projects 01-03) — Polars, DuckDB, DataFusion
 ```
 
-The course is organized into **11 sections** designed for a Python data engineer moving to Rust. Each section starts with tutorial-style projects (read `.md` files, write code alongside) and progresses to hands-on Cargo projects (build and run complete programs).
+The course is organized into **12 sections** designed for a Python data engineer moving to Rust. Each section starts with tutorial-style projects (read `.md` files, write code alongside) and progresses to hands-on Cargo projects (build and run complete programs).
 
 **Progression:** Go through sections in order. Within each section, start with lower-numbered projects (introduce concepts) then move to higher-numbered ones (apply and deepen). Concepts from earlier sections are assumed in later ones.
 
@@ -45,6 +46,7 @@ The course is carefully sequenced so each concept is introduced by one source an
 | 9 — Production Systems | Tokio, async, TCP, RESP protocol, Axum web API | 01 (Radish), 02 (AxumShop) |
 | 10 — Tools & Frameworks | Logging, configuration management, testing frameworks | 01 (Logging), 02 (Configuration), 03 (Testing) |
 | 11 — Reference | Quick concept lookup, cheatsheets, memory architecture | (no cargo projects — reference materials only) |
+| 12 — DataEng Analytics | Polars DataFrame, DuckDB in-process OLAP, Apache DataFusion query engine | 01 (Polars), 02 (DuckDB), 03 (DataFusion) |
 
 **How to use this table:** Start from Section 1 and work forward. Within each section, start with the lower-numbered projects (they introduce the concepts) and then move to the higher-numbered ones (they apply and deepen them).
 
@@ -202,6 +204,16 @@ Projects are grouped into **sections** that map concepts a Python data engineer 
 
 This section contains reference documents for quick lookup of Rust syntax, idioms, and patterns covered across all 10 prior sections.
 
+### Section 12: Data Engineering Analytics — Polars, DuckDB, DataFusion
+
+*The three high-performance Rust OLAP engines, all built on Apache Arrow — production data engineering at scale.*
+
+| # | Project | Rust Topics Covered |
+|---|---------|-------------------|
+| 01 | **Polars** — single-node DataFrame library | `polars` DataFrame, `LazyFrame` query plans, `group_by`, Parquet I/O, predicate pushdown |
+| 02 | **DuckDB** — in-process OLAP database | `duckdb` crate, DDL/DML, prepared statements, `read_csv_auto`, raw SQL execution |
+| 03 | **DataFusion** — Apache query engine | `SessionContext`, async SQL, CSV registration, Arrow zero-copy, Parquet write |
+
 ---
 
 ## Prerequisites
@@ -306,6 +318,9 @@ The table below lists all core Rust concepts a learner should eventually see. **
 | Parquet write→read round-trip, projection pushdown, statistics, schema evolution | ✅ | 04-03 |
 | YAML config (`serde_yaml`, `rename_all` enums, config merge) | ✅ | 04-05 |
 | JSON & NDJSON streaming (`serde_json`, `Value` walking, NDJSON read/write) | ✅ | 04-06 |
+| Polars DataFrame (eager + lazy, `group_by`, Parquet I/O, predicate pushdown) | ✅ | 12-01 |
+| DuckDB in-process OLAP (`read_csv_auto`, prepared statements, raw SQL) | ✅ | 12-02 |
+| Apache DataFusion (`SessionContext`, async SQL, Arrow zero-copy, Parquet write) | ✅ | 12-03 |
 | Testing (`#[test]`, `cargo test`) | ✅ | 01-02 |
 | Documentation (`///`, `cargo doc`) | ✅ | 01-02 |
 | `derive` macros (`Debug`, `Clone`, `Copy`, `PartialEq`, etc.) | ✅ | 02-02, 06-01, 06-10, 04-02 |

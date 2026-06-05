@@ -1,0 +1,260 @@
+# 🦀 Polars DataFrame Library — Python to Rust Workshop
+
+*Subtitle: Lightning-fast DataFrames with lazy evaluation, group-by, joins, and Parquet I/O.*
+
+> **Test-driven approach**: This project includes a Cargo project with progressive
+> unit tests. Each function in `src/lib.rs` starts as a `todo!()` stub. As you
+> follow each section, replace `todo!()` with real code and run `cargo test` to
+> watch the pass count grow. Your goal: **all 10 tests pass**.
+
+---
+
+## Why Polars for Single-Node Analytics?
+
+**Python pain:** `pandas` is the default for data work in Python, but it's slow on large data, single-threaded, and has a heavy memory footprint. You spend more time waiting on `groupby().agg()` than writing logic. `modin` and `dask` help, but they're a layer on top of pandas with their own bugs.
+
+**Rust fix:** Polars is a **from-scratch** DataFrame library built on Apache Arrow. It's 5-30x faster than pandas, uses a fraction of the memory, and is **parallel by default**. The lazy query planner applies the same optimizations as a database (predicate pushdown, projection pushdown, query fusion):
+
+```rust
+let df = LazyFrame::scan_csv("data/sales.csv", ScanArgsCsv::default())?
+    .filter(col("amount").gt(lit(100.0)))
+    .group_by([col("region")])
+    .agg([col("revenue").sum()])
+    .collect()?;
+```
+
+The lazy API builds a **query plan** that the optimizer transforms before execution. You can `.explain()` the plan to see what will run.
+
+## At a Glance
+
+| # | Concept | Rust | Python | Why it matters |
+|---|---------|------|--------|----------------|
+| 1 | DataFrame | `polars::DataFrame` | `pandas.DataFrame` | Columnar, typed, parallel |
+| 2 | Eager API | `df.column("x")?.sum()` | `df["x"].sum()` | Direct column access |
+| 3 | Lazy API | `df.lazy().filter(...).collect()` | `dask.dataframe` | Query optimization |
+| 4 | Group-by | `df.group_by([col])` | `df.groupby(col)` | Optimized aggregation |
+| 5 | Predicate pushdown | automatic (lazy) | manual filter indexing | Skip rows that don't match |
+| 6 | Parquet I/O | `ParquetWriter` / `ParquetReader` | `pd.read_parquet` | Native Arrow format |
+| 7 | Column expressions | `col("x") * col("y")` | `df["x"] * df["y"]` | Composable, type-checked |
+| 8 | Sort | `df.sort("col", SortOptions)` | `df.sort_values("col")` | Multi-key, descending |
+
+---
+
+## Table of Contents
+1. [Introduction](#1-introduction)
+2. [Prerequisites](#2-prerequisites)
+3. [Concept: DataFrame vs LazyFrame](#3-concept-dataframe-vs-lazyframe)
+4. [Concept: Loading CSV and Schema Inference](#4-concept-loading-csv-and-schema-inference)
+5. [Concept: Aggregations and Expressions](#5-concept-aggregations-and-expressions)
+6. [Concept: Lazy Query Plans and Optimization](#6-concept-lazy-query-plans-and-optimization)
+7. [Concept: Parquet I/O](#7-concept-parquet-i-o)
+8. [Putting It All Together](#8-putting-it-all-together)
+9. [Complete Code Reference](#9-complete-code-reference)
+10. [Summary](#10-summary)
+
+## 1. Introduction
+
+Polars is the de-facto DataFrame library in Rust. Used in production at:
+- **Apple** (data pipelines for Siri and App Store analytics)
+- **Shopify** (Shopify Sidekick ML pipelines)
+- **Netflix** (data quality checks)
+- **Bump.sh** (API analytics)
+
+**Python to Rust:** The `polars` Python package is built on the same Rust crate, so the API is nearly identical. The Rust version gives you `Result<T, PolarsError>` instead of Python exceptions, full type-safety, and zero-overhead FFI.
+
+**Data-engineering motivation:** When your pandas pipeline becomes the bottleneck, Polars is the simplest drop-in replacement. The lazy mode often gives a 10x speedup for free, just by adding `.lazy()` and `.collect()`.
+
+## 2. Prerequisites
+
+- Completed [04-FileIO/04-Arrow](../04-FileIO/04-Arrow/README.md) — comfortable with Arrow, the underlying format.
+- Familiar with `Result` and error handling.
+- Knows what a DataFrame is (even if only in pandas).
+
+## 3. Concept: DataFrame vs LazyFrame
+
+Polars has two execution modes:
+
+- **Eager (`DataFrame`)** — operations execute immediately. Like pandas.
+- **Lazy (`LazyFrame`)** — operations build a query plan, executed on `.collect()`. Like dask, but with a real optimizer.
+
+```rust
+use polars::prelude::*;
+
+// Eager
+let df = CsvReader::from_path("data/sales.csv")?.has_header(true).finish()?;
+let total = df.column("units")?.sum::<i64>()?;
+
+// Lazy
+let lf = LazyFrame::scan_csv("data/sales.csv", ScanArgsCsv::default())?;
+let result = lf
+    .filter(col("amount").gt(lit(100.0)))
+    .select([col("units").sum().alias("total_units")])
+    .collect()?;
+```
+
+The eager mode is fine for small data. For any serious work, use the lazy mode — Polars will apply the same optimizations as a SQL engine.
+
+**In Python:**
+
+```python
+import polars as pl
+df = pl.read_csv("data/sales.csv")
+total = df["units"].sum()
+
+# Lazy
+lf = pl.scan_csv("data/sales.csv")
+result = lf.filter(pl.col("amount") > 100).select(pl.col("units").sum()).collect()
+```
+
+The two are nearly identical. The Rust version uses method-style expressions (`col("x").gt(lit(100))`); the Python version uses operator overloading (`pl.col("x") > 100`).
+
+## 4. Concept: Loading CSV and Schema Inference
+
+`CsvReader::from_path(path)?.has_header(true).finish()` reads a CSV and infers the schema from the first N rows:
+
+```rust
+let df = CsvReader::from_path("data/sales.csv")?
+    .has_header(true)
+    .with_dtype_overwrite(None)
+    .finish()?;
+```
+
+The inferred schema:
+- `id: Int64`
+- `name: Utf8` (Rust's name for `String`)
+- `amount: Float64`
+- `units: Int64`
+
+**Schema overrides** are common in production: you can pass `.with_dtype_overwrite(Some(schema))` to force a specific type if the inference is wrong.
+
+**In pandas:**
+
+```python
+df = pd.read_csv("data/sales.csv")
+```
+
+Same result, but pandas's inference is slower and less accurate (it falls back to `object` for ambiguous columns, which kills performance).
+
+## 5. Concept: Aggregations and Expressions
+
+Aggregations use the `.agg()` method with expressions:
+
+```rust
+let revenue_per_product = df
+    .clone()
+    .lazy()
+    .group_by([col("name")])
+    .agg([(col("amount") * col("units")).sum().alias("revenue")])
+    .collect()?;
+```
+
+The expression `(col("amount") * col("units"))` is a **column expression** — Polars composes it lazily, fuses it with the aggregation, and runs it as a single SIMD-optimized kernel.
+
+**In pandas:**
+
+```python
+df.groupby("name").apply(lambda g: (g["amount"] * g["units"]).sum())
+```
+
+The pandas version is slow because of the Python-level lambda. The Polars version is fast because the expression is compiled to a typed query plan.
+
+## 6. Concept: Lazy Query Plans and Optimization
+
+The killer feature of Polars is the **lazy query optimizer**. After you build a `LazyFrame`, you can call `.explain()` to see the optimized plan:
+
+```rust
+let lf = LazyFrame::scan_csv("data/sales.csv", ScanArgsCsv::default())?
+    .filter(col("amount").gt(lit(100.0)))
+    .group_by([col("name")])
+    .agg([col("units").sum()]);
+
+println!("{}", lf.explain()?);
+// ANTI projection: [col("name"), col("units")]
+// SELECTION: [(col("amount")) > (100.0)]
+//   ParquetSCAN [data/sales.csv]
+//     PROJECTION: [name, amount, units]
+//   AGGREGATE
+//     [col("name")]
+//     [col("units").sum()]
+```
+
+The optimizer sees:
+- Only `name`, `amount`, `units` are needed → drop other columns at scan time
+- The filter `amount > 100` can be pushed down to the scan → skip rows that don't match
+
+**In dask:**
+
+```python
+import dask.dataframe as dd
+df = dd.read_csv("data/sales.csv")
+result = df[df["amount"] > 100].groupby("name")["units"].sum().compute()
+```
+
+Dask has fewer optimizations than Polars, and the API is more cumbersome. Polars is the more polished lazy DataFrame.
+
+## 7. Concept: Parquet I/O
+
+Polars reads and writes Parquet natively (no PyArrow dependency):
+
+```rust
+// Write
+let mut file = std::fs::File::create("data.parquet")?;
+ParquetWriter::new(&mut file).finish(&mut df.clone())?;
+
+// Read
+let file = std::fs::File::open("data.parquet")?;
+let df = ParquetReader::new(&mut file).finish()?;
+```
+
+The format is the **same Apache Parquet** that Spark, DuckDB, and pandas use. A Parquet file written by Polars is readable by any of them.
+
+**In pandas:**
+
+```python
+df.to_parquet("data.parquet")
+df = pd.read_parquet("data.parquet")
+```
+
+Same code, different language. The Rust version is faster (5-10x) and uses less memory (columnar, no Python object overhead).
+
+## 8. Putting It All Together
+
+`lib.rs` is organized in six progressive steps:
+
+1. **Step 1 (`step_01_load`)** — read CSV, inspect shape and columns.
+2. **Step 2 (`step_02_aggregations`)** — total units, total revenue.
+3. **Step 3 (`step_03_filter_select`)** — filter rows by amount.
+4. **Step 4 (`step_04_group_by`)** — group-by with revenue expression, threshold filter.
+5. **Step 5 (`step_05_parquet`)** — write & read Parquet round-trip.
+6. **Step 6 (`step_06_lazy`)** — `LazyFrame` filter and group-by.
+
+`main.rs` loads the CSV, computes totals, filters, groups, and writes Parquet.
+
+## 9. Complete Code Reference
+
+See [`workshop/src/lib.rs`](workshop/src/lib.rs) and [`workshop/src/main.rs`](workshop/src/main.rs). Sample CSV is at [`workshop/data/sales.csv`](workshop/data/sales.csv).
+
+## 10. Summary
+
+| Concept | Used In |
+|---------|---------|
+| `CsvReader::from_path` | `load_sales_csv` |
+| Eager aggregation | `total_units`, `total_revenue` |
+| Lazy filter | `filter_expensive` |
+| Lazy group-by | `revenue_per_product`, `high_revenue_products` |
+| `ParquetWriter` | `write_parquet` |
+| `ParquetReader` | `read_parquet` |
+| `LazyFrame::scan_csv` | `lazy_filter_expensive`, `lazy_group_by_total` |
+
+## Further Reading
+
+- [Polars user guide](https://pola-rs.github.io/polars/)
+- [Polars Rust API docs](https://docs.rs/polars/)
+- Ritchie Vink, "Polars — DataFrame library built for performance" (PyData talk, 2023)
+- dasroot.net, "Polars vs DataFusion" (Medium, 2026)
+
+## Exercises
+
+1. **Easy**: Add `count_products(sales: &DataFrame) -> Result<usize>` that returns the row count, and 1 test.
+2. **Medium**: Add a join function `join_sales_with_products(sales, products) -> Result<DataFrame>` that joins on `product_id` and 1 test that uses a small embedded `products` DataFrame.
+3. **Hard**: Add a UDF with `apply` that uppercases the `name` column, and 1 test verifying all names are uppercased.

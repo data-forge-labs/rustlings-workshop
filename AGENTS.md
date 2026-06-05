@@ -100,6 +100,11 @@ RustTut/
     ├── collections-guide.md        ← Collections comparison & selection guide
     ├── concurrency-reference.md    ← Concurrency model review
     ├── data-management-io.md       ← File I/O & serialization reference
+└── 12-DataEngAnalytics/            ← Section 12: data-eng analytics engines on Arrow
+    ├── README.md                   ← Section overview
+    ├── 01-Polars/                  ← Polars DataFrame (eager + lazy)
+    ├── 02-DuckDB/                  ← DuckDB in-process OLAP
+    └── 03-DataFusion/              ← Apache DataFusion query engine
     ├── distributed-systems.md      ← Distributed systems concepts (CAP, consistency)
     ├── memory-safety.md            ← Memory safety & security model
     ├── safety-reflection.md        ← Rust vs GC languages safety comparison

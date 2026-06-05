@@ -1,0 +1,158 @@
+use polars::prelude::*;
+
+pub fn load_sales_csv(path: &str) -> Result<DataFrame, PolarsError> {
+    todo!()
+}
+
+pub fn total_units(sales: &DataFrame) -> Result<i64, PolarsError> {
+    todo!()
+}
+
+pub fn total_revenue(sales: &DataFrame) -> Result<f64, PolarsError> {
+    todo!()
+}
+
+pub fn filter_expensive(sales: &DataFrame, min_amount: f64) -> Result<DataFrame, PolarsError> {
+    todo!()
+}
+
+pub fn revenue_per_product(sales: &DataFrame) -> Result<DataFrame, PolarsError> {
+    todo!()
+}
+
+pub fn high_revenue_products(sales: &DataFrame, min_revenue: f64) -> Result<DataFrame, PolarsError> {
+    todo!()
+}
+
+pub fn write_parquet(df: &DataFrame, path: &str) -> Result<(), PolarsError> {
+    todo!()
+}
+
+pub fn read_parquet(path: &str) -> Result<DataFrame, PolarsError> {
+    todo!()
+}
+
+pub fn lazy_filter_expensive(min_amount: f64) -> Result<DataFrame, PolarsError> {
+    todo!()
+}
+
+pub fn lazy_group_by_total() -> Result<DataFrame, PolarsError> {
+    todo!()
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    mod step_01_load {
+        use super::*;
+
+        #[test]
+        fn test_load_sales_csv() {
+            let df = load_sales_csv("data/sales.csv").unwrap();
+            assert_eq!(df.height(), 10);
+            assert_eq!(df.width(), 4);
+        }
+
+        #[test]
+        fn test_load_sales_csv_columns() {
+            let df = load_sales_csv("data/sales.csv").unwrap();
+            let names: Vec<String> = df.get_column_names().into_iter().map(|s| s.to_string()).collect();
+            assert_eq!(names, vec!["id", "name", "amount", "units"]);
+        }
+    }
+
+    mod step_02_aggregations {
+        use super::*;
+
+        #[test]
+        fn test_total_units() {
+            let df = load_sales_csv("data/sales.csv").unwrap();
+            assert_eq!(total_units(&df).unwrap(), 100 + 50 + 25 + 10 + 200 + 40 + 80 + 30 + 60 + 150);
+        }
+
+        #[test]
+        fn test_total_revenue() {
+            let df = load_sales_csv("data/sales.csv").unwrap();
+            let revenue = total_revenue(&df).unwrap();
+            let expected = 1.50 * 100.0 + 2.25 * 50.0 + 3.99 * 25.0
+                + 5.49 * 10.0 + 2.99 * 200.0 + 4.49 * 40.0
+                + 1.99 * 80.0 + 8.99 * 30.0 + 3.49 * 60.0 + 2.19 * 150.0;
+            assert!((revenue - expected).abs() < 1e-6);
+        }
+    }
+
+    mod step_03_filter_select {
+        use super::*;
+
+        #[test]
+        fn test_filter_expensive_keeps_only_high_amount() {
+            let df = load_sales_csv("data/sales.csv").unwrap();
+            let filtered = filter_expensive(&df, 5.0).unwrap();
+            assert_eq!(filtered.height(), 2);
+            let names: Vec<String> = filtered
+                .column("name")
+                .unwrap()
+                .str()
+                .unwrap()
+                .into_iter()
+                .map(|s| s.unwrap().to_string())
+                .collect();
+            assert!(names.contains(&"Cheese".to_string()));
+            assert!(names.contains(&"Coffee".to_string()));
+        }
+    }
+
+    mod step_04_group_by {
+        use super::*;
+
+        #[test]
+        fn test_revenue_per_product() {
+            let df = load_sales_csv("data/sales.csv").unwrap();
+            let result = revenue_per_product(&df).unwrap();
+            assert!(result.height() > 0);
+            let names: Vec<String> = result.get_column_names().into_iter().map(|s| s.to_string()).collect();
+            assert!(names.contains(&"name".to_string()));
+            assert!(names.contains(&"revenue".to_string()));
+        }
+
+        #[test]
+        fn test_high_revenue_products_threshold() {
+            let df = load_sales_csv("data/sales.csv").unwrap();
+            let result = high_revenue_products(&df, 100.0).unwrap();
+            assert!(result.height() >= 1);
+        }
+    }
+
+    mod step_05_parquet {
+        use super::*;
+        use std::fs;
+
+        #[test]
+        fn test_parquet_roundtrip() {
+            let df = load_sales_csv("data/sales.csv").unwrap();
+            let tmp = std::env::temp_dir().join("polars_test_roundtrip.parquet");
+            write_parquet(&df, tmp.to_str().unwrap()).unwrap();
+            let back = read_parquet(tmp.to_str().unwrap()).unwrap();
+            assert_eq!(back.height(), 10);
+            assert_eq!(back.width(), 4);
+            let _ = fs::remove_file(&tmp);
+        }
+    }
+
+    mod step_06_lazy {
+        use super::*;
+
+        #[test]
+        fn test_lazy_filter_expensive() {
+            let df = lazy_filter_expensive(5.0).unwrap();
+            assert!(df.height() >= 1);
+        }
+
+        #[test]
+        fn test_lazy_group_by_total() {
+            let df = lazy_group_by_total().unwrap();
+            assert!(df.height() > 0);
+        }
+    }
+}
