@@ -301,6 +301,7 @@ Equivalent to Python's `@dataclass(frozen=True)` — but with zero runtime overh
 | 5 | **TicketV2** — enums, match, error handling | `enum`, `match`, `if let`, `Option`, `Result`, error enums, `Error` trait, `thiserror`, `TryFrom` | Tutorial |
 | 37 | **OBRM** — ownership-based resource management | Ownership rules, `Drop` trait, RAII, borrowing, resource lifecycle | Project |
 | 38 | **OwnershipLifetimes** — lifetimes & borrow checker | Move semantics, borrowing (`&T`/`&mut T`), lifetimes (`'a`), `Copy`/`Clone` | Project |
+| 39 | **ConversionErrorHandling** — `unwrap`, `?`, `From`, and the whole family | `Option::unwrap_or[_default]`, `Option::map_or`, `Option::ok_or`, `Result::map_err`, `Result::and_then`, `?` operator, `From<E1>` impl, `thiserror` | Workshop |
 
 ## Learning Path
 
@@ -309,3 +310,4 @@ Equivalent to Python's `@dataclass(frozen=True)` — but with zero runtime overh
 3. **5-TicketV2** — enums and Result-based error handling (essential for production)
 4. **04-OBRM** — apply ownership in a resource management project
 5. **05-OwnershipLifetimes** — deep dive into lifetime annotations
+6. **06-ConversionErrorHandling** — the missing reference: every `Option` / `Result` method, `?` with `From`, `thiserror`

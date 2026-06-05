@@ -10,7 +10,7 @@ RustTut/
 ├── AGENTS.md                        ← AI workshop designer instructions
 ├── .devcontainer/                   ← preconfigured Rust dev environment
 ├── 01-Foundations/                  ← Section 1 (projects 01-04)
-├── 02-Ownership/                    ← Section 2 (projects 01-05)
+├── 02-Ownership/                    ← Section 2 (projects 01-06)
 ├── 03-Collections/                  ← Section 3 (projects 01-13)
 ├── 04-FileIO/                       ← Section 4 (projects 01-03)
 ├── 05-Concurrency/                  ← Section 5 (projects 01-11)
@@ -37,7 +37,7 @@ The course is carefully sequenced so each concept is introduced by one source an
 | Section | Concept Cluster | Projects |
 |---------|----------------|----------|
 | 1 — Foundations | Syntax, types, control flow, basic I/O, console games | 01 (Intro), 02 (GuessGame), 03 (BasicCalculator), 04 (MasterMind) |
-| 2 — Ownership | Structs, ownership, borrowing, lifetimes, traits, enums, error handling | 01 (TicketV1), 02 (Traits), 03 (TicketV2), 04 (OBRM), 05 (OwnershipLifetimes) |
+| 2 — Ownership | Structs, ownership, borrowing, lifetimes, traits, enums, error handling | 01 (TicketV1), 02 (Traits), 03 (TicketV2), 04 (OBRM), 05 (OwnershipLifetimes), 06 (ConversionErrorHandling) |
 | 3 — Collections | Vec, arrays, HashMap, HashSet, BTreeMap, iterators, LinkedList, VecDeque, BinaryHeap | 01 (TicketManagement), 02–13 (Fruit Salad series, HashMap, iterators) |
 | 4 — File I/O | CSV reading/writing, Parquet, Arrow, YAML, JSON/NDJSON, serde, file I/O | 01 (CSVCookbook), 02 (CSVWriter), 03 (Parquet), 04 (Arrow), 05 (YAML), 06 (JsonStream) |
 | 5 — Concurrency | Threads, async/await, Mutex, Arc, Send/Sync, Rayon, atomics, channels | 01 (Threads), 02 (Futures), 03–11 (DataRace, Atomics, DiningPhilosophers, Rayon, etc.), 12 (AdvancedSync), 13 (AsyncPatterns) |
@@ -94,6 +94,7 @@ Projects are grouped into **sections** that map concepts a Python data engineer 
 | 03 | **TicketV2** — enums, match, error handling | `enum`, `match`, `if let`, `Option`, `Result`, error enums, `Error` trait, `thiserror`, `TryFrom` |
 | 04 | **OBRM** — ownership-based resource management | **Canonical** `Drop` trait, RAII, resource lifecycle; ownership/borrowing recap (see TicketV1) |
 | 05 | **OwnershipLifetimes** — lifetimes & borrow checker | Lifetimes (`'a`), lifetime elision, struct lifetimes; move/copy recap (see TicketV1) |
+| 06 | **ConversionErrorHandling** — `unwrap`, `?`, `From`, and the whole family | `Option::unwrap_or[_default]`, `Option::map_or`, `Option::ok_or`, `Result::map_err`, `Result::and_then`, `?` operator, `From<E1>` impl, `thiserror` |
 
 ### Section 3: Collections — Faster Than Python Lists & Dicts
 
@@ -325,6 +326,9 @@ The table below lists all core Rust concepts a learner should eventually see. **
 | Error handling with `Result` and custom error types | ✅ | 02-03, 06-01, 06-10, 04-01 |
 | `thiserror` crate | ✅ | 02-03 |
 | `TryFrom` / `TryInto` traits | ✅ | 02-03 |
+| `Option` combinators (`unwrap_or[_default]`, `map_or`, `ok_or`, `filter`, `or_else`, `transpose`) | ✅ | 02-06 |
+| `Result` combinators (`map_err`, `and_then`, `or_else`, `?` operator) | ✅ | 02-06 |
+| `From<E1>` for error conversion + `thiserror` | ✅ | 02-06 |
 | `mod`, `pub`, `use` (modules & visibility) | ✅ | 02-01, 06-10 |
 | External crates beyond `rand` | ✅ | 02-03, 05-01, 06-01, 06-02, 06-10, 04-01 |
 | File I/O (`std::fs`, `File`, `BufReader`) | ✅ | 04-01, 04-02 |
