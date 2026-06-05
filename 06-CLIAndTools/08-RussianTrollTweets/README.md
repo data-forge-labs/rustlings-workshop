@@ -5,32 +5,16 @@
 > follow each section, replace `todo!()` with real code and run `cd workshop && cargo test` to
 > watch the pass count grow. Your goal: **all 16 tests pass**.
 
-## Why This Project?
+## Why Analyze a Retweet Graph Without Pandas?
 
-### The Problem
-
-Social network analysis in Python typically means loading data into a Pandas DataFrame, then converting to `networkx`:
-
-```python
-import pandas as pd
-import networkx as nx
-
-df = pd.read_csv("tweets.csv")
-G = nx.from_pandas_edgelist(df, source="user", target="retweet_of",
-                            create_using=nx.DiGraph())
-influencers = sorted(G.degree(), key=lambda x: -x[1])[:10]
-```
-
-This pipeline loads data into one library (pandas), converts to another (networkx), and runs analysis. Each conversion copies data and creates Python-object wrappers. For 100K tweets, this means 300K+ Python objects and 5-10 seconds of overhead.
+**Python pain:** A typical social-graph pipeline loads CSV into pandas, converts to `networkx`, then runs analysis. Each conversion copies data and creates Python wrappers. For 100K tweets, that's 300K+ Python objects and ~8s of overhead:
 
 ```
-Python pandas+networkx (100K tweets):  ~8 seconds
-Rust HashMap+Vec (100K tweets):        ~0.1 seconds
+Python pandas + networkx (100K tweets):  ~8 seconds
+Rust HashMap + Vec (100K tweets):        ~0.1 seconds
 ```
 
-### The Rust Solution
-
-Rust processes raw tweet data into a `HashMap<String, Vec<String>>` directly, no intermediate conversion:
+**Rust fix:** Build the graph in a single pass into `HashMap<String, Vec<String>>` — no intermediate library, no copy, no GC pauses:
 
 ```rust
 pub fn build_retweet_graph(tweets: &[Tweet]) -> HashMap<String, Vec<String>> {
@@ -45,23 +29,19 @@ pub fn build_retweet_graph(tweets: &[Tweet]) -> HashMap<String, Vec<String>> {
 }
 ```
 
-One pass, one data structure, zero garbage collection pauses.
+## At a Glance
 
-## What You'll Learn
-
-| # | Concept | Rust Type / Module | Python Equivalent | Purpose |
-|---|---------|--------------------|------------------|---------|
+| # | Concept | Rust | Python | Why it matters |
+|---|---------|------|--------|----------------|
 | 1 | Optional fields | `Option<String>` | `Optional[str]` | Model nullable retweet_of field |
 | 2 | Retweet graph | `HashMap<String, Vec<String>>` | `defaultdict(list)` | Build directed graph from tweet data |
 | 3 | Counting with HashMap | `entry().or_insert(0) += 1` | `collections.Counter` | Count tweets per user |
-| 4 | Top-N sorting | `sort_by(|a,b| b.1.cmp(&a.1))`, truncate | `Counter.most_common(n)` | Find most active users |
-| 5 | BFS reachability | `VecDeque` + `HashSet` | `deque` + `set` | Check if info flows user A to user B |
-| 6 | Influence score | Count incoming edges | List comprehension | Measure how many retweeted a user |
-| 7 | Bridge detection | BFS component labeling | Connected components | Find users connecting communities |
+| 4 | Top-N sorting | `sort_by` desc, `truncate` | `Counter.most_common(n)` | Find most active users |
+| 5 | BFS reachability | `VecDeque` + `HashSet` | `deque` + `set` | Check info flow A → B |
+| 6 | Influence score | count incoming edges | list comprehension | Measure how many retweeted a user |
+| 7 | Bridge detection | BFS component labeling | connected components | Find users connecting communities |
 
-## Concepts at a Glance
-
-**Option<String>** -- Rust's `Option<String>` represents a field that may be absent, like Python's `Optional[str]`. `Some(original)` means a retweet; `None` means original tweet. Pattern-matched with `if let Some(ref orig) = tweet.retweet_of`. **Retweet graph** -- A `HashMap<String, Vec<String>>` maps each user to the list of users they retweeted. `graph.entry(user).or_default()` creates empty lists on first access, like `defaultdict(list)`. **HashMap counting** -- `*counts.entry(user).or_insert(0) += 1` increments a counter, replicating Python's `Counter.update()`. **Top-N sorting** -- `users.sort_by(|a, b| b.1.cmp(&a.1)); users.truncate(n)` sorts by count descending and keeps N, matching `Counter.most_common(n)`. **BFS with VecDeque** -- `VecDeque` serves as a FIFO queue for BFS. `HashSet` tracks visited nodes. `can_reach` returns `true` as soon as the target is found, like Python's `deque`-based BFS. **Influence score** -- Counting user appearances in neighbor lists: `graph.values().filter(|targets| targets.contains(user)).count()`. Equivalent to Python's `sum(1 for targets in graph.values() if user in targets)`. **Bridge detection** -- BFS assigns each node a component ID. A user whose neighbors span multiple components is a "bridge". Python equivalent: `nx.community` or manual component labeling.
+---
 
 ---
 

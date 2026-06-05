@@ -2,71 +2,32 @@
 
 > **Test-driven approach**: This project includes a Cargo project with progressive unit tests. Each function in `workshop/src/lib.rs` starts as a `todo!()` stub. As you follow each section, replace `todo!()` with real code and run `cd workshop && cargo test` to watch the pass count grow. Your goal: **all 4 tests pass**.
 
-## Why This Project?
+## Why Use Parquet's Columnar Storage?
 
-### The Problem
+**Python pain:** A 100-column CSV at 10 GB forces you to read 10 GB even when you only need 2 columns (200 MB). `pd.read_parquet("data.parquet", columns=[...])` hides the column-projection win behind a one-liner, and there's no compile-time check that your struct matches the schema.
 
-In Python, reading Parquet files is deceptively simple:
-
-```python
-import pandas as pd
-df = pd.read_parquet("data.parquet", columns=["name", "value"])
-```
-
-This hides a complex columnar format behind a single call. When datasets grow to millions of rows, the **memory wall** hits hard — CSV reads load every column even if you only need two. A 100-column CSV at 10 GB forces your pipeline to read 10 GB even when only 2 columns (200 MB) are needed:
-
-```
-CSV (Row-oriented):  | name | age | city | salary | ... 96 more columns |
-                     |----------------- 10 GB -------------------------|
-                     ^^^^^^^^
-                     You read ALL of this even for just `name`
-
-Parquet (Columnar):  | name |   (only 200 MB on disk)
-```
-
-### The Rust Solution
-
-Rust's `parquet` and `arrow` crates give you explicit control over column projection, row groups, and predicate pushdown. You work with typed `Record` structs that represent the schema, and filter/aggregate using zero-cost iterators:
+**Rust fix:** The `parquet` and `arrow` crates give explicit control over column projection, row groups, and predicate pushdown. You work with typed `Record` structs and zero-cost iterators:
 
 ```rust
-pub struct Record {
-    pub name: String,
-    pub value: f64,
-    pub count: u32,
-}
-
-// Filter and aggregate — no I/O overhead, type-safe
 let filtered: Vec<&Record> = records.iter().filter(|r| r.value > 100.0).collect();
-let total: f64 = records.iter().map(|r| r.value * r.count as f64).sum();
+let total:    f64        = records.iter().map(|r| r.value * r.count as f64).sum();
 ```
 
-When connected to actual Parquet files, the `parquet` crate reads only the column chunks you request — no wasted I/O.
+When connected to actual Parquet files, the `parquet` crate reads only the requested column chunks — no wasted I/O.
 
-## What You'll Learn
+## At a Glance
 
-| # | Concept | Rust Type / Module | Python Equivalent | Purpose |
-|---|---------|--------------------|------------------|---------|
-| 1 | Columnar vs Row-Oriented | Parquet file format | `pd.read_parquet` | Understand storage layout trade-offs |
-| 2 | Data Struct | `struct Record` | `dataclass` | Define typed data rows |
-| 3 | String Formatting | `format!` macro | f-strings | Create human-readable summaries |
-| 4 | Iterator Filter | `.filter()` with closure | List comprehension `if` | Select rows by condition |
-| 5 | Iterator Map + Sum | `.map().sum()` | Generator + `sum()` | Compute aggregate values |
-| 6 | Reference Collections | `Vec<&Record>` | List of references | Borrow data without copying |
-| 7 | Numeric Conversion | `as` keyword | Automatic `int`/`float` | Cast types explicitly |
-| 8 | Arrow Format | Arrow `RecordBatch` | `pyarrow.Table` | In-memory columnar representation |
-| 9 | Parquet Features | Column chunks, stats | `pyarrow.parquet` | Compression, predicate pushdown |
-
-## Concepts at a Glance
-
-- **Columnar vs Row-Oriented**: Parquet stores each column as a contiguous chunk — querying 2 of 100 columns reads only those 2 columns' bytes. CSV and JSON store all columns together per row, wasting I/O on unneeded fields.
-- **Data Struct (`struct Record`)**: Defines the schema as a typed struct — like Python's `dataclass` but checked at compile time. Fields have explicit types (`String`, `f64`, `u32`) with no implicit conversions.
-- **String Formatting (`format!`)**: Rust's macro for creating formatted strings. Works like Python f-strings but is compiled to efficient inline code.
-- **Iterator Filter (`.filter()`)**: Lazy, chainable filtering — returns an iterator over matching elements. Python equivalent: `(x for x in xs if cond(x))`.
-- **Iterator Map + Sum (`.map().sum()`)**: Transform each element then sum the results. Python equivalent: `sum(f(x) for x in xs)`.
-- **Reference Collections (`Vec<&Record>`)**: Filtering returns references to original data — no memory copying. In Python, list comprehensions always create new objects.
-- **Numeric Conversion (`as` keyword)**: Rust requires explicit `x as f64` for numeric conversions. Python auto-promotes `int` to `float` — Rust surfaces these decisions explicitly.
-- **Arrow Format (`RecordBatch`)**: Apache Arrow is the in-memory columnar format optimized for CPU cache and SIMD. Python's `pyarrow.Table` is the same concept.
-- **Parquet Features**: Column chunks (store data per-column), statistics (min/max per chunk for predicate pushdown), compression (Snappy/Zstd per column), and row groups (horizontal partitions within a file).
+| # | Concept | Rust | Python | Why it matters |
+|---|---------|------|--------|----------------|
+| 1 | Columnar vs Row-Oriented | Parquet file format | `pd.read_parquet` | Querying 2 of 100 columns reads only those 2 — no I/O waste |
+| 2 | Data Struct | `struct Record` | `dataclass` | Typed schema, compile-time checked |
+| 3 | String Formatting | `format!` macro | f-strings | Formatted strings, compiled to efficient code |
+| 4 | Iterator Filter | `.filter(\|r\| ...)` | list comprehension `if` | Lazy, chainable filtering |
+| 5 | Iterator Map + Sum | `.map().sum()` | `sum(f(x) for x in xs)` | Zero-copy aggregation |
+| 6 | Reference Collections | `Vec<&Record>` | list of references | Borrow data, no copies |
+| 7 | Numeric Conversion | `x as f64` | implicit `int → float` | Surface conversion decisions explicitly |
+| 8 | Arrow Format | `arrow::RecordBatch` | `pyarrow.Table` | In-memory columnar format, cache + SIMD friendly |
+| 9 | Parquet Features | column chunks, row groups, statistics | `pyarrow.parquet` | Compression + predicate pushdown |
 
 ---
 

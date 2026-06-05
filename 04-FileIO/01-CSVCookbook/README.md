@@ -4,85 +4,35 @@
 
 ---
 
-## Why This Project?
+## Why Stream CSVs in Rust?
 
-### The Problem — Python's CSV Parsing Tax
+**Python pain:** `pandas.read_csv("5gb.csv")` reads the entire file into memory, guesses types, and stores Python objects for every cell — peak memory is roughly 4× the file size, and a malformed row only surfaces hours into a batch job. There is no compile-time check that the columns match the schema.
 
-```python
-import pandas as pd
-
-# Python — convenient but loads EVERYTHING into memory
-df = pd.read_csv("transactions_2024.csv")  # 5 GB file → 15 GB RAM
-```
-
-`pandas.read_csv()` reads the entire file into memory, guesses types (expensive), and builds Python objects for every cell. For a 5 GB CSV, you'll use 15-20 GB of RAM. There's also no compile-time checking — a malformed row surfaces hours into a batch job.
-
-```
-pandas.read_csv("5gb.csv") timeline:
-┌─────────────────────────────────────────┐
-│  Read raw bytes          → 5 GB        │
-│  Parse strings           → 15 GB       │
-│  Infer dtypes            → 15 GB       │
-│  Store as Python objects → 20+ GB      │
-│  Peak memory: 4x file size!            │
-└─────────────────────────────────────────┘
-```
-
-### The Rust Solution — Stream One Row at a Time
+**Rust fix:** The `csv` crate processes rows **lazily** — one row at a time, ~1 KB working set, types enforced at compile time via `serde`:
 
 ```rust
 use csv::ReaderBuilder;
-
-let mut rdr = ReaderBuilder::new()
-    .from_path("transactions_2024.csv")?;
-
+let mut rdr = ReaderBuilder::new().from_path("transactions_2024.csv")?;
 for result in rdr.deserialize() {
-    let record: Transaction = result?;
-    process(&record);  // One row at a time — ~1 KB, not 5 GB
+    let record: Transaction = result?;   // type-checked at compile time
+    process(&record);                     // process, discard, move on
 }
 ```
 
-Rust's `csv` crate processes rows **lazily** — it reads one row, processes it, discards it, and moves to the next. Memory footprint is proportional to one row, not the whole file. Types are enforced at compile time via `serde` deserialization.
+## At a Glance
 
----
-
-## What You'll Learn
-
-| # | Concept | Rust Type / Module | Python Equivalent | Purpose |
-|---|---------|--------------------|------------------|---------|
-| 1 | CSV data model | Comma-separated fields | `csv` module | Understanding CSV structure |
-| 2 | String splitting | `.split(pat)` | `str.split()` | Break CSV line into fields |
-| 3 | String joining | `.join(sep)` | `str.join()` | Rebuild CSV line from fields |
+| # | Concept | Rust | Python | Why it matters |
+|---|---------|------|--------|----------------|
+| 1 | CSV data model | comma-separated fields, optional header | `csv` module | Understanding CSV structure |
+| 2 | String splitting | `.split(pat)` | `str.split(pat)` | Break CSV line into fields |
+| 3 | String joining | `.join(sep)` | `str.join(sep)` | Rebuild CSV line from fields |
 | 4 | Line iteration | `.lines()` | `.splitlines()` | Process file line by line |
 | 5 | String trimming | `.trim()` | `.strip()` | Clean whitespace from fields |
-| 6 | CSV parsing (manual) | `Vec<String>` | N/A (usually use csv lib) | Build your own CSV parser |
-| 7 | CSV parsing (crate) | `csv::Reader` | `csv.reader` | Production-grade CSV parsing |
-| 8 | Deserialization | `csv::Reader::deserialize` | N/A (dicts) | Auto-map rows to structs |
-| 9 | Error-per-row | `Result<T, E>` | `try/except` around loop | Handle bad rows gracefully |
+| 6 | Manual CSV parsing | `Vec<String>` from split+trim | N/A (usually a lib) | Build your own parser to understand the format |
+| 7 | `csv::Reader` | `csv` crate | `csv.reader` | Production-grade parsing with quoting/escaping |
+| 8 | Deserialization | `rdr.deserialize::<T>()` | N/A (dicts) | Auto-map rows to typed structs |
+| 9 | Per-row errors | `Result<T, E>` per row | `try/except` around loop | One bad row doesn't crash the pipeline |
 | 10 | Buffered reading | `BufReader` | File buffering | Efficient sequential reads |
-
-## Concepts at a Glance
-
-### 1. CSV Data Model
-A CSV file is text where each line is a record, fields are comma-separated, and the first line is often a header. Same concept as Python's `csv` module.
-
-### 2. String Splitting — `.split(pat)`
-`line.split(',')` returns an iterator over substrings — like `line.split(',')` in Python.
-
-### 3. String Joining — `.join(sep)`
-`fields.join(",")` joins string slices with commas — like `",".join(fields)` in Python.
-
-### 4. Line Iteration — `.lines()`
-`s.lines()` returns an iterator over lines in a string — like `s.splitlines()` in Python.
-
-### 5. String Trimming — `.trim()`
-`field.trim()` removes leading/trailing whitespace — like `field.strip()` in Python.
-
-### 6-7. CSV Parsing
-You'll first build parsing manually (splitting, trimming) to understand the fundamentals, then use the `csv` crate for production-quality parsing with quoting and escaping handled automatically.
-
-### 8-9. Deserialization + Error Handling
-The `csv::Reader::deserialize()` method maps each row directly to a Rust struct. Errors are per-row `Result<T, E>` — a bad row doesn't crash the pipeline.
 
 ---
 

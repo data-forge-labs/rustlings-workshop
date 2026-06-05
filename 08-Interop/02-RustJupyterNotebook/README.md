@@ -5,38 +5,15 @@
 > follow each section, replace `todo!()` with real code and run `cd workshop && cargo test` to
 > watch the pass count grow. Your goal: **all 21 tests pass**.
 
-## Why This Project?
+## Why Run Rust in Jupyter via `evcxr`?
 
-### The Problem
+**Python pain:** Jupyter transformed Python data workflows — Shift+Enter, see DataFrame as HTML, iterate fast. Rust users had no equivalent: 3-second compile cycles, plain text output, no rich rendering, no inline documentation.
 
-Jupyter notebooks have transformed Python data workflows, but Rust users are left out — there is no built-in way to run Rust code interactively in a notebook:
-
-```
-Python Jupyter workflow:
-  Write pandas code in a cell
-  Press Shift+Enter
-  See DataFrame rendered as HTML table
-  Iterate: tweak, re-run, inspect
-  Ship the notebook as documentation
-
-Rust before evcxr:
-  Write code in main.rs
-  cargo run  <- 3-second compile cycle
-  See text output
-  Edit, re-compile, re-run  <- friction!
-```
-
-Data exploration thrives on interactivity — tweak a filter, re-plot, inspect intermediate results. Without a notebook kernel, Rust's compile-edit-run cycle makes exploration tedious.
-
-### The Rust Solution
-
-The `evcxr_jupyter` kernel brings Rust into Jupyter. Write Rust code in notebook cells, see rich HTML output (tables, plots), and iterate without recompiling:
+**Rust fix:** The `evcxr_jupyter` kernel brings Rust into Jupyter — write Rust in cells, get rich HTML output, iterate without recompiling:
 
 ```rust
-// In a Jupyter notebook cell with evcxr:
 :dep rust_jupyter_notebook = { path = "." }
 use rust_jupyter_notebook::*;
-
 let df = SimpleDataFrame::new(
     vec!["city".to_string(), "pop".to_string()],
     vec![
@@ -44,23 +21,27 @@ let df = SimpleDataFrame::new(
         vec!["Porto".to_string(), "249633".to_string()],
     ],
 );
-":html " + &df.to_html()
+":html " + &df.to_html()    // rich HTML table in the cell
 ```
 
-This project builds the Rust-side toolkit — `Matrix<T>`, `SimpleDataFrame`, and `range_f64` — so you can display and manipulate data interactively in notebooks, combining Rust's performance with Jupyter's iterative workflow.
+This project builds the Rust-side toolkit — `Matrix<T>`, `SimpleDataFrame`, `range_f64` — so you get Rust's performance with Jupyter's iterative workflow.
 
-## What You'll Learn
+---
 
-| # | Concept | Rust Type / Module | Python Equivalent | Purpose |
-|---|---------|--------------------|------------------|---------|
-| 1 | Generic struct with impl | `Matrix<T>` | `numpy.ndarray` | Type-safe 2D matrix with flat Vec storage |
-| 2 | Generic trait bounds | `T: std::fmt::Debug` | Duck typing | Restrict generic type parameters at compile time |
-| 3 | Safe indexing with Option | `Matrix::get() -> Option<&T>` | `try/except IndexError` | Bounds-checked element access |
-| 4 | HTML string rendering | `to_html() -> String` | `df._repr_html_()` | Rich table display in Jupyter |
-| 5 | SimpleDataFrame | `SimpleDataFrame` struct | `pandas.DataFrame` | Columnar data with row-oriented storage |
-| 6 | Float range generation | `range_f64()` function | `numpy.arange()` | Generate sequences of floating-point numbers |
-| 7 | evcxr Jupyter kernel | `evcxr_jupyter` | `ipykernel` | Interactive Rust in notebook cells |
-| 8 | Crate discovery | `list_interactive_crates()` | pip-installed libraries | Plotters, ndarray, polars, rayon for notebooks |
+## At a Glance
+
+| # | Concept | Rust | Python | Why it matters |
+|---|---------|------|--------|----------------|
+| 1 | Generic struct | `Matrix<T>` | `numpy.ndarray` | Type-safe 2D matrix with flat `Vec` |
+| 2 | Generic trait bound | `T: std::fmt::Debug` | Duck typing | Restrict generic params at compile time |
+| 3 | Safe indexing | `get() -> Option<&T>` | `try/except IndexError` | Bounds-checked element access |
+| 4 | HTML rendering | `to_html() -> String` | `df._repr_html_()` | Rich table display in Jupyter |
+| 5 | `SimpleDataFrame` | struct | `pandas.DataFrame` | Columnar data, row-oriented storage |
+| 6 | `f64` range | `range_f64()` | `numpy.arange()` | Generate float sequences |
+| 7 | evcxr kernel | `evcxr_jupyter` | `ipykernel` | Interactive Rust in notebook cells |
+| 8 | Crate discovery | `list_interactive_crates()` | pip-installed libs | Plotters, ndarray, polars, rayon for notebooks |
+
+---
 
 ## Concepts at a Glance
 

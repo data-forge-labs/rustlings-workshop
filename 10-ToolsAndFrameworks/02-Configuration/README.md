@@ -2,79 +2,55 @@
 
 > **Test-driven approach**: This project includes a Cargo project with progressive unit tests. Each function in `workshop/src/lib.rs` starts as a `todo!()` stub. As you follow each section, replace `todo!()` with real code and run `cd workshop && cargo test` to watch the pass count grow. Your goal: **all 11 tests pass**.
 
-## Why This Project?
+## Why Use the `config` Crate + `serde`?
 
-### The Problem
-
-Python configuration management is fragmented — different formats need different libraries and manual merging:
+**Python pain:** Configuration is fragmented — TOML/JSON/YAML/INI/ENV each have a different API, merging env vars with files is manual, and there's no type safety (every value comes out as a `dict` or `str`):
 
 ```python
 import json, yaml, configparser, os
-
-# Each format has its own API
 config = configparser.ConfigParser()
 config.read("app.ini")
 host = config.get("server", "host", fallback="localhost")
-
-# Environment variable overrides need manual merge
-if os.getenv("APP_HOST"):
+if os.getenv("APP_HOST"):            # manual env override
     host = os.getenv("APP_HOST")
-
-# Different format = different code
-with open("config.json") as f:
-    json_conf = json.load(f)        # dict access, no type safety
-with open("config.yaml") as f:
-    yaml_conf = yaml.safe_load(f)   # different import, same dict problem
 ```
 
-```
-Python config pain points:
-  TOML    -> configparser (no built-in TOML)  <- different API per format
-  JSON    -> json.load (dict)                 <- no type safety
-  YAML    -> yaml.safe_load (dict)            <- different import
-  ENV     -> os.environ.get() + manual merge  <- error-prone
-```
-
-No compile-time validation, no unified format switching, and no automatic layering.
-
-### The Rust Solution
-
-The `config` crate + `serde` provides a single API for all formats with compile-time type safety:
+**Rust fix:** The `config` crate + `serde` gives one unified API for every format, with compile-time type safety:
 
 ```rust
 use config::{Config, FileFormat};
-use serde::{Deserialize, Serialize};
-
-#[derive(Debug, Serialize, Deserialize, PartialEq)]
+use serde::{Deserialize};
+#[derive(Debug, Deserialize)]
 pub struct AppConfig {
     pub host: String,
     pub port: u16,
     pub debug: bool,
     pub database_url: Option<String>,
 }
+```
 
-pub fn load_toml(source: &str) -> Result<AppConfig, String> {
-    Config::builder()
-        .add_source(config::File::from_str(source, FileFormat::Toml))
-        .build()
-        .map_err(|e| e.to_string())
+Same struct parses TOML, JSON, YAML, or env vars. Missing or wrong-type fields become compile errors via `serde`, not runtime `KeyError`s.
+
+---
         .and_then(|c| c.try_deserialize().map_err(|e| e.to_string()))
 }
 ```
 
 Swap `FileFormat::Toml` to `Json` or `Yaml` — the code stays the same. Environment variable overrides are a single `.set_override()` call. All type mismatches are caught at deserialization time, not as runtime type errors.
 
-## What You'll Learn
+## At a Glance
 
-| # | Concept | Rust Type / Module | Python Equivalent | Purpose |
-|---|---------|--------------------|------------------|---------|
-| 1 | Serde Deserialize derive | `#[derive(Deserialize)]` | pydantic `BaseModel` | Define type-safe config structs |
-| 2 | Config builder pattern | `config::Config::builder()` | `configparser.ConfigParser` | Construct layered configuration |
-| 3 | FileFormat enum | `config::FileFormat::Toml` | `toml.load()` / `json.load()` | Parse TOML, JSON, or YAML uniformly |
-| 4 | Source layering | `.add_source(File::from_str(...))` | Manual `{**dict1, **dict2}` | Stack config sources with priority |
-| 5 | Environment overrides | `.set_override(key, value)` | `os.environ.get()` + manual assignment | Apply env variables on top of file config |
-| 6 | try_deserialize | `.try_deserialize::<AppConfig>()` | pydantic model validation | Convert parsed config to typed struct |
-| 7 | Pattern matching fallback | `match key { ... _ => "" }` | `config.get(key, default)` | Return field values with default |
+| # | Concept | Rust | Python | Why it matters |
+|---|---------|------|--------|----------------|
+| 1 | Serde Deserialize | `#[derive(Deserialize)]` | pydantic `BaseModel` | Type-safe config structs |
+| 2 | Config builder | `config::Config::builder()` | `configparser.ConfigParser` | Construct layered configuration |
+| 3 | `FileFormat` enum | `FileFormat::Toml` | `toml.load()` / `json.load()` | Parse TOML, JSON, or YAML uniformly |
+| 4 | Source layering | `.add_source(File::from_str(...))` | manual `{**d1, **d2}` | Stack config sources with priority |
+| 5 | Env overrides | `.set_override(key, value)` | `os.environ.get()` + manual | Apply env on top of file config |
+| 6 | `try_deserialize` | `.try_deserialize::<AppConfig>()` | pydantic validation | Convert parsed config to typed struct |
+| 7 | Match fallback | `match key { ... _ => "" }` | `config.get(key, default)` | Return field values with default |
+
+---
 
 ## Concepts at a Glance
 

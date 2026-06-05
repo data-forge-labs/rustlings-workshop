@@ -2,80 +2,31 @@
 
 > **Test-driven approach**: This project includes a Cargo project with progressive unit tests. Each function in `workshop/src/lib.rs` starts as a `todo!()` stub. As you follow each section, replace `todo!()` with real code and run `cd workshop && cargo test` to watch the pass count grow. Your goal: **all 11 tests pass**.
 
-## Why This Project?
+## Why Use Rayon for Data Parallelism?
 
-### The Problem
+**Python pain:** Parallelizing even a simple operation requires an executor, manual chunking, task submission, and result collection — all boilerplate. Threads hit the GIL, so you're forced into process pools with pickle overhead.
 
-In Python, parallelizing a simple operation requires significant boilerplate:
-
-```python
-from concurrent.futures import ProcessPoolExecutor
-
-def process_batch(batch):
-    return [x * 2 for x in batch]
-
-data = list(range(1_000_000))
-
-with ProcessPoolExecutor() as ex:
-    # Must split work manually, submit tasks, collect results
-    futures = [ex.submit(process_batch, data[i:i+100_000])
-               for i in range(0, len(data), 100_000)]
-    result = []
-    for f in futures:
-        result.extend(f.result())
-```
-
-```
-Python:                              Rust + Rayon:
-┌──────────────────┐                ┌──────────────────┐
-│ Manual splitting │                │ data.par_iter()  │
-│ Task submission  │                │     .map(...)    │
-│ Result gathering │                │     .collect()   │
-│ Error handling   │                │                  │
-└──────────────────┘                └──────────────────┘
-```
-
-Even simple parallelism becomes a ceremony. And if you use threads instead of processes, the GIL limits your speedup.
-
-### The Rust Solution
-
-Rayon's `.par_iter()` is a drop-in replacement for `.iter()` — one method call transforms sequential code into parallel:
+**Rust fix:** Rayon's `.par_iter()` is a drop-in replacement for `.iter()` — add `par_` and your sequential iterator becomes parallel:
 
 ```rust
 use rayon::prelude::*;
-
-// Sequential:   data.iter().map(|x| x * 2).collect()
-// Parallel:     data.par_iter().map(|x| x * 2).collect()
-//               ^ just add "par_" — that's it!
-
-pub fn parallel_increment(data: Vec<i32>) -> Vec<i32> {
-    data.into_par_iter().map(|x| x + 1).collect()
-}
+data.into_par_iter().map(|x| x + 1).collect()
+//          ^^^^^^^^ that's the only difference from .iter()
 ```
 
-No executor management, no manual chunking, no result collection boilerplate. Rayon handles thread pool management and work stealing automatically.
+No executor, no manual chunking, no result-collection boilerplate. Rayon manages a thread pool and uses work stealing automatically.
 
-## What You'll Learn
+## At a Glance
 
-| # | Concept | Rust Crate / Type | Python Equivalent | Purpose |
-|---|---------|-------------------|------------------|---------|
+| # | Concept | Rust | Python | Why it matters |
+|---|---------|------|--------|----------------|
 | 1 | Parallel Iterator | `rayon::par_iter()` | `executor.map()` | Drop-in parallel iteration |
-| 2 | Parallel Sum | `par_iter().sum()` | `sum()` (sequential only) | Parallel reduce |
+| 2 | Parallel Sum | `par_iter().sum()` | `sum()` (sequential) | Parallel reduce |
 | 3 | Parallel Map | `par_iter().map().collect()` | `executor.map()` | Parallel transform |
 | 4 | Parallel Filter | `par_iter().filter().collect()` | `filter()` (sequential) | Parallel selection |
 | 5 | Parallel Frequency | `par_iter().fold().reduce()` | `Counter()` (sequential) | Parallel word count |
 | 6 | CPU Count | `num_cpus::get()` | `os.cpu_count()` | Query available cores |
-| 7 | Speedup Model | Amdahl's law | No standard equivalent | Predict parallel speedup |
-
-## Concepts at a Glance
-
-- **Parallel Iterator (`rayon::par_iter()`)**: A drop-in replacement for `.iter()` that automatically parallelizes operations across a thread pool. Python's `concurrent.futures.ProcessPoolExecutor.map()` achieves similar parallelism but with more ceremony.
-- **Parallel Sum (`par_iter().sum()`)**: Rayon automatically splits the data across threads and sums the partial results. Python's `sum()` is strictly sequential.
-- **Parallel Map (`par_iter().map()`)**: Applies a closure to each element in parallel. `collect()` gathers results in order. Python's `executor.map()` orders results implicitly but requires an executor context.
-- **Parallel Filter (`par_iter().filter()`)**: Selects elements matching a predicate in parallel. Python's `filter()` is sequential — Rayon parallelizes for free.
-- **Parallel Frequency (`par_iter().fold().reduce()`)**: Counts word frequencies in parallel using `fold` (local counting) and `reduce` (merge). Python's `Counter()` is single-threaded.
-- **CPU Count (`num_cpus::get()`)**: Returns the number of logical CPU cores. Equivalent to Python's `os.cpu_count()`.
-- **Speedup Model (Amdahl's law)**: Given the parallelizable fraction of a workload, predicts maximum speedup. A 95% parallelizable workload on 8 cores achieves ~6x speedup.
+| 7 | Speedup Model | Amdahl's law | N/A | Predict max parallel speedup |
 
 ---
 

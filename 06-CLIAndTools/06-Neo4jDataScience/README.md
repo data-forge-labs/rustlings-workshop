@@ -5,35 +5,21 @@
 > follow each section, replace `todo!()` with real code and run `cd workshop && cargo test` to
 > watch the pass count grow. Your goal: **all 14 tests pass**.
 
-## Why This Project?
+## Why Compute Centrality Locally Without Neo4j?
 
-### The Problem
-
-In production, graph data lives in a database like Neo4j. Running centrality with Neo4j's Graph Data Science library in Python requires a database connection and the GDS plugin:
+**Python pain:** In production, graph data lives in Neo4j. Calling GDS in Python requires a database connection, network round-trips, and the GDS plugin (paid in some deployments):
 
 ```python
 from neo4j import GraphDatabase
-
 driver = GraphDatabase.driver("bolt://localhost:7687")
 with driver.session() as session:
-    result = session.run("""
-        CALL gds.degree.stream('myGraph')
-        YIELD nodeId, score
-        RETURN nodeId, score
-    """)
+    session.run("CALL gds.degree.stream('myGraph') ...")  # network call per query
 ```
 
-This incurs network latency, requires a running Neo4j instance, and the GDS plugin is a paid feature in some deployments. For quick exploration, you need a local implementation.
-
-### The Rust Solution
-
-Rust implements all three centrality algorithms from scratch in a single `Graph` struct, no database required:
+**Rust fix:** Implement all three centrality algorithms in a single `Graph` struct, no database required — self-contained, offline, and ~100x faster than a network round-trip:
 
 ```rust
-pub struct Graph {
-    pub adjacency: HashMap<usize, Vec<usize>>,
-}
-
+pub struct Graph { pub adjacency: HashMap<usize, Vec<usize>> }
 impl Graph {
     pub fn degree_centrality(&self) -> HashMap<usize, f64> {
         let n = self.adjacency.len();
@@ -44,22 +30,18 @@ impl Graph {
 }
 ```
 
-Self-contained, offline, and 100x faster than a network round-trip to a graph database.
+## At a Glance
 
-## What You'll Learn
-
-| # | Concept | Rust Type / Module | Python Equivalent | Purpose |
-|---|---------|--------------------|------------------|---------|
-| 1 | Graph struct | `struct Graph { adjacency: HashMap... }` | Class with `defaultdict` | Wrap graph data with methods |
+| # | Concept | Rust | Python | Why it matters |
+|---|---------|------|--------|----------------|
+| 1 | Graph struct | `struct Graph { adjacency: HashMap... }` | class with `defaultdict` | Wrap graph data with methods |
 | 2 | Degree centrality | `neighbors.len() / (N-1)` | `nx.degree_centrality` | Count direct connections |
-| 3 | Closeness centrality | BFS from each node, sum distances | `nx.closeness_centrality` | Measure reachability speed |
-| 4 | Betweenness centrality | Brandes' BFS-based algorithm | `nx.betweenness_centrality` | Count shortest-path passages |
-| 5 | Top-N ranking | Collect, sort by score desc, truncate | `sorted(dict.items(), key=-x[1])` | Find most central nodes |
-| 6 | Summary statistics | Fold for min/max, sum/count for mean | `min/max/sum/len` | Summarize score distribution |
+| 3 | Closeness centrality | BFS from each node | `nx.closeness_centrality` | Measure reachability speed |
+| 4 | Betweenness centrality | Brandes' BFS algorithm | `nx.betweenness_centrality` | Count shortest-path passages |
+| 5 | Top-N ranking | `sort_by`, `truncate` | `sorted(... , key=-x[1])[:n]` | Find most central nodes |
+| 6 | Summary statistics | `fold` for min/max, `sum/len` for mean | `min/max/sum/len` | Summarize score distribution |
 
-## Concepts at a Glance
-
-**Graph struct** -- Wrapping `HashMap<usize, Vec<usize>>` in a `struct Graph` groups all graph operations as methods, like a Python class with `defaultdict` as instance data. **Degree centrality** -- The fraction of nodes a node connects to directly: `neighbors.len() / (N - 1)`. In Python, `nx.degree_centrality`; in Rust, a single `iter().map()` expression. **Closeness centrality** -- BFS from each node computes shortest-path distances. `VecDeque` handles the queue, `HashMap<usize, usize>` tracks distances. `reachable / sum_dist` yields the score, like Python's `nx.closeness_centrality`. **Betweenness centrality (Brandes)** -- BFS from each source node counts how many shortest paths pass through each intermediate node. Nodes on many shortest paths get high scores. This replicates `nx.betweenness_centrality`. **Top-N ranking** -- Collect `HashMap` entries into `Vec<(usize, f64)>`, `.sort_by(|a, b| b.1.partial_cmp(&a.1).unwrap())`, then `.truncate(n)`. Equivalent to Python's `sorted(scores.items(), key=lambda x: -x[1])[:n]`. **Centrality summary** -- Fold over values for `min` and `max`, divide sum by count for `mean`. Mirrors Python's `min(values), max(values), sum(values)/len(values)`.
+---
 
 ---
 

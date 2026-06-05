@@ -5,6 +5,33 @@
 > follow each section, replace `todo!()` with real code and run `cd workshop && cargo test` to
 > watch the pass count grow. Your goal: **all 13 tests pass**.
 
+## Why Use `unsafe` at All?
+
+**Python pain:** Python is *always* "safe" — the runtime checks every memory access, holds the GIL, and pays GC costs. You never have to think about memory layout, but you also can't talk directly to hardware or implement a zero-copy parser.
+
+**Rust fix:** Safe Rust is the default — the compiler enforces no nulls, no overflows, no use-after-free, no data races. `unsafe` is a *narrow, audited* opt-out for exactly the cases where you need to: talking to C, raw pointers, or hot-path bounds-check skipping.
+
+```rust
+let mut v = vec![1, 2, 3, 4, 5];
+let (left, right) = v.split_at_mut(2);    // safe: returns two non-overlapping &mut slices
+let ptr = &v[0] as *const i32;            // *const i32 is a raw pointer
+unsafe { println!("{}", *ptr); }          // unsafe block required to dereference
+```
+
+The `unsafe` keyword is auditable: a `grep "unsafe "` shows every escape hatch in the codebase.
+
+## At a Glance
+
+| # | Concept | Rust | Python | Why it matters |
+|---|---------|------|--------|----------------|
+| 1 | Safe Rust guarantees | compiler-enforced | runtime/GC-enforced | No null, no overflow, no use-after-free |
+| 2 | `unsafe` keyword | `unsafe { ... }` | N/A | Opt out of safety in an audited block |
+| 3 | Raw pointers | `*const T`, `*mut T` | N/A | C interop, FFI, custom allocators |
+| 4 | `split_at_mut` | `slice::split_at_mut` | N/A | Get two non-overlapping `&mut` slices safely |
+| 5 | When to use `unsafe` | FFI, hot paths | N/A | Hardware access, zero-copy parsers |
+
+---
+
 ## Table of Contents
 
 1. [Introduction](#1-introduction)

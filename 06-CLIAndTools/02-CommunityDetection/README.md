@@ -5,28 +5,16 @@
 > follow each section, replace `todo!()` with real code and run `cd workshop && cargo test` to
 > watch the pass count grow. Your goal: **all 17 tests pass**.
 
-## Why This Project?
+## Why Build SCC from Scratch in Rust?
 
-### The Problem
-
-In Python, finding strongly connected components is a one-liner with `networkx`:
-
-```python
-import networkx as nx
-G = nx.DiGraph([(0,1), (1,2), (2,0), (2,3), (3,4), (4,3)])
-sccs = list(nx.strongly_connected_components(G))
-```
-
-But `networkx` is slow on large graphs -- it stores nodes as Python objects with dict wrapping, creating overhead. For a graph with millions of nodes (common in social network analysis), networkx can take minutes where a hand-tuned Rust implementation takes seconds.
+**Python pain:** `networkx.strongly_connected_components` is a one-liner — but on a graph with millions of nodes (common in social network analysis), networkx can take *minutes* where a hand-tuned Rust implementation takes *seconds*:
 
 ```
-Python networkx:  100K nodes  → ~12 seconds
-Rust HashMap/vec: 100K nodes  → ~0.3 seconds
+networkx (100K nodes):  ~12 seconds
+Rust HashMap/Vec:       ~0.3 seconds
 ```
 
-### The Rust Solution
-
-Rust implements Kosaraju's algorithm with plain `HashMap<usize, Vec<usize>>` and `Vec` stacks -- no wrapper overhead, no garbage collection pauses:
+**Rust fix:** Plain `HashMap<usize, Vec<usize>>` and `Vec` stacks, no wrapper overhead, no GC pauses:
 
 ```rust
 pub fn kosaraju_scc(edges: &[(usize, usize)], node_count: usize) -> Vec<Vec<usize>> {
@@ -41,20 +29,18 @@ pub fn kosaraju_scc(edges: &[(usize, usize)], node_count: usize) -> Vec<Vec<usiz
 }
 ```
 
-## What You'll Learn
+## At a Glance
 
-| # | Concept | Rust Type / Module | Python Equivalent | Purpose |
-|---|---------|--------------------|------------------|---------|
+| # | Concept | Rust | Python | Why it matters |
+|---|---------|------|--------|----------------|
 | 1 | Adjacency list | `HashMap<usize, Vec<usize>>` | `dict[int, list[int]]` | Store directed graph edges |
-| 2 | DFS traversal | Iterative with `Vec` stack + `HashSet` | Stack-based DFS | Explore graph depth-first |
-| 3 | Graph transposition | `HashMap` reversal | Dict comprehension | Reverse all edges for Kosaraju pass 2 |
-| 4 | Kosaraju's SCC algorithm | Two-pass DFS (post-order + reverse) | `nx.strongly_connected_components` | Find strongly connected components |
-| 5 | Counting distinct elements | `HashSet` | `set()` | Deduplicate users from edge list |
-| 6 | Frequency ranking | `HashMap` + sort by value | `collections.Counter` | Find top-N most active users |
+| 2 | Iterative DFS | `Vec` stack + `HashSet` | Stack-based DFS | Avoid stack overflow on deep graphs |
+| 3 | Graph transposition | `HashMap` reversal | Dict comprehension | Reverse edges for Kosaraju pass 2 |
+| 4 | Kosaraju's algorithm | Two-pass DFS | `nx.strongly_connected_components` | Find SCCs |
+| 5 | Distinct count | `HashSet` | `set()` | Deduplicate users from edge list |
+| 6 | Frequency ranking | `HashMap` + sort | `collections.Counter` | Find top-N most active users |
 
-## Concepts at a Glance
-
-**HashMap adjacency list** -- Rust's `HashMap` and `Vec` replace Python's `dict` of `list` for graph storage. `entry().or_default()` creates empty neighbor lists on first access, like `defaultdict(list)`. **Iterative DFS** -- A `Vec` stack and `HashSet` visited set replace Python's recursive DFS, avoiding stack overflow on deep graphs. Rust's `visited.insert(node)` returns `true` if newly inserted, doubling as a membership check. **Reverse graph** -- Flipping every edge `a -> b` to `b -> a` is done by iterating the original map and pushing source nodes into the neighbor's list, like Python's dict comprehension with `setdefault`. **Kosaraju's algorithm** -- Two-pass algorithm: first DFS records finish order, second DFS on the reversed graph collects SCCs. Equivalent to `nx.strongly_connected_components()` but built from scratch. **HashSet for distinct count** -- Inserting all usernames into a `HashSet` and reading `.len()` mirrors `len(set(users))` in Python. **HashMap frequency ranking** -- Incrementing counts with `entry().or_insert(0) += 1` and sorting by value desc replicates `collections.Counter.most_common(n)`.
+---
 
 ---
 

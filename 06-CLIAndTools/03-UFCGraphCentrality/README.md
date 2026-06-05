@@ -5,29 +5,11 @@
 > follow each section, replace `todo!()` with real code and run `cd workshop && cargo test` to
 > watch the pass count grow. Your goal: **all 14 tests pass**.
 
-## Why This Project?
+## Why Compute Centrality Without `networkx`?
 
-### The Problem
+**Python pain:** `nx.degree_centrality` and `nx.closeness_centrality` are one-liners — but every node is a Python object, every BFS step is a Python function call. On a 1K-node UFC fight graph that's ~2.5s where Rust's BFS does it in ~0.05s.
 
-In Python, computing centrality on a graph of UFC fights is trivial with `networkx`:
-
-```python
-import networkx as nx
-G = nx.Graph([(0,1), (1,2), (0,2)])
-deg = nx.degree_centrality(G)
-close = nx.closeness_centrality(G)
-```
-
-But `networkx` stores every node as a Python object, and each BFS iteration creates Python-level function calls. On a graph with thousands of nodes (the UFC fighter network), this means millions of Python function calls, slow loops, and high memory pressure.
-
-```
-networkx closeness (1000 nodes):   ~2.5 seconds
-Rust BFS closeness (1000 nodes):   ~0.05 seconds
-```
-
-### The Rust Solution
-
-Rust computes centrality by operating directly on flat `HashMap` and `Vec` structures with no abstraction overhead:
+**Rust fix:** Operate directly on flat `HashMap` and `Vec` with `VecDeque` BFS — no wrapper overhead, no Python call dispatch:
 
 ```rust
 pub fn closeness_centrality(adj: &HashMap<usize, Vec<usize>>) -> HashMap<usize, f64> {
@@ -43,20 +25,16 @@ pub fn closeness_centrality(adj: &HashMap<usize, Vec<usize>>) -> HashMap<usize, 
 }
 ```
 
-## What You'll Learn
+## At a Glance
 
-| # | Concept | Rust Type / Module | Python Equivalent | Purpose |
-|---|---------|--------------------|------------------|---------|
-| 1 | Undirected adjacency list | `HashMap<usize, Vec<usize>>` with dual insertion | `defaultdict(list)` with bidirectional append | Store undirected graph |
-| 2 | Degree centrality | `v.len() as f64 / max(1, N-1)` | `nx.degree_centrality` | Fraction of nodes a fighter has fought |
-| 3 | BFS distances | `VecDeque` + `HashMap<usize, usize>` | `collections.deque` + dict | Compute shortest-path distances |
-| 4 | Closeness centrality | `reachable / sum_dist` | `nx.closeness_centrality` | How quickly a fighter reaches all others |
-| 5 | Max by float key | `.max_by(partial_cmp)` | `max(dict, key=dict.get)` | Find most central node |
-| 6 | Sorted formatted output | Sort keys, `format!("{:.4}")` | f-string formatting | Display scores in sorted order |
-
-## Concepts at a Glance
-
-**Undirected adjacency list** -- Each edge `(a, b)` inserts into both `a`'s list and `b`'s list, like Python's `graph[a].append(b); graph[b].append(a)`. **Degree centrality** -- A node's neighbor count divided by `N-1`. In Python, `nx.degree_centrality`; in Rust, `v.len() as f64 / (N - 1) as f64` with a guard for `N <= 1`. **BFS with VecDeque** -- `VecDeque` is Rust's double-ended queue, identical in use to Python's `collections.deque`. `push_back()` / `pop_front()` perform BFS level-order traversal. **Closeness centrality** -- Sum of BFS distances from a node to all reachable nodes: `reachable_count / sum_dist`. In Python, `nx.closeness_centrality`; in Rust, manual BFS from each node. **max_by with partial_cmp** -- Since `f64` doesn't implement `Ord`, use `.max_by(|a, b| a.1.partial_cmp(&b.1).unwrap())` instead of Python's `max(dict, key=dict.get)`. **format! alignment** -- `format!("{:.4}", score)` replicates Python's `f"{score:.4f}"`. Sorting keys before formatting gives deterministic output.
+| # | Concept | Rust | Python | Why it matters |
+|---|---------|------|--------|----------------|
+| 1 | Undirected adjacency list | `HashMap` + dual insert | `defaultdict(list)` bidirectional | Store undirected graph |
+| 2 | Degree centrality | `v.len() as f64 / (N-1)` | `nx.degree_centrality` | Fraction of nodes a fighter has fought |
+| 3 | BFS distances | `VecDeque` + `HashMap<usize, usize>` | `collections.deque` + dict | Shortest-path distances |
+| 4 | Closeness centrality | `reachable / sum_dist` | `nx.closeness_centrality` | How quickly a fighter reaches others |
+| 5 | Max by float | `.max_by(partial_cmp)` | `max(dict, key=dict.get)` | `f64` has no `Ord`, use `partial_cmp` |
+| 6 | Sorted formatted output | sort keys, `format!("{:.4}")` | f-string | Deterministic score display |
 
 ---
 

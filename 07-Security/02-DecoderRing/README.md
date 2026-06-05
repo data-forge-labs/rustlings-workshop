@@ -5,84 +5,36 @@
 > follow each section, replace `todo!()` with real code and run `cd workshop && cargo test` to
 > watch the pass count grow. Your goal: **all 7 tests pass**.
 
-## Why This Project?
+## Why Crack Ciphers in Parallel?
 
-### The Problem
+**Python pain:** Frequency analysis for Caesar ciphers is straightforward but slow on large corpora — each shift decrypts and scores sequentially while CPU cores sit idle. Parallelising with `ProcessPoolExecutor` adds boilerplate, pickling overhead, and manual thread management.
 
-Python frequency analysis for Caesar ciphers is straightforward but slow on large corpora — each shift decrypts and scores sequentially while CPU cores sit idle:
-
-```python
-from collections import Counter
-import concurrent.futures
-
-def crack(text, depth=26):
-    results = []
-    for shift in range(depth):
-        decrypted = decrypt(text, shift)
-        score = score_text(decrypted)
-        results.append((shift, decrypted, score))
-    return max(results, key=lambda x: x[2])
-```
-
-```
-Python sequential brute-force:
-  Shift 0 -> decrypt -> score
-  Shift 1 -> decrypt -> score     <- one at a time
-  Shift 2 -> decrypt -> score
-  ... up to 25                    <- CPU cores idle!
-```
-
-Parallelising with `ProcessPoolExecutor` adds boilerplate, pickling overhead, and manual thread management.
-
-### The Rust Solution
-
-Rust's Rayon library transforms sequential iteration into parallel execution with one method call:
+**Rust fix:** Rayon's `into_par_iter()` replaces `into_iter()` — automatic work-stealing across CPU cores, no thread pools, no futures, no manual scheduling:
 
 ```rust
 use rayon::prelude::*;
-
-pub fn guess_shift_parallel(text: &str, depth: usize) -> (usize, String, f32) {
-    (0..depth)
-        .into_par_iter()  // <- automatic work-stealing across CPU cores
-        .map(|shift| {
-            let decrypted = decrypt(text, shift);
-            let score = score_text(&decrypted, &freqs);
-            (shift, decrypted, score)
-        })
-        .max_by(|a, b| a.2.partial_cmp(&b.2).unwrap())
-        .unwrap()
-}
+(0..depth)
+    .into_par_iter()                   // <- one word change for parallelism
+    .map(|shift| {
+        let decrypted = decrypt(text, shift);
+        let score = score_text(&decrypted, &freqs);
+        (shift, decrypted, score)
+    })
+    .max_by(|a, b| a.2.partial_cmp(&b.2).unwrap())
+    .unwrap()
 ```
 
-`into_par_iter()` replaces `into_iter()`. Rayon handles work distribution and load balancing automatically — no thread pools, no futures, no manual scheduling.
+## At a Glance
 
-## What You'll Learn
-
-| # | Concept | Rust Type / Module | Python Equivalent | Purpose |
-|---|---------|--------------------|------------------|---------|
-| 1 | HashMap<char, f32> | std::collections::HashMap | `dict` | Store English letter frequency table |
-| 2 | Pattern matching on char ranges | `match` on `'a'..='z'` | `if/elif` chains with `ord()`/`chr()` | Classify letters for Caesar shifting |
-| 3 | chars().map().collect() | Iterator adapters | List comprehension + `str.join()` | Transform strings functionally |
-| 4 | Functional iteration with max_by | `Iterator::max_by` | `max(key=...)` | Find the best-scoring shift |
-| 5 | Rayon parallel iterators | `rayon::prelude::*` | `concurrent.futures.ProcessPoolExecutor` | Parallel brute-force across all 26 shifts |
-| 6 | Filter-map accumulator | `filter` / `map` / `sum` | `collections.Counter` | Frequency scoring against English baseline |
-| 7 | ASCII byte arithmetic | `u8` wrapping with `% 26` | `ord()` / `chr()` modulo | Caesar cipher letter shifting |
-
-## Concepts at a Glance
-
-**1. HashMap<char, f32>** — In Python you use a `dict` for frequency tables; Rust's `HashMap` is the same concept but with explicit type parameters `HashMap<char, f32>`. The `entry()` API replaces Python's `defaultdict` pattern.
-
-**2. Pattern matching on char ranges** — Rust's `match` with range patterns (`'a'..='z'`) is more concise than Python's `if 'a' <= ch <= 'z'` chains and is verified by the compiler for exhaustiveness.
-
-**3. chars().map().collect()** — Python uses list comprehensions with `str.join()`; Rust chains iterator adapters lazily. Nothing executes until `.collect()` materialises the result.
-
-**4. Functional iteration with max_by** — Python's `max(results, key=lambda x: x[2])` becomes Rust's `.max_by(|a, b| a.2.partial_cmp(&b.2).unwrap())`. `partial_cmp` is needed because `f32` has NaN which breaks total ordering.
-
-**5. Rayon parallel iterators** — Python requires `ProcessPoolExecutor` with manual `submit()` and `result()` gathering. Rust's `into_par_iter()` is a single method change. Rayon uses work-stealing for automatic load balancing across CPU cores.
-
-**6. Filter-map accumulator** — Python's `Counter` counts automatically; Rust builds counts explicitly with `entry().or_insert()` then divides for percentages. Both follow the same accumulator pattern.
-
-**7. ASCII byte arithmetic** — Python's `ord()`/`chr()` work on Unicode code points; Rust's `u8` byte arithmetic is faster and explicit about ASCII-only scope. The `% 26` wrap-around is identical in both languages.
+| # | Concept | Rust | Python | Why it matters |
+|---|---------|------|--------|----------------|
+| 1 | Frequency table | `HashMap<char, f32>` | `dict` | Store English letter frequencies |
+| 2 | Char range matching | `match 'a'..='z'` | `if/elif` + `ord()`/`chr()` | Classify letters for Caesar shifting |
+| 3 | Iterator chains | `chars().map().collect()` | list comprehension + `str.join()` | Transform strings functionally |
+| 4 | Max by key | `Iterator::max_by` | `max(key=...)` | Find the best-scoring shift |
+| 5 | Parallel iterators | `rayon::prelude::*` | `ProcessPoolExecutor` | Parallel brute-force across 26 shifts |
+| 6 | Frequency scoring | `entry().or_insert()` + divide | `Counter` | Score against English baseline |
+| 7 | Byte arithmetic | `u8` wrap with `% 26` | `ord()` / `chr()` modulo | Caesar letter shifting |
 
 ---
 

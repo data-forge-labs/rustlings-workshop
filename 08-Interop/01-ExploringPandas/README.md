@@ -5,69 +5,39 @@
 > follow each section, replace `todo!()` with real code and run `cd workshop && cargo test` to
 > watch the pass count grow. Your goal: **all 17 tests pass**.
 
-## Why This Project?
+## Why Build DataFrame Operations from Primitives?
 
-### The Problem
+**Python pain:** Pandas DataFrames copy data, coerce types at runtime (`"123"` might become int or stay str), and have no compile-time validation — bugs surface in production at 3 AM. For 10GB ETL jobs, the 2x memory multiplier wastes money.
 
-Pandas is the go-to tool for Python data engineers, but it comes with hidden costs: memory overhead (DataFrames copy data), type coercion surprises (strings silently become NaN), and a "black box" abstraction:
-
-```python
-import pandas as pd
-
-df = pd.read_csv("fruits.csv")
-avg = df.groupby("fruit")["price"].mean()
-```
-
-```
-Python/pandas memory model:
-  CSV file -> pd.DataFrame (copies data in memory)
-  -> groupby (splits into groups, copies again)
-  Types inferred at runtime: "123" might become int or stay str
-  No compile-time validation -> bugs surface in production at 3 AM
-```
-
-For production ETL pipelines processing gigabytes daily, these overheads compound — a 2x memory multiplier on a 10 GB dataset wastes resources and money.
-
-### The Rust Solution
-
-Rust builds the same operations from explicit, zero-cost primitives — no hidden allocations, no type surprises, compile-time checked:
+**Rust fix:** Build the same operations from explicit, zero-cost primitives — no hidden allocations, no type surprises, compile-time checked:
 
 ```rust
 use serde::Deserialize;
-
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 pub struct FruitRecord {
     pub fruit: String,
-    pub year: u32,       // u32 can never become NaN
+    pub year: u32,      // u32 can never become NaN
     pub price: f64,
-}
-
-pub fn mean_price_per_fruit(records: &[FruitRecord]) -> Vec<(String, f64)> {
-    let mut sums: HashMap<&str, (f64, usize)> = HashMap::new();
-    for r in records {
-        let entry = sums.entry(&r.fruit).or_insert((0.0, 0));
-        entry.0 += r.price;
-        entry.1 += 1;
-    }
-    sums.into_iter()
-        .map(|(fruit, (sum, count))| (fruit.to_string(), sum / count as f64))
-        .collect()
 }
 ```
 
-Every row is verified at compile time — a CSV containing `"abc"` in the `price` column won't compile. You get pandas-level expressiveness with C-level performance and Rust-level safety.
+A CSV containing `"abc"` in the `price` column won't compile. Pandas-level expressiveness with C-level performance and Rust-level safety.
 
-## What You'll Learn
+---
 
-| # | Concept | Rust Type / Module | Python Equivalent | Purpose |
-|---|---------|--------------------|------------------|---------|
-| 1 | Serde derive macros | `#[derive(Serialize, Deserialize)]` | pydantic `BaseModel` | Define typed data structures from CSV schema |
+## At a Glance
+
+| # | Concept | Rust | Python | Why it matters |
+|---|---------|------|--------|----------------|
+| 1 | Serde derive | `#[derive(Serialize, Deserialize)]` | pydantic `BaseModel` | Typed data structures from CSV schema |
 | 2 | CSV deserialization | `csv::Reader::deserialize()` | `pd.read_csv()` | Stream CSV rows into typed structs |
-| 3 | HashMap entry API | `HashMap::entry().or_insert()` | `defaultdict` / `dict.setdefault()` | GroupBy aggregation with sum/count |
+| 3 | HashMap entry API | `entry().or_insert()` | `defaultdict` / `dict.setdefault()` | GroupBy aggregation with sum/count |
 | 4 | Iterator filter | `.iter().filter().cloned().collect()` | `df[df["price"] > x]` | Filter records by predicate |
-| 5 | f64 partial_cmp | `.sort_by(\|a, b\| a.partial_cmp(b))` | `df.describe()` | Compute min/max/mean/count statistics |
+| 5 | `f64` ordering | `.sort_by(\|a, b\| a.partial_cmp(b))` | `df.describe()` | Compute min/max/mean/count |
 | 6 | CSV serialization | `csv::Writer::serialize()` | `df.to_csv()` | Write structs back to CSV format |
-| 7 | Result error handling | `Result<Vec<T>, String>` | `try/except` | Propagate parse and IO errors |
+| 7 | `Result` errors | `Result<Vec<T>, String>` | `try/except` | Propagate parse and IO errors |
+
+---
 
 ## Concepts at a Glance
 

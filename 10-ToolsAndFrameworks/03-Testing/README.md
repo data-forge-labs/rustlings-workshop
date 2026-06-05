@@ -2,40 +2,16 @@
 
 > **Test-driven approach**: This project includes a Cargo project with progressive unit tests. Each function in `workshop/src/lib.rs` starts as a `todo!()` stub. As you follow each section, replace `todo!()` with real code and run `cd workshop && cargo test` to watch the pass count grow. Your goal: **all 18 tests pass**.
 
-## Why This Project?
+## Why Use `cargo test` Instead of pytest?
 
-### The Problem
+**Python pain:** Python testing relies on a third-party runner (pytest), tests run at runtime with no compile-time check, and `assert` can be globally disabled with `python -O`. No built-in way to express "this test should panic" without a context manager.
 
-Python testing relies on pytest — a third-party library — and tests run at runtime with no compile-time verification:
-
-```python
-# Python: test runs even with obvious mistakes
-def test_divide():
-    result = divide(10, 0)  # RuntimeError: division by zero
-    assert result is not None
-    assert result == 5.0    # Never reached!
-```
-
-```
-Python testing flow:
-  Write test (any .py file starting with test_)
-  pytest discovers tests by filename/function name convention
-  Runs them sequentially (or with -n flaky parallelism)
-  Runtime errors -> test fails at that line
-  No compile-time guarantees about test correctness
-  assert can be disabled with -O flags!
-```
-
-The `assert` statement is a regular Python statement that can be globally disabled. Tests rely on a third-party runner for discovery and execution. There is no built-in way to express "this test should panic" without a context manager.
-
-### The Rust Solution
-
-Rust bakes testing into the language and compiler — attributes, assertions, and test organisation are all built into `cargo`:
+**Rust fix:** Testing is baked into the language and `cargo` — attributes, assertions, organisation are all built in:
 
 ```rust
 #[test]
 fn test_divide() -> Result<(), String> {
-    let result = divide(10.0, 2.0)?;  // Compile-time checked
+    let result = divide(10.0, 2.0)?;          // compile-time checked
     assert_eq!(result, 5.0);
     Ok(())
 }
@@ -43,24 +19,26 @@ fn test_divide() -> Result<(), String> {
 #[test]
 #[should_panic(expected = "division by zero")]
 fn test_divide_by_zero() {
-    divide(10.0, 0.0).unwrap();  // Compiler enforces unwrap -> panic
+    divide(10.0, 0.0).unwrap();               // first-class attribute
 }
 ```
 
 Tests compile alongside production code (behind `#[cfg(test)]`), so compile errors in tests fail the build. `#[should_panic]` is a first-class attribute, not a context manager. Tests run in parallel by default with `cargo test`.
 
-## What You'll Learn
+## At a Glance
 
-| # | Concept | Rust Type / Module | Python Equivalent | Purpose |
-|---|---------|--------------------|------------------|---------|
-| 1 | #[test] attribute | `#[test]` | `def test_` (pytest discovery) | Mark functions as tests |
+| # | Concept | Rust | Python | Why it matters |
+|---|---------|------|--------|----------------|
+| 1 | `#[test]` | `#[test]` | `def test_` (pytest) | Mark functions as tests |
 | 2 | Assertion macros | `assert_eq!`, `assert_ne!`, `assert!` | `assert` statement | Compare values with verbose failure output |
-| 3 | #[should_panic] | `#[should_panic(expected = "...")]` | `pytest.raises()` | Verify a function panics |
-| 4 | Result<T,E> in tests | `-> Result<(), String>` | `pytest.fail()` / exceptions | Test functions that return errors |
-| 5 | #[cfg(test)] | Conditional compilation | `if __name__ == "__main__"` | Compile test code only during testing |
-| 6 | Integration tests | `tests/` directory | Separate `test_*.py` files | Test public API from external crate view |
-| 7 | Property-based patterns | Manual boundary loops | `@given` in hypothesis | Test invariants across input ranges |
-| 8 | cargo test workflow | `cargo test`, `cargo test name` | `pytest`, `pytest -k` | Run tests with filtering and parallelism |
+| 3 | `#[should_panic]` | `#[should_panic(expected = "...")]` | `pytest.raises()` | Verify a function panics |
+| 4 | `Result<T,E>` in tests | `-> Result<(), String>` | `pytest.fail()` | Test functions that return errors |
+| 5 | `#[cfg(test)]` | conditional compilation | `if __name__ == "__main__"` | Compile test code only during testing |
+| 6 | Integration tests | `tests/` directory | separate `test_*.py` files | Test public API from external view |
+| 7 | Property-based patterns | manual boundary loops | `@given` in hypothesis | Test invariants across input ranges |
+| 8 | `cargo test` workflow | `cargo test`, `cargo test name` | `pytest`, `pytest -k` | Filtering and parallelism |
+
+---
 
 ## Concepts at a Glance
 

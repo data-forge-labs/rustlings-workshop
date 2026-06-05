@@ -6,76 +6,36 @@
 
 ---
 
-## Why This Project?
+## Why Let the Compiler Catch Data Races?
 
-### The Problem
+**Python pain:** A shared counter incremented from 10 threads with the GIL still produces ~600,000 instead of 1,000,000 — read-modify-write is *not* atomic, and Python's compiler never warns you. You must remember to add `threading.Lock()` everywhere, by hand, every time.
 
-Data races are one of the hardest bugs to find in Python. The GIL prevents true parallel writes, but race conditions (wrong results from interleaved operations) are still common:
-
-```python
-import threading
-
-counter = 0
-def increment():
-    global counter
-    for _ in range(100000):
-        # Read, increment, write — three separate operations
-        counter += 1  # GIL helps, but this is still NOT atomic!
-
-threads = [threading.Thread(target=increment) for _ in range(10)]
-for t in threads: t.start()
-for t in threads: t.join()
-print(counter)  # Expected: 1,000,000. Actual: ~600,000
-```
-
-```
-Thread A: read counter (50) → increment → write (51)
-                                    ↑
-Thread B: read counter (50) ────────┘
-         Both threads read 50 and write 51 — one increment is lost!
-```
-
-Python offers no compiler protection — you must manually remember to add `threading.Lock()` everywhere.
-
-### The Rust Solution
-
-Rust prevents data races at **compile time**. You cannot share mutable data across threads without synchronization:
+**Rust fix:** Rust prevents data races at **compile time**. You cannot share mutable data across threads without synchronization, and the compiler enforces it:
 
 ```rust
-use std::sync::{Arc, Mutex};
-use std::thread;
-
 let counter = Arc::new(Mutex::new(0usize));
-let mut handles = vec![];
-
 for _ in 0..10 {
     let c = Arc::clone(&counter);
-    handles.push(thread::spawn(move || {
-        for _ in 0..100000 {
-            *c.lock().unwrap() += 1;  // Lock held across read-modify-write
-        }
-    }));
+    thread::spawn(move || { *c.lock().unwrap() += 1; });
 }
-
-for h in handles { h.join().unwrap(); }
-println!("{}", *counter.lock().unwrap());  // Always 1,000,000
+// without the Mutex, this wouldn't compile
 ```
 
-Forget the `Mutex`? The compiler refuses to compile. This is the core of Rust's **fearless concurrency** promise.
+This is the core of Rust's *fearless concurrency* — concurrent code that compiles is correct, with no runtime race surprises.
 
-## What You'll Learn
+## At a Glance
 
-| # | Concept | Rust Type / Module | Python Equivalent | Purpose |
-|---|---------|--------------------|------------------|---------|
+| # | Concept | Rust | Python | Why it matters |
+|---|---------|------|--------|----------------|
 | 1 | Thread Spawning | `thread::spawn` | `threading.Thread` | Create parallel execution paths |
-| 2 | Move Closures | `move \|\|` | N/A (implicit) | Transfer data ownership to threads |
+| 2 | Move Closures | `move \|\|` | N/A (implicit) | Transfer ownership into a thread |
 | 3 | Shared Ownership | `Arc<T>` | N/A (GC handles this) | Thread-safe reference counting |
-| 4 | Mutual Exclusion | `Mutex<T>` | `threading.Lock` | Exclusive write access |
-| 5 | Read-Write Lock | `RwLock<T>` | No stdlib equivalent | Multiple readers, one writer |
+| 4 | Mutual Exclusion | `Mutex<T>` | `threading.Lock` | Exclusive write access — compiler enforces |
+| 5 | Read-Write Lock | `RwLock<T>` | N/A in stdlib | Multiple readers OR one writer |
 | 6 | Condition Variable | `Condvar` | `threading.Condition` | Signal between threads |
-| 7 | Scoped Threads | `thread::scope` | No equivalent | Borrow data across threads |
-| 8 | Data Race Prevention | Ownership + type system | No compile-time equivalent | Catch bugs at compile time |
-| 9 | Automatic Unlock | `MutexGuard` Drop | `with lock:` | Never forget to unlock |
+| 7 | Scoped Threads | `thread::scope` | N/A | Borrow data across threads without `move` |
+| 8 | Data Race Prevention | ownership + `Send`/`Sync` | None (runtime) | Concurrency bugs caught at compile time |
+| 9 | Automatic Unlock | `MutexGuard`'s `Drop` | `with lock:` | Lock released the moment the guard goes out of scope |
 
 ## Concepts at a Glance
 

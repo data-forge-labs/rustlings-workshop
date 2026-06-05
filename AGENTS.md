@@ -259,7 +259,18 @@ Always pick concepts that build on already‑covered ones. If a prerequisite has
 
 The workshop must be a Markdown file that follows this template. Every workshop serves as the **primary learning file** for that project — the learner reads this, not the complementary files.
 
-Every project README must start with a **motivation + table + concepts-explanation** block before the `---` separator. After the `---`, the original tutorial content follows untouched.
+### 6.1 Compact Preamble (the only block before `---`)
+
+The preamble is **always exactly three elements** and never more than ~20 lines:
+
+1. **H1 + tagline** — the project name and a one-line description.
+2. **Test-driven banner** — `> **Test-driven approach**: ...` with the test count goal.
+3. **`## Why {meaningful phrase}?` heading** — project-specific (NOT the generic "Why This Project?"). Below it:
+   - One short "Python pain" paragraph (2–3 lines, optionally a 1–2 line code snippet)
+   - One short "Rust fix" paragraph (2–3 lines, optionally a 1–2 line code snippet)
+   - **One unified `## At a Glance` table** with 5 columns: `# | Concept | Rust | Python | Why it matters`
+
+The "Why it matters" column absorbs everything that used to live in the prose-only "Concepts at a Glance" section. **Do not add a separate "Concepts at a Glance" section** — that is the duplication we are eliminating.
 
 ```markdown
 # 🦀 Project Name — Python to Rust Workshop
@@ -273,39 +284,26 @@ Every project README must start with a **motivation + table + concepts-explanati
 
 ---
 
-## Why This Project?
+## Why {Meaningful Phrase}?
 
-### The Problem — [Python pain point]
+**Python pain:** [2-3 line problem, optionally a tiny code snippet]
 
-```python
-# Python code that shows the limitation
-```
+**Rust fix:** [2-3 line solution, optionally a tiny code snippet]
 
-ASCII diagram showing the bottleneck / architecture issue.
+## At a Glance
 
-### The Rust Solution — [Rust advantage]
-
-```rust
-// Rust code that solves it
-```
-
-Brief 3-4 bullet list of Rust advantages.
+| # | Concept | Rust | Python | Why it matters |
+|---|---------|------|--------|----------------|
+| 1 | Concept name | `crate::Module` | Python equivalent | One-line purpose |
 
 ---
+```
 
-## What You'll Learn
+### 6.2 Body Sections (after `---`)
 
-| # | Concept | Rust Type / Module | Python Equivalent | Purpose |
-|---|---------|--------------------|------------------|---------|
-| 1 | Concept name | `crate::Module` | Python equivalent | Why it matters |
+After the closing `---` of the preamble, the original tutorial content follows this structure:
 
-## Concepts at a Glance
-
-### 1. Concept Name
-Explain with code snippets and Python comparisons. One paragraph per concept.
-
----
-
+```markdown
 ## Table of Contents
 1. [Introduction](#1-introduction)
 ...
@@ -346,9 +344,12 @@ Include the full final Rust source code so the learner can verify their work.
 Table listing the new concepts covered, with short descriptions and where they were used.
 ```
 
-**Important notes:**
-- **Every** project README must have the **Why This Project? / What You'll Learn / Concepts at a Glance** block prepended (before the `---` separator).
-- The "Concept" sections must come **before** the final assembly.
+### 6.3 Important notes
+
+- **Every** project README must have the **compact preamble (§6.1)** before the `---` separator. The preamble is at most ~20 lines, not ~80.
+- The "Why {meaningful phrase}?" heading is **always project-specific** (e.g., "Why RAII for data pipelines?", "Why model tickets with structs?", "Why parallel CSV parsing?"). Never use the generic "Why This Project?".
+- The "At a Glance" table is the **only** concept-list section in the preamble. No separate "Concepts at a Glance" prose section — the table's "Why it matters" column carries that information.
+- The "Concept" sections in the body must come **before** the final assembly.
 - Every concept section must include a **Python comparison** — this is not optional.
 - For Type B projects (Cargo projects), skip Section 3 and instead explain the Rust code directly.
 - Use ASCII diagrams (`┌───┐` style) to illustrate ownership, borrowing, memory layout, data flow.

@@ -6,122 +6,35 @@
 
 ---
 
-## Why This Project?
+## Why Use Traits for Shared Behavior?
 
-### The Problem
+**Python pain:** Protocols and ABCs are *structural* — any class with matching methods satisfies the interface. A typo like `sumarize` instead of `summarize` only fails at runtime, and the compiler never complains. You also can't add behavior to types you don't own without monkey-patching.
 
-In Python, you define shared behavior using protocols, ABCs, or duck typing:
-
-```python
-from typing import Protocol
-
-class Summarizable(Protocol):
-    def summarize(self) -> str: ...
-
-def print_summary(item: Summarizable):
-    print(item.summarize())
-
-class Ticket:
-    def summarize(self):
-        return f"[{self.status}] {self.title}"
-
-# This works, but nothing forces Ticket to implement summarize
-# If you mis-spell "summarize" as "sumarize", you get a runtime error
-```
-
-Python's protocols are **structural** — any class with matching methods satisfies the protocol. This is flexible but error-prone: there's no explicit declaration that `Ticket` implements `Summarizable`. A typo in a method name only fails at runtime. There's also no way to add behavior to types you don't control (e.g., making `int` printable with custom formatting) without modifying the class.
-
-For data engineers: you want to define operations like "can be serialized to CSV" or "can be summed" as reusable interfaces. Python gives you ABCs and protocols, but they're unenforced conventions — the compiler never checks.
-
-```
-Python traits are "duck typed":
-  if it quacks like a Summarizable, it is one
-  → runtime check, no compile-time guarantee
-  → no way to implement Summarizable for existing types
-```
-
-### The Rust Solution
-
-Rust uses **traits** — explicit, named sets of methods that types can implement:
+**Rust fix:** Traits are **nominal** — `impl Summary for Ticket` is explicit, the compiler checks every method matches, and the *orphan rule* prevents conflicting implementations across crates. Polymorphism without inheritance, with the same flexibility as Python duck typing but compile-time verified:
 
 ```rust
-trait Summarizable {
-    fn summarize(&self) -> String;
-}
-
-impl Summarizable for Ticket {
-    fn summarize(&self) -> String {
-        format!("[{}] {}", self.status, self.title)
-    }
-}
-
-fn print_summary(item: &impl Summarizable) {
-    println!("{}", item.summarize());
-}
+trait Summary { fn summarize(&self) -> String; }
+impl Summary for Ticket { fn summarize(&self) -> String { /* ... */ } }
+fn print_summary(item: &impl Summary) { println!("{}", item.summarize()); }
 ```
 
-Traits are **nominal** — `Ticket` explicitly declares `impl Summarizable for Ticket`. The compiler ensures the implementation matches the trait definition. You can implement external traits for your types (and vice versa, with the orphan rule as the only restriction). Traits enable polymorphism without inheritance — composition over inheritance.
+## At a Glance
 
----
-
-## What You'll Learn
-
-| # | Concept | Rust Type / Module | Python Equivalent | Purpose |
-|---|---------|--------------------|------------------|---------|
-| 1 | Trait Definition | `trait` | `Protocol` / `ABC` | Define shared behavior interfaces |
-| 2 | Trait Implementation | `impl Trait for Type` | Subclass / register | Add behavior to any type |
-| 3 | Orphan Rule | Coherence | Multiple inheritance | Prevent conflicting implementations |
-| 4 | Trait Bounds | `T: Trait` / `where` | Type hints | Constrain generic functions |
-| 5 | Derive Macros | `#[derive(...)]` | `@dataclass` | Auto-implement common traits |
-| 6 | Display | `std::fmt::Display` | `__str__` | Human-readable output `{}` |
-| 7 | Debug | `std::fmt::Debug` | `__repr__` | Debug output `{:?}` |
-| 8 | From / Into | `From<T>`, `Into<T>` | `__init__` from type | Type conversions |
-| 9 | Clone | `Clone` | `copy.deepcopy` | Explicit deep copy |
-| 10 | Copy | `Copy` | None (implicit refs) | Implicit bitwise copy for stack types |
-| 11 | Drop | `Drop` | `__del__` | Deterministic cleanup on scope exit |
-| 12 | Operator Overloading | `Add`, `Sub`, etc. | `__add__`, `__sub__` | Custom operators on types |
-| 13 | PartialEq / Eq | `PartialEq`, `Eq` | `__eq__` | Equality and total equality |
-
-## Concepts at a Glance
-
-### 1. Trait Definition
-A trait is a set of method signatures, like Python's `Protocol`. `trait Summary { fn summarize(&self) -> String; }` vs Python `class Summarizable(Protocol): def summarize(self) -> str: ...`. Rust traits are nominal (explicit opt-in), not structural (duck-typed).
-
-### 2. Trait Implementation
-`impl Summary for Ticket { ... }` explicitly declares that `Ticket` implements `Summary`. Python would accept any class with a `summarize` method. Rust requires the explicit `impl` block.
-
-### 3. Orphan Rule
-You can implement a trait for a type only if you own the trait or the type. Python has no equivalent — you can monkey-patch anything. The orphan rule prevents conflicting implementations across crates.
-
-### 4. Trait Bounds
-`fn process<T: Summary>(item: &T)` constrains generic types. Python's type hints (`item: Summarizable`) are advisory; Rust's trait bounds are compiler-enforced.
-
-### 5. Derive Macros
-`#[derive(Debug, Clone, PartialEq)]` auto-generates trait implementations. Like Python's `@dataclass` auto-generates `__init__`, `__repr__`, `__eq__`. Derive is the standard way to add common traits.
-
-### 6. Display
-`impl Display for Ticket` provides `"{}"` formatting. Python equivalent: `__str__`. Must be implemented manually (no derive). Used for user-facing output.
-
-### 7. Debug
-`impl Debug for Ticket` provides `"{:?}"` formatting. Python equivalent: `__repr__`. Can be derived with `#[derive(Debug)]`. Used for developer-facing output.
-
-### 8. From / Into
-`impl From<&str> for Ticket` enables `Ticket::from("title")` and `let t: Ticket = "title".into()`. Python equivalent: `__init__` accepting different types.
-
-### 9. Clone
-`x.clone()` creates an explicit deep copy. Python: `copy.deepcopy(x)`. Rust makes copying explicit — no accidental duplication of large datasets.
-
-### 10. Copy
-Types that implement `Copy` (integers, bools) are implicitly duplicated on assignment. Python has no equivalent — everything is a reference. In Rust, `let y = x` for a `Copy` type keeps `x` valid.
-
-### 11. Drop
-`Drop::drop()` runs automatically at end of scope. Python's `__del__` is GC-driven and non-deterministic. Rust guarantees cleanup when the owner exits scope.
-
-### 12. Operator Overloading
-Rust overloads operators via traits: `impl Add for Point { type Output = Point; ... }`. Python: `__add__`. Both allow custom `+`, `-`, `*`, etc.
-
-### 13. PartialEq / Eq
-`#[derive(PartialEq, Eq)]` enables `==` comparison. Python: `__eq__`. `Eq` requires `PartialEq` and guarantees total equivalence (no NaN-like values).
+| # | Concept | Rust | Python | Why it matters |
+|---|---------|------|--------|----------------|
+| 1 | Trait Definition | `trait Summary { fn ... }` | `Protocol` / `ABC` | Shared behavior interfaces — nominal, not structural |
+| 2 | Trait Implementation | `impl Summary for Ticket { ... }` | subclass / `register` | Explicit opt-in; compiler verifies method match |
+| 3 | Orphan Rule | coherence rule | multiple inheritance | Prevents conflicting trait impls across crates |
+| 4 | Trait Bounds | `T: Summary` / `where T: Summary` | type hints (advisory) | Constrain generic functions — compiler-enforced |
+| 5 | Derive Macros | `#[derive(Debug, Clone, ...)]` | `@dataclass` | Auto-generate impls for common traits |
+| 6 | Display | `impl std::fmt::Display` | `__str__` | `{}` formatting for human output (manual impl) |
+| 7 | Debug | `impl std::fmt::Debug` | `__repr__` | `{:?}` formatting for dev output (can be derived) |
+| 8 | From / Into | `impl From<&str> for Ticket` | `__init__` from type | Type conversions; `From` gives `Into` for free |
+| 9 | Clone | `x.clone()` | `copy.deepcopy(x)` | Explicit deep copy — no accidental dataset duplication |
+| 10 | Copy | `derive Copy` (for stack types) | N/A (all references) | Implicit bitwise copy for `Copy` types like `i32` |
+| 11 | Drop | `impl Drop { fn drop(&mut self) }` | `__del__` | Deterministic cleanup (see OBRM for full RAII) |
+| 12 | Operator Overloading | `impl Add`, `Sub`, etc. | `__add__`, `__sub__` | Custom operators (`+`, `-`, `*`) on your types |
+| 13 | PartialEq / Eq | `derive PartialEq, Eq` | `__eq__` | `==` comparison; `Eq` = no NaN-like total equality |
 
 ---
 

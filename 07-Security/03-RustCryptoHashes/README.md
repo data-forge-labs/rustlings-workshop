@@ -5,35 +5,11 @@
 > follow each section, replace `todo!()` with real code and run `cd workshop && cargo test` to
 > watch the pass count grow. Your goal: **all 12 tests pass**.
 
-## Why This Project?
+## Why Hash in RustCrypto Instead of `hashlib`?
 
-### The Problem
+**Python pain:** `hashlib` is convenient, but for bulk data integrity checks — millions of files, Merkle trees, content-addressing in data lakes — every chunk crosses the Python-to-C boundary while the GIL is held, limiting throughput.
 
-Python's `hashlib` is convenient but for bulk data integrity checks — verifying millions of files, computing Merkle trees, or content-addressing in data lakes — the overhead of Python function calls and GIL contention adds up:
-
-```python
-import hashlib
-
-def hash_file(path):
-    h = hashlib.sha256()
-    with open(path, "rb") as f:
-        for chunk in iter(lambda: f.read(8192), b""):
-            h.update(chunk)
-    return h.hexdigest()
-```
-
-```
-Python hashlib flow:
-  read chunk -> Python to C boundary  <- GIL held
-  read chunk -> Python to C boundary  <- GIL held
-  ... repeated for every chunk        <- CPU-bound, single-threaded
-```
-
-Each chunk crosses the Python-to-C boundary while holding the GIL, limiting throughput in high-volume data pipelines.
-
-### The Rust Solution
-
-Rust's RustCrypto ecosystem provides the same algorithms through the `Digest` trait — a unified API across SHA-2, SHA-3, and BLAKE2 — with zero-crossing overhead and no GIL:
+**Rust fix:** The RustCrypto ecosystem exposes a unified `Digest` trait across SHA-2, SHA-3, and BLAKE2 with zero crossing overhead and no GIL — combine with Rayon or Tokio for parallel hashing:
 
 ```rust
 use sha2::{Sha256, Digest};
@@ -43,37 +19,24 @@ pub fn hash_bytes(data: &[u8]) -> String {
     hasher.update(data);
     format!("{:x}", hasher.finalize())
 }
+// same API for Sha3_256, Blake2b512, ...
 ```
 
-The `Digest` trait provides `new()`, `update()`, and `finalize()` — the same API for every algorithm. Combined with Rayon or Tokio, you can hash files in parallel without the per-chunk boundary cost that Python incurs.
+## At a Glance
 
-## What You'll Learn
+| # | Concept | Rust | Python | Why it matters |
+|---|---------|------|--------|----------------|
+| 1 | `Digest` trait | `sha2::Digest`, `sha3::Digest`, `blake2::Digest` | `hashlib._Hash` | Unified API for all hash algorithms |
+| 2 | SHA-256 | `sha2::Sha256` | `hashlib.sha256()` | NIST-standard 256-bit crypto hash |
+| 3 | SHA-3 | `sha3::Sha3_256` | `hashlib.sha3_256()` | Newer NIST standard (Keccak sponge) |
+| 4 | BLAKE2b | `blake2::Blake2b512` | `hashlib.blake2b()` | Fast crypto hash for file integrity |
+| 5 | Hex encoding | `format!("{:x}", hash)` | `.hexdigest()` | Convert digest bytes to hex string |
+| 6 | Simple sum hash | `u32 sum + format!` | `sum(ord(c) for c in s)` | Non-crypto hash (collisions easy) |
+| 7 | XOR checksum | `fold(0, \|acc, &b\| acc ^ b)` | `functools.reduce(operator.xor, ...)` | Error-detection checksum |
+| 8 | Avalanche effect | `unsafe { as_bytes_mut() }` bit toggle | `chr(ord(s[pos]) ^ 1)` | 1-bit input change affects output |
+| 9 | Deterministic property | function equality check | `hashlib` always same | Foundation of dicts, sets, content addressing |
 
-| # | Concept | Rust Type / Module | Python Equivalent | Purpose |
-|---|---------|--------------------|------------------|---------|
-| 1 | Digest trait | `sha2::Digest`, `sha3::Digest`, `blake2::Digest` | `hashlib._Hash` | Unified API for all hash algorithms |
-| 2 | SHA-256 | `sha2::Sha256` | `hashlib.sha256()` | NIST-standard 256-bit cryptographic hash |
-| 3 | SHA-3 | `sha3::Sha3_256` | `hashlib.sha3_256()` | Newer NIST standard based on Keccak sponge |
-| 4 | BLAKE2b | `blake2::Blake2b512` | `hashlib.blake2b()` | Fast cryptographic hash, used in file integrity |
-| 5 | Hex encoding | `format!("{:x}", hash)` | `.hexdigest()` | Convert digest bytes to readable hex string |
-| 6 | Simple sum hash | `u32 sum + format!` | `sum(ord(c) for c in s)` | Demonstrate non-crypto hash (collisions easy) |
-| 7 | XOR checksum | `fold(0, \|acc, &b\| acc ^ b)` | `functools.reduce(int.__xor__, data)` | Simple error-detection checksum |
-| 8 | Avalanche effect | `unsafe { as_bytes_mut() }` bit toggle | `chr(ord(s[pos]) ^ 1)` | Verify 1-bit input change affects output |
-| 9 | Deterministic property | Function equality check | `hashlib` always returns same value | Foundation of dicts, sets, content addressing |
-
-## Concepts at a Glance
-
-**1. Digest trait** — Python's `hashlib` has similar methods per algorithm but each is its own class. Rust's `Digest` trait standardises them into a single interface — you can write generic code that works with any hash algorithm.
-
-**2-4. SHA-256, SHA-3, BLAKE2b** — These are the same algorithms as Python's `hashlib.sha256()`, `hashlib.sha3_256()`, and `hashlib.blake2b()`. The API is identical across all three: `new()`, `update(data)`, `finalize()`. In Rust, each is its own crate under the RustCrypto project.
-
-**5. Hex encoding** — Python's `.hexdigest()` returns a hex string directly. Rust uses `format!("{:x}", hash)` where `hash` is a `GenericArray<u8, U32>`. The `{:x}` formatter produces lowercase hex — identical to Python's output.
-
-**6-7. Simple sum hash & XOR checksum** — Python's `sum(ord(c) for c in s)` maps to Rust's `input.bytes().map(|b| b as u32).sum()`. XOR with `fold` mirrors Python's `functools.reduce`. Both demonstrate non-cryptographic hashing concepts.
-
-**8. Avalanche effect** — Both Python and Rust flip one bit and compare hashes. Rust uses `unsafe { as_bytes_mut() }` for direct byte mutation; Python creates a new string with slicing. The test verifies that good hash functions change output dramatically on small input changes.
-
-**9. Deterministic property** — In both languages, hashing the same input twice produces the same output. This is the foundation of dicts, sets, caches, and content-addressable storage.
+---
 
 ---
 

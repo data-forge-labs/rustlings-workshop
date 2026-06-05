@@ -2,78 +2,32 @@
 
 > **Test-driven approach**: This project includes a Cargo project with progressive unit tests. Each function in `workshop/src/lib.rs` starts as a `todo!()` stub. As you follow each section, replace `todo!()` with real code and run `cd workshop && cargo test` to watch the pass count grow. Your goal: **all 20 tests pass**.
 
-## Why This Project?
+## Why Use Send/Sync Markers?
 
-### The Problem
+**Python pain:** A plain `dict` shared across threads produces wrong values with no compile-time warning. There's no type-level distinction between thread-safe and non-thread-safe types — bugs surface only at runtime, often in production.
 
-In Python, there is no type-level distinction between thread-safe and non-thread-safe types. Any object can be shared between threads, and bugs only surface at runtime:
-
-```python
-from threading import Thread
-
-counter = {"val": 0}  # A plain dict shared across threads
-
-def worker():
-    for _ in range(10000):
-        counter["val"] += 1  # No compiler warning — but this is NOT safe!
-
-threads = [Thread(target=worker) for _ in range(8)]
-for t in threads: t.start()
-for t in threads: t.join()
-print(counter["val"])  # Wrong value, and Python didn't warn you
-```
-
-```
-Python: "Here, take this dict — share it everywhere. Good luck!"
-        (no compile-time safety, bugs found in production)
-
-Rust:   "You cannot share `Counter` across threads because `Counter` is not `Sync`."
-        (compile-time error before the program ever runs)
-```
-
-### The Rust Solution
-
-Rust's `Send` and `Sync` marker traits are automatically derived from field types. The compiler uses them to prevent accidental thread-unsafe sharing:
+**Rust fix:** The `Send` and `Sync` marker traits are auto-derived from field types. The compiler refuses to share anything that isn't provably safe:
 
 ```rust
-use std::sync::RwLock;
-use std::thread;
-
-// RwLock is Sync — safe to share &RwLock across threads
-let data = std::sync::Arc::new(RwLock::new(42i32));
+let data = std::sync::Arc::new(RwLock::new(42i32));  // RwLock is Sync
 
 thread::scope(|s| {
-    for _ in 0..10 {
-        let d = &data;
-        s.spawn(|| {
-            let val = d.read().unwrap();  // Multiple readers — no blocking!
-            println!("{}", *val);
-        });
-    }
+    s.spawn(|| { let _ = data.read().unwrap(); });   // multiple readers OK
+    s.spawn(|| { let _ = data.read().unwrap(); });
 });
+// use Rc instead of Arc? compile error: Rc is !Send
 ```
 
-If `Rc` were used instead of `Arc`, the compiler would refuse — `Rc` is not `Send`.
+## At a Glance
 
-## What You'll Learn
-
-| # | Concept | Rust Type / Module | Python Equivalent | Purpose |
-|---|---------|--------------------|------------------|---------|
-| 1 | Send Trait | `std::marker::Send` | No equivalent | Ownership transferable across threads |
-| 2 | Sync Trait | `std::marker::Sync` | No equivalent | Shared ref transferable across threads |
-| 3 | RwLock | `std::sync::RwLock` | No stdlib equivalent | Concurrent reads, exclusive writes |
-| 4 | Scoped Threads | `thread::scope` | No equivalent | Borrow refs across threads safely |
-| 5 | Parallel Sum | Scoped threads + `chunks` | `concurrent.futures` | Divide-and-conquer reduce |
-| 6 | Parallel Map | Scoped threads + mapper fn | `executor.map()` | Divide-and-conquer transform |
-
-## Concepts at a Glance
-
-- **Send Trait**: A type is `Send` if ownership can be transferred across threads. `Rc<T>` is not `Send`; `Arc<T>` is. Python has no equivalent — all objects can be sent between threads with no compile-time check.
-- **Sync Trait**: A type is `Sync` if `&T` can be shared across threads. `Cell<T>` and `RefCell<T>` are not `Sync`; `Mutex<T>` is. Rust auto-derives both traits from field types.
-- **RwLock (`std::sync::RwLock`)**: Allows multiple readers or one writer. Python has no stdlib `RwLock` — `threading.Lock` blocks all threads, even readers, causing unnecessary contention.
-- **Scoped Threads (`thread::scope`)**: Spawn threads that borrow from the parent scope; the scope waits for all threads to finish before returning. No Python equivalent — eliminates the `move` boilerplate.
-- **Parallel Sum**: Splits data into chunks, sums each chunk on separate threads, then combines results. Python's `concurrent.futures.ThreadPoolExecutor` can do this, but with more boilerplate and no data-race safety.
-- **Parallel Map**: Applies a mapping function to each element in parallel across threads. Python's `executor.map()` is similar but lacks compile-time thread-safety verification.
+| # | Concept | Rust | Python | Why it matters |
+|---|---------|------|--------|----------------|
+| 1 | `Send` | `std::marker::Send` | N/A | Ownership transferable across threads |
+| 2 | `Sync` | `std::marker::Sync` | N/A | `&T` shareable across threads |
+| 3 | `RwLock` | `std::sync::RwLock` | N/A in stdlib | Multiple readers OR one writer |
+| 4 | Scoped Threads | `thread::scope` | N/A | Borrow refs across threads without `move` |
+| 5 | Parallel Sum | scoped threads + `chunks` | `concurrent.futures` | Divide-and-conquer reduce |
+| 6 | Parallel Map | scoped threads + mapper | `executor.map()` | Divide-and-conquer transform |
 
 ---
 

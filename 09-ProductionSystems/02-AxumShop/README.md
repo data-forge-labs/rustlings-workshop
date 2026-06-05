@@ -6,43 +6,11 @@
 
 ---
 
-## Why This Project?
+## Why Migrate FastAPI to Axum?
 
-### The Problem — Python's Web API Tax
+**Python pain:** FastAPI is great for prototyping, but the GIL limits concurrency, every request allocates Python objects (10K concurrent = 500MB+ GC pressure), SQLAlchemy lazy loading causes N+1 queries, and the Docker image is 200MB+ vs Rust's ~15MB.
 
-```python
-# FastAPI — clean but limited by Python's runtime
-from fastapi import FastAPI, Depends
-from sqlalchemy.orm import Session
-
-app = FastAPI()
-
-@app.get("/products")
-async def list_products(db: Session = Depends(get_db)):
-    return db.query(Product).all()
-```
-
-FastAPI is excellent for prototyping, but in production at scale:
-
-```
-┌─────────────────────────────────────────────────────┐
-│  FastAPI at Scale — Hidden Costs                     │
-│                                                      │
-│  1. GIL limits concurrency — one request blocks all  │
-│     └─ Uvicorn workers = multi-process, high memory  │
-│                                                      │
-│  2. Each request allocates Python objects            │
-│     └─ 10K concurrent = 500MB+ GC pressure           │
-│                                                      │
-│  3. SQLAlchemy lazy loading kills perf               │
-│     └─ N+1 queries, object overhead per row          │
-│                                                      │
-│  4. Deployment requires Python runtime + deps        │
-│     └─ Docker image: 200MB+ vs Rust: ~15MB           │
-└─────────────────────────────────────────────────────┘
-```
-
-### The Rust Solution — Axum on Tokio
+**Rust fix:** Axum on Tokio — async, single-binary, ~15MB Docker image, no GIL, no per-request Python allocation:
 
 ```rust
 use axum::{Router, routing::get, extract::State};
@@ -68,10 +36,10 @@ This workshop rebuilds a full Shop Manager backend (FastAPI → Axum) end-to-end
 
 ---
 
-## What You'll Learn
+## At a Glance
 
-| # | Concept | Rust Type / Module | Python Equivalent | Purpose |
-|---|---------|--------------------|------------------|---------|
+| # | Concept | Rust | Python | Why it matters |
+|---|---------|------|--------|----------------|
 | 1 | Web framework | `axum::Router` | `FastAPI()` | Route definition and request dispatch |
 | 2 | Async runtime | `tokio` | `uvicorn` + `asyncio` | Multi-threaded async executor |
 | 3 | Request extractors | `Path`, `Query`, `Json`, `State` | Pydantic + `Depends` | Type-safe request parsing |
@@ -81,9 +49,11 @@ This workshop rebuilds a full Shop Manager backend (FastAPI → Axum) end-to-end
 | 7 | Custom extractors | `FromRequestParts` trait | `Depends()` | Auth/injection via the type system |
 | 8 | Password hashing | `sha2` + `hex` | `hashlib` | SHA-256 secure password storage |
 | 9 | CORS | `CorsLayer` | `CORSMiddleware` | Cross-origin request handling |
-| 10 | Database transactions | `pool.begin()` + `tx.commit()` | `db.commit()` | Atomic multi-table operations |
-| 11 | Error handling | `IntoResponse` for custom enums | Exception handlers | Type-safe error → HTTP response |
+| 10 | DB transactions | `pool.begin()` + `tx.commit()` | `db.commit()` | Atomic multi-table operations |
+| 11 | Error handling | `IntoResponse` for custom enums | exception handlers | Type-safe error → HTTP response |
 | 12 | Module organization | `mod`, routes as modules | `APIRouter` prefix | Clean codebase structure |
+
+---
 
 ## Concepts at a Glance
 

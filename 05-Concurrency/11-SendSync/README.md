@@ -2,82 +2,35 @@
 
 > **Test-driven approach**: This project includes a Cargo project with progressive unit tests. Each function in `workshop/src/lib.rs` starts as a `todo!()` stub. As you follow each section, replace `todo!()` with real code and run `cd workshop && cargo test` to watch the pass count grow. Your goal: **all 9 tests pass**.
 
-## Why This Project?
+## Why Use Send/Sync Marker Traits?
 
-### The Problem
+**Python pain:** There's no way to declare a type thread-safe or not. Every object can be passed between threads freely — `Rc` clones, `RefCell` borrows, all of it — and a missing `Lock()` produces a silent wrong answer, not an error.
 
-In Python, there is no way to declare that a type is or isn't thread-safe. Every object can be passed between threads freely:
-
-```python
-from threading import Thread
-
-class Counter:
-    def __init__(self):
-        self.count = 0
-
-def worker(c: Counter):
-    for _ in range(10000):
-        c.count += 1  # Not thread-safe — but Python lets you do it anyway
-
-c = Counter()
-threads = [Thread(target=worker, args=(c,)) for _ in range(8)]
-for t in threads: t.start()
-for t in threads: t.join()
-print(c.count)  # Wrong value — no warning, no error
-```
-
-```
-Python type system:     "I don't know — and I don't care — if this is thread-safe."
-                        Any type → any thread → no protection
-
-Rust type system:       "Rc<i32> is not Send. RefCell<i32> is not Sync."
-                        Compile-time protection → fearless concurrency
-```
-
-Python depends on documentation and discipline. In large teams with complex data pipelines, this causes production incidents that are hard to reproduce and fix.
-
-### The Rust Solution
-
-Rust's `Send` and `Sync` marker traits are automatically derived from field types. The compiler uses them to prevent thread-safety bugs:
+**Rust fix:** `Send` and `Sync` are auto-derived from field types. The compiler enforces thread-safety; the standard library is hand-checked to maintain that property:
 
 ```rust
-use std::rc::Rc;
-use std::sync::{Arc, Mutex};
-
-// Rc<i32> is NOT Send — cannot transfer across threads
-// let handle = thread::spawn(move || { let _ = Rc::new(42); });
-// ERROR: Rc<i32> cannot be sent between threads safely
-
 // Arc<Mutex<i32>> is Send + Sync — safe for threads
-pub fn verify_send<T: Send>(val: T) -> T { val }
-pub fn verify_sync<T: Sync>(val: T) -> T { val }
-
 let safe = Arc::new(Mutex::new(42i32));
-verify_send(&safe);   // ✓ Compiles
-verify_sync(&safe);   // ✓ Compiles
+verify_send(&safe);   // ✓ compiles
+
+// Rc<i32> is !Send — thread::spawn won't accept it
+// verify_send(&Rc::new(42));   // compile error
 ```
 
-Custom types can implement `Send`/`Sync` via `unsafe impl` when the compiler cannot auto-derive them (e.g., with raw pointers).
+When the compiler can't see through a type (e.g., raw pointers), you can write `unsafe impl Send for MyType {}` — promising the invariant is upheld.
 
-## What You'll Learn
+## At a Glance
 
-| # | Concept | Rust Trait | Python Equivalent | Purpose |
-|---|---------|------------|------------------|---------|
-| 1 | Send Trait | `std::marker::Send` | No equivalent | Ownership transferable across threads |
-| 2 | Sync Trait | `std::marker::Sync` | No equivalent | Shared ref transferable across threads |
-| 3 | Auto-Implementation | Field composition | N/A | Compiler derives from field types |
-| 4 | Unsafe Impl | `unsafe impl Send`/`Sync` | N/A | Manual implementation for custom types |
+| # | Concept | Rust | Python | Why it matters |
+|---|---------|------|--------|----------------|
+| 1 | `Send` | `std::marker::Send` | N/A | Ownership transferable across threads |
+| 2 | `Sync` | `std::marker::Sync` | N/A | `&T` shareable across threads |
+| 3 | Auto-Implementation | field composition | N/A | Compiler derives from field types |
+| 4 | Unsafe Impl | `unsafe impl Send`/`Sync` | N/A | Manual declaration for custom types |
 | 5 | Thread-Safe Pattern | `Arc<Mutex<T>>` | `threading.Lock` | Standard shared mutable state |
-| 6 | Non-Thread-Safe Types | `Rc`, `Cell`, `RefCell` | All types are "thread-safe" | Thread-unsafe types are explicit |
+| 6 | Non-Thread-Safe Types | `Rc`, `Cell`, `RefCell` | All types "thread-safe" | Thread-unsafety is in the type signature |
 
-## Concepts at a Glance
-
-- **Send Trait**: A type is `Send` if ownership can be transferred between threads. `Rc<T>` is not `Send` (its reference count uses non-atomic operations). Python has no equivalent — all Python objects can be sent between threads.
-- **Sync Trait**: A type is `Sync` if `&T` can be shared between threads. `Cell<T>` and `RefCell<T>` are not `Sync` (their interior mutability has no synchronization). Python has no equivalent marker.
-- **Auto-Implementation**: `Send` and `Sync` are automatically implemented by the compiler based on field types. A struct is `Send` if all fields are `Send`; it is `Sync` if all fields are `Sync`. This is the foundation of Rust's fearless concurrency.
-- **Unsafe Impl (`unsafe impl Send`/`Sync`)**: Allows manual implementation of `Send`/`Sync` for custom types where the compiler cannot determine safety. The `unsafe` keyword indicates a correctness guarantee the programmer must uphold.
-- **Thread-Safe Pattern (`Arc<Mutex<T>>`)**: The standard Rust pattern for shared mutable state across threads. `Arc` provides shared ownership; `Mutex` provides synchronization. Python's `threading.Lock` achieves the same result but without compile-time verification.
-- **Non-Thread-Safe Types**: `Rc`, `Cell`, `RefCell` are deliberately `!Send` or `!Sync`. Their thread-unsafety is part of their type signature — visible in documentation and enforced by the compiler.
+---
 
 ---
 

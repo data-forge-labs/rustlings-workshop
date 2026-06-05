@@ -2,74 +2,32 @@
 
 > **Test-driven approach**: This project includes a Cargo project with progressive unit tests. Each function in `workshop/src/lib.rs` starts as a `todo!()` stub. As you follow each section, replace `todo!()` with real code and run `cd workshop && cargo test` to watch the pass count grow. Your goal: **all 5 tests pass**.
 
-## Why This Project?
+## Why Use Async/Await?
 
-### The Problem
+**Python pain:** `asyncio` is powerful but easy to misuse — a single `time.sleep(1)` in an async handler blocks the *entire* event loop, and you only discover it when latency spikes in production. There's no compile-time distinction between async and sync functions, and coroutines allocate on the heap every time.
 
-Python's `asyncio` is powerful but easy to misuse. Accidentally using `time.sleep()` instead of `asyncio.sleep()` blocks the entire event loop. There is no compile-time distinction between async and sync functions:
-
-```python
-import asyncio
-import time
-
-async def bad_handler():
-    time.sleep(1)  # Oops — blocks the entire event loop for 1 second!
-    return "done"
-
-# Only discovered when latency spikes in production
-```
-
-```
-Python asyncio:     Bad handler calls time.sleep(1)
-┌─────────────────────────────────────────────────────┐
-│ Event Loop:  | Task1 | ████████ sleep ████████ | ...│
-│              The ENTIRE loop is blocked             │
-└─────────────────────────────────────────────────────┘
-```
-
-Python also allocates coroutine objects on the heap every time you create an async task, adding GC pressure.
-
-### The Rust Solution
-
-Rust's async model is **zero-cost** — futures that are not awaited compile to nothing. The type system prevents blocking calls inside async functions:
+**Rust fix:** Rust's async model is **zero-cost** — a future that is never awaited compiles to *nothing*. The type system prevents blocking calls inside `async fn`:
 
 ```rust
-use tokio::time::{sleep, Duration};
-
 pub async fn good_handler() -> String {
-    sleep(Duration::from_secs(1)).await;  // Yields — doesn't block
-    "done".to_string()
-}
-
-pub fn sync_blocking() -> String {
-    std::thread::sleep(Duration::from_secs(1));  // Only in sync code
+    tokio::time::sleep(Duration::from_secs(1)).await;  // yields, doesn't block
     "done".to_string()
 }
 ```
 
-The compiler won't let you call `std::thread::sleep` inside an `async fn` without explicit wrapping — the distinction is enforced.
+The compiler enforces the boundary — you can't accidentally call `std::thread::sleep` from inside an async function.
 
-## What You'll Learn
+## At a Glance
 
-| # | Concept | Rust Type / Module | Python Equivalent | Purpose |
-|---|---------|--------------------|------------------|---------|
-| 1 | Async Functions | `async fn` | `async def` | Define async operations |
-| 2 | Awaiting Futures | `.await` | `await` | Drive a future to completion |
-| 3 | Task Spawning | `tokio::spawn` | `asyncio.create_task` | Run futures concurrently |
-| 4 | Async Runtime | `tokio::runtime::Runtime` | `asyncio.run()` | Drive async code to completion |
-| 5 | Async Sleep | `tokio::time::sleep` | `asyncio.sleep` | Non-blocking delay |
-| 6 | Task Joining | `.await` on `JoinHandle` | `await` on task | Collect results from spawned tasks |
-| 7 | Runtime Configuration | `#[tokio::main]` | `asyncio.run()` | Multi-threaded vs current-thread |
-
-## Concepts at a Glance
-
-- **Async Functions (`async fn`)**: Returns a `Future` — a lazy computation that does nothing until awaited. Python's `async def` returns a coroutine that is eagerly allocated. Rust futures are zero-cost: an unused future compiles to nothing.
-- **Awaiting Futures (`.await`)**: Drives the future to completion, yielding control back to the runtime if the future is not ready. Same syntax and semantics as Python's `await` but Rust's `.await` is a method call, not a keyword.
-- **Task Spawning (`tokio::spawn`)**: Spawns a future to run concurrently on the Tokio runtime. Equivalent to `asyncio.create_task`. Spawned tasks are multiplexed onto a thread pool — lightweight, no per-task thread overhead.
-- **Async Runtime (`tokio::runtime::Runtime`)**: The executor that drives futures to completion. `Runtime::block_on` is like `asyncio.run()`, but Rust gives you finer control (current-thread vs multi-thread scheduler).
-- **Async Sleep (`tokio::time::sleep`)**: Non-blocking delay that yields to the runtime. Like `asyncio.sleep()`. Using `std::thread::sleep` instead would block the entire thread, preventing other tasks from running.
-- **Task Joining**: Awaiting a `JoinHandle` returns the task's result. Same pattern as Python's `await task` but with typed error handling via `Result`.
-- **Runtime Configuration**: `#[tokio::main]` macro sets up a multi-threaded runtime by default. Python's `asyncio.run()` is always single-threaded.
+| # | Concept | Rust | Python | Why it matters |
+|---|---------|------|--------|----------------|
+| 1 | Async Functions | `async fn` | `async def` | Returns a lazy `Future` — zero-cost if never awaited |
+| 2 | Awaiting Futures | `future.await` | `await` | Drive a future to completion; yields to the runtime |
+| 3 | Task Spawning | `tokio::spawn` | `asyncio.create_task` | Run futures concurrently on the runtime |
+| 4 | Async Runtime | `#[tokio::main]` | `asyncio.run()` | Multi-threaded or current-thread executor |
+| 5 | Async Sleep | `tokio::time::sleep().await` | `asyncio.sleep` | Non-blocking delay that yields |
+| 6 | Task Joining | `JoinHandle` → `.await` | `await task` | Collect results from spawned tasks |
+| 7 | Runtime Config | `#[tokio::main(flavor = "multi_thread")]` | `asyncio.run` (always single-thread) | Choose scheduler at the macro level |
 
 ---
 

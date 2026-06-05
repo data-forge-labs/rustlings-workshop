@@ -2,77 +2,34 @@
 
 > **Test-driven approach**: This project includes a Cargo project with progressive unit tests. Each function in `workshop/src/lib.rs` starts as a `todo!()` stub. As you follow each section, replace `todo!()` with real code and run `cd workshop && cargo test` to watch the pass count grow. Your goal: **all 4 tests pass**.
 
-## Why This Project?
+## Why Serialize Structs Directly to CSV?
 
-### The Problem
+**Python pain:** `csv.writer` is dynamic — a typo in `obj.nmae` only fails at runtime, and a swapped column order isn't caught until the data consumer reports the problem. You also manually extract each field per row.
 
-Python's `csv.writer` and `csv.DictWriter` are dynamic — a typo in a field name only fails at runtime. When writing hundreds of thousands of rows, you may not discover the bug until downstream consumers fail. Python also requires manual conversion from objects to dicts/lists:
-
-```python
-import csv
-
-class Product:
-    def __init__(self, name, price):
-        self.name = name
-        self.price = price
-
-products = [Product("Widget", 100.0), Product("Gadget", 200.0)]
-
-with open("output.csv", "w", newline="") as f:
-    writer = csv.writer(f)
-    writer.writerow(["Name", "Price"])
-    for p in products:
-        writer.writerow([p.name, p.price])  # Manual field extraction — easy to misorder
-```
-
-This works, but you must manually extract each field in the correct order. A swapped column won't be caught until the data consumer reports a problem.
-
-### The Rust Solution
-
-With `serde::Serialize` and `csv::Writer`, the struct fields are mapped automatically at compile time:
+**Rust fix:** With `serde::Serialize` + `csv::Writer`, the struct fields are mapped automatically at compile time. A typo is a compile error, not a corrupted CSV:
 
 ```rust
-use csv::Writer;
-use serde::Serialize;
-
 #[derive(Serialize)]
 #[serde(rename_all = "PascalCase")]
-struct Product {
-    name: String,
-    price: f64,
-}
+struct Product { name: String, price: f64 }
 
-let products = vec![
-    Product { name: "Widget".into(), price: 100.0 },
-    Product { name: "Gadget".into(), price: 200.0 },
-];
-
-let mut wtr = Writer::from_path("output.csv")?;
-for p in &products {
-    wtr.serialize(p)?;  // Compiled field mapping — typo = compile error
-}
-wtr.flush()?;
+wtr.serialize(&product)?;  // compiled field mapping — typo = compile error
 ```
 
-If you misspell `name` as `nmae`, the program won't compile. Python would only fail when the CSV is opened by another tool.
+## At a Glance
 
-## What You'll Learn
+| # | Concept | Rust | Python | Why it matters |
+|---|---------|------|--------|----------------|
+| 1 | CSV Writer | `csv::Writer::from_path` | `csv.writer(f)` | Write records with quoting/escaping handled |
+| 2 | Struct Serialization | `#[derive(Serialize)]` | `dataclass.asdict()` + `DictWriter` | Auto-map struct fields to CSV — compile-time verified |
+| 3 | Field Renaming | `#[serde(rename_all = "PascalCase")]` | `DictWriter` fieldnames list | Control column headers without renaming fields |
+| 4 | Custom Delimiters | `WriterBuilder::delimiter(b'\t')` | `csv.writer(delimiter='\t')` | Write TSV or pipe-delimited files |
+| 5 | Builder Pattern | `WriterBuilder` | kwargs pattern | Configure writer options fluently |
+| 6 | Flushing | `Writer::flush()` | `f.close()` (implicit) | Ensure data is on disk |
+| 7 | In-Memory Writing | `Writer::from_writer(Vec::new())` | `io.StringIO` | Test CSV output without touching the filesystem |
+| 8 | Error Handling | `?` operator | `try/except` | Per-step I/O error handling |
 
-| # | Concept | Rust Type / Module | Python Equivalent | Purpose |
-|---|---------|--------------------|------------------|---------|
-| 1 | CSV Writer | `csv::Writer` | `csv.writer` | Write records to CSV files |
-| 2 | Struct Serialization | `serde::Serialize` | `dataclass` + `csv.DictWriter` | Auto-generate CSV rows from structs |
-| 3 | Field Renaming | `#[serde(rename_all = "PascalCase")]` | `DictWriter` fieldnames | Control CSV column headers |
-| 4 | Custom Delimiters | `WriterBuilder::delimiter()` | `csv.writer(delimiter=...)` | Write TSV or pipe-delimited files |
-| 5 | Builder Pattern | `WriterBuilder` | N/A (kwargs pattern) | Configure writer options |
-| 6 | Flushing | `Writer::flush()` | File `.close()` | Ensure data is written to disk |
-| 7 | In-Memory Writing | `Writer::from_writer(vec![])` | `io.StringIO` | Test CSV output without files |
-| 8 | Error Handling | `?` operator | `try/except` | Handle I/O errors at each step |
-
-## Concepts at a Glance
-
-- **CSV Writer (`csv::Writer`)**: The primary type for writing CSV data. Like Python's `csv.writer`, it handles quoting, escaping, and line endings automatically.
-- **Struct Serialization (`serde::Serialize`)**: A `derive` macro that generates code to convert a struct into CSV fields. In Python, you would write `row = [obj.name, obj.price]` manually or use `dataclasses.asdict()`. Rust does this at compile time with zero overhead.
+---
 - **Field Renaming (`#[serde(rename_all = "PascalCase")]`)**: Transforms Rust's `snake_case` field names to `PascalCase` (or other cases) for CSV headers. Python's `DictWriter` lets you pass any `fieldnames` list — Rust enforces consistency via attributes.
 - **Custom Delimiters (`WriterBuilder::delimiter()`)**: Change the separator from comma to tab, pipe, or semicolon. Same as Python's `delimiter=` kwarg but configured via the builder pattern.
 - **Builder Pattern (`WriterBuilder`)**: A fluent API for configuring writers before creation. Python uses kwargs; Rust uses chained method calls with compile-time safety.

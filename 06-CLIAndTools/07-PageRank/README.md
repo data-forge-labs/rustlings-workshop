@@ -5,28 +5,16 @@
 > follow each section, replace `todo!()` with real code and run `cd workshop && cargo test` to
 > watch the pass count grow. Your goal: **all 18 tests pass**.
 
-## Why This Project?
+## Why Run PageRank Without `networkx`?
 
-### The Problem
-
-In Python, PageRank is a one-liner with `networkx`:
-
-```python
-import networkx as nx
-G = nx.DiGraph([(0,1), (1,2), (2,0)])
-ranks = nx.pagerank(G, alpha=0.85)
-```
-
-But behind that one-liner, `networkx` creates Python-object wrappers for every node and edge, and the iterative power method runs as pure Python loops. For a graph with 100K nodes (a moderate web crawl), this takes minutes.
+**Python pain:** `nx.pagerank` is a one-liner, but behind it `networkx` wraps every node and edge in Python objects, and the power method runs as pure Python loops. On a 100K-node web crawl that's *minutes*:
 
 ```
 networkx PageRank (100K nodes, 50 iters):  ~3-5 minutes
 Rust PageRank (100K nodes, 50 iters):      ~0.2 seconds
 ```
 
-### The Rust Solution
-
-Rust implements the PageRank power method directly on flat `HashMap` structures, iterating at machine speed:
+**Rust fix:** Power method directly on flat `HashMap` structures — iterating at machine speed:
 
 ```rust
 pub fn page_rank(edges: &[(usize, usize)], node_count: usize,
@@ -47,20 +35,18 @@ pub fn page_rank(edges: &[(usize, usize)], node_count: usize,
 }
 ```
 
-## What You'll Learn
+## At a Glance
 
-| # | Concept | Rust Type / Module | Python Equivalent | Purpose |
-|---|---------|--------------------|------------------|---------|
-| 1 | Outlinks map | `HashMap<usize, Vec<usize>>` from `(from, to)` | `defaultdict(list)` | Map each node to its outgoing edges |
-| 2 | Inlinks map | `HashMap<usize, Vec<usize>>` from `(to, from)` | `defaultdict(list)` | Map each node to its incoming edges |
-| 3 | Iterative PageRank | Power method with damping formula | `nx.pagerank` | Compute rank scores iteratively |
-| 4 | Damping factor | Parameter `damping: f64` (default 0.85) | `alpha` parameter | Control random-jump probability |
-| 5 | Top-N ranking | Collect, sort desc, truncate | `sorted(dict.items(), key=-x[1])` | Find highest-ranked pages |
-| 6 | Convergence checking | Sum of absolute deltas | `sum(abs(curr[k]-v) for k,v in prev.items())` | Detect when ranks stabilize |
+| # | Concept | Rust | Python | Why it matters |
+|---|---------|------|--------|----------------|
+| 1 | Outlinks map | `HashMap<usize, Vec<usize>>` from `(from, to)` | `defaultdict(list)` | Map each node to outgoing edges |
+| 2 | Inlinks map | `HashMap<usize, Vec<usize>>` from `(to, from)` | `defaultdict(list)` | Map each node to incoming edges |
+| 3 | Iterative PageRank | power method + damping | `nx.pagerank` | Compute rank scores iteratively |
+| 4 | Damping factor | `damping: f64` (default 0.85) | `alpha` parameter | Control random-jump probability |
+| 5 | Top-N ranking | collect, sort desc, truncate | `sorted(..., key=-x[1])` | Find highest-ranked pages |
+| 6 | Convergence checking | sum of absolute deltas | `sum(abs(curr[k]-v) ...)` | Detect when ranks stabilize |
 
-## Concepts at a Glance
-
-**Outlinks/inlinks maps** -- Two `HashMap`s store outgoing and incoming edges separately. `build_outlinks` pushes `to` into `from`'s list; `build_inlinks` pushes `from` into `to`'s list. Like Python's `defaultdict(list)` populated in two passes. **Iterative PageRank** -- The formula `PR(v) = (1-d)/N + d * sum(PR(u)/out_degree(u))` is applied for a fixed number of iterations. Each iteration computes new ranks from the previous iteration's values. This is the power method behind `nx.pagerank`. **Damping factor** -- With `damping=0.85`, 85% of rank comes from following links and 15% from random jumps. `damping=1.0` means no random jumps (risk of rank sinks); `damping=0.0` gives all nodes equal rank. **Top-N ranking** -- Collect entries into `Vec<(usize, f64)>`, sort by score descending, truncate. Equivalent to Python's `sorted(scores.items(), key=lambda x: -x[1])[:n]`. **Convergence delta** -- `score_delta` sums absolute changes between iterations. When delta drops below a threshold (e.g., 1e-6), the ranks have converged. Matches Python's `sum(abs(curr[k]-v) for k, v in prev.items())`.
+---
 
 ---
 

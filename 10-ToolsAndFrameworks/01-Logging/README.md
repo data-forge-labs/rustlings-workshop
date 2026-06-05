@@ -1,6 +1,34 @@
-# Rust Logging — Python loguru Equivalent
+# Rust Logging — Python `loguru` Equivalent
 
 > **Test-driven approach**: This project includes a Cargo project with progressive unit tests. Each function in `workshop/src/lib.rs` starts as a `todo!()` stub. As you follow each section, replace `todo!()` with real code and run `cd workshop && cargo test` to watch the pass count grow. Your goal: **all 8 tests pass**.
+
+## Why Use the `log` Facade?
+
+**Python pain:** Python has many loggers (`loguru`, `structlog`, stdlib `logging`) and the API varies. There's no compile-time check that you've imported the right one.
+
+**Rust fix:** The `log` crate is a **facade** — it defines the API (`info!`, `warn!`, `error!`) but doesn't write anything. You plug in a backend (`env_logger`, `tracing-subscriber`, ...). The same code works with any backend:
+
+```rust
+use log::{info, warn, error};
+
+fn main() {
+    env_logger::init();              // choose backend
+    info!("Server started on port {}", 8080);
+}
+```
+
+## At a Glance
+
+| # | Concept | Rust | Python | Why it matters |
+|---|---------|------|--------|----------------|
+| 1 | Facade | `log` crate | `logging` / `loguru` | Universal API; backend is pluggable |
+| 2 | Terminal backend | `env_logger` | `loguru.add(sys.stderr)` | Simple stdout/stderr output |
+| 3 | Structured backend | `tracing` | `structlog` | Span-based, async-aware logging |
+| 4 | Log macros | `info!`, `warn!`, `error!` | `logger.info(...)` | Log at a level in one macro call |
+| 5 | Level filtering | `RUST_LOG=info` | `LOG_LEVEL=INFO` env var | Configure verbosity at runtime |
+| 6 | `log_enabled!` | `log_enabled!(Level::Info)` | `logger.level` | Skip expensive log call work |
+
+---
 
 ## Table of Contents
 

@@ -7,45 +7,11 @@
 
 ---
 
-## Why This Project?
+## Why RAII for Data Pipelines?
 
-### The Problem
+**Python pain:** File handles, DB connections, and sockets need to be closed. Forget `with` and the resource leaks. Early returns need careful `try/finally` placement. `__del__` is non-deterministic — the GC decides when it runs, *if ever*. In a production ETL pipeline, a single forgotten `f.close()` can exhaust file descriptors and crash the job.
 
-Every data engineer manages resources: file handles, DB connections, network sockets. In Python, you use `with` statements for cleanup:
-
-```python
-with open("data.csv", "r") as f:
-    data = f.read()
-# f is closed here — but only because of `with`
-```
-
-But Python's approach has gaps. Forget `with` and the resource leaks. Early returns require careful `try/finally` placement. `__del__` is non-deterministic — the GC decides when it runs, if ever.
-
-```python
-# Python — easy to leak resources
-def process_many_files(paths):
-    handles = []
-    for path in paths:
-        f = open(path, "r")  # Forgot `with`!
-        handles.append(f)
-        # If an exception occurs here, f is never closed
-    return [f.read() for f in handles]  # All handles still open!
-    # When does __del__ run? Who knows!
-```
-
-In production ETL pipelines processing millions of files, a single forgotten `f.close()` or an exception bypassing cleanup can exhaust file descriptors and crash the job.
-
-```
-Python resource cleanup:
-  ✅ with statement: deterministic, but must remember
-  ❌ direct open(): needs manual close()
-  ❌ __del__: non-deterministic, may never run
-  ❌ exceptions: must use try/finally
-```
-
-### The Rust Solution
-
-Rust's **Ownership-Based Resource Management (RAII)** ties resource lifetime to variable scope. Resources are acquired at creation and released automatically when the owner goes out of scope:
+**Rust fix:** **Ownership-Based Resource Management (RAII)** ties resource lifetime to variable scope. Acquire on creation, release automatically when the owner goes out of scope — no `with`, no `try/finally`, no GC. The compiler inserts cleanup at every scope exit, even on early return or panic:
 
 ```rust
 {
@@ -54,40 +20,16 @@ Rust's **Ownership-Based Resource Management (RAII)** ties resource lifetime to 
 } // f is automatically closed here — guaranteed by the compiler
 ```
 
-No `with`, no `try/finally`, no GC. The compiler inserts cleanup code at every scope exit. If a function returns early or panics, the resource is still cleaned up. This determinism is invaluable for production data pipelines that must not leak resources.
+## At a Glance
 
----
-
-## What You'll Learn
-
-| # | Concept | Rust Type / Module | Python Equivalent | Purpose |
-|---|---------|--------------------|------------------|---------|
-| 1 | RAII | RAII pattern | `with` statement | Tie resource lifetime to object lifetime |
-| 2 | Drop Trait | `Drop` | `__del__` / `__exit__` | Deterministic cleanup at scope end |
-| 3 | Ownership Transfer | Move semantics | Reference assignment | Transfer cleanup responsibility |
-| 4 | Borrowing | `&T` / `&mut T` | Pass-by-reference | Access resources without owning |
-| 5 | Scope-based Cleanup | `{}` blocks | `with` block | Auto-cleanup at every scope boundary |
-| 6 | Resource Lifecycle | Open/close pattern | `__enter__`/`__exit__` | Managed resource states |
-
-## Concepts at a Glance
-
-### 1. RAII
-Resource Acquisition Is Initialization — resources are acquired in constructors and released in destructors. Python: `with open() as f:` enters and exits. Rust: the compiler handles both automatically, no `with` needed.
-
-### 2. Drop Trait
-`impl Drop for Resource { fn drop(&mut self) { self.close(); } }` — runs at scope end. Python: `__exit__` (deterministic but manual) vs `__del__` (automatic but non-deterministic). Rust's `Drop` is both automatic and deterministic.
-
-### 3. Ownership Transfer
-Moving a value transfers cleanup to the new owner. Python: passing a file handle to a function still leaves the caller with a reference. Rust: after `let b = a`, `a` is invalid and `b` owns the cleanup.
-
-### 4. Borrowing
-`&Resource` lets functions inspect a resource without taking ownership. Python has no borrowing — all references are equal. Rust guarantees the borrower can't outlive the owner and the owner can't close while borrowed.
-
-### 5. Scope-based Cleanup
-Cleanup happens at `}`, not at GC cycle. Even on early return or panic, `Drop` runs. Python: `with` blocks handle this, but only if you use them. Rust: every value gets cleaned up at scope exit automatically.
-
-### 6. Resource Lifecycle
-A resource transitions through states: closed → open (acquired) → closed (released). The `Resource` struct tracks `is_open`. The `Drop` impl guarantees closing if still open, preventing leaks.
+| # | Concept | Rust | Python | Why it matters |
+|---|---------|------|--------|----------------|
+| 1 | RAII | resource acquired in ctor, released in `Drop` | `with` statement (manual) | Lifetime tied to scope — no leaks by default |
+| 2 | `Drop` Trait | `impl Drop for Resource { fn drop(&mut self) { ... } }` | `__del__` (non-deterministic) / `__exit__` (manual) | Both *automatic* and *deterministic* — the best of both |
+| 3 | Ownership Transfer | move transfers cleanup responsibility | passing a handle keeps the caller's reference | Caller is *forced* to give up the handle when it moves |
+| 4 | Borrowing | `&Resource` / `&mut Resource` | all references are equal | Borrower can't outlive the owner; owner can't close while borrowed |
+| 5 | Scope-based Cleanup | every `}` runs `Drop` for all locals | `with` (only if used) | Works even on early return and panic — zero escape hatches |
+| 6 | Resource Lifecycle | `closed → open → closed` tracked in struct | `__enter__` / `__exit__` protocol | The `Drop` impl closes if still open — the last line of defense |
 
 ---
 

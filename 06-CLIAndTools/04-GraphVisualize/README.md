@@ -5,23 +5,11 @@
 > follow each section, replace `todo!()` with real code and run `cd workshop && cargo test` to
 > watch the pass count grow. Your goal: **all 16 tests pass**.
 
-## Why This Project?
+## Why Render ASCII Bar Charts by Hand?
 
-### The Problem
+**Python pain:** On a remote box you can't open a GUI, and even terminal libraries like `plotext` add 50-100ms of import time per script. Installing `matplotlib` pulls in hundreds of dependencies — overkill for a bar chart.
 
-On remote servers or CI pipelines, you cannot open a GUI window. Python's `matplotlib` requires a display backend, and even terminal libraries like `plotext` add a 50-100ms import overhead per script:
-
-```python
-import plotext as plt  # 80ms import
-plt.bar(["A", "B"], [5, 10])
-plt.show()
-```
-
-For a data engineer SSH'd into a production box, installing `matplotlib` or `plotext` means pulling in hundreds of dependencies. A simple bar chart should not require a graphing library.
-
-### The Rust Solution
-
-Rust renders ASCII bar charts directly using string repetition -- no dependencies beyond `std`:
+**Rust fix:** Render ASCII bar charts with string repetition — no dependencies beyond `std`, instant startup, works over SSH:
 
 ```rust
 pub fn ascii_bar_chart(data: &[f64], labels: &[&str]) -> Vec<String> {
@@ -33,21 +21,17 @@ pub fn ascii_bar_chart(data: &[f64], labels: &[&str]) -> Vec<String> {
 }
 ```
 
-Output renders instantly in any terminal -- no GUI, no imports beyond `std`.
+## At a Glance
 
-## What You'll Learn
-
-| # | Concept | Rust Type / Module | Python Equivalent | Purpose |
-|---|---------|--------------------|------------------|---------|
-| 1 | Summary statistics | `fold(f64::INFINITY, f64::min)` | `min()`, `max()`, `sum()/len` | Compute min, max, mean of data slice |
-| 2 | Min-max normalization | `(v - min) / (max - min) * 100` | `(v - mn) / (mx - mn) * 100` | Rescale data to 0-100 range |
+| # | Concept | Rust | Python | Why it matters |
+|---|---------|------|--------|----------------|
+| 1 | Summary statistics | `fold(f64::INFINITY, f64::min)` | `min()`, `max()`, `sum()/len` | Min, max, mean of a data slice |
+| 2 | Min-max normalization | `(v - min) / (max - min) * 100` | Same formula | Rescale data to 0-100 range |
 | 3 | String repetition | `"█".repeat(n)` | `"█" * n` | Build ASCII bars of variable length |
 | 4 | Labeled data series | `zip` into `Vec<(&str, f64)>` | `list(zip(names, values))` | Pair names with numeric values |
 | 5 | Format alignment | `format!("{:<10}", label)` | `f"{label:<10}"` | Left-align labels in fixed-width column |
 
-## Concepts at a Glance
-
-**fold for min/max** -- Rust's `.fold(f64::INFINITY, f64::min)` finds the minimum value in one pass, equivalent to Python's `min(data)`. Empty slices return `f64::NAN`. **Min-max normalization** -- The formula `(v - min) / (max - min) * 100` rescales any dataset to 0-100. In Python, a list comprehension; in Rust, `.map()` and `.collect()`. Handles constant data by returning all 50.0. **String repetition with repeat** -- `"█".repeat(n)` creates a string of N block characters, exactly like Python's `"█" * n`. This builds horizontal bars of proportional length. **zip into Vec of tuples** -- `names.iter().zip(values.iter()).map(|(&n, &v)| (n, v)).collect()` pairs labels with values, like Python's `list(zip(names, values))`. Panics if slice lengths differ. **Format alignment** -- `format!("{:<10}", label)` left-aligns a string in a 10-character column, matching Python's `f"{label:<10}"`.
+---
 
 ---
 

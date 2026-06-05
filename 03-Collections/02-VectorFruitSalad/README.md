@@ -6,84 +6,30 @@
 
 ---
 
-## Why This Project?
+## Why Use Vec for Data Collections?
 
-### The Problem â€” Python Lists Are Flexible but Heavy
+**Python pain:** A `list` of strings like `["Orange", "Apple", "Banana"]` is convenient but each element is a heap-allocated `PyObject` — 28+ bytes per entry plus a pointer. For datasets with millions of rows, that memory overhead adds up fast.
 
-```python
-# Python â€” flexible but each element is a full PyObject
-fruits = ["Orange", "Apple", "Banana"]
-fruits.append("Pear")
-```
-
-Python's `list` is the go-to for dynamic collections. But each element is a **heap-allocated PyObject** â€” 28+ bytes per entry plus the pointer. For large datasets (millions of rows), this memory overhead adds up fast. Sampling and shuffling also require copying or careful mutation.
-
-```
-Python list memory:
-â”Œâ”€â”€â”€â”€â”€â”¬â”€â”€â”€â”€â”€â”¬â”€â”€â”€â”€â”€â”¬â”€â”€â”€â”€â”€â”
-â”‚  *  â”‚  *  â”‚  *  â”‚  *  â”‚  â† pointers (8 bytes each)
-â””â”€â”‚â”€â”€â”€â”´â”€â”‚â”€â”€â”€â”´â”€â”‚â”€â”€â”€â”´â”€â”‚â”€â”€â”€â”˜
-  â–¼     â–¼     â–¼     â–¼
-â”Œâ”€â”€â”€â”€â”â”Œâ”€â”€â”€â”€â”â”Œâ”€â”€â”€â”€â”â”Œâ”€â”€â”€â”€â”
-â”‚str â”‚â”‚str â”‚â”‚str â”‚â”‚str â”‚  â† heap objects (28+ bytes each)
-â””â”€â”€â”€â”€â”˜â””â”€â”€â”€â”€â”˜â””â”€â”€â”€â”€â”˜â””â”€â”€â”€â”€â”˜
-Total: ~36 bytes per string
-```
-
-### The Rust Solution â€” Vec Is Compact and Fast
+**Rust fix:** `Vec<T>` stores elements in **contiguous memory** — cache-friendly iteration, no pointer chasing, and the type is fixed at compile time (`Vec<&str>`) so the compiler guarantees every element is the right type:
 
 ```rust
-// Rust â€” contiguous memory, no pointer overhead
+// Rust — contiguous memory, no pointer overhead
 let fruits = vec!["Orange", "Apple", "Banana"];
+fruits.shuffle(&mut rng);  // in-place, zero allocations
 ```
 
-```
-Rust Vec memory:
-â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”¬â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¬â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¬â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
-â”‚ "Orange"â”‚ "Apple" â”‚ "Banana"â”‚ "Pear"  â”‚  â† contiguous &str pointers
-â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”´â”€â”€â”€â”€â”€â”€â”€â”€â”€â”´â”€â”€â”€â”€â”€â”€â”€â”€â”€â”´â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
-Total: 8 bytes per &str (pointer + length)
-```
+## At a Glance
 
-`Vec<T>` stores elements in **contiguous memory** â€” cache-friendly iteration, no pointer chasing. The type is fixed at compile time (`Vec<&str>`), so every element is guaranteed to be the right type.
-
----
-
-## What You'll Learn
-
-| # | Concept | Rust Type / Module | Python Equivalent | Purpose |
-|---|---------|--------------------|------------------|---------|
+| # | Concept | Rust | Python | Why it matters |
+|---|---------|------|--------|----------------|
 | 1 | Dynamic arrays | `Vec<T>` | `list` | Type-safe, contiguous growable array |
-| 2 | Random generation | `rand::rng()` | `random.Random()` | Random number generator |
-| 3 | Random ranges | `.random_range()` | `random.randint()` | Generate random numbers in a range |
-| 4 | Random selection | `.choose()` | `random.choice()` | Pick a random element |
-| 5 | Shuffling | `.shuffle()` | `random.shuffle()` | Randomize element order |
-| 6 | External crates | `Cargo.toml` deps | `requirements.txt` | Add third-party libraries |
-| 7 | The SliceRandom trait | `rand::seq::SliceRandom` | N/A (built-in) | Import shuffle/choose methods |
-| 8 | Iterating with index | `.iter().enumerate()` | `enumerate()` | Loop with position tracking |
-
-## Concepts at a Glance
-
-### 1. `Vec<T>` â€” Dynamic Array
-Same concept as Python's `list`: a growable, heap-allocated collection. Unlike Python, Rust's `Vec` is **type-homogeneous** â€” all elements must be the same type `T`.
-
-### 2. `rand::rng()` â€” Random Generator
-Like `random.Random()` in Python â€” creates a random number generator seeded by the OS. You pass `&mut rng` to methods that need randomness.
-
-### 3. `.random_range()` â€” Random in Range
-`rng.random_range(1..=10)` is like `random.randint(1, 10)` in Python. Uses Rust's range syntax.
-
-### 4. `.choose()` â€” Random Selection
-`fruits.choose(&mut rng)` picks one random element and returns `Option<&T>` â€” it could be `None` if the collection is empty.
-
-### 5. `.shuffle()` â€” In-Place Randomization
-`fruits.shuffle(&mut rng)` randomizes the order in place, just like `random.shuffle(fruits)`.
-
-### 6. External Crates via `Cargo.toml`
-In Python you `pip install rand`; in Rust you add `rand = "0.10"` under `[dependencies]` in `Cargo.toml`. Cargo downloads and compiles it automatically.
-
-### 7. The `SliceRandom` Trait
-`.shuffle()` and `.choose()` aren't built into `Vec` â€” they come from the `SliceRandom` trait in the `rand` crate. You must add `use rand::seq::SliceRandom;` to use them. This is Rust's **trait-based extension** pattern.
+| 2 | Random generation | `rand::rng()` | `random.Random()` | OS-seeded RNG; pass `&mut rng` to methods |
+| 3 | Random ranges | `rng.random_range(1..=10)` | `random.randint(1, 10)` | Rust range syntax (inclusive/exclusive) |
+| 4 | Random selection | `fruits.choose(&mut rng)` | `random.choice(fruits)` | Returns `Option<&T>` — could be `None` |
+| 5 | Shuffling | `fruits.shuffle(&mut rng)` | `random.shuffle(fruits)` | In-place, zero allocations |
+| 6 | External crates | `rand = "0.10"` in `Cargo.toml` | `pip install` / `requirements.txt` | Cargo downloads and compiles deps |
+| 7 | `SliceRandom` trait | `use rand::seq::SliceRandom;` | N/A (built-in) | Rust's trait-based extension pattern |
+| 8 | Indexed iteration | `.iter().enumerate()` | `enumerate(fruits)` | Loop with `(index, value)` tuples |
 
 ---
 

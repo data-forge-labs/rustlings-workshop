@@ -5,38 +5,11 @@
 > follow each section, replace `todo!()` with real code and run `cd workshop && cargo test` to
 > watch the pass count grow. Your goal: **all 10 tests pass**.
 
-## Why This Project?
+## Why Separate lib.rs from main.rs?
 
-### The Problem
+**Python pain:** A typical CLI tool mixes parsing, logic, and I/O in one script. Testing the shuffling logic means mocking `sys.argv` or invoking a subprocess — there's no enforced module boundary.
 
-Python CLI tools that read CSV data typically mix parsing, logic, and I/O in one script:
-
-```python
-import argparse
-import csv
-import random
-
-parser = argparse.ArgumentParser()
-parser.add_argument("--fruits", default="apple,pear,banana")
-args = parser.parse_args()
-
-fruits = [f.strip() for f in args.fruits.split(",")]
-random.shuffle(fruits)
-print("Your fruit salad contains:")
-for f in fruits:
-    print(f)
-```
-
-There is no separation of concerns -- parsing, shuffling, and display are all in one file. Testing the shuffling logic means mocking `sys.argv` or invoking a subprocess. As the project grows, this becomes unmaintainable.
-
-```
-Python: one script, untestable logic, no module boundaries
-Rust:   lib.rs (testable logic) + main.rs (thin CLI wrapper)
-```
-
-### The Rust Solution
-
-Rust enforces module separation: `lib.rs` contains all business logic and unit tests; `main.rs` is a thin CLI entry point using `clap`:
+**Rust fix:** Cargo's two-file layout is a convention with real teeth: `lib.rs` holds all business logic and unit tests; `main.rs` is a thin CLI wrapper that calls into `lib.rs`:
 
 ```rust
 // lib.rs -- all logic, all tests
@@ -48,9 +21,7 @@ pub fn create_fruit_salad(mut fruits: Vec<String>) -> Vec<String> {
     fruits.shuffle(&mut rng);
     fruits
 }
-```
 
-```rust
 // main.rs -- thin CLI wrapper
 fn main() {
     let args = Args::parse();
@@ -59,23 +30,22 @@ fn main() {
     println!("{}", custom_cli_fruit_salad::display_fruit_salad(&salad));
 }
 ```
+```
 
 Logic is fully testable through `lib.rs` without ever invoking `main`.
 
-## What You'll Learn
+## At a Glance
 
-| # | Concept | Rust Type / Module | Python Equivalent | Purpose |
-|---|---------|--------------------|------------------|---------|
-| 1 | CSV string parsing | `split(',')`, `map(str::trim)`, `collect()` | `str.split(",")` + list comprehension | Parse comma-separated input |
+| # | Concept | Rust | Python | Why it matters |
+|---|---------|------|--------|----------------|
+| 1 | CSV string parsing | `split(',').map(str::trim).collect()` | `str.split(",")` + comprehension | Parse comma-separated input |
 | 2 | Random shuffle | `SliceRandom::shuffle` | `random.shuffle()` | Randomize fruit order in-place |
-| 3 | Thread-local RNG | `rng()` | `random.Random()` | Generate random numbers per thread |
+| 3 | Thread-local RNG | `rng()` | `random.Random()` | Per-thread random numbers |
 | 4 | String building | `String::from` + `push_str` + `format!` | String concatenation | Build display output line by line |
-| 5 | CLI argument parsing | `clap::Parser` derive | `argparse.ArgumentParser` | Parse CLI arguments from struct definition |
-| 6 | lib/main module split | `lib.rs` (logic + tests) + `main.rs` (CLI) | Module file + `__main__.py` | Separate testable logic from entry point |
+| 5 | CLI argument parsing | `clap::Parser` derive | `argparse.ArgumentParser` | Parse CLI from struct definition |
+| 6 | lib/main split | `lib.rs` (logic + tests) + `main.rs` (CLI) | module file + `__main__.py` | Separate testable logic from entry point |
 
-## Concepts at a Glance
-
-**CSV string parsing** -- `csv.split(',').map(|s| s.trim().to_string()).collect()` splits on comma, trims whitespace, and collects into `Vec<String>`. Python equivalent: `[s.strip() for s in csv.split(",")]`. **SliceRandom::shuffle** -- The `rand::seq::SliceRandom` trait adds `.shuffle(&mut rng)` to any `&mut [T]`, like Python's `random.shuffle(list)`. Requires `use rand::seq::SliceRandom` to bring the trait into scope. **rng()** -- `rng()` returns a thread-local random number generator, analogous to `random.Random()` or the default `random` module in Python. No manual seeding needed -- automatically seeded per thread. **String building** -- `String::from("header") + push_str(&format!(...))` builds strings incrementally, like Python's `s = "header"; s += f"{item}\n"`. More efficient than repeated `+` due to owned vs borrowed semantics. **clap Parser derive** -- `#[derive(Parser)]` auto-generates argument parsing from a struct's `#[arg(...)]` attributes, eliminating manual `parser.add_argument()` boilerplate. Like Python's `argparse` but declarative. **lib/main module split** -- `lib.rs` holds all `pub fn` logic and `#[cfg(test)]` tests; `main.rs` imports the crate and calls functions. Python equivalent: a module file (e.g., `salad.py`) for logic and a `if __name__ == "__main__"` block in `__main__.py` for CLI.
+---
 
 ---
 
