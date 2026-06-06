@@ -17,7 +17,7 @@ async fn main() {
     let session_store = MemoryStore::default();
     let session_layer = SessionManagerLayer::new(session_store)
         .with_secure(false)
-        .with_expiry(Expiry::OnInactivity(time::Duration::hours(24)));
+        .with_expiry(Expiry::OnInactivity(tower_sessions::cookie::time::Duration::hours(24)));
 
     let cors = CorsLayer::new()
         .allow_origin([

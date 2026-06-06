@@ -54,7 +54,7 @@ impl fmt::Display for TicketError {
 
 // === Ticket Struct ===
 // README §4: Enums with data (status is now Status, not String)
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct Ticket {
     title: String,
     description: String,

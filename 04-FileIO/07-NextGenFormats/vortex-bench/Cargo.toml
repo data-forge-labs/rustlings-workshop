@@ -1,0 +1,19 @@
+[package]
+name = "vortex-bench"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[dependencies]
+arrow-array = { workspace = true }
+arrow-schema = { workspace = true }
+vortex = { workspace = true }
+vortex-array = { workspace = true }
+vortex-file = { workspace = true }
+vortex-buffer = { workspace = true }
+vortex-session = { workspace = true }
+vortex-scan = { workspace = true }
+tokio = { workspace = true }
+anyhow = { workspace = true }
+tempfile = { workspace = true }
+rand = { workspace = true }

@@ -12,7 +12,8 @@ use std::fmt;
 
 /// A ticket with trait implementations.
 /// README §2-8: Traits
-#[derive(Debug)]
+/// (Add `Clone, PartialEq` to the derive macro as you progress through §5)
+#[derive(Debug, Clone, PartialEq)]
 pub struct Ticket {
     pub title: String,
     pub description: String,

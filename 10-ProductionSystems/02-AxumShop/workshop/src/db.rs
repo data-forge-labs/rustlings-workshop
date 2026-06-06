@@ -1,3 +1,4 @@
+use sha2::Digest;
 use sqlx::{SqlitePool, sqlite::SqlitePoolOptions};
 
 /// Create the SQLite connection pool with WAL mode support.

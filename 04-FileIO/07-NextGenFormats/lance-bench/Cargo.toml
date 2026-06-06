@@ -1,0 +1,18 @@
+[package]
+name = "lance-bench"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[dependencies]
+arrow-array = { workspace = true }
+arrow-schema = { workspace = true }
+lance = { workspace = true, default-features = false }
+tokio = { workspace = true }
+anyhow = { workspace = true }
+tempfile = { workspace = true }
+rand = { workspace = true }
+chrono = { workspace = true }
+
+[dev-dependencies]
+tokio = { version = "1", features = ["macros", "rt-multi-thread"] }

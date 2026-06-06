@@ -1,0 +1,24 @@
+[package]
+name = "warehouse"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[[bin]]
+name = "warehouse"
+path = "src/main.rs"
+
+[dependencies]
+arrow-array = { workspace = true }
+arrow-schema = { workspace = true }
+arrow-select = { workspace = true }
+parquet = { workspace = true }
+lance = { workspace = true, default-features = false }
+tokio = { workspace = true }
+futures = "0.3"
+anyhow = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+rand = { workspace = true }
+chrono = { workspace = true }
+walkdir = { workspace = true }
