@@ -102,7 +102,34 @@ async fn main() -> Result<()> {
     });
 
     // -------------------------------------------------------------------------
-    // Step 4: Sequential scan
+    // Step 4: Vortex write
+    // -------------------------------------------------------------------------
+    println!("[4/9] Writing Vortex (10 partitions)...");
+    let vortex_root = data_root.join("vortex");
+    std::fs::create_dir_all(&vortex_root)?;
+    let mut total_vortex_size = 0u64;
+    let t = Instant::now();
+    for (i, batch) in batches.iter().enumerate() {
+        let day = (i % 28) + 1;
+        let p = partition_path(&vortex_root, 2024, 1, day as u32).join("events.vortex");
+        make_dirs(p.parent().unwrap())?;
+        total_vortex_size += write_vortex(&p, batch).await?;
+    }
+    let dur = t.elapsed();
+    let rows_per_sec = TOTAL_ROWS as f64 / dur.as_secs_f64();
+    println!("  Done in {:.2}s — {:.0} rows/s — {:.2} MB\n", dur.as_secs_f64(), rows_per_sec, total_vortex_size as f64 / 1_048_576.0);
+    report.results.push(BenchResult {
+        name: "write_partitioned".into(),
+        format: "vortex".into(),
+        n_rows: TOTAL_ROWS,
+        duration_ms: dur.as_millis() as f64,
+        rows_per_sec,
+        file_size_bytes: total_vortex_size,
+        notes: Some("Default Vortex compression, 10 partitions".into()),
+    });
+
+    // -------------------------------------------------------------------------
+    // Step 5: Sequential scan
     // -------------------------------------------------------------------------
     println!("[4/8] Sequential scan (read all 1M rows)...");
     // Parquet: read first partition
@@ -154,6 +181,32 @@ async fn main() -> Result<()> {
         n_rows: total_ln_rows,
         duration_ms: ln_scan.as_millis() as f64,
         rows_per_sec: total_ln_rows as f64 / ln_scan.as_secs_f64(),
+        file_size_bytes: 0,
+        notes: None,
+    });
+
+    // Vortex: read first partition
+    let vx_first = partition_path(&vortex_root, 2024, 1, 1).join("events.vortex");
+    let t = Instant::now();
+    let _ = read_vortex(&vx_first).await?;
+    let vx_first_dur = t.elapsed();
+    println!("  Vortex  1 partition: {:.2}ms", vx_first_dur.as_millis() as f64);
+
+    let t = Instant::now();
+    let mut total_vx_rows = 0;
+    for day in 1..=10u32 {
+        let p = partition_path(&vortex_root, 2024, 1, day).join("events.vortex");
+        let batch = read_vortex(&p).await?;
+        total_vx_rows += batch.num_rows();
+    }
+    let vx_scan = t.elapsed();
+    println!("  Vortex  full scan: {:.2}ms ({} rows)", vx_scan.as_millis() as f64, total_vx_rows);
+    report.results.push(BenchResult {
+        name: "sequential_scan".into(),
+        format: "vortex".into(),
+        n_rows: total_vx_rows,
+        duration_ms: vx_scan.as_millis() as f64,
+        rows_per_sec: total_vx_rows as f64 / vx_scan.as_secs_f64(),
         file_size_bytes: 0,
         notes: None,
     });
@@ -357,8 +410,26 @@ async fn main() -> Result<()> {
     // -------------------------------------------------------------------------
     // Step 9: Schema evolution (add 2 new columns to existing Lance)
     // -------------------------------------------------------------------------
-    println!("[9/9] Schema evolution: append batch with 2 new columns...");
-    let new_schema = std::sync::Arc::new(arrow_schema::Schema::new(vec![
+    println!("[9/9] Schema evolution: add 2 new columns, then append...");
+    let t = Instant::now();
+
+    // First: add new columns as all-null (Lance requires schema before append)
+    let mut dataset = lance::dataset::Dataset::open(
+        ln_first.to_str().unwrap(),
+    ).await?;
+    use lance::dataset::NewColumnTransform;
+    let new_cols = Arc::new(arrow_schema::Schema::new(vec![
+        arrow_schema::Field::new("device", arrow_schema::DataType::Utf8, true),
+        arrow_schema::Field::new("session_id", arrow_schema::DataType::Utf8, true),
+    ]));
+    dataset.add_columns(
+        NewColumnTransform::AllNulls(new_cols),
+        None,  // read_columns = None (read all)
+        Some(1024),  // batch size
+    ).await?;
+
+    // Now append a batch with all 8 columns
+    let new_schema = Arc::new(arrow_schema::Schema::new(vec![
         arrow_schema::Field::new("id", arrow_schema::DataType::UInt32, false),
         arrow_schema::Field::new("user_id", arrow_schema::DataType::UInt32, false),
         arrow_schema::Field::new("event_type", arrow_schema::DataType::Utf8, false),
@@ -381,7 +452,6 @@ async fn main() -> Result<()> {
             Arc::new(StringArray::from(vec!["s1", "s2", "s3"])),
         ],
     )?;
-    let t = Instant::now();
     let total = append_lance(&ln_first, &small_batch).await?;
     let evol_dur = t.elapsed();
     println!("  Schema evolution: {:.2}ms (new total: {} rows)\n", evol_dur.as_millis() as f64, total);

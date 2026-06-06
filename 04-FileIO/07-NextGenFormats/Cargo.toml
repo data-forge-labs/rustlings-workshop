@@ -20,7 +20,7 @@ arrow-schema = "58"
 arrow-select = "58"
 parquet = "58"
 lance = { version = "7", default-features = false }
-vortex = "0.74"
+vortex = { version = "0.74", default-features = true, features = ["tokio"] }
 vortex-array = "0.74"
 vortex-file = "0.74"
 vortex-buffer = "0.74"

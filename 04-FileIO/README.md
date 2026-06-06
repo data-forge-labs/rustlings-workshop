@@ -216,6 +216,7 @@ Query "AVG(val)"     → read full file   → read one column
 | 57 | **YAML** — pipeline config files | `serde_yaml`, `#[derive(Deserialize)]`, custom enums with `rename_all`, config merge, NDJSON-style queries | Project |
 | 58 | **JsonStream** — JSON & NDJSON streaming | `serde_json`, typed `Value` walking, NDJSON read/write, pretty-print, object merge | Project |
 | 59 | **DataManagementLessonReflection** — I/O reflection | File I/O, serialization, columnar vs row-oriented | Reflection |
+| 60 | **NextGenFormats** — Lance, Vortex, Nimble, F3 formats benchmark | Lance v7, Vortex v0.74, structural encoding, cascading compression, partitioned warehouse, random take, predicate pushdown, compaction, schema evolution | Workspace |
 
 ## Learning Path
 
@@ -226,3 +227,4 @@ Query "AVG(val)"     → read full file   → read one column
 5. Configure pipelines with **05-YAML**
 6. Stream events with **06-JsonStream**
 7. Reflect with **DataManagementLessonReflection**
+8. Explore next-gen formats with **07-NextGenFormats** — benchmark Lance, Vortex, Nimble, and F3 against Parquet

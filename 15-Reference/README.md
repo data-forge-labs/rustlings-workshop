@@ -26,6 +26,7 @@ This is the **last section** in the course — it's an appendix, not a sequentia
   ─────────────────────────────────────────────────
   Which collection?                  collections-guide.md
   Array vs slice in fn signature?    collections-guide.md (§"Arrays vs Slices")
+  Which crate for this task?         crate-catalog.md
   Thread safety?                     send-sync.md
   File I/O pattern?                  data-management-io.md
   Consistency model?                 distributed-systems.md
@@ -49,5 +50,6 @@ This is the **last section** in the course — it's an appendix, not a sequentia
 | 6 | `heap-memory.md` | Stack vs heap deep dive, Rust vs Python memory layout, off-heap concept, allocators, GC comparison | "What's the memory cost of this `Vec`/`HashMap`?" or "What is off-heap memory?" |
 | 7 | `security-model.md` | Compile-time guarantees, the type system, `unsafe`, RustCrypto, security checklist | "How does Rust prevent security vulnerabilities?" |
 | 8 | `send-sync.md` | `Send` and `Sync` traits, auto vs manual impl, `Rc` vs `Arc`, `RefCell` vs `Mutex` | "Can I share this type between threads?" |
+| 9 | `crate-catalog.md` | 50+ crates for data engineering: ingestion, ETL, storage, async, observability, CLI — with practical snippets | "Which crate should I use for X?" |
 
 This section has no Cargo projects — it's all `.md` files designed for quick lookup. Return to it whenever you need a refresher.

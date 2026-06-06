@@ -1,0 +1,169 @@
+{
+  "timestamp": "2026-06-06T18:16:37.877094090+00:00",
+  "machine": "8 cores, linux",
+  "total_rows": 1000000,
+  "results": [
+    {
+      "name": "write_partitioned",
+      "format": "parquet",
+      "n_rows": 1000000,
+      "duration_ms": 7796.0,
+      "rows_per_sec": 128268.72507237221,
+      "file_size_bytes": 21388378,
+      "notes": "Snappy compression, 10 partitions"
+    },
+    {
+      "name": "write_partitioned",
+      "format": "lance",
+      "n_rows": 1000000,
+      "duration_ms": 1114.0,
+      "rows_per_sec": 897538.0336969938,
+      "file_size_bytes": 12307179,
+      "notes": "Default Lance compression, 10 partitions"
+    },
+    {
+      "name": "write_partitioned",
+      "format": "vortex",
+      "n_rows": 1000000,
+      "duration_ms": 8895.0,
+      "rows_per_sec": 112410.56946283176,
+      "file_size_bytes": 10705856,
+      "notes": "Default Vortex compression, 10 partitions"
+    },
+    {
+      "name": "sequential_scan",
+      "format": "parquet",
+      "n_rows": 1000000,
+      "duration_ms": 2117.0,
+      "rows_per_sec": 472204.3782221415,
+      "file_size_bytes": 0,
+      "notes": null
+    },
+    {
+      "name": "sequential_scan",
+      "format": "lance",
+      "n_rows": 1000000,
+      "duration_ms": 1052.0,
+      "rows_per_sec": 950110.1484072527,
+      "file_size_bytes": 0,
+      "notes": null
+    },
+    {
+      "name": "sequential_scan",
+      "format": "vortex",
+      "n_rows": 1000000,
+      "duration_ms": 662.0,
+      "rows_per_sec": 1508485.0875742496,
+      "file_size_bytes": 0,
+      "notes": null
+    },
+    {
+      "name": "sequential_scan",
+      "format": "nimble (mocked)",
+      "n_rows": 1000000,
+      "duration_ms": 1250.0,
+      "rows_per_sec": 800000.0,
+      "file_size_bytes": 0,
+      "notes": "Mock from Meta benchmark claims"
+    },
+    {
+      "name": "sequential_scan",
+      "format": "f3 (mocked)",
+      "n_rows": 1000000,
+      "duration_ms": 833.3333333333334,
+      "rows_per_sec": 1200000.0,
+      "file_size_bytes": 0,
+      "notes": "Mock from F3 SIGMOD 2026 paper"
+    },
+    {
+      "name": "column_projection_2_of_6",
+      "format": "parquet",
+      "n_rows": 1000000,
+      "duration_ms": 419.0,
+      "rows_per_sec": 2381863.6252643685,
+      "file_size_bytes": 0,
+      "notes": "Projection pushed to row group level"
+    },
+    {
+      "name": "column_projection_2_of_6",
+      "format": "lance",
+      "n_rows": 1000000,
+      "duration_ms": 200.0,
+      "rows_per_sec": 4991167.928703442,
+      "file_size_bytes": 0,
+      "notes": null
+    },
+    {
+      "name": "random_take_1000",
+      "format": "parquet",
+      "n_rows": 1000,
+      "duration_ms": 201.0,
+      "rows_per_sec": 4952.583740403113,
+      "file_size_bytes": 0,
+      "notes": "Parquet has no native take — must read all"
+    },
+    {
+      "name": "random_take_1000",
+      "format": "lance",
+      "n_rows": 1000,
+      "duration_ms": 57.0,
+      "rows_per_sec": 17365.511881544007,
+      "file_size_bytes": 0,
+      "notes": "Lance structural encoding: O(1) seeks"
+    },
+    {
+      "name": "random_take_1000",
+      "format": "nimble (mocked)",
+      "n_rows": 1000,
+      "duration_ms": 500.0,
+      "rows_per_sec": 50000000.0,
+      "file_size_bytes": 0,
+      "notes": "Mock from Meta benchmark"
+    },
+    {
+      "name": "random_take_1000",
+      "format": "f3 (mocked)",
+      "n_rows": 1000,
+      "duration_ms": 2000.0,
+      "rows_per_sec": 5000000.0,
+      "file_size_bytes": 0,
+      "notes": "F3 has no structural encoding, similar to Parquet"
+    },
+    {
+      "name": "filter_purchase",
+      "format": "parquet",
+      "n_rows": 249677,
+      "duration_ms": 2358.0,
+      "rows_per_sec": 424027.6810256739,
+      "file_size_bytes": 0,
+      "notes": "Parquet has row-group statistics but limited string pushdown"
+    },
+    {
+      "name": "filter_purchase",
+      "format": "lance",
+      "n_rows": 249677,
+      "duration_ms": 1436.0,
+      "rows_per_sec": 696368.4267466164,
+      "file_size_bytes": 0,
+      "notes": "Lance pushdown via DataFusion predicate"
+    },
+    {
+      "name": "compact",
+      "format": "lance",
+      "n_rows": 100000,
+      "duration_ms": 2.0,
+      "rows_per_sec": 0.0,
+      "file_size_bytes": 1230699,
+      "notes": "Reduced 1230699 -> 1230699 bytes"
+    },
+    {
+      "name": "schema_evolution_append",
+      "format": "lance",
+      "n_rows": 3,
+      "duration_ms": 25.0,
+      "rows_per_sec": 0.0,
+      "file_size_bytes": 0,
+      "notes": "Added 2 new columns without rewriting existing data"
+    }
+  ]
+}

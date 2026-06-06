@@ -446,7 +446,21 @@ Before finalising any change:
 
 ---
 
-## 10. Running Code via WSL
+## 10. Maintaining the Crate Catalog
+
+The file `15-Reference/crate-catalog.md` is the **course-wide crate index** — a living document of every essential Rust crate a data engineer needs.
+
+**When working on any workshop that introduces a new dependency:**
+1. Check if the crate is already listed in `crate-catalog.md`. If not, add it to the appropriate section with a 1-2 line description and a minimal code snippet.
+2. If the crate fits multiple categories, pick the most relevant one and cross-reference.
+3. Keep version numbers up-to-date — when upgrading workspace deps, reflect the new versions in the "Daily Driver" `Cargo.toml` blocks.
+4. Remove or mark deprecated crates; the catalog should remain a *trusted* reference, not a junk drawer.
+
+This covers every goal from Section 6.3 (AGENTS.md) — but we add this custom instruction because it's a course-wide asset, not a single workshop.
+
+--- 
+
+## 11. Running Code via WSL
 
 This repository is developed on Windows. All Rust compilation and testing is done through **WSL (Windows Subsystem for Linux)** using the `wsl` CLI.
 

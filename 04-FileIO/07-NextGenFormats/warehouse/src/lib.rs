@@ -11,7 +11,7 @@ use arrow_array::{
     StringArray, UInt32Array,
 };
 use arrow_schema::{DataType, Field, Schema};
-use arrow_select::concat::concat;
+use arrow_select::concat;
 use rand::seq::SliceRandom;
 use rand::{Rng, SeedableRng};
 use serde::{Deserialize, Serialize};
@@ -123,17 +123,7 @@ fn concat_batches(batches: Vec<RecordBatch>) -> Result<RecordBatch> {
         return Err("empty batch list".into());
     }
     let schema = batches[0].schema();
-    let n_cols = batches[0].num_columns();
-    let mut all_cols: Vec<ArrayRef> = (0..n_cols)
-        .map(|_| Arc::new(UInt32Array::from(Vec::<u32>::new())) as ArrayRef)
-        .collect();
-    for b in &batches {
-        for i in 0..b.num_columns() {
-            let combined = concat(&[all_cols[i].as_ref(), b.column(i).as_ref()]).unwrap();
-            all_cols[i] = combined;
-        }
-    }
-    Ok(RecordBatch::try_new(schema, all_cols)?)
+    Ok(concat::concat_batches(&schema, &batches)?)
 }
 
 // =============================================================================
@@ -267,6 +257,79 @@ pub async fn compact_lance(path: &Path) -> Result<()> {
     let mut dataset = Dataset::open(path.to_str().unwrap()).await?;
     let _metrics = compact_files(&mut dataset, CompactionOptions::default(), None).await?;
     Ok(())
+}
+
+// =============================================================================
+// Vortex — write/read via vortex::file; take/filter via Arrow (read-all-then-op)
+// =============================================================================
+
+pub async fn write_vortex(path: &Path, batch: &RecordBatch) -> Result<u64> {
+    use vortex::array::ArrayRef;
+    use vortex::array::arrow::FromArrowArray;
+    use vortex::file::VortexWriteOptions;
+    use vortex::session::VortexSession;
+    use vortex::VortexSessionDefault;
+
+    let session = VortexSession::default();
+    let vp_array = ArrayRef::from_arrow(batch.clone(), false)?;
+    let file = tokio::fs::File::create(path).await?;
+    VortexWriteOptions::new(session)
+        .write(file, vp_array.to_array_stream())
+        .await?;
+    Ok(std::fs::metadata(path)?.len())
+}
+
+fn vortex_chunk_to_batch(vp_array: vortex::array::ArrayRef) -> Result<RecordBatch> {
+    use arrow_array::StructArray;
+    use arrow_schema::Schema;
+    use vortex::array::arrow::IntoArrowArray;
+
+    #[allow(deprecated)]
+    let arrow_arr = vp_array.into_arrow_preferred()?;
+    let struct_arr = arrow_arr.as_any().downcast_ref::<StructArray>()
+        .ok_or_else(|| format!("expected StructArray, got {:?}", arrow_arr.data_type()))?;
+    let schema = Schema::new(struct_arr.fields().to_vec());
+    Ok(RecordBatch::try_new(Arc::new(schema), struct_arr.columns().to_vec())?)
+}
+
+pub async fn read_vortex(path: &Path) -> Result<RecordBatch> {
+    use vortex::file::OpenOptionsSessionExt;
+    use vortex::session::VortexSession;
+    use vortex::VortexSessionDefault;
+    use futures::StreamExt;
+
+    let session = VortexSession::default();
+    let vf = session.open_options().open_path(path).await?;
+    let stream = vf.scan()?.into_array_stream()?;
+    let mut batches: Vec<RecordBatch> = Vec::new();
+    tokio::pin!(stream);
+    while let Some(chunk) = stream.next().await {
+        batches.push(vortex_chunk_to_batch(chunk?)?);
+    }
+    concat_batches(batches)
+}
+
+pub async fn take_vortex(path: &Path, indices: &[u32]) -> Result<RecordBatch> {
+    let full = read_vortex(path).await?;
+    use arrow_select::take::take as arrow_take;
+    let n_cols = full.num_columns();
+    let indices_array = arrow_array::UInt64Array::from(
+        indices.iter().map(|&i| i as u64).collect::<Vec<_>>(),
+    );
+    let taken_cols: Vec<ArrayRef> = (0..n_cols)
+        .map(|i| arrow_take(full.column(i), &indices_array, None).unwrap())
+        .collect();
+    Ok(RecordBatch::try_new(full.schema(), taken_cols)?)
+}
+
+pub async fn filter_vortex(path: &Path, event_type: &str) -> Result<RecordBatch> {
+    use arrow_select::filter::filter_record_batch;
+    let full = read_vortex(path).await?;
+    let arr = full.column(2).as_any().downcast_ref::<StringArray>().unwrap();
+    let mask: BooleanArray = (0..arr.len())
+        .map(|i| arr.is_valid(i) && arr.value(i) == event_type)
+        .collect();
+    Ok(filter_record_batch(&full, &mask)?)
 }
 
 // =============================================================================

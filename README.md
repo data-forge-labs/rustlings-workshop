@@ -132,6 +132,7 @@ Projects are grouped into **sections** that map concepts a Python data engineer 
 | 04 | **Arrow** — Apache Arrow in-memory columnar format | `arrow` crate, `RecordBatch`, primitive arrays, builders, schema, CSV→Arrow, IPC, `compute` kernels |
 | 05 | **YAML** — pipeline configuration files | `serde_yaml`, `#[derive(Deserialize)]`, custom enums, `rename_all`, config merge, NDJSON-style queries |
 | 06 | **JsonStream** — JSON & NDJSON streaming | `serde_json`, typed `Value` walking, NDJSON read/write, pretty-print, object merge |
+| 07 | **NextGenFormats** — Beyond Parquet: Lance, Vortex, Nimble, F3 benchmark | `lance` v7, `vortex` v0.74, structural encoding, cascading compression, partitioned warehouse, random take, predicate pushdown, compaction, schema evolution |
 
 ### Section 5: Concurrency — Beyond Python's GIL
 
@@ -431,6 +432,11 @@ The table below lists all core Rust concepts a learner should eventually see. **
 | Debezium-style CDC (`CdcEvent` envelope, `op` codes, `Sink` trait, `LeaderClaim`, `Checkpoint`, `batch_ready`) | ✅ | 14-07 |
 | Unified pipeline fan-out (`PipelineConfig`, `fanout_targets`, `SinkOutcome`, `WindowCounters`, `DeadLetter`) | ✅ | 14-08 |
 | Docker Compose for local data infrastructure (multi-service YAML, healthchecks, init scripts) | ✅ | 14-00 (root) |
+| Lance columnar format (`lance::Dataset`, structural encoding, random take, compaction, vector index) | ✅ | 04-07 |
+| Vortex columnar format (`vortex::file`, cascading compression, layout tree) | ✅ | 04-07 |
+| Partitioned warehouse (Hive-style `year=/month=/day=` with multiple formats) | ✅ | 04-07 |
+| Schema evolution (add columns without rewrite on Lance) | ✅ | 04-07 |
+| Next-gen format benchmarking (Parquet vs Lance vs Vortex — write, scan, project, take, filter, compact) | ✅ | 04-07 |
 
 ---
 

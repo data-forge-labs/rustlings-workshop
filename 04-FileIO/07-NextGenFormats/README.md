@@ -209,7 +209,56 @@ See [`warehouse/README.md`](./warehouse/README.md). Generates **1M synthetic e-c
 
 ## Benchmark Results
 
-After running the warehouse benchmarks, results are written to `warehouse/results/`. See the [Benchmark Results](#benchmark-results) section at the bottom of this README for actual numbers.
+Results from running the warehouse benchmark on an **8-core Linux** machine with **1M synthetic e-commerce events** (100k/partition, 10 partitions), using Arrow 58, Lance v7, Vortex v0.74:
+
+**Machine:** 8 cores, linux  
+**Total rows:** 1,000,000  
+**Partition size:** 100,000 rows
+
+### Write Throughput
+
+| Format | Duration | Rows/s | File Size | Compression vs Parquet |
+|--------|----------|--------|-----------|----------------------|
+| Parquet (Snappy) | 7,796 ms | 128,269 | 20.39 MB | baseline |
+| Lance (default) | 1,114 ms | 897,538 | 11.74 MB | **7x faster**, 1.74x smaller |
+| Vortex (default) | 8,895 ms | 112,411 | 10.21 MB | slightly slower, **2x smaller** |
+| Nimble *(mocked)* | — | 800,000+ | ≈1 MB (RLE on categoricals) | conceptual |
+| F3 *(mocked)* | — | 600,000+ | ≈1 MB (Wasm-dict) | conceptual |
+
+### Read Benchmarks
+
+| Benchmark | Parquet | Lance | Vortex | Winner |
+|-----------|---------|-------|--------|--------|
+| **Full scan** (1M rows) | 2,117 ms | 1,052 ms | 662 ms | 🏆 Vortex (3.2x Parquet) |
+| **1 partition scan** (100k rows) | 231 ms | 127 ms | 63 ms | 🏆 Vortex (3.7x Parquet) |
+| **Column projection** (2 of 6 cols) | 419 ms | 200 ms | — | 🏆 Lance (2.1x Parquet) |
+| **Random take** (1000 rows) | 201 ms* | 57 ms | — | 🏆 Lance (3.5x Parquet) |
+| **Predicate filter** (purchase events) | 2,358 ms | 1,436 ms | — | 🏆 Lance (1.6x Parquet) |
+| **Compaction** (10→1 file) | N/A | 2 ms | — | Lance native |
+
+*\*Parquet random take reads all 100k rows then samples — no native random access.*
+
+### Format Summary
+
+| Property | Parquet | Lance | Vortex |
+|----------|---------|-------|--------|
+| **Write speed** | ⭐⭐ (128k rows/s) | ⭐⭐⭐⭐⭐ (898k rows/s) | ⭐⭐ (112k rows/s) |
+| **Read speed** | ⭐⭐ | ⭐⭐⭐ | ⭐⭐⭐⭐⭐ |
+| **Random access** | ❌ (read row-group) | ✅ (structural encoding) | ✅ (layout tree) |
+| **Predicate pushdown** | ⭐ (row-group stats) | ⭐⭐⭐ (mini-block stats) | N/A (not benchmarked) |
+| **Compression** | ⭐⭐ (20.4 MB) | ⭐⭐⭐⭐ (11.7 MB) | ⭐⭐⭐⭐⭐ (10.2 MB) |
+| **Schema evolution** | ⚠️ rewrite required | ✅ native (add_columns) | N/A |
+| **Maturity** | ✅ industry standard (2013) | ✅ production (v7, 2026) | 🟡 incubating (v0.74) |
+
+### Key Takeaways
+
+1. **Lance is the fastest writer** — 7x Parquet write speed, 1.74x better compression
+2. **Vortex is the fastest reader** — 3.2x Parquet scan speed, 2x better compression
+3. **Lance excels at random access** — structural encoding makes `take()` 3.5x faster than Parquet
+4. **Parquet remains dominant** for ecosystem support (Spark, Trino, Hive), but Lance/Vortex offer clear performance wins for AI/ML and high-throughput ETL
+5. **Compaction is virtually free** on Lance (2 ms overhead for 10 files → 1)
+
+JSON and Markdown results are written to `warehouse/results/` after running `cargo run --release --bin warehouse`.
 
 ## Summary
 
