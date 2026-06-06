@@ -1,0 +1,217 @@
+version: '3.8'
+
+services:
+  # =========================================================================
+  # PostgreSQL 16 — Source database + DuckLake catalog backend
+  # =========================================================================
+  postgres:
+    image: postgres:16-alpine
+    container_name: di-postgres
+    environment:
+      POSTGRES_USER: dataeng
+      POSTGRES_PASSWORD: dataeng
+      POSTGRES_DB: dataeng
+      # Enable logical replication for Debezium CDC
+      POSTGRES_INITDB_ARGS: "--wal-segsize=64"
+    command: >
+      postgres -c wal_level=logical
+               -c max_replication_slots=10
+               -c max_wal_senders=10
+               -c shared_preload_libraries=pg_stat_statements
+               -c pg_stat_statements.track=all
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init/postgres:/docker-entrypoint-initdb.d:ro
+    networks:
+      - dataeng_net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U dataeng -d dataeng"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  # =========================================================================
+  # Apache Kafka — Event backbone (KRaft mode, no ZooKeeper)
+  # =========================================================================
+  kafka:
+    image: confluentinc/cp-kafka:7.6.0
+    container_name: di-kafka
+    environment:
+      KAFKA_NODE_ID: 1
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092,CONTROLLER://0.0.0.0:9093
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@kafka:9093
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_PROCESS_ROLES: broker,controller
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_LOG_DIRS: /var/lib/kafka/data
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
+      KAFKA_LOG_RETENTION_HOURS: 168
+      KAFKA_LOG_SEGMENT_BYTES: 1073741824
+      CLUSTER_ID: "MkU3OEVBNTcwNTJENDM2Qk"
+    ports:
+      - "9092:9092"
+    volumes:
+      - kafka_data:/var/lib/kafka/data
+    networks:
+      - dataeng_net
+    healthcheck:
+      test: ["CMD-SHELL", "/etc/confluent/docker/healthcheck"]
+      interval: 10s
+      timeout: 10s
+      retries: 5
+
+  # Kafka UI for topic inspection
+  kafka-ui:
+    image: provectuslabs/kafka-ui:latest
+    container_name: di-kafka-ui
+    environment:
+      KAFKA_CLUSTERS_0_NAME: local
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:9092
+      KAFKA_CLUSTERS_0_ZOOKEEPER: ""
+    ports:
+      - "8080:8080"
+    networks:
+      - dataeng_net
+    depends_on:
+      kafka:
+        condition: service_healthy
+
+  # =========================================================================
+  # Redis 7 — Cache + Streams
+  # =========================================================================
+  redis:
+    image: redis:7-alpine
+    container_name: di-redis
+    command: redis-server --appendonly yes --maxmemory 256mb --maxmemory-policy allkeys-lru
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - dataeng_net
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  # =========================================================================
+  # ClickHouse — OLAP destination
+  # =========================================================================
+  clickhouse:
+    image: clickhouse/clickhouse-server:24.8-alpine
+    container_name: di-clickhouse
+    environment:
+      CLICKHOUSE_DB: analytics
+      CLICKHOUSE_USER: dataeng
+      CLICKHOUSE_PASSWORD: dataeng
+      CLICKHOUSE_DEFAULT_ACCESS_MANAGEMENT: 1
+    ports:
+      - "8123:8123"  # HTTP
+      - "9000:9000"  # Native
+    volumes:
+      - clickhouse_data:/var/lib/clickhouse
+      - ./init/clickhouse:/docker-entrypoint-initdb.d:ro
+    ulimits:
+      nofile:
+        soft: 262144
+        hard: 262144
+    networks:
+      - dataeng_net
+    healthcheck:
+      test: ["CMD", "clickhouse-client", "--query", "SELECT 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  # =========================================================================
+  # Apache Iggy — Rust-native message streaming (single-node)
+  # =========================================================================
+  iggy:
+    image: iggy-rs/iggy:0.7.0
+    container_name: di-iggy
+    environment:
+      IGGY_CONFIG: |
+        server:
+          bind_address: "0.0.0.0"
+          http_port: 8090
+          tcp_port: 3000
+          quic_port: 3001
+        storage:
+          path: "/data"
+          max_segment_size: 1073741824
+        auth:
+          enabled: false
+    ports:
+      - "3000:3000"   # TCP
+      - "3001:3001"   # QUIC
+      - "8090:8090"   # HTTP/API
+    volumes:
+      - iggy_data:/data
+    networks:
+      - dataeng_net
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:8090/api/v1/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  # =========================================================================
+  # MinIO — S3-compatible object storage for DuckLake/ClickHouse data files
+  # =========================================================================
+  minio:
+    image: minio/minio:latest
+    container_name: di-minio
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin
+    ports:
+      - "9000:9000"   # S3 API
+      - "9001:9001"   # Console
+    volumes:
+      - minio_data:/data
+    networks:
+      - dataeng_net
+    healthcheck:
+      test: ["CMD", "mc", "ready", "local"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  # =========================================================================
+  # DuckDB — DuckLake catalog backend (embedded, file-based)
+  # =========================================================================
+  # Note: DuckDB runs as a library within the Rust projects, not as a separate service.
+  # The DuckLake catalog metadata lives in PostgreSQL (above) or a local DuckDB file.
+  # We include a helper container for ad-hoc queries.
+  duckdb:
+    image: ghcr.io/duckdb/duckdb:latest
+    container_name: di-duckdb
+    command: tail -f /dev/null  # Keep running for docker exec
+    volumes:
+      - duckdb_data:/data
+      - minio_data:/mnt/minio:ro
+    networks:
+      - dataeng_net
+    profiles:
+      - tools
+
+networks:
+  dataeng_net:
+    driver: bridge
+
+volumes:
+  postgres_data:
+  kafka_data:
+  redis_data:
+  clickhouse_data:
+  iggy_data:
+  minio_data:
+  duckdb_data:

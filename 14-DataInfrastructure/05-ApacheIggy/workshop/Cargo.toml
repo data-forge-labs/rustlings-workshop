@@ -1,0 +1,29 @@
+[package]
+name = "apache_iggy"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+tokio = { version = "1.40", features = ["rt-multi-thread", "macros", "time", "signal"] }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+uuid = { version = "1.10", features = ["v4", "serde"] }
+chrono = { version = "0.4", features = ["serde"] }
+anyhow = "1.0"
+thiserror = "1.0"
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+futures = "0.3"
+
+# The `iggy` SDK is the official Apache Iggy client. We don't link it
+# here because (a) it pulls in aws-lc-sys, which has assembler issues
+# on WSL, and (b) our tests are pure-data — they don't need the SDK
+# at all. The main.rs demo shows the *shape* of an Iggy producer
+# call; swap in `iggy = "0.7"` and `IggyProducer` from `iggy::prelude`
+# when you run against a real broker.
+# iggy = "0.7"
+
+[profile.release]
+opt-level = 3
+lto = "thin"
+codegen-units = 1

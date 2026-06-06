@@ -22,10 +22,11 @@ RustTut/
 ├── 11-Interop/                      ← Section 11 (projects 01-04) — PyO3, evcxr, GIL release
 ├── 12-DataEngAnalytics/             ← Section 12 (projects 01-03) — Polars, DuckDB, DataFusion
 ├── 13-ActorModel/                   ← Section 13 (projects 01-03) — DIY actor, ractor, ETL pipeline
-└── 14-Reference/                    ← Section 14 (reference appendix — no projects)
+├── 14-DataInfrastructure/           ← Section 14 (projects 01-08) — Kafka, Postgres, Redis, ClickHouse, Iggy, DuckLake, CDC, Unified
+└── 15-Reference/                    ← Section 15 (reference appendix — no projects)
 ```
 
-The course is organized into **14 sections** designed for a Python data engineer moving to Rust. Each section starts with tutorial-style projects (read `.md` files, write code alongside) and progresses to hands-on Cargo projects (build and run complete programs).
+The course is organized into **15 sections** designed for a Python data engineer moving to Rust. Each section starts with tutorial-style projects (read `.md` files, write code alongside) and progresses to hands-on Cargo projects (build and run complete programs).
 
 **Progression:** Go through sections in order. Within each section, start with lower-numbered projects (introduce concepts) then move to higher-numbered ones (apply and deepen). Concepts from earlier sections are assumed in later ones.
 
@@ -226,11 +227,26 @@ Projects are grouped into **sections** that map concepts a Python data engineer 
 | 03 | **PyO3Bindings** — Call Rust from Python | `pyo3 0.23`, `#[pyfunction]` / `#[pymodule]`, `cdylib`, `maturin develop`, feature-gated FFI |
 | 04 | **GILRelease** — Free the GIL, free the CPU | `pyo3::Python::allow_threads`, GIL contention factor, multi-threaded CPU work |
 
-### Section 14: Reference Appendix
+### Section 14: Data Infrastructure & Integration
+
+*Production data pipelines in Rust: PostgreSQL → Kafka/CDC → ClickHouse/DuckLake, with Redis caching, Apache Iggy, and a unified fan-out orchestrator.*
+
+| # | Project | Rust Topics Covered |
+|---|---------|-------------------|
+| 01 | **KafkaRdkafka** — produce & consume events in Rust | `rdkafka` (librdkafka), `FutureProducer`/`StreamConsumer`, idempotent producer, manual commit, `DedupCache` (FIFO), outbox pattern |
+| 02 | **PostgreSQLSqlx** — transactional outbox with sqlx | `sqlx::PgPool`, async transactions, `OutboxRow`, `OutboxBatcher`, exponential backoff, NUMERIC → f64 |
+| 03 | **RedisAsync** — cache + streams with redis-rs | `ConnectionManager` (multiplexed), TTL bands, `XADD`/`XREADGROUP` consumer groups, `SETNX` idempotency, hit-ratio stats |
+| 04 | **ClickHouseIngestion** — columnar OLAP sink | `clickhouse-rs` `Client::insert`, `IngestBatcher` (rows+bytes), `ClickHouseRetry`, `OrderStatus` enum, per-minute aggregation |
+| 05 | **ApacheIggy** — Rust-native message streaming | Thread-per-core, `IggyMessage`, FNV-1a partitioner, `OffsetCursor`, `IggyDedup`, `consumer_parallelism` |
+| 06 | **DuckLakeCatalog** — SQL-on-Parquet lakehouse | `duckdb::Connection`, `ATTACH 'ducklake:...'`, time-travel `AT (VERSION => N)`, `MERGE INTO` upsert, compaction heuristic |
+| 07 | **CdcPipeline** — Debezium-style CDC | `CdcEvent` (before/after/op/ts_ms/tx_id), `CdcOp` enum, `topic_for`/`routing_key`, `LeaderClaim`, `Sink` trait, `Checkpoint`, `batch_ready` |
+| 08 | **UnifiedPipeline** — multi-sink orchestrator | `PipelineConfig`, `PipelineEvent`, `SinkOutcome`, `fanout_targets`, `WindowCounters`, `sink_backoff_ms`, `DeadLetter`, `PipelineStats` |
+
+### Section 15: Reference Appendix
 
 *Quick reference materials for concept lookup — no cargo projects, just cheatsheets and reference documents.*
 
-This appendix contains reference documents for quick lookup of Rust syntax, idioms, and patterns covered across all 13 prior sections.
+This appendix contains reference documents for quick lookup of Rust syntax, idioms, and patterns covered across all 14 prior sections.
 
 ### Section 12: Data Engineering Analytics — Polars, DuckDB, DataFusion
 
@@ -406,6 +422,15 @@ The table below lists all core Rust concepts a learner should eventually see. **
 | Actor pipeline (source → transform → sink with bounded channels + atomic metrics) | ✅ | 13-03 |
 | Jupyter notebook / `evcxr` | ✅ | 11-02 |
 | Pandas / DataFrame operations | ✅ | 11-01 |
+| Apache Kafka with `rdkafka` (`FutureProducer`, `StreamConsumer`, `ClientConfig`, manual commit, FNV-1a partitioner) | ✅ | 14-01 |
+| PostgreSQL with `sqlx` (`PgPool`, async transactions, compile-time-checked queries, outbox table) | ✅ | 14-02 |
+| Redis async (`ConnectionManager`, `XADD`/`XREADGROUP`, `SETNX`, `pexpire`, hit-ratio stats) | ✅ | 14-03 |
+| ClickHouse ingestion (`Client::insert`, `Row` derive, `MergeTree` DDL, byte+row batcher) | ✅ | 14-04 |
+| Apache Iggy (thread-per-core, FNV-1a partitioner, offset cursor, in-memory dedup) | ✅ | 14-05 |
+| DuckLake / DuckDB catalog (`ATTACH 'ducklake:...'`, time-travel `AT (VERSION => N)`, `MERGE INTO`) | ✅ | 14-06 |
+| Debezium-style CDC (`CdcEvent` envelope, `op` codes, `Sink` trait, `LeaderClaim`, `Checkpoint`, `batch_ready`) | ✅ | 14-07 |
+| Unified pipeline fan-out (`PipelineConfig`, `fanout_targets`, `SinkOutcome`, `WindowCounters`, `DeadLetter`) | ✅ | 14-08 |
+| Docker Compose for local data infrastructure (multi-service YAML, healthchecks, init scripts) | ✅ | 14-00 (root) |
 
 ---
 
