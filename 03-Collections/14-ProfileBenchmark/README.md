@@ -53,15 +53,16 @@ cargo bench              # criterion measures ns/iter with statistical confidenc
 1. [Introduction](#1-introduction)
 2. [Prerequisites](#2-prerequisites)
 3. [Setup: Create the Project from Scratch](#3-setup-create-the-project-from-scratch)
-4. [Concept: Cargo Build Profiles (dev vs release)](#4-concept-cargo-build-profiles-dev-vs-release)
-5. [Concept: Configuring `[profile.release]`](#5-concept-configuring-profilerelease)
-6. [Concept: Criterion Benchmarks](#6-concept-criterion-benchmarks)
-7. [Concept: Comparing Collection Strategies](#7-concept-comparing-collection-strategies)
-8. [Putting It All Together](#8-putting-it-all-together)
-9. [Running the Benchmarks](#9-running-the-benchmarks)
-10. [Complete Code Reference](#10-complete-code-reference)
-11. [Exercises](#11-exercises)
-12. [Summary](#12-summary)
+4. [Test Roadmap — what each test teaches](#4-test-roadmap--what-each-test-teaches)
+5. [Concept: Cargo Build Profiles (dev vs release)](#5-concept-cargo-build-profiles-dev-vs-release)
+6. [Concept: Configuring `[profile.release]`](#6-concept-configuring-profilerelease)
+7. [Concept: Criterion Benchmarks](#7-concept-criterion-benchmarks)
+8. [Concept: Comparing Collection Strategies](#8-concept-comparing-collection-strategies)
+9. [Putting It All Together](#9-putting-it-all-together)
+10. [Running the Benchmarks](#10-running-the-benchmarks)
+11. [Complete Code Reference](#11-complete-code-reference)
+12. [Exercises](#12-exercises)
+13. [Summary](#13-summary)
 
 ---
 
@@ -124,7 +125,32 @@ cargo bench             # Criterion compiles and runs, but the underlying fns pa
 
 Now let's build it up.
 
-## 4. Concept: Cargo Build Profiles (dev vs release)
+## 4. Test Roadmap — what each test teaches
+
+The 14 tests in `workshop/src/lib.rs` are organized in 5 step modules that mirror the 5 functions in `lib.rs`. Each test has a doc comment explaining *what property* it verifies and *why that property matters*. The table below is a quick map:
+
+| # | Test | Function | Property verified | Concept taught |
+|---|------|----------|-------------------|----------------|
+| 1 | `step_01_normalize::test_lowercase` | `normalize_word` | Mixed-case input folds to lowercase | `to_lowercase`, `chars()` |
+| 2 | `step_01_normalize::test_strip_punctuation` | `normalize_word` | Non-alphanumeric chars are dropped | `filter` with closure, `collect::<String>` |
+| 3 | `step_02_vec::test_count_vec_basic` | `count_vec` | Repeated words aggregate, output sorted alphabetically | `Vec`, `HashMap::entry().or_insert(0) += 1`, `sort_by` |
+| 4 | `step_02_vec::test_count_vec_sorted` | `count_vec` | Sort order holds even with reversed input | `sort_by` with closure |
+| 5 | `step_02_vec::test_count_vec_empty` | `count_vec` | Empty input returns empty `Vec` (no panic) | Empty-input contract |
+| 6 | `step_03_hashmap::test_count_hashmap_basic` | `count_hashmap` | `entry().or_insert(0) += 1` counts correctly | `HashMap::entry` API |
+| 7 | `step_03_hashmap::test_count_hashmap_lowercases` | `count_hashmap` | Normalization happens *before* aggregation | Pipeline order matters |
+| 8 | `step_03_hashmap::test_count_hashmap_strips_punct` | `count_hashmap` | Punctuation-stripping is part of the key | Composition of `normalize_word` |
+| 9 | `step_04_btreemap::test_count_btreemap_basic` | `count_btreemap` | `BTreeMap` supports the same `entry` pattern | `BTreeMap` as a `HashMap` substitute |
+| 10 | `step_04_btreemap::test_count_btreemap_sorted` | `count_btreemap` | Keys iterate in sorted order | `BTreeMap` ordering property |
+| 11 | `step_04_btreemap::test_count_btreemap_empty` | `count_btreemap` | Empty input contract for `BTreeMap` | Empty-input contract |
+| 12 | `step_05_top_n::test_top_n_basic` | `top_n` | Top-N returns highest counts first | `BinaryHeap<Reverse<(K, V)>>` |
+| 13 | `step_05_top_n::test_top_n_more_than_available` | `top_n` | `n > map.len()` returns all items, no panic | Defensive programming |
+| 14 | `step_05_top_n::test_top_n_zero` | `top_n` | `n = 0` returns empty `Vec` | Edge case handling |
+
+**How to use this table while coding:** implement the function for step N, then run `cargo test step_NN_name` to see the tests for that step pass. When all 14 are green, run `cargo bench` to compare strategies under the release profile.
+
+**What is intentionally not tested:** the *performance* of these functions. Performance is verified by the criterion benchmarks in `benches/profile_benchmarks.rs`, not by `cargo test`. Unit tests verify correctness; benchmarks verify performance. Separating the two keeps your test suite fast and reliable.
+
+## 5. Concept: Cargo Build Profiles (dev vs release)
 
 ### Explanation
 
@@ -191,7 +217,7 @@ That last row is critical — see the [BasicCalculator](../../01-Foundations/03-
 
 Our word-counting code is pure collection manipulation — no `unsafe`, no FFI, no panics. It is a perfect candidate for benchmarking the dev-vs-release gap. After we implement `count_words`, you will see the same function take 500 ns/iter in dev and 50 ns/iter in release.
 
-## 5. Concept: Configuring `[profile.release]`
+## 6. Concept: Configuring `[profile.release]`
 
 ### Explanation
 
@@ -312,7 +338,7 @@ This is the configuration we use for the benchmarks. With `codegen-units = 1` an
 
 We will use the `[profile.release]` block above for all benchmark runs. To verify the impact, you can comment out the custom block and re-run benchmarks to see the default release config be 20-40% slower.
 
-## 6. Concept: Criterion Benchmarks
+## 7. Concept: Criterion Benchmarks
 
 ### Explanation
 
@@ -398,7 +424,7 @@ Criterion is closer to `pytest-benchmark` than to `cProfile`: it measures throug
 
 Our `benches/profile_benchmarks.rs` compares three collection strategies across two workload sizes. After running `cargo bench`, you will see the results table and the HTML report.
 
-## 7. Concept: Comparing Collection Strategies
+## 8. Concept: Comparing Collection Strategies
 
 ### Explanation
 
@@ -443,7 +469,7 @@ pub fn count_btreemap(text: &str) -> BTreeMap<String, usize> { ... } // single p
 
 The benchmarks measure each one on a 10,000-word corpus in both dev and release modes.
 
-## 8. Putting It All Together
+## 9. Putting It All Together
 
 Open `workshop/src/lib.rs`. You will see five `pub fn` signatures, each with `todo!()`. Implement them one at a time, running `cargo test` after each step.
 
@@ -547,7 +573,7 @@ After implementing, all 14 tests should pass:
 cd workshop && cargo test
 ```
 
-## 9. Running the Benchmarks
+## 10. Running the Benchmarks
 
 Now the fun part. With all tests green, run the criterion benchmarks:
 
@@ -593,7 +619,7 @@ cargo bench --bench profile_benchmarks vec_count
 2. Edit `Cargo.toml` to change `opt-level` to `0`
 3. Run `cargo bench --baseline before` — criterion will report regression percentages
 
-## 10. Complete Code Reference
+## 11. Complete Code Reference
 
 ### `workshop/Cargo.toml`
 
@@ -884,7 +910,7 @@ criterion_group!(benches, bench_vec, bench_hashmap, bench_btreemap, bench_top_n)
 criterion_main!(benches);
 ```
 
-## 11. Exercises
+## 12. Exercises
 
 ### Easy
 Add a `count_hashset(text: &str) -> HashSet<String>` function that returns only the *unique* words (no counts). Then add a `cargo bench` group comparing it against the existing counters.
@@ -895,7 +921,7 @@ Add a custom profile block `[profile.bench]` to `Cargo.toml` that inherits from 
 ### Hard
 Use `cargo flamegraph` (an external cargo subcommand) to generate a flame graph of `count_hashmap` running in release mode. Identify the function that takes the most time. Hint: install with `cargo install flamegraph` (requires `perf` on Linux, `DTrace` on macOS, or `cargo-instruments` for Instruments.app).
 
-## 12. Summary
+## 13. Summary
 
 | Concept | Description | Python equivalent |
 |---------|-------------|-------------------|
