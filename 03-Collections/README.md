@@ -270,10 +270,12 @@ println!("{}", sum(&vec[1..4]));  // 2 + 3 + 4 = 9
 | 11 | **HashSetFruit** — unique items | `HashSet`, uniqueness, membership testing | Project |
 | 12 | **RustIterators** — lazy functional iteration | `Iterator` trait, lazy eval, `map`/`filter`/`fold` | Project |
 | 13 | **MutableFruitSalad** — Vec mutation | `push`/`pop`/`insert`/`remove`, capacity vs length | Project |
+| 14 | **ProfileBenchmark** — Cargo profiles + criterion | dev vs release profiles, `[profile.release]`, `criterion` benchmarks, `opt-level` / `lto` / `codegen-units` / `overflow-checks` | Project |
 
 ## Learning Path
 1. Start with **01-TicketManagement** tutorial for collections theory
 2. Build **02-VectorFruitSalad** through **06-VecDequeFruitSalad** for hands-on practice
 3. Use **04-HashMapCount** and **07-HashMapLanguage** for HashMap mastery
 4. Explore **09-BinaryHeapFruit**, **10-BTreeSetFruit**, **11-HashSetFruit** for specialized collections
-5. Finish with **12-RustIterators** and **13-MutableFruitSalad**
+5. Finish with **12-RustIterators** and **13-MutableFruitSalad** for iteration and mutation
+6. Cap the section with **14-ProfileBenchmark** — measure what you've built with `criterion`, configure Cargo profiles, and observe the 10-50x dev-vs-release gap

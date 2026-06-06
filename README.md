@@ -117,6 +117,7 @@ Projects are grouped into **sections** that map concepts a Python data engineer 
 | 11 | **HashSetFruit** — unique items with HashSet | `HashSet`, uniqueness, membership testing |
 | 12 | **RustIterators** — lazy functional iteration | `Iterator` trait, lazy eval, `map`/`filter`/`fold` |
 | 13 | **MutableFruitSalad** — Vec mutation | `push`/`pop`/`insert`/`remove`, capacity vs length |
+| 14 | **ProfileBenchmark** — Cargo profiles + criterion | dev vs release profiles, `[profile.release]`, `opt-level` / `lto` / `codegen-units` / `overflow-checks` / `debug`, `criterion` benchmark groups |
 
 ### Section 4: File I/O — CSV & Parquet at Scale
 
@@ -354,6 +355,15 @@ The table below lists all core Rust concepts a learner should eventually see. **
 | Ratatui terminal UIs (`ratatui`, `crossterm`, `TestBackend`, layouts, widgets) | ✅ | 06-03 |
 | Async CLIs with `clap` derive (subcommands, `#[tokio::main]`, `ExitCode`) | ✅ | 06-04 |
 | Testing (`#[test]`, `cargo test`) | ✅ | 01-03 |
+| Cargo build profiles (`dev` / `release`, `cargo build --release`) | ✅ | 01-03 (brief), 03-14 (deep) |
+| `[profile.release]` configuration in `Cargo.toml` | ✅ | 03-14 |
+| `opt-level` (0–3, "s", "z") | ✅ | 03-14 |
+| `lto` (`false` / `"thin"` / `"fat"`) | ✅ | 03-14 |
+| `codegen-units` (compile-time vs inlining trade-off) | ✅ | 03-14 |
+| `overflow-checks` in release profile | ✅ | 01-03 (concept), 03-14 (config) |
+| `debug` setting (`true` / `false` / `"line-tables-only"`) | ✅ | 03-14 |
+| `strip` setting (binary size optimization) | ✅ | 03-14 |
+| Criterion benchmarks (`criterion` crate, `cargo bench`, `bench_function`, `benchmark_group`, `BenchmarkId`) | ✅ | 03-14 |
 | Documentation (`///`, `cargo doc`) | ✅ | 01-04 (advanced) |
 | `derive` macros (`Debug`, `Clone`, `Copy`, `PartialEq`, etc.) | ✅ | 02-02, 06-01, 06-02, 04-02 |
 | Trait definitions, bounds, and orphan rule | ✅ | 02-02 |
