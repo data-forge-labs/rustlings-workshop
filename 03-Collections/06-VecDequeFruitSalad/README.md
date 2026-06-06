@@ -1,6 +1,39 @@
-This tutorial provides a comprehensive guide to working with `VecDeque` in Rust, using the provided code snippet to create a fruit salad with shuffling and double-ended queue operations. We'll explain key concepts like `VecDeque`, its differences from `Vec` and `LinkedList`, and the significance of conversions and operations in the program. The program will be built step-by-step from a simple version to an advanced one, covering both basic and advanced Rust concepts, including traits, iterators, and randomization. We'll also address the questions in the code comments and provide additional challenges to deepen your understanding.
+# 🦀 VecDequeFruitSalad — Python to Rust Workshop
+
+*Double-ended queues with O(1) push/pop at both ends — the ring buffer that beats `list.pop(0)`.*
 
 > **Test-driven approach**: This project includes a Cargo project with progressive unit tests. Each function in `workshop/src/lib.rs` starts as a `todo!()` stub. As you follow each section, replace `todo!()` with real code and run `cd workshop && cargo test` to watch the pass count grow. Your goal: **all 5 tests pass**.
+
+---
+
+## Why Double-Ended Queues?
+
+**Python pain:** `list.pop(0)` is O(n) — every pop shifts all remaining elements. For a 10K-element queue processed 10K times, that's 100M operations. `collections.deque` is the Python answer, but it lacks a clean `Vec` integration.
+
+**Rust fix:** `VecDeque<T>` is a ring buffer with O(1) `push_front`, `push_back`, `pop_front`, `pop_back` — and you can still index into it like a `Vec`. No shifting, no reallocation surprises.
+
+```rust
+use std::collections::VecDeque;
+
+let mut queue: VecDeque<i32> = VecDeque::new();
+queue.push_back(10);    // O(1)
+queue.push_front(0);    // O(1) — no shifting
+let first = queue.pop_front();  // Some(0)
+let last = queue.pop_back();    // Some(10)
+```
+
+## At a Glance
+
+| # | Concept | Rust | Python | Why it matters |
+|---|---------|------|--------|----------------|
+| 1 | Double-ended queue | `VecDeque<T>` | `collections.deque` | O(1) at both ends, ring buffer |
+| 2 | Push back | `push_back(x)` | `d.append(x)` | O(1), amortized |
+| 3 | Push front | `push_front(x)` | `d.appendleft(x)` | O(1) — no element shifting |
+| 4 | Pop back | `pop_back()` → `Option<T>` | `d.pop()` | O(1) |
+| 5 | Pop front | `pop_front()` → `Option<T>` | `d.popleft()` | O(1) — no element shifting |
+| 6 | Indexing | `queue[i]` | `d[i]` | O(1) — same as `Vec` |
+| 7 | Iteration | `for x in &queue` | `for x in d` | Forward and reverse iterators |
+| 8 | Conversion | `Vec::from(queue)`, `VecDeque::from(vec)` | `list(d)`, `deque(lst)` | Convert to/from `Vec` losslessly |
 
 ---
 

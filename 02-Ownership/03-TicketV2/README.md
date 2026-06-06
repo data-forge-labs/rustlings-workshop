@@ -59,6 +59,19 @@ fn parse_status(s: &str) -> Result<Status, String> {
 
 ---
 
+## Prerequisites
+
+- Completed [01-TicketV1](../01-TicketV1/README.md) — you should understand:
+  - `struct` definition with private fields and public `impl` methods
+  - `&self` vs `&mut self` method receivers (§9–11)
+  - Validation in `new()` constructor and setters (§6, §7)
+  - Encapsulation via private fields + public API (§8)
+  - Ownership, move semantics, and borrowing (§9–11)
+
+This workshop builds *directly* on the `Ticket` type from TicketV1. The `Ticket` struct, its validation logic, and its method signatures are the starting point — we swap the `String` status for a proper `enum`, and replace `panic!` with `Result<T, E>`.
+
+---
+
 ## 1. Project Overview
 
 We'll enhance our ticket system with:
@@ -921,7 +934,7 @@ The following lesson files in this folder provide deeper dives into each concept
 
 ### Next Project
 
-Proceed to [6-TicketManagement](../03-Collections/01-TicketManagement/README.md) for **collections, iterators, and HashMap** — essential tools for data pipelines.
+Proceed to [01-TicketManagement](../03-Collections/01-TicketManagement/README.md) for **collections, iterators, and HashMap** — essential tools for data pipelines.
 
 ## Further Reading
 

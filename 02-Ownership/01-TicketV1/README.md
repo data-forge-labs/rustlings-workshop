@@ -6,6 +6,23 @@
 
 ---
 
+> ### 📋 Prerequisites — Read These First
+>
+> This is the first workshop in **Section 2: Ownership** and assumes fluency with three concepts introduced in Section 1's [`04-MasterMind`](../01-Foundations/04-MasterMind/README.md):
+>
+> 1. **`&self` vs `&mut self` method receivers** — [MasterMind §9](../01-Foundations/04-MasterMind/README.md#9-concept-self-vs-mut-self--method-receivers)
+>    *Why?* This workshop uses both forms extensively. If a method changes a field, it takes `&mut self`; if it only reads, it takes `&self`. You need to recognize the difference at a glance.
+>
+> 2. **`pub` visibility and module organization** — [MasterMind §10](../01-Foundations/04-MasterMind/README.md#10-concept-pub-visibility)
+>    *Why?* The complete solution in §13 splits code across `src/ticket.rs` and `src/lib.rs`. The `mod ticket;` declaration and `pub` keywords on every item in `lib.rs` are not optional.
+>
+> 3. **The `Drop` trait (30-second preview)** — see [OBRM §4](../04-OBRM/README.md) for the full treatment (this is a *forward reference* — you don't need it to complete TicketV1)
+>    *Why?* §12 of this workshop mentions `Drop` briefly. The canonical teaching is in `04-OBRM`, which comes later in this section. TicketV1 only needs the concept that *"values clean up when they go out of scope"*.
+>
+> **Time required to review:** ~10 minutes if you completed MasterMind recently; ~20 minutes otherwise. Skipping this will make the borrow-checker errors in §11 feel like walls instead of guardrails.
+
+---
+
 ## Why Model Tickets with Structs?
 
 **Python pain:** A function that takes a `list` of `dict`s can mutate the caller's list silently — there is no way to know who "owns" the data, and the GC never tells you. A 10,000-line ETL pipeline can lose data integrity to one accidental `.append()`.
@@ -808,7 +825,15 @@ impl Ticket {
 
 ## 12. Concept: Destructors and Drop
 
-> **Recap**: The `Drop` trait and RAII cleanup were taught in depth in [04-OBRM §4 — The Drop Trait](../04-OBRM/README.md#4-concept-the-drop-trait--automatic-cleanup). Read that first for the full conceptual coverage (4 worked examples, ASCII lifecycle diagram, data-engineering patterns).
+> ### ⏭️ Forward Reference — Don't Get Stuck Here
+>
+> The `Drop` trait and RAII cleanup are **taught in depth in a later project**: [04-OBRM §4 — The Drop Trait](../04-OBRM/README.md#4-concept-the-drop-trait--automatic-cleanup). That workshop has the full conceptual coverage:
+>
+> - 4 worked examples (file handles, database connections, custom buffers, smart pointers)
+> - An ASCII lifecycle diagram showing exactly when `drop` runs
+> - Data-engineering patterns: `File` guard, `Transaction` rollback, connection pools
+>
+> **You can complete this TicketV1 workshop without reading OBRM first.** This section gives you just enough to understand the "automatic cleanup" comment in the §13 examples. Come back to this section after finishing OBRM for a second pass.
 
 The only point that matters for *this* project is: **Rust calls `drop` on every value when it goes out of scope, in reverse order of declaration.** This is what makes the `Ticket` type's resource cleanup automatic — we never had to write a `close()` call.
 
@@ -822,7 +847,13 @@ fn main() {
 }
 ```
 
-The [04-OBRM workshop](../04-OBRM/README.md) covers the `impl Drop for YourType { fn drop(&mut self) { ... } }` syntax, the resource-lifecycle diagram, and the data-engineering cleanup patterns. The two `impl Drop` examples in this file's `Putting It All Together` (the `File` and `Dataset` types) come directly from that teaching.
+**Mental model for now:** every `String`, `Vec`, and other heap-allocated value cleans itself up. You don't need to call `free()` or `close()` — the language does it. The custom `impl Drop for YourType { ... }` syntax is for *your own* types that own resources (file handles, network sockets, locks). You'll write your first `impl Drop` block in [04-OBRM](../04-OBRM/README.md).
+
+**Recommended learning order:**
+1. ✅ Finish this TicketV1 (the `Drop` references will be clear from the §13 examples)
+2. ➡️ Move to [02-Traits](../02-Traits/README.md) → [03-TicketV2](../03-TicketV2/README.md)
+3. 📖 Read [04-OBRM §4](../04-OBRM/README.md#4-concept-the-drop-trait--automatic-cleanup) for the canonical `Drop` teaching
+4. ↩️ Return here for a second pass — the §13 `impl Drop` examples will then make full sense
 
 ---
 
@@ -1095,7 +1126,7 @@ The [Appendix](#appendix-original-step-by-step-tutorial) at the end of this docu
 
 ### Next Project
 
-Proceed to [4-Traits](../02-Ownership/02-Traits/README.md) to learn about **traits** — Rust's version of interfaces and protocols.
+Proceed to [02-Traits](../02-Traits/README.md) to learn about **traits** — Rust's version of interfaces and protocols.
 
 ---
 

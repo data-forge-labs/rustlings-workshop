@@ -71,8 +71,8 @@ Every collection in `std::collections` is designed for a specific use case with 
 
 ## What You'll Learn
 
-| # | Concept | Rust Type / Module | Python Equivalent | Purpose |
-|---|---------|--------------------|------------------|---------|
+| # | Concept | Rust | Python | Why it matters |
+|---|---------|------|--------|----------------|
 | 1 | Dynamic arrays | `Vec<T>` | `list` | Type-safe, contiguous growable array |
 | 2 | Fixed-size arrays | `[T; N]` | `array.array` | Stack-allocated, known-length collection |
 | 3 | Key-value maps | `HashMap<K, V>` | `dict` | Hash-based key-value storage |
@@ -257,26 +257,23 @@ println!("{}", sum(&vec[1..4]));  // 2 + 3 + 4 = 9
 
 | # | Project | Concepts | Format |
 |---|---------|----------|--------|
-| 6 | **TicketManagement** — Vec, arrays, HashMap | `Vec`, arrays `[T;N]`, iterators, lifetimes, `impl Trait`, slices, `HashMap`, `BTreeMap` | Tutorial |
-| 9 | **VectorFruitSalad** — dynamic arrays with Vec | `Vec<T>`, `SliceRandom`, `rand`, iteration, `&str` | Project |
-| 10 | **ArrayFruitSalad** — fixed-size vs dynamic | Arrays `[T;N]`, `Vec`/`VecDeque`/`LinkedList` comparison | Project |
-| 11 | **HashMapCount** — frequency counting | `HashMap`, `entry`/`or_insert`, `BTreeMap`, sorting | Project |
-| 12 | **LinkedListFruitSalad** — doubly-linked list | `LinkedList`, memory overhead | Project |
-| 13 | **VecDequeFruitSalad** — double-ended queue | `VecDeque`, ring buffer, `push_front`/`push_back` | Project |
-| 15 | **HashMapLanguage** — complex HashMap data | `HashMap` with complex values, `values_mut` | Project |
-| 16 | **CollectionsLessonReflection** — comparison guide | Collection trade-offs, big-O, memory efficiency | Reflection |
-| 17 | **RustCollectionsDoc** — reference document | All `std::collections`, `criterion` benchmarks | Reference |
-| 18 | **BinaryHeapFruit** — priority queue | `BinaryHeap`, max-heap | Project |
-| 19 | **BTreeSetFruit** — ordered set | `BTreeSet`, ordered iteration | Project |
-| 23 | **HashSetFruit** — unique items | `HashSet`, uniqueness, membership testing | Project |
-| 28 | **RustIterators** — lazy functional iteration | `Iterator` trait, lazy eval, `map`/`filter`/`fold` | Project |
-| 30 | **WhenToUseRustSet** — selection guide | All collections comparison | Reference |
-| 36 | **MutableFruitSalad** — Vec mutation | `push`/`pop`/`insert`/`remove`, capacity vs length | Project |
+| 01 | **TicketManagement** — Vec, arrays, HashMap | `Vec`, arrays `[T;N]`, iterators, lifetimes, `impl Trait`, slices, `HashMap`, `BTreeMap` | Tutorial |
+| 02 | **VectorFruitSalad** — dynamic arrays with Vec | `Vec<T>`, `SliceRandom`, `rand`, iteration, `&str` | Project |
+| 03 | **ArrayFruitSalad** — fixed-size vs dynamic | Arrays `[T;N]`, `Vec`/`VecDeque`/`LinkedList` comparison | Project |
+| 04 | **HashMapCount** — frequency counting | `HashMap`, `entry`/`or_insert`, `BTreeMap`, sorting | Project |
+| 05 | **LinkedListFruitSalad** — doubly-linked list | `LinkedList`, memory overhead | Project |
+| 06 | **VecDequeFruitSalad** — double-ended queue | `VecDeque`, ring buffer, `push_front`/`push_back` | Project |
+| 07 | **HashMapLanguage** — complex HashMap data | `HashMap` with complex values, `values_mut` | Project |
+| 08 | **RustCollectionsDoc** — reference document | All `std::collections`, `criterion` benchmarks | Reference |
+| 09 | **BinaryHeapFruit** — priority queue | `BinaryHeap`, max-heap | Project |
+| 10 | **BTreeSetFruit** — ordered set | `BTreeSet`, ordered iteration | Project |
+| 11 | **HashSetFruit** — unique items | `HashSet`, uniqueness, membership testing | Project |
+| 12 | **RustIterators** — lazy functional iteration | `Iterator` trait, lazy eval, `map`/`filter`/`fold` | Project |
+| 13 | **MutableFruitSalad** — Vec mutation | `push`/`pop`/`insert`/`remove`, capacity vs length | Project |
 
 ## Learning Path
-
-1. Start with **6-TicketManagement** tutorial for collections theory
-2. Build **9-VectorFruitSalad** through **13-VecDequeFruitSalad** for hands-on practice
-3. Use **11-HashMapCount** and **15-HashMapLanguage** for HashMap mastery
-4. Explore **18-BinaryHeapFruit**, **19-BTreeSetFruit**, **23-HashSetFruit** for specialized collections
-5. Finish with **28-RustIterators** and **16-CollectionsLessonReflection**
+1. Start with **01-TicketManagement** tutorial for collections theory
+2. Build **02-VectorFruitSalad** through **06-VecDequeFruitSalad** for hands-on practice
+3. Use **04-HashMapCount** and **07-HashMapLanguage** for HashMap mastery
+4. Explore **09-BinaryHeapFruit**, **10-BTreeSetFruit**, **11-HashSetFruit** for specialized collections
+5. Finish with **12-RustIterators** and **13-MutableFruitSalad**

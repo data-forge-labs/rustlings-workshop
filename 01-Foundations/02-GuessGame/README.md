@@ -48,10 +48,10 @@ match check_guess(secret, guess) {
 3. [Concept: Custom `enum`](#3-concept-custom-enum)
 4. [Concept: Adding an External Crate](#4-concept-adding-an-external-crate)
 5. [Concept: `String` vs `&str`](#5-concept-string-vs-str)
-6. [Concept: Reading Input — `std::io`](#6-concept-reading-input--stdiouo)
+6. [Concept: Reading Input — `std::io`](#6-concept-reading-input-stdio)
 7. [Concept: `Result<T, E>` and `.parse()`](#7-concept-resultt-e-and-parse)
-8. [Concept: The `?` Operator](#8-concept-the--operator)
-9. [Putting It All Together — The Full Game](#9-putting-it-all-together--the-full-game)
+8. [Concept: The `?` Operator](#8-concept-the-operator)
+9. [Putting It All Together — The Full Game](#9-putting-it-all-together-the-full-game)
 10. [Exercises](#10-exercises)
 11. [Summary](#11-summary)
 12. [What's Next](#12-whats-next)
@@ -172,7 +172,7 @@ A function returning an enum gives the compiler a *closed set* to check — ther
 
 ### Exercise
 
-After you read the next sections, the `check_guess` stub in `src/lib.rs` is one of the first you'll implement. Skip to [§9 Putting It All Together](#9-putting-it-all-together--the-full-game) when you're ready, or continue reading the concepts in order.
+After you read the next sections, the `check_guess` stub in `src/lib.rs` is one of the first you'll implement. Skip to [§9 Putting It All Together](#9-putting-it-all-together-the-full-game) when you're ready, or continue reading the concepts in order.
 
 ---
 

@@ -82,8 +82,8 @@ This is the **single most important concept** in Rust. It affects every line of 
 
 ## What You'll Learn
 
-| # | Concept | Rust Type / Module | Python Equivalent | Purpose |
-|---|---------|--------------------|------------------|---------|
+| # | Concept | Rust | Python | Why it matters |
+|---|---------|------|--------|----------------|
 | 1 | Ownership rules | Ownership model | N/A (GC) | Every value has exactly one owner — no GC needed |
 | 2 | Move semantics | Move (`=`, function args) | N/A (all refs) | Ownership transfers, old binding invalidated |
 | 3 | Borrowing | `&T` (shared ref) | Pass-by-reference | Read data without taking ownership |
@@ -296,18 +296,17 @@ Equivalent to Python's `@dataclass(frozen=True)` — but with zero runtime overh
 
 | # | Project | Concepts | Format |
 |---|---------|----------|--------|
-| 3 | **TicketV1** — structs, ownership, stack vs heap | `struct`, validation, `mod`/`pub`, encapsulation, ownership, borrowing, stack/heap, destructors (`Drop`) | Tutorial |
-| 4 | **Traits** — trait definitions, derive, bounds | `trait`, orphan rule, operator overloading, `derive`, trait bounds, `Deref`, `Sized`, `From` | Tutorial |
-| 5 | **TicketV2** — enums, match, error handling | `enum`, `match`, `if let`, `Option`, `Result`, error enums, `Error` trait, `thiserror`, `TryFrom` | Tutorial |
-| 37 | **OBRM** — ownership-based resource management | Ownership rules, `Drop` trait, RAII, borrowing, resource lifecycle | Project |
-| 38 | **OwnershipLifetimes** — lifetimes & borrow checker | Move semantics, borrowing (`&T`/`&mut T`), lifetimes (`'a`), `Copy`/`Clone` | Project |
-| 39 | **ConversionErrorHandling** — `unwrap`, `?`, `From`, and the whole family | `Option::unwrap_or[_default]`, `Option::map_or`, `Option::ok_or`, `Result::map_err`, `Result::and_then`, `?` operator, `From<E1>` impl, `thiserror` | Workshop |
+| 01 | **TicketV1** — structs, ownership, stack vs heap | `struct`, validation, `mod`/`pub`, encapsulation, ownership, borrowing, stack/heap, destructors (`Drop`) | Tutorial |
+| 02 | **Traits** — trait definitions, derive, bounds | `trait`, orphan rule, operator overloading, `derive`, trait bounds, `Deref`, `Sized`, `From` | Tutorial |
+| 03 | **TicketV2** — enums, match, error handling | `enum`, `match`, `if let`, `Option`, `Result`, error enums, `Error` trait, `thiserror`, `TryFrom` | Tutorial |
+| 04 | **OBRM** — ownership-based resource management | Ownership rules, `Drop` trait, RAII, borrowing, resource lifecycle | Project |
+| 05 | **OwnershipLifetimes** — lifetimes & borrow checker | Move semantics, borrowing (`&T`/`&mut T`), lifetimes (`'a`), `Copy`/`Clone` | Project |
+| 06 | **ConversionErrorHandling** — `unwrap`, `?`, `From`, and the whole family | `Option::unwrap_or[_default]`, `Option::map_or`, `Option::ok_or`, `Result::map_err`, `Result::and_then`, `?` operator, `From<E1>` impl, `thiserror` | Workshop |
 
 ## Learning Path
-
-1. **3-TicketV1** — the most important workshop. Master ownership with extensive diagrams
-2. **4-Traits** — learn Rust's interface system (like Python protocols)
-3. **5-TicketV2** — enums and Result-based error handling (essential for production)
+1. **01-TicketV1** — the most important workshop. Master ownership with extensive diagrams
+2. **02-Traits** — learn Rust's interface system (like Python protocols)
+3. **03-TicketV2** — enums and Result-based error handling (essential for production)
 4. **04-OBRM** — apply ownership in a resource management project
 5. **05-OwnershipLifetimes** — deep dive into lifetime annotations
 6. **06-ConversionErrorHandling** — the missing reference: every `Option` / `Result` method, `?` with `From`, `thiserror`

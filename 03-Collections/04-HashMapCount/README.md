@@ -1,6 +1,42 @@
-This tutorial provides a comprehensive guide to working with `HashMap` in Rust, using the provided code snippet to calculate the frequency of numbers in a vector. We'll explain key concepts like `HashMap`, the `entry` API, `or_insert`, and the use of `BTreeMap` for sorting. The program will be built step-by-step from a simple version to an advanced one, covering both basic and advanced Rust concepts, including traits, ownership, and iteration. We'll also address the challenge of sorting the result by frequency and provide additional challenges to deepen your understanding.
+# 🦀 HashMapCount — Python to Rust Workshop
+
+*Frequency counting with `HashMap`, the `entry` API, and `BTreeMap` for sorted output.*
 
 > **Test-driven approach**: This project includes a Cargo project with progressive unit tests. Each function in `workshop/src/lib.rs` starts as a `todo!()` stub. As you follow each section, replace `todo!()` with real code and run `cd workshop && cargo test` to watch the pass count grow. Your goal: **all 7 tests pass**.
+
+---
+
+## Why HashMap for Frequency Counting?
+
+**Python pain:** The `dict.get(k, 0) + 1` idiom is everywhere, but it's three lookups for one logical operation: read, default, write. Worse, in hot loops the bytecodes add up — 100M rows means 300M dict operations.
+
+**Rust fix:** `.entry().or_insert(0)` does the same thing in *one* hash lookup. The `Entry` API is designed for "insert-or-modify" patterns, and the borrow checker prevents you from accidentally aliasing the same key.
+
+```rust
+// Rust — single hash lookup
+for word in text.split_whitespace() {
+    *counts.entry(word.to_string()).or_insert(0) += 1;
+}
+```
+
+```python
+# Python — three lookups
+for word in text.split():
+    counts[word] = counts.get(word, 0) + 1
+```
+
+## At a Glance
+
+| # | Concept | Rust | Python | Why it matters |
+|---|---------|------|--------|----------------|
+| 1 | `HashMap` | `HashMap<K, V>` | `dict` | Hash-based key-value storage with typed K, V |
+| 2 | Insert | `.insert(k, v)` | `d[k] = v` | Returns `Option<V>` (old value) |
+| 3 | Safe get | `.get(k)` → `Option<&V>` | `d.get(k)` → `None` or value | No `KeyError` — the type forces a check |
+| 4 | Entry API | `.entry(k).or_insert(0)` | `d.setdefault(k, 0)` | Insert-if-missing in a single lookup |
+| 5 | Mutable entry | `.entry(k).or_insert_with(default)` | N/A | Lazy default — only computed if missing |
+| 6 | Iteration | `for (k, v) in &map` | `for k, v in d.items()` | Borrowed iteration, no moves |
+| 7 | Sorting by value | Convert to `Vec<(K, V)>` then `sort_by` | `sorted(d.items(), key=...)` | Rust's `sort_by_key` / `sort_by` |
+| 8 | `BTreeMap` | `BTreeMap<K, V>` | `sortedcontainers.SortedDict` | Sorted iteration, same API as `HashMap` |
 
 ---
 

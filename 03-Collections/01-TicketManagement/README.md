@@ -1,8 +1,37 @@
-# Rust for Python Data Engineers — TicketManagement: Collections & Iterators
+# 🦀 TicketManagement — Python to Rust Workshop
 
 *Master Rust's collections (Vec, HashMap) and the iterator pattern — the bread and butter of data processing in any language.*
 
 > **Test-driven approach**: This project includes a Cargo project with progressive unit tests. Each function in `workshop/src/lib.rs` starts as a `todo!()` stub. As you follow each section, replace `todo!()` with real code and run `cd workshop && cargo test` to watch the pass count grow. Your goal: **all 15 tests pass**.
+
+---
+
+## Why Index Tickets with HashMap?
+
+**Python pain:** A `dict[Status, list[Ticket]]` is convenient, but you get no help from the type system: a typo in a status key silently creates a new bucket, and a missing key crashes your dashboard at 3 AM.
+
+**Rust fix:** `HashMap<Status, Vec<Ticket>>` is type-checked end-to-end. The `Status` enum (or string slice) is the *only* allowed key, every value is a `Vec<Ticket>`, and the compiler prevents the silent-aliasing bugs that haunt Python pipelines.
+
+```rust
+// Rust — typed index
+let mut by_status: HashMap<String, Vec<Ticket>> = HashMap::new();
+by_status.entry(ticket.status().to_string())
+    .or_insert_with(Vec::new)
+    .push(ticket);
+```
+
+## At a Glance
+
+| # | Concept | Rust | Python | Why it matters |
+|---|---------|------|--------|----------------|
+| 1 | Dynamic arrays | `Vec<T>` | `list` | Type-safe, contiguous growable array |
+| 2 | Fixed-size arrays | `[T; N]` | `array.array` | Stack-allocated, known-length collection |
+| 3 | Slices | `&[T]` | `list[:]` (view) | Borrowed view into a contiguous sequence |
+| 4 | Iterators | `.iter()`, `.into_iter()` | `iter()` | Lazy, composable functional iteration |
+| 5 | Iterator combinators | `.map()`, `.filter()`, `.fold()` | `map`, `filter`, `reduce` | Chain transformations on data |
+| 6 | Key-value maps | `HashMap<K, V>` | `dict` | Hash-based key-value storage |
+| 7 | Ordered maps | `BTreeMap<K, V>` | `sortedcontainers.SortedDict` | Sorted key-value pairs (by key) |
+| 8 | Lifetimes | `'a` | N/A (GC) | Compiler tracks how long references are valid |
 
 ---
 
@@ -396,6 +425,47 @@ fn analyze(rows: &[DataRow]) {
     println!("Above avg labels: {:?}", labels);
 }
 ```
+
+---
+
+## 6.5 Concept: HashMap Primer — Python `dict` vs Rust `HashMap`
+
+> **Why this primer?** Sections 1–2 (Foundations, Ownership) never introduce `HashMap`. Python developers know `dict` deeply, but Rust's `HashMap` is its own type with subtle differences. This 30-second preview gives you enough to understand §7. The full teaching (`.entry().or_insert()`, `BTreeMap`, trade-offs) follows in §7–8.
+
+### Python's `dict` — no type safety
+
+```python
+counts = {}                          # empty dict — any keys, any values
+counts["apple"] = 1                  # insert
+counts["banana"] = "two"             # mixed types silently allowed!
+val = counts.get("x", 0)             # 0 (default)
+val = counts["x"]                    # KeyError at runtime
+```
+
+### Rust's `HashMap` — typed and explicit
+
+```rust
+use std::collections::HashMap;
+
+let mut counts: HashMap<String, u32> = HashMap::new();  // K, V both fixed
+counts.insert("apple".to_string(), 1);                  // explicit insert
+let val: Option<&u32> = counts.get("apple");            // Option, never a crash
+// let val = counts["apple"];                          // panics if missing
+```
+
+| Python | Rust |
+|--------|------|
+| `{}` (untyped) | `HashMap::new()` with explicit `K, V` |
+| `counts["x"]` (KeyError) | `counts["x"]` (panics) or `counts.get("x")` (Option) |
+| `counts.get(x, 0)` | `counts.get(x).copied().unwrap_or(0)` |
+| `counts[x] = counts.get(x, 0) + 1` | `*counts.entry(x).or_insert(0) += 1` (see §7) |
+
+**Three things to remember:**
+1. The type signature `HashMap<K, V>` fixes both key and value types at compile time
+2. `.get()` returns `Option<&V>` — no panics, no crashes
+3. Use `.entry()` for the "insert or modify" pattern (full syntax in §7)
+
+See §7 for the full `HashMap` teaching in this project.
 
 ---
 

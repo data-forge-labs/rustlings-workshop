@@ -1,4 +1,4 @@
-# Rust for Python Data Engineers â€” MasterMind
+# Rust for Python Data Engineers — MasterMind
 
 *A hands-on workshop that teaches Strings, Vectors, Structs, Option, Iterators, and I/O by building a MasterMind code-breaking game.*
 
@@ -32,7 +32,7 @@ match record.label {
 | 7 | Ownership basics | `&self`, function params | N/A (GC) | Memory safety *without* garbage collection |
 | 8 | Iterators | `.chars()`, `.enumerate()`, `.filter()` | `for ch in s`, `enumerate(s)` | Lazy, composable functional iteration |
 | 9 | Console I/O | `io::stdin().read_line(&mut buf)`, `println!` | `input()`, `print()` | Read user input and print output |
-| 10 | `rand` crate | `rand::rng().random_range(10..=99)` | `random.randint(10, 99)` | Random number generation (add `rand = "0.10"`) |
+| 10 | `rand` crate | `pool.shuffle(&mut rand::rng())` (uses `SliceRandom`) | `random.shuffle(list)` | Random shuffling of a pool of candidates (add `rand = "0.10"`) |
 | 11 | `pub` visibility | `pub fn`, `pub struct` | Public by default | Items are private unless explicitly exported |
 | 12 | `Self` constructor | `fn new(...) -> Self` | `__init__(self)` | Idiomatic constructor pattern; `Self` abbreviates the type |
 
@@ -43,12 +43,16 @@ match record.label {
 1. [Project Overview](#1-project-overview)
 2. [Prerequisites](#2-prerequisites)
 3. [How to Use This Workshop](#3-how-to-use-this-workshop)
-4. [Python vs Rust Concepts in This Project](#4-python-vs-rust-concepts-in-this-project)
-5. [Basic Workshop (workshop/)](#5-basic-workshop-workshop)
-6. [Advanced Workshop (workshop/advanced/)](#6-advanced-workshop-workshopadvanced)
-7. [Detailed Step-by-Step Guide (Basic)](#7-detailed-step-by-step-guide-basic)
-8. [Advanced Exercise Guide](#8-advanced-exercise-guide)
-9. [Summary](#9-summary)
+4. [Concept: `String` vs `&str` (Deeper Dive)](#4-concept-string-vs-str-deeper-dive)
+5. [Concept: `Vec<T>` — Dynamic Arrays](#5-concept-vect-dynamic-arrays)
+6. [Concept: `struct` and `impl` — Custom Data Types](#6-concept-struct-and-impl-custom-data-types)
+7. [Concept: `Option<T>` — Handling Missing Data](#7-concept-optiont-handling-missing-data)
+8. [Concept: Iterators and Closures](#8-concept-iterators-and-closures)
+9. [Concept: `&self` vs `&mut self` — Method Receivers](#9-concept-self-vs-mut-self-method-receivers)
+10. [Concept: `pub` Visibility](#10-concept-pub-visibility)
+11. [Detailed Step-by-Step Guide (Basic)](#11-detailed-step-by-step-guide-basic)
+12. [Advanced Exercise Guide](#12-advanced-exercise-guide)
+13. [Summary](#13-summary)
 
 ---
 
@@ -77,7 +81,9 @@ MasterMind is a classic code-breaking game:
 
 ## 2. Prerequisites
 
-- Completed [Basic Calculator](../01-Foundations/03-BasicCalculator/README.md)
+- Completed [01-Intro](../01-Intro/README.md) — variables, mutability, `if`/`else`, loops, tuples, arrays
+- Completed [02-GuessGame](../02-GuessGame/README.md) — `String` vs `&str`, `enum`, `Result`, `.parse()`, `match`
+- Completed [03-BasicCalculator](../03-BasicCalculator/README.md) — integer types, overflow, `#[test]`
 - Rust installed and working
 - Basic familiarity with `cd workshop && cargo run`
 
@@ -87,211 +93,665 @@ MasterMind is a classic code-breaking game:
 
 This project has two separate workshops:
 
-### Basic â€” `workshop/`
+### Basic — `workshop/`
 
 Build the core MasterMind game with structs, Vec, Option, and iterators. Start here.
 
-1. **Read the concept overview** in Section 4 below â€” maps each Rust concept to Python
-2. **Follow the detailed guide** in [Section 7](#7-detailed-step-by-step-guide-basic) for the full step-by-step implementation
+1. **Read the concept sections below** (Sections 5–10) — each teaches a Rust concept with Python comparison, standalone example, and MasterMind application
+2. **Follow the detailed guide** in [Section 11](#11-detailed-step-by-step-guide-basic) for the full step-by-step implementation
 3. **Build the game** with `cd workshop && cargo run`
 
-### Advanced â€” `workshop/advanced/`
+### Advanced — `workshop/advanced/`
 
 Refactor the game into a library + binary crate with `clap` CLI args and documentation. Complete the basic version first.
 
-1. **Read** [Section 8](#8-advanced-exercise-guide) for module organization, `clap`, and doc concepts
+1. **Read** [Section 12](#12-advanced-exercise-guide) for module organization, `clap`, and doc concepts
 2. **Browse the stub files** in `workshop/advanced/src/` (lib.rs, main.rs, secret.rs, game.rs)
 3. **Build** with `cd workshop/advanced && cargo run -- --max-attempts 15`
 
 ---
 
-## 4. Python vs Rust Concepts in This Project
+## 4. Concept: `String` vs `&str` (Deeper Dive)
 
-### Strings: `String` vs `&str`
+You met `String` and `&str` briefly in [02-GuessGame §5](../02-GuessGame/README.md#5-concept-string-vs-str). This section deepens the distinction for data-engineering work.
+
+### Explanation
+
+Rust has two string types that you'll use together constantly:
+
+| Type | Owns its data? | Grows? | Use for |
+|------|----------------|--------|---------|
+| `String` | Yes (heap) | Yes | Building, modifying, returning new text |
+| `&str` | No (borrowed view) | No | Reading text, function parameters |
+
+### Example (standalone)
+
+```rust
+fn main() {
+    // String literal → &str (points into the binary's read-only memory)
+    let greeting: &str = "hello";
+
+    // Owned, growable String
+    let mut name: String = String::from("Alice");
+    name.push_str(" Smith");          // grows the heap buffer
+    let combined: String = format!("{}, {}!", greeting, name);
+
+    // &str can borrow from String
+    let slice: &str = &name[0..5];    // "Alice"
+    println!("{} | {} | {}", slice, name, combined);
+}
+```
+
+### Python comparison
 
 ```python
-# Python â€” one string type
+# Python — one type, all behaviors
 name = "Alice"
-name += " Smith"   # Creates a new string
+name += " Smith"      # creates a new str, rebinds
+greeting = "hello"
+combined = f"{greeting}, {name}!"
+print(combined)
 ```
+
+In Python, `str` is always immutable; the runtime allocates a new string each time you "modify" it. Rust gives you a **choice**: cheap borrowed views (`&str`) when you only read, owned buffers (`String`) when you need to grow.
+
+### Applying to our project
+
+In MasterMind, the player's guess enters as a `String` (mutable buffer for `read_line`), and every function that *reads* the guess takes `&str` — that way it works with string literals in tests too:
 
 ```rust
-// Rust â€” two string types
-let literal: &str = "Alice";       // Immutable, fixed, efficient
-let mut owned: String = String::from("Alice");  // Heap-allocated, growable
-owned.push_str(" Smith");
+// In lib.rs
+pub fn has_unique_digits(s: &str) -> bool { ... }       // accepts both
+pub fn evaluate_guess(&self, guess: &str) -> (usize, usize, usize) { ... }
+
+// In main.rs
+let mut input = String::new();       // owned, growable buffer
+io::stdin().read_line(&mut input).unwrap();
+if has_unique_digits(input.trim()) {  // &str coercion: &String → &str
+    let (g, y, r) = secret.evaluate_guess(input.trim());
+    ...
+}
 ```
 
-| Characteristic | `&str` (string slice) | `String` (owned string) |
-|---|---|---|
-| Mutability | Immutable | Mutable |
-| Where stored | Read-only memory or borrowed | Heap |
-| Use case | Read-only access, parameters | Building, modifying text |
-| Python analog | `str` (immutable) | No direct equivalent |
+The pattern: **read into `String`, pass `&str` to validators**. This is the idiomatic shape for any text-processing pipeline you'll build in Rust.
 
-### Vectors: `Vec<T>`
+### Common pitfalls
+
+- `s.len()` returns **bytes**, not characters. `"café".len() == 5` because `é` is 2 bytes in UTF-8. For character counts use `s.chars().count()`.
+- `s[0..2]` is **byte-indexed** and will panic on a non-ASCII boundary. For safe slicing use `s.chars().take(n).collect::<String>()`.
+- `String` does not implement `Copy`. Assigning moves the value; clone explicitly with `.clone()` when you need a second owner.
+
+---
+
+## 5. Concept: `Vec<T>` — Dynamic Arrays
+
+### Explanation
+
+`Vec<T>` is Rust's growable, type-homogeneous array — the equivalent of Python's `list`. The big difference: **every element has the same type, enforced at compile time**.
+
+```
+┌────────────────────────────────────┐
+│  Vec<u8>   digits: [3, 1, 4, 1]    │
+│  ────────  ─────────────────────   │
+│  length:   4                       │
+│  capacity: 4  (may be > length)    │
+│  element:  u8 (1 byte each)         │
+└────────────────────────────────────┘
+```
+
+### Example (standalone)
+
+```rust
+fn main() {
+    // Three ways to create a Vec
+    let a: Vec<i32> = Vec::new();            // empty
+    let b: Vec<i32> = vec![10, 20, 30];      // with values (the `vec!` macro)
+    let c: Vec<i32> = (0..5).collect();      // from an iterator
+
+    // Mutation
+    let mut nums: Vec<i32> = vec![1, 2];
+    nums.push(3);         // [1, 2, 3]
+    nums.push(4);         // [1, 2, 3, 4]
+    let last = nums.pop(); // Some(4) — Vec grows AND shrinks
+
+    // Access
+    println!("len={}, first={}", nums.len(), nums[0]);  // len=3, first=1
+}
+```
+
+### Python comparison
 
 ```python
-# Python â€” dynamic list
-fruits = ["apple", "banana"]
-fruits.append("cherry")
+nums = [1, 2]
+nums.append(3)
+nums.append(4)
+last = nums.pop()      # 4
+print(len(nums), nums[0])  # 3 1
 ```
+
+Same operations, but Rust's `Vec<i32>` would reject `nums.push("hello")` at compile time.
+
+### Applying to our project
+
+The secret code and hint-tracking state are both `Vec`s:
 
 ```rust
-// Rust â€” typed vector
-let mut fruits: Vec<&str> = vec!["apple", "banana"];
-fruits.push("cherry");
+pub struct SecretCode {
+    pub digits: Vec<u8>,              // the 4-digit code
+    pub revealed_positions: Vec<bool>, // [false, false, false, false]
+    pub revealed_digits: Vec<bool>,    // [false; 10] — which digits 0-9 revealed
+}
 ```
 
-| Operation | Python `list` | Rust `Vec<T>` |
-|---|---|---|
-| Create | `items = []` | `let items: Vec<T> = Vec::new();` |
-| With values | `items = [1, 2, 3]` | `let items = vec![1, 2, 3];` |
-| Add | `items.append(x)` | `items.push(x);` |
-| Remove last | `items.pop()` | `items.pop();` |
-| Length | `len(items)` | `items.len()` |
-| Access | `items[0]` | `items[0]` (panics if out of bounds) |
+You'll build these with `vec![]`, `.push()`, and indexed assignment (`self.revealed_positions[i] = true`).
 
-### Structs and Methods: `struct` + `impl`
+---
+
+## 6. Concept: `struct` and `impl` — Custom Data Types
+
+This is your **first encounter with `struct`** in the course. Take your time here.
+
+### Explanation
+
+A `struct` groups related fields into a single type. An `impl` block attaches methods to it. The two are always written separately — unlike Python where a `class` body holds both data and methods.
+
+```rust
+// 1. Declare the data shape
+struct Player {
+    name: String,
+    attempts: u32,
+}
+
+// 2. Attach behavior
+impl Player {
+    // Constructor: returns Self (the type name)
+    fn new(name: String) -> Self {
+        Self { name, attempts: 0 }
+    }
+
+    // Read-only method: &self borrows the data
+    fn status(&self) -> String {
+        format!("{}: {} attempts left", self.name, self.attempts)
+    }
+
+    // Mutating method: &mut self can change fields
+    fn use_attempt(&mut self) {
+        self.attempts += 1;
+    }
+}
+```
+
+### Why split data (`struct`) from behavior (`impl`)?
+
+- **You can have multiple `impl` blocks** for the same struct (split across files in larger projects).
+- **Traits** (covered in section 02-Ownership) can attach behavior to structs you don't own.
+- The compiler knows which methods mutate (`&mut self`) and which don't (`&self`), enabling safer concurrency.
+
+### Example (standalone)
+
+```rust
+#[derive(Debug)]  // auto-implement Debug so we can println!("{:?}")
+struct Point {
+    x: f64,
+    y: f64,
+}
+
+impl Point {
+    fn new(x: f64, y: f64) -> Self {
+        Self { x, y }
+    }
+
+    fn distance_from_origin(&self) -> f64 {
+        (self.x * self.x + self.y * self.y).sqrt()
+    }
+
+    fn translate(&mut self, dx: f64, dy: f64) {
+        self.x += dx;
+        self.y += dy;
+    }
+}
+
+fn main() {
+    let mut p = Point::new(3.0, 4.0);
+    println!("{:?} → distance = {}", p, p.distance_from_origin());  // 5.0
+    p.translate(1.0, 1.0);
+    println!("After translate: {:?}", p);  // Point { x: 4.0, y: 5.0 }
+}
+```
+
+### Python comparison
 
 ```python
-# Python class
-class Guess:
-    def __init__(self, value: str):
-        self.value = value
+class Point:
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
 
-    def is_valid(self) -> bool:
-        return len(self.value) == 4
-```
+    def distance_from_origin(self):
+        return (self.x**2 + self.y**2) ** 0.5
 
-```rust
-// Rust struct + impl
-struct Guess {
-    value: String,
-}
-
-impl Guess {
-    fn new(value: String) -> Self {
-        Self { value }
-    }
-
-    fn is_valid(&self) -> bool {
-        self.value.len() == 4
-    }
-}
+    def translate(self, dx, dy):
+        self.x += dx
+        self.y += dy
 ```
 
 | Aspect | Python `class` | Rust `struct` + `impl` |
 |---|---|---|
-| Data fields | `self.field` in `__init__` | Fields in `struct` definition |
-| Methods | All in class body | Separate `impl` block |
-| Constructor | `__init__` | `fn new(...) -> Self` |
-| Visibility | Public by default | Private by default (`pub` to expose) |
+| Data fields | Assigned in `__init__` | Declared in `struct` |
+| Methods | All inside the class body | In one or more `impl` blocks |
+| Constructor | `__init__` | `fn new(...) -> Self` (convention) |
+| Read method | `self` (read by convention) | `&self` (enforced immutable borrow) |
+| Mutating method | `self` (no enforcement) | `&mut self` (required to change fields) |
+| `self` / `Self` | `self` is an argument | `&self` is a *reference*; `Self` is the type name |
+| Visibility | Public by default | Private by default; add `pub` to expose |
 
-### Option and Pattern Matching
+The last row is critical: in Python, anything not prefixed with `_` is public. In Rust, fields and methods are **private** to their module unless you write `pub`. You'll see `pub struct`, `pub fn`, and `pub` on every field in our library code.
 
-```python
-# Python â€” None handling
-def find_item(items, target):
-    for item in items:
-        if item == target:
-            return item
-    return None
+### Applying to our project
 
-result = find_item(data, "x")
-if result is not None:
-    print(result)
-```
+MasterMind uses two structs and two `impl` blocks:
 
 ```rust
-// Rust â€” Option + match
-fn find_item(items: &[&str], target: &str) -> Option<&str> {
-    for &item in items {
-        if item == target {
-            return Some(item);
+// Data: the secret code
+pub struct SecretCode {
+    pub digits: Vec<u8>,
+    pub revealed_positions: Vec<bool>,
+    pub revealed_digits: Vec<bool>,
+}
+
+// Behavior: methods on SecretCode
+impl SecretCode {
+    pub fn new() -> Self { ... }
+    pub fn evaluate_guess(&self, guess: &str) -> (usize, usize, usize) { ... }
+    pub fn give_position_hint(&mut self) -> Option<(usize, u8)> { ... }
+}
+
+// Data: the game state
+pub struct MastermindGame {
+    pub secret: SecretCode,
+    pub attempts_left: u32,
+    pub guess_count: u32,
+}
+
+// Behavior: methods on MastermindGame
+impl MastermindGame {
+    pub fn new(max_attempts: u32) -> Self { ... }
+    pub fn play(&mut self) { ... }
+}
+```
+
+Notice the `pub` on each item — without it, `main.rs` (which is a separate module) couldn't see `SecretCode` or `MastermindGame`.
+
+### Exercise
+
+Before you read further, implement `has_unique_digits` in `workshop/src/lib.rs`. It takes `s: &str` and returns `bool`. The test stubs are already there in `step_01_validation`. This is the smallest possible function that combines `&str`, `Vec`, and a `for` loop — the rest of the project builds on this pattern.
+
+---
+
+## 7. Concept: `Option<T>` — Handling Missing Data
+
+This is your **first encounter with `Option`** in the course. Section 02-Ownership will deepen it with `Result` and combinators; here you only need the basics.
+
+### Explanation
+
+`Option<T>` represents a value that *might not exist*. It has exactly two variants:
+
+```rust
+enum Option<T> {
+    Some(T),  // there is a value of type T
+    None,     // there is no value
+}
+```
+
+The compiler **forces** you to handle both variants before you can use the inner value.
+
+### Example (standalone)
+
+```rust
+fn find_index(haystack: &[&str], needle: &str) -> Option<usize> {
+    for (i, item) in haystack.iter().enumerate() {
+        if *item == needle {
+            return Some(i);
         }
     }
     None
 }
 
-match find_item(&data, "x") {
-    Some(item) => println!("Found: {}", item),
-    None => println!("Not found"),
+fn main() {
+    let data = ["apple", "banana", "cherry"];
+
+    // Three ways to handle Option
+    // 1. match (exhaustive — compiler checks every variant)
+    match find_index(&data, "banana") {
+        Some(i) => println!("Found at index {}", i),
+        None    => println!("Not found"),
+    }
+
+    // 2. if let (only handle one variant)
+    if let Some(i) = find_index(&data, "apple") {
+        println!("Apple is at index {}", i);
+    }
+
+    // 3. .unwrap_or (provide a default)
+    let i = find_index(&data, "kiwi").unwrap_or(999);
+    println!("Kiwi at {} (or 999 if missing)", i);
 }
+```
+
+### Python comparison
+
+```python
+def find_index(haystack, needle):
+    for i, item in enumerate(haystack):
+        if item == needle:
+            return i
+    return None  # the implicit "no answer"
+
+result = find_index(data, "banana")
+if result is not None:
+    print("Found at index", result)
 ```
 
 | Python | Rust |
 |---|---|
 | `None` | `Option::None` |
-| `if x is not None` | `if let Some(x) = value` |
-| `x = func() or default` | `func().unwrap_or(default)` |
-| `x = func()` (might be None) | `func()` returns `Option<T>` |
+| Return value might be `None` | Return type is `Option<T>` |
+| `if x is not None:` | `if let Some(x) = value` |
+| `x = func() or default` | `x = func().unwrap_or(default);` |
+| `result["key"]` (KeyError) | `map.get("key")` returns `Option<&V>` |
+
+The crucial difference: in Python, `None` is a runtime value you check for. In Rust, the **type** is `Option<T>`. You literally cannot call `Option<T>` as if it were a `T` — the compiler will stop you.
+
+### Applying to our project
+
+`SecretCode::give_position_hint` returns `Option<(usize, u8)>`: it gives back `(position, digit)` if a hint is still available, or `None` if all hints have been revealed.
+
+```rust
+pub fn give_position_hint(&mut self) -> Option<(usize, u8)> {
+    if !self.can_give_position_hint() {
+        return None;                  // nothing left to reveal
+    }
+    // ... pick a position ...
+    self.revealed_positions[chosen] = true;
+    Some((chosen, self.digits[chosen]))  // hand back the hint
+}
+```
+
+The caller uses `if let` to consume the hint:
+
+```rust
+if let Some((pos, digit)) = self.secret.give_position_hint() {
+    self.attempts_left -= HINT_POSITION_COST;
+    println!("Hint: Digit {} is at position {}.", digit, pos + 1);
+}
+// if it was None, we just skip — no crash, no NoneType error
+```
+
+### `if let` vs `match`
+
+`if let Some(x) = opt` is a shortcut for `match opt { Some(x) => ..., None => () }`. Use `match` when you care about both arms; use `if let` when you only care about one.
+
+### Exercise
+
+Implement `SecretCode::can_give_position_hint` and `can_give_digit_hint` next. They return `bool` (not `Option`), but they feed the `if !...` check that decides whether to return `None` from the actual hint functions. The test stubs are in `step_03_hints`.
 
 ---
 
-## 5. Basic Workshop (workshop/)
+## 8. Concept: Iterators and Closures
 
-The `workshop/` directory contains the basic MasterMind game. Follow the detailed guide in [Section 7](#7-detailed-step-by-step-guide-basic). Key sections:
+### Explanation
 
-1. **Setup:** Create project, add dependencies (`rand` crate)
-2. **Variables & Types:** Declare game constants and state
-3. **Strings:** Handle player input with `String` and `&str`
-4. **Ownership & Borrowing:** Pass data between functions
-5. **Vectors:** Store the secret code and guess history
-6. **Structs:** Model the `Guess` and `Game` types
-7. **Option:** Handle cases where data might not exist
-8. **Iterators:** Process guesses functionally
-9. **I/O:** Read guesses, print feedback
+An **iterator** is anything that produces a sequence of values. A **closure** is an anonymous function you can pass around. Together they form Rust's equivalent of Python's `map`/`filter`/`reduce`.
+
+The most common iterator method is `.iter()`, which produces a sequence of references to each element:
+
+```rust
+let nums = vec![1, 2, 3, 4];
+for n in nums.iter() {        // n: &i32
+    println!("{}", n);
+}
+```
+
+Iterator adapters (`.map`, `.filter`, `.enumerate`, `.zip`, `.sum`, `.count`) build a **chain** that runs when you call a **consumer** (`.collect()`, `.sum()`, `.count()`, `for`):
+
+```rust
+let nums = vec![1, 2, 3, 4, 5, 6];
+
+// Sum of all even numbers
+let even_sum: i32 = nums.iter()
+    .filter(|n| *n % 2 == 0)  // keep evens
+    .sum();
+
+println!("Even sum: {}", even_sum);  // 12
+```
+
+| Iterator method | What it does | Python equivalent |
+|---|---|---|
+| `.iter()` | Iterate by reference | implicit in `for x in lst` |
+| `.map(closure)` | Transform each item | `map(func, lst)` |
+| `.filter(closure)` | Keep items where closure returns `true` | `filter(func, lst)` |
+| `.enumerate()` | Pair each item with its index | `enumerate(lst)` |
+| `.zip(other)` | Pair items from two iterators | `zip(a, b)` |
+| `.count()` | Count items | `len(lst)` |
+| `.sum()` | Add all items | `sum(lst)` |
+| `.collect::<Vec<_>>()` | Build a `Vec` from the iterator | `list(lst)` |
+
+### Example (standalone)
+
+```rust
+fn main() {
+    let secrets = vec![1, 2, 3, 4];
+    let guesses = vec![1, 0, 2, 0];
+
+    // Count exact-position matches (zip + filter + count)
+    let green = secrets.iter()
+        .zip(guesses.iter())
+        .filter(|(s, g)| s == g)
+        .count();
+    println!("Exact matches: {}", green);  // 2
+}
+```
+
+### Python comparison
+
+```python
+secrets = [1, 2, 3, 4]
+guesses = [1, 0, 2, 0]
+green = sum(1 for s, g in zip(secrets, guesses) if s == g)
+print("Exact matches:", green)  # 2
+```
+
+The shape is identical: pair them up, filter, count. The Rust version is **lazier** (nothing runs until `.count()` is called) and **type-checked** (`.zip` enforces both iterators have the same item type).
+
+### Closures: `|arg| body`
+
+```rust
+let double = |x: i32| x * 2;
+let is_even = |x: &i32| *x % 2 == 0;
+
+println!("{}", double(5));      // 10
+println!("{}", is_even(&4));    // true
+```
+
+Closures can capture variables from their surrounding scope (like Python lambdas). The pipe `|` syntax is just shorthand for `fn` arguments.
+
+### Applying to our project
+
+The core scoring algorithm in `evaluate_guess` uses exactly this chain:
+
+```rust
+let green = self.digits
+    .iter()                          // iterate the secret
+    .zip(guess_digits.iter())        // pair with the guess
+    .filter(|(s, g)| s == g)         // keep exact matches
+    .count();                        // count them
+```
+
+You'll also see `enumerate()` when picking a random hint position:
+
+```rust
+let available: Vec<usize> = self.revealed_positions
+    .iter()
+    .enumerate()                          // (index, &bool) pairs
+    .filter(|(_, &revealed)| !revealed)  // keep unrevealed
+    .map(|(i, _)| i)                      // drop the bool, keep index
+    .collect();
+```
+
+### Exercise
+
+Implement `SecretCode::evaluate_guess` next. The algorithm is in the README, the test stubs are in `step_02_secret_code`. You'll use `.iter().zip().filter().count()` for the green count, and a manual loop for the yellow count (because yellow requires removing matched digits from the secret pool).
 
 ---
 
-## 6. Summary
+## 9. Concept: `&self` vs `&mut self` — Method Receivers
 
-| Concept | How Used in MasterMind |
-|---|---|
-| `String` / `&str` | Player input strings, string slicing for digits |
-| Ownership | Function parameters â€” know when to move vs borrow |
-| `Vec<char>` | Store the 4-digit code as vector of characters |
-| `struct Guess` | Model a single guess with validation |
-| `struct Game` | Model the game state (secret, attempts) |
-| `impl` | Methods on `Guess` and `Game` |
-| `Option<&str>` | Parse input, may fail |
-| `match` | Branch on `Option` variants |
-| Iterators | `chars()`, `enumerate()` for digit comparison |
-| Console I/O | `io::stdin().read_line()`, `println!` |
-| `rand` crate | Generate random secret code |
+### Explanation
 
-**Advanced workshop extra concepts:**
-| Concept | How Used |
-|---------|----------|
-| `mod` / `pub` | Split code into `secret.rs`, `game.rs`, `lib.rs` modules |
-| `clap::Parser` | Parse `--max-attempts` CLI argument |
-| `///` docs | Document structs and methods, `cargo doc --open` |
-| `#[cfg(test)]` | Unit tests alongside implementation code |
+In Python, every method takes `self` and *might* mutate. In Rust, the method signature declares whether mutation is allowed:
 
-### Further Reading
+| Receiver | What it means | When to use |
+|----------|---------------|-------------|
+| `&self` | Borrow the value (read-only) | Method only reads fields |
+| `&mut self` | Borrow the value mutably | Method changes fields |
+| `self` | Take ownership of the value | Method consumes the value (rare) |
+| No `self` | Associated function, not a method | Constructors, utilities |
 
-| Section | Workshop | Topics |
-|---------|----------|--------|
-| [Section 7](#7-detailed-step-by-step-guide-basic) | Basic (`workshop/`) | Full step-by-step guide: structs, Vec, Option, iterators, I/O |
-| [Section 8](#8-advanced-exercise-guide) | Advanced (`workshop/advanced/`) | Module organization, `clap` CLI args, documentation, unit tests |
+```rust
+impl MastermindGame {
+    pub fn new(max_attempts: u32) -> Self {           // no self — constructor
+        MastermindGame { ... }
+    }
 
-### Next Project
+    pub fn attempts_left(&self) -> u32 {             // reads only
+        self.attempts_left
+    }
 
-Proceed to [3-TicketV1](../02-Ownership/01-TicketV1/README.md) to master **ownership** â€” Rust's most important and unique concept.
+    pub fn submit_guess(&mut self, guess: &str)      // changes state
+        -> Option<(usize, usize, usize)>
+    {
+        self.attempts_left -= 1;                     // OK — we have &mut
+        ...
+    }
+}
+```
+
+The compiler enforces this: a `&self` method **cannot** modify fields, and you cannot call a `&mut self` method while a `&self` borrow is alive.
+
+### Python comparison
+
+```python
+class MastermindGame:
+    def new(max_attempts):           # @staticmethod
+        return MastermindGame(...)
+
+    def attempts_left(self):         # convention: doesn't mutate
+        return self.attempts_left
+
+    def submit_guess(self, guess):   # convention: might mutate
+        self.attempts_left -= 1      # but nothing stops accidental mutation
+```
+
+In Python, the convention is "name your mutating methods carefully." In Rust, the type system **stops you from accidentally mutating through a read-only reference**.
+
+### Applying to our project
+
+| Method | Receiver | Why |
+|--------|----------|-----|
+| `SecretCode::new` | none | Constructor |
+| `SecretCode::evaluate_guess` | `&self` | Only reads `digits` |
+| `SecretCode::can_give_position_hint` | `&self` | Only reads `revealed_positions` |
+| `SecretCode::give_position_hint` | `&mut self` | Sets `revealed_positions[chosen] = true` |
+| `MastermindGame::new` | none | Constructor |
+| `MastermindGame::play` | `&mut self` | Decrements `attempts_left`, calls `&mut self` methods |
+
+You'll see the compiler complain if you try to call `give_position_hint` through a `&self` reference — that's the safety net working.
 
 ---
 
-## 7. Detailed Step-by-Step Guide (Basic)
+## 10. Concept: `pub` Visibility
+
+### Explanation
+
+By default, every item in Rust is **private** to the module where it's defined. To expose something to other modules (or to `main.rs`), you prefix it with `pub`:
+
+```rust
+// In lib.rs
+pub struct SecretCode { ... }       // visible to main.rs
+pub fn new() -> SecretCode { ... }  // visible to main.rs
+
+struct Helper { ... }               // PRIVATE — only this file can use it
+fn internal() { ... }               // PRIVATE
+```
+
+Three levels you'll use in this course:
+
+| Visibility | Syntax | Where it's visible |
+|------------|--------|---------------------|
+| Private (default) | `fn` | Only the current module |
+| Public to anyone | `pub fn` | Anyone who can see the module |
+| Public to current crate only | `pub(crate) fn` | Anything in the same crate (rare) |
+
+### Why default to private?
+
+It forces you to think about the **public API** of your module. In Python, every name not prefixed with `_` is public, which makes it easy to depend on internals that later change. Rust makes you opt in to "this is part of my API."
+
+### Example (standalone)
+
+```rust
+mod game {
+    pub struct Player {
+        pub name: String,        // public field
+        health: u32,             // PRIVATE field — outside code can't read it
+    }
+
+    impl Player {
+        pub fn new(name: String) -> Self {  // public constructor
+            Self { name, health: 100 }
+        }
+
+        pub fn health(&self) -> u32 {       // public getter (private field)
+            self.health
+        }
+    }
+}
+
+fn main() {
+    let p = game::Player::new("Alice".to_string());
+    println!("{} has {} HP", p.name, p.health());  // OK — both are public
+    // println!("{}", p.health);                  // ERROR — field is private
+}
+```
+
+### Python comparison
+
+```python
+class Player:
+    def __init__(self, name):
+        self.name = name        # public by convention
+        self._health = 100      # "private" by underscore convention
+```
+
+In Python, the underscore is a hint, not a wall. `p._health = 999` still works. In Rust, `p.health` is a *compile error* if the field isn't `pub`.
+
+### Applying to our project
+
+In the basic workshop, **every** item in `lib.rs` is `pub` because the tests live in the same module. In the advanced workshop, we deliberately make some items `pub` (the public API) and others private (helpers) — that exercise is in section 12.
+
+For now, the rule is simple: **prefix with `pub` if it should be usable from `main.rs` or from tests in another module**.
+
+---
+
+## 11. Detailed Step-by-Step Guide (Basic)
 
 Build the core MasterMind game. Work in the `workshop/` directory.
 
 ### Table of Contents
 
-1. [Prerequisites & Setup](#1-prerequisites--setup)
+1. [Prerequisites & Setup](#1-prerequisites-setup)
 2. [Adding Dependencies](#2-adding-dependencies)
-3. [Concept Recap — Where to Learn Each Concept](#3-concept-recap--where-to-learn-each-concept)
-4. [Putting It All Together: The Complete `main.rs`](#4-putting-it-all-together-the-complete-mainrs)
+3. [Setup: Create the Project from Scratch](#3-setup-create-the-project-from-scratch)
+4. [Step-by-Step Implementation](#4-step-by-step-implementation)
 5. [Running the Game](#5-running-the-game)
 6. [Summary of Rust Concepts Used](#6-summary-of-rust-concepts-used)
 
@@ -312,18 +772,6 @@ rustc --version
 cargo --version
 ```
 
-#### Creating the Project
-
-```bash
-cargo new mastermind
-cd mastermind
-```
-
-This creates a folder with:
-
-- `Cargo.toml` â€“ project configuration
-- `src/main.rs` â€“ main source file
-
 ### 2. Adding Dependencies
 
 Rust uses `cargo` to manage external libraries (called *crates*). We need `rand` for random number generation.
@@ -339,36 +787,50 @@ Now run `cargo build`. Cargo downloads the `rand` crate and compiles your projec
 
 > **Comparison:** In Python, `import random` gives you random functions. In Rust, you declare the dependency in `Cargo.toml` and then `use rand::...` in your code.
 
-### 3. Concept Recap — Where to Learn Each Concept
+### 3. Setup: Create the Project from Scratch
 
-The 8 concepts below are covered in detail in earlier projects. The full teaching with Python comparisons, ASCII diagrams, and exercises lives there. Below is **only the MasterMind-specific application** of each.
+If the `workshop/` directory is empty, create the project:
 
-| # | Concept | Canonical Source | Used in MasterMind as |
-|---|---------|------------------|----------------------|
-| 1 | Variables, mutability, basic types | [01-Intro §6](../01-Intro/README.md#6-variables-and-mutability) | `let mut attempts_left: u32 = 20;` |
-| 2 | `String` vs `&str` | [01-Intro §4](../01-Intro/README.md#4-syntax-side-by-side) (mention) — full teaching in this project §4 below | `let mut input = String::new();` and `fn evaluate_guess(&self, guess: &str) -> ...` |
-| 3 | Ownership, borrowing, references | [02-Ownership/01-TicketV1](../02-Ownership/01-TicketV1/README.md) | `&self` for read-only methods, `&mut self` for hint methods |
-| 4 | `Vec<T>` | [03-Collections/01-TicketManagement](../03-Collections/01-TicketManagement/README.md) | `let digits: Vec<u8> = vec![1, 4, 2, 7];` |
-| 5 | `struct` + `impl` | This project §4 (Python vs Rust Concepts) above | `struct SecretCode { ... } impl SecretCode { ... }` |
-| 6 | `Option<T>`, `if let`, `match` | This project §4 above | `fn give_position_hint(&mut self) -> Option<(usize, u8)>` |
-| 7 | Iterators, closures | This project §4 above | `.iter().zip().filter().count()` chains for guess evaluation |
-| 8 | `const` | [01-Intro §6](../01-Intro/README.md#6-variables-and-mutability) (Constants) | `const DEFAULT_ATTEMPTS: u32 = 20;` |
+```bash
+cargo new mastermind
+cd mastermind
+```
 
-**If you haven't completed the Intro and BasicCalculator projects, do that first** — this project assumes you know how to declare variables, write functions, read input, and match on `Option`. If you have, just skim the recap table above and skip to the next section.
+This creates a folder with:
 
-### 4. Putting It All Together: The Complete `main.rs`
+- `Cargo.toml` – project configuration
+- `src/main.rs` – main source file
 
-Now build the entire game file step by step. Replace the content of `src/main.rs` with the following blocks.
+Replace `Cargo.toml` with the project's deps (just `rand`), then create the `src/lib.rs` stub (or copy it from the workshop folder). The test stubs in `lib.rs` are already organized into `step_01_validation`, `step_02_secret_code`, `step_03_hints`, `step_04_game_setup`, and `step_05_integration`.
 
-#### Top-level imports and utility function
+### 4. Step-by-Step Implementation
+
+The test stubs in `workshop/src/lib.rs` are organized into five progressive modules. Open the README for each concept first, implement the matching function, then run `cargo test` to watch the test count grow.
+
+| Step | Concept (read this first) | Function to implement | Tests that pass |
+|------|---------------------------|----------------------|-----------------|
+| 1 | [§4 String vs &str](../02-GuessGame/README.md#5-concept-string-vs-str) | `has_unique_digits(s: &str) -> bool` | `step_01_validation` (7 tests) |
+| 2 | [§6 struct + impl](#6-concept-struct-and-impl-custom-data-types), [§8 iterators](#8-concept-iterators-and-closures) | `SecretCode::new`, `SecretCode::evaluate_guess` | `step_02_secret_code` (8 tests) |
+| 3 | [§7 Option](#7-concept-optiont-handling-missing-data) | `SecretCode::can_give_*_hint`, `SecretCode::give_*_hint` | `step_03_hints` (8 tests) |
+| 4 | [§6 struct + impl](#6-concept-struct-and-impl-custom-data-types) | `MastermindGame::new` | `step_04_game_setup` (5 tests) |
+| 5 | Integration test | (just run) | `step_05_integration` (2 tests) |
+
+After all 30 tests pass, your `lib.rs` is complete. Now write the thin `main.rs` that calls into it (shown below).
+
+#### Reference: Complete `lib.rs` (Step 5 final form)
+
+For reference only — you build this up function-by-function as you complete each step. After Step 5, your `workshop/src/lib.rs` should match the following (the test modules are abbreviated here; see the workshop folder for the full file):
 
 ```rust
 use rand::seq::SliceRandom;
 use rand::rng;
-use std::io::{self, Write};
+
+pub const DEFAULT_ATTEMPTS: u32 = 20;
+pub const HINT_POSITION_COST: u32 = 5;
+pub const HINT_DIGIT_COST: u32 = 3;
 
 /// Returns true if the given string consists of 4 unique digits.
-fn has_unique_digits(s: &str) -> bool {
+pub fn has_unique_digits(s: &str) -> bool {
     let mut seen = [false; 10];
     for ch in s.chars() {
         let digit = ch.to_digit(10).unwrap() as usize;
@@ -379,7 +841,66 @@ fn has_unique_digits(s: &str) -> bool {
     }
     true
 }
+
+pub struct SecretCode {
+    pub digits: Vec<u8>,
+    pub revealed_positions: Vec<bool>,
+    pub revealed_digits: Vec<bool>,
+}
+
+impl SecretCode {
+    pub fn new() -> Self {
+        let mut rng = rng();
+        let mut pool: Vec<u8> = (0..=9).collect();
+        pool.shuffle(&mut rng);
+        let digits = pool[..4].to_vec();
+
+        SecretCode {
+            digits,
+            revealed_positions: vec![false; 4],
+            revealed_digits: vec![false; 10],
+        }
+    }
+
+    pub fn evaluate_guess(&self, guess: &str) -> (usize, usize, usize) {
+        // ... (full implementation follows the algorithm in §8)
+    }
+
+    pub fn can_give_position_hint(&self) -> bool {
+        self.revealed_positions.iter().any(|&r| !r)
+    }
+
+    pub fn can_give_digit_hint(&self) -> bool {
+        self.revealed_digits.iter().any(|&r| !r)
+    }
+
+    pub fn give_position_hint(&mut self) -> Option<(usize, u8)> {
+        // ... (full implementation follows §7 + §8)
+    }
+
+    pub fn give_digit_hint(&mut self) -> Option<u8> {
+        // ... (full implementation follows §7 + §8)
+    }
+}
+
+pub struct MastermindGame {
+    pub secret: SecretCode,
+    pub attempts_left: u32,
+    pub guess_count: u32,
+}
+
+impl MastermindGame {
+    pub fn new(max_attempts: u32) -> Self {
+        MastermindGame {
+            secret: SecretCode::new(),
+            attempts_left: max_attempts,
+            guess_count: 0,
+        }
+    }
+}
 ```
+
+> **Note:** The `play()` method and full hint logic live in `main.rs` in the basic workshop (no test depends on them). The full version of `evaluate_guess` and the hint methods is shown in §8 and §7 above. Type it in yourself as you complete each step — don't paste.
 
 #### SecretCode struct and implementation
 
@@ -652,6 +1173,142 @@ fn main() {
 }
 ```
 
+#### The `main.rs` you'll write
+
+Once all 30 tests pass, replace `workshop/src/main.rs` with the game loop. This is the only file that does I/O — all logic lives in `lib.rs`:
+
+```rust
+use std::io::{self, Write};
+use mastermind::{has_unique_digits, MastermindGame, DEFAULT_ATTEMPTS};
+
+fn main() {
+    let mut game = MastermindGame::new(DEFAULT_ATTEMPTS);
+
+    println!("{}", "=".repeat(40));
+    println!("   Welcome to Mastermind!");
+    println!("   Guess the 4-digit code (digits 0-9, no repeats)");
+    println!("   You have {} attempts. Type 'help' for hints.", DEFAULT_ATTEMPTS);
+    println!("{}", "=".repeat(40));
+
+    while game.attempts_left > 0 {
+        println!("\nAttempts left: {}", game.attempts_left);
+        let input = get_user_input();
+
+        if input == "help" {
+            handle_hint(&mut game);
+            continue;
+        }
+
+        game.guess_count += 1;
+        let (green, yellow, red) = game.secret.evaluate_guess(&input);
+        println!("Green: {}   Yellow: {}   Red: {}", green, yellow, red);
+
+        if green == 4 {
+            println!(
+                "\nCongratulations! You cracked the code in {} actual guesses.",
+                game.guess_count
+            );
+            return;
+        }
+
+        game.attempts_left -= 1;
+    }
+
+    let secret_str: String = game.secret.digits.iter().map(|d| d.to_string()).collect();
+    println!("\nGame Over! The secret code was {}.", secret_str);
+}
+
+fn get_user_input() -> String {
+    loop {
+        print!("Enter guess (or 'help'): ");
+        io::stdout().flush().unwrap();
+
+        let mut input = String::new();
+        io::stdin().read_line(&mut input).unwrap();
+        let input = input.trim().to_lowercase();
+
+        if input == "help" {
+            return input;
+        }
+
+        if input.len() != 4 || !input.chars().all(|c| c.is_ascii_digit()) {
+            println!("Invalid input. Please enter exactly 4 digits (e.g., 1234).");
+            continue;
+        }
+        if !has_unique_digits(&input) {
+            println!("Digits must be unique (no repeats). Try again.");
+            continue;
+        }
+        return input;
+    }
+}
+
+fn handle_hint(game: &mut MastermindGame) {
+    const HINT_POSITION_COST: u32 = 5;
+    const HINT_DIGIT_COST: u32 = 3;
+
+    if game.attempts_left == 0 {
+        println!("You don't have enough attempts to use a hint.");
+        return;
+    }
+
+    let pos_available = game.secret.can_give_position_hint();
+    let dig_available = game.secret.can_give_digit_hint();
+
+    if !pos_available && !dig_available {
+        println!("All hints already revealed. No more help available.");
+        return;
+    }
+
+    println!("\n--- Hint Menu ---");
+    if pos_available {
+        println!("1. Reveal one digit and its correct position (costs {} attempts)", HINT_POSITION_COST);
+    } else {
+        println!("1. (No more position hints available)");
+    }
+    if dig_available {
+        println!("2. Reveal a correct digit (costs {} attempts)", HINT_DIGIT_COST);
+    } else {
+        println!("2. (No more digit hints available)");
+    }
+
+    print!("Choose 1 or 2 (or press Enter to cancel): ");
+    io::stdout().flush().unwrap();
+
+    let mut choice = String::new();
+    io::stdin().read_line(&mut choice).unwrap();
+    let choice = choice.trim();
+
+    if choice.is_empty() {
+        return;
+    }
+
+    if choice == "1" && pos_available {
+        if game.attempts_left < HINT_POSITION_COST {
+            println!("Not enough attempts.");
+            return;
+        }
+        if let Some((pos, digit)) = game.secret.give_position_hint() {
+            game.attempts_left -= HINT_POSITION_COST;
+            println!("Hint: Digit {} is at position {}.", digit, pos + 1);
+        }
+    } else if choice == "2" && dig_available {
+        if game.attempts_left < HINT_DIGIT_COST {
+            println!("Not enough attempts.");
+            return;
+        }
+        if let Some(digit) = game.secret.give_digit_hint() {
+            game.attempts_left -= HINT_DIGIT_COST;
+            println!("Hint: The code contains the digit {}.", digit);
+        }
+    } else {
+        println!("Invalid choice.");
+    }
+}
+```
+
+This `main.rs` uses every concept you learned in §4–§10: `&str` parameters, `Vec` (in the secret code), `if let Some(...)` to consume hint results, iterator methods for hint selection, `pub` to make items visible across the `lib.rs`/`main.rs` boundary, and `&mut self` on `MastermindGame` to decrement attempts.
+
 ### 5. Running the Game
 
 Inside the `mastermind` directory, run:
@@ -674,24 +1331,40 @@ cargo run
 | Iterators & closures | evaluating guesses, finding unrevealed hints |
 | Constants (`const`) | `DEFAULT_ATTEMPTS`, hint costs |
 | I/O (`stdin`, `stdout`, `flush`) | reading guesses, printing prompts |
+| `pub` visibility | every item in `lib.rs` exposed to `main.rs` |
 
 ---
 
-## 8. Advanced Exercise Guide
+> ### ⏭️ What's Next: Section 2 — Ownership
+>
+> You've used `&self`, `&mut self`, and `pub` here, but we never asked **why** Rust has them. In **Section 2: Ownership**, you'll go from *using* these features to *understanding* the memory model behind them:
+>
+> | You just used (MasterMind) | You'll deeply understand in (Section 2) |
+> |---------------------------|------------------------------------------|
+> | `&self` and `&mut self` on methods | [01-TicketV1 §9-11](../../02-Ownership/01-TicketV1/README.md#9-concept-ownership-the-key-to-rust) — why Rust enforces "many readers OR one writer" |
+> | `pub` on every item in `lib.rs` | [01-TicketV1 §7-8](../../02-Ownership/01-TicketV1/README.md#7-concept-modules-and-visibility) — module trees, `pub(crate)`, `pub(super)` |
+> | `&str` vs `String` (implicit) | [01-TicketV1 §9](../../02-Ownership/01-TicketV1/README.md#9-concept-ownership-the-key-to-rust) — *why* `&str` doesn't own its data, and what "borrowing" means |
+> | `Drop` mentioned briefly | [04-OBRM §4](../../02-Ownership/04-OBRM/README.md) — the full `impl Drop` pattern and RAII |
+> | `panic!`-free `Option` handling | [03-TicketV2 §6-7](../../02-Ownership/03-TicketV2/README.md) — `Result<T, E>` and the `?` operator for production error handling |
+>
+> **If you want to proceed with the full mental model before tackling Section 2**, spend 5 minutes re-reading §9 (method receivers) and §10 (`pub` visibility) above. The borrow-checker errors in TicketV1 will feel like guardrails instead of walls.
+
+---
+
+## 12. Advanced Exercise Guide
 
 Refactor the game into a library + binary crate. Work in the `workshop/advanced/` directory.
 
 ### Table of Contents
 
-- [8. Advanced Exercise Guide](#8-advanced-exercise-guide)
-  - [Table of Contents](#table-of-contents-1)
-  - [1. Introduction](#1-introduction-1)
-  - [2. Prerequisites](#2-prerequisites-1)
+- [12. Advanced Exercise Guide](#12-advanced-exercise-guide)
+  - [1. Introduction](#1-introduction)
+  - [2. Prerequisites](#2-prerequisites)
   - [3. Concept 1: Rust Packages, Crates, and Modules](#3-concept-1-rust-packages-crates-and-modules)
   - [4. Concept 2: Library vs Binary Crate](#4-concept-2-library-vs-binary-crate)
   - [5. Concept 3: Visibility (`pub`) and Re-exports](#5-concept-3-visibility-pub-and-re-exports)
-  - [6. Concept 4: Documentation (`///` & `cargo doc`)](#6-concept-4-documentation--cargo-doc)
-  - [7. Concept 5: Unit Tests (`#[test]` & `cargo test`)](#7-concept-5-unit-tests-test--cargo-test)
+  - [6. Concept 4: Documentation (`///` & `cargo doc`)](#6-concept-4-documentation-cargo-doc)
+  - [7. Concept 5: Unit Tests (`#[test]` & `cargo test`)](#7-concept-5-unit-tests-test-cargo-test)
   - [8. Concept 6: Command-Line Arguments with `clap`](#8-concept-6-command-line-arguments-with-clap)
   - [9. Putting It All Together: Building the Library](#9-putting-it-all-together-building-the-library)
   - [10. Putting It All Together: Building the Binary](#10-putting-it-all-together-building-the-binary)
@@ -727,10 +1400,10 @@ A typical package layout:
 
 ```
 mastermind/
-â”œâ”€â”€ Cargo.toml
-â””â”€â”€ src/
-    â”œâ”€â”€ main.rs      â† binary crate root (by default)
-    â””â”€â”€ lib.rs       â† library crate root (if present)
+├── Cargo.toml
+└── src/
+    ├── main.rs      ← binary crate root (by default)
+    └── lib.rs       ← library crate root (if present)
 ```
 
 ```rust
@@ -835,9 +1508,9 @@ Now rewrite the Mastermind code as a library crate with proper structure.
 #### Create the files
 
 Inside `src/`, we'll have:
-- `lib.rs` â€“ the library root
-- `secret.rs` â€“ the `SecretCode` module
-- `game.rs` â€“ the `MastermindGame` module
+- `lib.rs` — the library root
+- `secret.rs` — the `SecretCode` module
+- `game.rs` — the `MastermindGame` module
 
 #### `secret.rs`
 
@@ -848,7 +1521,9 @@ use rand::seq::SliceRandom;
 use rand::rng;
 
 pub struct SecretCode {
-    digits: Vec<u8>,
+    // pub(crate) so game.rs tests (in a sibling module) can read digits
+    // — see §5 "Visibility (pub) and Re-exports" above
+    pub(crate) digits: Vec<u8>,
     revealed_positions: Vec<bool>,
     revealed_digits: Vec<bool>,
 }
@@ -1229,3 +1904,57 @@ cargo run -- --max-attempts 10
 | `derive` macros (`#[derive(Parser)]`) | On `Args` |
 | `saturating_sub` | In `deduct_attempts` |
 | Separation of concerns (logic in lib, I/O in bin) | Moved game logic to library |
+
+---
+
+## 13. Summary
+
+### Concepts taught in this project (first appearances)
+
+| # | Concept | Section | Where applied |
+|---|---------|---------|----------------|
+| 1 | `String` vs `&str` (deeper) | §4 | Player input, function parameters |
+| 2 | `Vec<T>` (deeper) | §5 | `digits`, `revealed_positions`, `revealed_digits` |
+| 3 | `struct` + `impl` | §6 | `SecretCode`, `MastermindGame` |
+| 4 | `Self` constructor | §6 | `SecretCode::new() -> Self` |
+| 5 | `Option<T>` + `if let` | §7 | `give_position_hint` returns `Option<(usize, u8)>` |
+| 6 | Iterators (`.iter()`, `.zip()`, `.filter()`, `.count()`, `.enumerate()`, `.collect()`) | §8 | `evaluate_guess`, hint selection |
+| 7 | Closures (`|x| ...`) | §8 | `filter(|(_, &revealed)| !revealed)` |
+| 8 | `&self` vs `&mut self` | §9 | Read-only vs mutating methods |
+| 9 | `pub` visibility | §10 | Every public item in `lib.rs` |
+| 10 | `Self` type alias | §6 | `fn new() -> Self` |
+
+### Concepts used but taught earlier (review pointers)
+
+| Concept | First taught in | Used here for |
+|---------|-----------------|----------------|
+| Variables, mutability, basic types | [01-Intro §6](../01-Intro/README.md#6-variables-and-mutability) | `let mut attempts_left: u32 = 20;` |
+| `const` | [01-Intro §6](../01-Intro/README.md#6-variables-and-mutability) | `DEFAULT_ATTEMPTS`, `HINT_*_COST` |
+| `if`/`else` as expressions | [01-Intro §7](../01-Intro/README.md#7-ifelse-making-decisions) | Hint cost checks |
+| `while` loop | [01-Intro §8](../01-Intro/README.md#8-loops-repeating-work) | Game loop in `play()` |
+| `String`/`&str` (intro) | [02-GuessGame §5](../02-GuessGame/README.md#5-concept-string-vs-str) | `String::new()` buffer, `&str` params |
+| `Result`, `.expect()` | [02-GuessGame §7](../02-GuessGame/README.md#7-concept-resultt-e-and-parse) | `io::stdin().read_line(...).unwrap()` |
+| `match` | [02-GuessGame §7](../02-GuessGame/README.md#7-concept-resultt-e-and-parse) | `match input.trim().parse()` |
+| `panic!` (covered lightly) | [03-BasicCalculator §9](../03-BasicCalculator/README.md#9-concept-panics-unrecoverable-errors) | `unwrap()` on I/O |
+| `#[test]`, `assert_eq!` | [03-BasicCalculator §14](../03-BasicCalculator/README.md#14-concept-unit-testing-in-rust) | 30 tests in `workshop/src/lib.rs` |
+| External crates | [02-GuessGame §4](../02-GuessGame/README.md#4-concept-adding-an-external-crate) | `rand = "0.10"` in `Cargo.toml` |
+| Random numbers | [02-GuessGame §4](../02-GuessGame/README.md#4-concept-adding-an-external-crate) | `rand::seq::SliceRandom` for shuffling |
+
+### What you should be able to do now
+
+After completing both workshops (basic + advanced), you can:
+
+- Model a small domain with `struct` and `impl`, choosing `&self` vs `&mut self` correctly.
+- Use `Vec<T>` to hold dynamic collections, and `Option<T>` for values that might not exist.
+- Chain iterator adapters (`.iter().zip().filter().count()`) for data processing.
+- Decide when a function should take `&str` (read) vs `String` (own).
+- Mark items `pub` so they're visible across module boundaries.
+- Refactor a single-file program into a library + binary crate with `clap` for CLI args.
+
+### What's next
+
+Proceed to [Section 02: Ownership](../../02-Ownership/README.md) to learn the **borrow checker** — Rust's central feature. You'll revisit `&self`/`&mut self` and learn the rules that make Rust memory-safe without a garbage collector.
+
+---
+
+*You finished Project 1.4 — MasterMind. You now know how to model domain types, handle missing data, and process collections with iterators. The borrow checker in Section 02 will make all of this feel even safer.*

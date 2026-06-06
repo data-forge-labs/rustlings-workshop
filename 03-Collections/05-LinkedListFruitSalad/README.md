@@ -1,6 +1,37 @@
-This tutorial provides a comprehensive guide to working with `LinkedList` in Rust, using the provided code snippet to create a fruit salad with shuffling and list operations. We'll explain key concepts like `LinkedList`, its differences from `Vec` and `VecDeque`, and the significance of conversions and operations in the program. The program will be built step-by-step from a simple version to an advanced one, covering both basic and advanced Rust concepts, including traits, iterators, randomization, and memory considerations. We'll address the reflection questions in the code comments and provide additional challenges to deepen your understanding.
+# 🦀 LinkedListFruitSalad — Python to Rust Workshop
+
+*The doubly-linked list: when you actually need O(1) splice/split, and when you don't.*
 
 > **Test-driven approach**: This project includes a Cargo project with progressive unit tests. Each function in `workshop/src/lib.rs` starts as a `todo!()` stub. As you follow each section, replace `todo!()` with real code and run `cd workshop && cargo test` to watch the pass count grow. Your goal: **all 4 tests pass**.
+
+---
+
+## Why (Rarely) LinkedList?
+
+**Python pain:** Python's `collections.deque` is fast at both ends, but there's no true linked list in the standard library. When you really need a linked structure, you reach for a third-party library or build your own.
+
+**Rust fix:** `LinkedList<T>` gives you a true doubly-linked list with O(1) splice/split — but the Rust docs explicitly recommend `Vec` or `VecDeque` for almost everything. This project teaches you *when* `LinkedList` is actually the right choice, and *when* it's a footgun (poor cache locality).
+
+```rust
+use std::collections::LinkedList;
+
+let mut list: LinkedList<&str> = LinkedList::new();
+list.push_back("Apple");
+list.push_front("Banana");  // O(1) at the front
+```
+
+## At a Glance
+
+| # | Concept | Rust | Python | Why it matters |
+|---|---------|------|--------|----------------|
+| 1 | Doubly-linked list | `LinkedList<T>` | (no stdlib equivalent) | O(1) splice/split, O(n) traversal |
+| 2 | Push/pop ends | `push_front`, `push_back`, `pop_front`, `pop_back` | `deque.append` / `pop` | O(1) at both ends |
+| 3 | Cursor API | `.cursor_front_mut()` | N/A | O(1) insertion/remove at any cursor position |
+| 4 | Splice / split | `.append(&mut other)`, `.split_off(idx)` | N/A | Move sub-lists in O(1) |
+| 5 | Iteration | `for x in &list` | `for x in deque` | Bidirectional, but no random access |
+| 6 | No indexing | `list[i]` doesn't exist | `deque[i]` works (O(n)) | Compile-time error forces you to think |
+| 7 | Conversion | `Vec::from(list)` / `LinkedList::from(vec)` | `list(deque)` | Convert when you need random access |
+| 8 | When *not* to use | Almost always prefer `Vec`/`VecDeque` | `deque` is usually fine | Cache locality matters more than splice |
 
 ---
 

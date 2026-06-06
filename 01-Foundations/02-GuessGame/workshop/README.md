@@ -53,7 +53,7 @@ cargo run         # play the interactive game
 
 ## Concepts Introduced Here
 
-These are the **new** topics this workshop teaches (everything else was covered in [01-Intro](../01-Intro/README.md)):
+These are the **new** topics this workshop teaches (everything else was covered in [01-Intro](../../01-Intro/README.md)):
 
 - **Adding an external crate** (`rand`) via `Cargo.toml`
 - **Custom `enum`** with `derive(Debug, PartialEq, Eq)`

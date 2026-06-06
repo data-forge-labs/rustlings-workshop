@@ -1,12 +1,31 @@
-# Rust for Python Data Engineers
+# 🦀 Rust for Python Data Engineers — Rust Reference
 
 *A gentle first look at Rust — written for data engineers who already know Python.*
 
-If you've written Python pipelines long enough, you've hit the familiar walls: a job that's too slow to scale, a service eating memory under load, or a bug that only shows up in production at 2 AM. Rust was built to eliminate exactly these problems — and this tutorial is built to make Rust approachable for people who already think in Python.
-
-You don't need any systems programming background. **In this first project you'll only learn the gentle basics** — types, variables, functions, control flow, tuples, and fixed-size arrays — each with a Python equivalent beside it. The strict parts (ownership, borrowing, slices, error handling, collections) come one step at a time in later projects.
-
 > **Test-driven approach**: This project includes a Cargo workspace with progressive unit tests. Each function in `workshop/src/lib.rs` starts as a `todo!()` stub. As you work through each section, replace `todo!()` with real code and run `cd workshop && cargo test` to watch the pass count grow. The `workshop/src/main.rs` file provides a runnable demo (calling the same functions) — use `cargo run` to see your code in action. Your goal: **all 26 tests pass**.
+
+---
+
+## Why This Reference?
+
+**Python pain:** If you've written Python pipelines long enough, you've hit the familiar walls: a job that's too slow to scale, a service eating memory under load, or a bug that only shows up in production at 2 AM.
+
+**Rust fix:** Rust was built to eliminate exactly these problems — and this tutorial is built to make Rust approachable for people who already think in Python. You don't need any systems programming background. **In this first project you'll only learn the gentle basics** — each with a Python equivalent beside it. The strict parts come one step at a time in later projects.
+
+## At a Glance
+
+| # | Concept | Rust | Python | Why it matters |
+|---|---------|------|--------|----------------|
+| 1 | Variable binding | `let x = 5;` | `x = 5` | Immutable by default — opt-in mutability |
+| 2 | Type inference | `let x: i32 = 5;` | `x: int = 5` | Compiler infers most types; explicit when needed |
+| 3 | Constants | `const MAX: u32 = 100_000;` | `MAX = 100_000` | Compile-time, inlined, no fixed address |
+| 4 | Functions | `fn add(a: i32, b: i32) -> i32 { a + b }` | `def add(a, b): return a + b` | Types in signature, expression-return by default |
+| 5 | Print | `println!("x = {}", x);` | `print(f"x = {x}")` | Macro, type-checked format string |
+| 6 | Tuple | `let t = (1, "hi", 3.14);` | `t = (1, "hi", 3.14)` | Fixed-size, mixed types, destructurable |
+| 7 | Array | `let a: [i32; 3] = [1, 2, 3];` | `a = [1, 2, 3]` | Fixed-size, stack-allocated, type-known length |
+| 8 | Control flow | `if x > 0 { ... } else { ... }` | `if x > 0: ... else: ...` | `if` is an expression — returns a value |
+| 9 | Loops | `loop`, `while`, `for x in 0..10` | `while`, `for x in range(10)` | `loop` has no Python equivalent — infinite by default |
+| 10 | Pattern match | `match x { 0 => ..., _ => ... }` | `match x: case 0: ...` | Exhaustive — compiler enforces all cases |
 
 ---
 
@@ -18,10 +37,10 @@ You don't need any systems programming background. **In this first project you'l
 4. [Syntax Side-by-Side](#4-syntax-side-by-side)
 5. [Functions](#5-functions)
 6. [Variables and Mutability](#6-variables-and-mutability)
-7. [If/Else — Making Decisions](#7-ifelse--making-decisions)
-8. [Loops — Repeating Work](#8-loops--repeating-work)
-9. [Tuples — Grouping Values](#9-tuples--grouping-values)
-10. [Arrays — Fixed-Size Sequences](#10-arrays--fixed-size-sequences)
+7. [If/Else — Making Decisions](#7-ifelse-making-decisions)
+8. [Loops — Repeating Work](#8-loops-repeating-work)
+9. [Tuples — Grouping Values](#9-tuples-grouping-values)
+10. [Arrays — Fixed-Size Sequences](#10-arrays-fixed-size-sequences)
 11. [Putting It All Together](#11-putting-it-all-together)
 12. [Cargo Commands](#12-cargo-commands)
 13. [Summary](#13-summary)
@@ -409,23 +428,23 @@ fn classify_temp(temp: i32) -> &'static str {
 }
 ```
 
-#### What is `&'static str`?
-
-You might wonder about that return type. Let's break it down:
-
-| Piece | Meaning |
-|-------|---------|
-| `&` | **Borrow / reference** — "I'm pointing to data owned by someone else." Not a C pointer — it's a *safe, non-null reference* with compile-time guarantees. |
-| `'static` | **Lifetime** — the data lives for the entire program. String literals like `"cold"` are baked into the binary, so they live forever. |
-| `str` | **String slice** — an unsized view into UTF-8 text. You can't have a `str` by itself; you always access it via `&str` (borrowed) or `Box<str>` (owned). |
-
-**Python analogy:** `&'static str` ≈ a Python string literal that never gets garbage collected. The `&` means "I'm borrowing this, not owning it" — similar to passing a string to a function in Python (you don't copy it, you just use it).
-
-**Why not `String`?** `String` is an *owned*, growable, heap-allocated buffer (like Python's `list` of characters). `&str` is a *view* into existing text — zero allocation, just a pointer + length. For returning constant labels like `"cold"`, `&'static str` is the right choice: no heap allocation, no copy, and the compiler guarantees the data lives long enough.
-
-> **The `&` symbol** — In C, `&` takes the address of a variable. In Rust, `&` creates a **reference** (a safe pointer) that the borrow checker tracks. Unlike C pointers, Rust references can never be null, never dangle, and can't outlive the data they point to — all enforced at compile time.
-
 The whole `if/else if/else` is an expression, and its value is the last expression in the chosen branch. This is the same pattern you'll use throughout the rest of the course.
+
+### A quick word on `&'static str`
+
+The return type `&'static str` looks unusual — here's what each part means:
+
+| Part | What it does | Python equivalent |
+|------|--------------|-------------------|
+| `&` | "I'm just looking at this, not making a copy" | Passing a string to a function — Python doesn't copy it either |
+| `'static` | "This reference is valid for the entire program" | Any variable in Python — Python keeps everything alive as long as someone references it |
+| `str` | A chunk of UTF-8 text | `str` in Python |
+
+**Why `'static`?** Because the function hands back one of `"cold"`, `"mild"`, or `"hot"` — they're literally part of your compiled `.exe` file. They sit in the binary's read-only memory. Rust needs to know: "how long will this pointer be valid?" The answer here is "for the whole program" (these strings never get freed). So the full type says: *a pointer (`&`) to text (`str`) that's valid forever (`'static`)*.
+
+**What if we just wrote `&str`?** Rust would complain: "you're returning a borrowed string, but I don't know how long it lives." The `'static` keyword is the answer — it's like telling Rust "don't worry, this data isn't going anywhere."
+
+**The `&` symbol** — This comes from C's "address-of" operator. But Rust's `&` is safer: it can never be null, never point to freed memory, and the compiler tracks who's using it so you can't accidentally mess things up.
 
 ### Exercise
 
@@ -517,10 +536,34 @@ fn main() {
 }
 ```
 
-Two Rust-specific bits:
+Three Rust-specific bits:
 
 - `let mut count` — we *opt in* to mutability so the compiler can track changes
 - The last line `count` (no semicolon) is the return value
+- The return type `usize` — Rust's standard type for counts, lengths, and indices
+
+### A quick word on `usize`
+
+The return type `usize` looks odd at first — here's what it means:
+
+| Part | What it does | Python equivalent |
+|------|--------------|-------------------|
+| `u` | "unsigned" — no negative values, range is `0` to `2ⁿ − 1` | Python's `int` is signed but arbitrary precision |
+| `size` | Width matches the platform: 64 bits on a 64-bit system, 32 bits on 32-bit | N/A — Python ints are unbounded |
+| (combined) | An unsigned integer that's always big enough to count anything in memory | N/A |
+
+**Why `usize` for a count?** Because `count` represents a *quantity*, not a *measurement*. It can never be negative, and the moment you compare it to something like `readings.len()`, both sides need to match — `readings.len()` returns `usize`, and so do `vec.len()`, `string.len()`, and `hashmap.len()`. Using `usize` for counts keeps the math with those calls clean.
+
+**Why not `i32`?** Signed would be wasteful (you'll never have a negative count) and would force you to cast whenever you compare with `len()`.
+
+**Why not `u32`?** Technically works, but Rust's convention is: if it's a size, count, length, or array index, use `usize` — it auto-scales to the platform and matches every standard-library length method.
+
+**Where you'll see `usize`:**
+- `arr.len()` returns `usize`
+- Indexing `arr[i]` requires `i: usize`
+- `0..n` ranges produce `usize` when `n` is `usize`
+
+In short: think of `usize` as Rust's "non-negative count" type. The compiler enforces the unsigned-ness so you can never accidentally produce a negative length.
 
 ### Exercise
 
@@ -713,6 +756,36 @@ fn max_of_five(values: [i32; 5]) -> i32 {
 
 ---
 
+## 10.5. A Quick Note on `char`
+
+You saw `char` in the type table earlier. Here's the minimum you need to know for this course:
+
+```rust
+let letter: char = 'A';
+let emoji: char = '🦀';
+let digit: char = '7';
+```
+
+Three differences from Python:
+
+| Aspect | Python `str[0]` | Rust `char` |
+|---|---|---|
+| Size | Variable (1–4 bytes per char) | **Always 4 bytes** (a full Unicode scalar value) |
+| Quote | `"A"` (double quotes) | `'A'` (single quotes) |
+| What it holds | A substring | Exactly one Unicode codepoint |
+
+You'll use `char` mostly when iterating over text in later projects:
+
+```rust
+for ch in "hello".chars() {       // ch: char
+    println!("{}", ch);
+}
+```
+
+For now, treat `char` as a 4-byte Unicode scalar. The deeper UTF-8 story (why `String` is byte-indexed, not char-indexed) is covered in the **§4 "Common pitfalls"** of [04-MasterMind](../04-MasterMind/README.md#4-concept-string-vs-str-deeper-dive).
+
+---
+
 ## 11. Putting It All Together
 
 Here's a small data processing function that uses everything covered so far — a fixed-size array, a `for` loop, an `if` expression, and a tuple return value:
@@ -870,4 +943,20 @@ Don't worry about any of these yet. Make sure all **26 tests pass** in `workshop
 
 ---
 
-*Next up — Project 1.2: Guess the Number Game. You'll learn `String` vs `&str`, custom enums, console I/O, `Result`, and external crates by building a real interactive game.*
+## Related Projects
+
+After this introduction, continue your Rust journey with these hands-on workshops:
+
+- [02-GuessGame](../02-GuessGame/README.md) — `String` vs `&str`, custom enums, console I/O, `Result`, external crates
+- [03-BasicCalculator](../03-BasicCalculator/README.md) — integers, branching, loops
+- [04-MasterMind](../04-MasterMind/README.md) — `struct`, `Vec`, `Option`, console I/O
+
+For deeper exploration of the foundations covered here:
+
+- [02-Ownership/01-TicketV1](../../02-Ownership/01-TicketV1/README.md) — ownership, stack vs heap (the next big concept after syntax)
+- [02-Ownership/02-Traits](../../02-Ownership/02-Traits/README.md) — traits, `derive`, bounds
+- [03-Collections/01-TicketManagement](../../03-Collections/01-TicketManagement/README.md) — `Vec`, `HashMap`, iterators (where collections begin)
+
+---
+
+*Next up - Project 1.2: Guess the Number Game. You'll learn `String` vs `&str`, custom enums, console I/O, `Result`, and external crates by building a real interactive game.*

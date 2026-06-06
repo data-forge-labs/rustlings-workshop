@@ -2,7 +2,7 @@
 
 *A hands-on workshop that teaches Rust fundamentals by building a command-line calculator — all concepts mapped to Python equivalents.*
 
-> **Test-driven approach**: This project includes a Cargo project with progressive unit tests. Each `workshop/src/lib.rs` function starts as a `todo!()` stub. As you follow each section of this tutorial, replace `todo!()` with real code and run `cd workshop && cargo test` to watch the pass count grow. Your goal: **all 24 tests pass**.
+> **Test-driven approach**: This project includes a Cargo project with progressive unit tests. Each `workshop/src/lib.rs` function starts as a `todo!()` stub. As you follow each section of this tutorial, replace `todo!()` with real code and run `cd workshop && cargo test` to watch the pass count grow. Your goal: **all 35 tests pass**.
 
 ---
 
@@ -37,19 +37,19 @@
 
 1. [Project Overview](#1-project-overview)
 2. [Prerequisites](#2-prerequisites)
-3. [Running the Python Version](#3-running-the-python-version)
+3. [Running the Python Version](#3-running-the-workshop)
 4. [Concept: Integer Types in Rust](#4-concept-integer-types-in-rust)
 5. [Concept: Variables and Mutability (Recap)](#5-concept-variables-and-mutability-recap)
 6. [Concept: Arithmetic Operators](#6-concept-arithmetic-operators)
-7. [Concept: Control Flow — `if`/`else` (Recap)](#7-concept-control-flow--ifelse-recap)
-8. [Concept: No Truthy/Falsy — the `bool` Type (Recap)](#8-concept-no-truthyfalsy--the-bool-type-recap)
-9. [Concept: Panics — Unrecoverable Errors](#9-concept-panics--unrecoverable-errors)
-10. [Concept: Loops — `while` and `for`](#10-concept-loops--while-and-for)
+7. [Concept: Control Flow — `if`/`else` (Recap)](#7-concept-control-flow-ifelse-recap)
+8. [Concept: No Truthy/Falsy — the `bool` Type (Recap)](#8-concept-no-truthyfalsy-the-bool-type-recap)
+9. [Concept: Panics — Unrecoverable Errors](#9-concept-panics-unrecoverable-errors)
+10. [Concept: Loops — `while` and `for`](#10-concept-loops-while-and-for)
 11. [Concept: Integer Overflow](#11-concept-integer-overflow)
 12. [Concept: Wrapping and Saturating Arithmetic](#12-concept-wrapping-and-saturating-arithmetic)
 13. [Concept: Type Casting with `as`](#13-concept-type-casting-with-as)
 14. [Concept: Unit Testing in Rust](#14-concept-unit-testing-in-rust)
-15. [Putting It All Together — The Complete Calculator](#15-putting-it-all-together--the-complete-calculator)
+15. [Putting It All Together — The Complete Calculator](#15-putting-it-all-together-the-complete-calculator)
 16. [Exercises to Try](#16-exercises-to-try)
 17. [Summary](#17-summary)
 
@@ -81,22 +81,23 @@ We'll build a **command-line calculator** that can:
 
 ## 2. Prerequisites
 
-- Rust installed (see [Project 0: Intro](../01-Foundations/01-Intro/README.md))
+- Rust installed (see [Project 0: Intro](../01-Intro/README.md))
 - Basic Python knowledge
 - Familiarity with `cargo new` and `cd workshop && cargo run`
 
 ---
 
-## 3. Running the Python Version
+## 3. Running the Workshop
 
-The Python version (`project.py`) demonstrates what our Rust calculator will do:
+This is a **Type B** Cargo project — there is no `project.py`. The workshop lives in `workshop/`:
 
 ```bash
-cd rustlings-workshop/1-BasicCalculator
-python project.py
+cd workshop
+cargo test        # Run the 35 progressive tests
+cargo run         # Run the calculator REPL
 ```
 
-> **Note:** If `project.py` doesn't exist yet, the workshop will guide you through writing the Rust version from scratch.
+If `workshop/` does not exist yet, follow the [Setup section](#create-the-project) below to create it from scratch.
 
 ---
 
@@ -292,7 +293,7 @@ fn main() {
 
 ## 7. Concept: Control Flow — `if`/`else` (Recap)
 
-> **Already covered in [Project 0: Intro](../01-Intro/README.md#7-expressions-vs-statements).** Quick refresher:
+> **Already covered in [Project 0: Intro §7](../01-Intro/README.md#7-ifelse-making-decisions).** Quick refresher:
 
 In Rust, `if` is an **expression** (it returns a value), not a statement:
 
@@ -416,6 +417,41 @@ fn main() {
 assert_eq!(2 + 2, 4);    // ✅
 assert_eq!(2 + 2, 5);    // ⚡ "assertion failed: `(left == right)` left: `4`, right: `5`"
 ```
+
+### `panic!` vs `Result` — Side by Side
+
+For division-by-zero, you have two choices. Here's the same logic in both styles:
+
+```rust
+// Version A: panic! — for internal/CLI tools where the caller is "you, the developer"
+fn divide_panic(a: i32, b: i32) -> i32 {
+    if b == 0 {
+        panic!("Cannot divide by zero!");  // crash with a message
+    }
+    a / b
+}
+
+// Version B: Result — for libraries where the caller is "another Rust programmer"
+fn divide_result(a: i32, b: i32) -> Result<i32, String> {
+    if b == 0 {
+        return Err(String::from("Cannot divide by zero!"));  // hand back the error
+    }
+    Ok(a / b)
+}
+
+fn main() {
+    // Version A usage — the program just dies
+    let result = divide_panic(10, 2);  // 5
+
+    // Version B usage — the caller decides what to do
+    match divide_result(10, 0) {
+        Ok(v)  => println!("Got {}", v),
+        Err(e) => println!("Bad input: {}", e),  // "Bad input: Cannot divide by zero!"
+    }
+}
+```
+
+You saw `Result` briefly in [02-GuessGame §7](../02-GuessGame/README.md#7-concept-resultt-e-and-parse). The deep dive — including the `?` operator and `From` conversions — is in [Section 02: Ownership](../../02-Ownership/README.md). For this project, the `divide` function uses `panic!` (it's an internal tool, not a library).
 
 ---
 
@@ -567,6 +603,17 @@ let y = x - 1;  // Underflow! 0 - 1 doesn't fit in u8
 ```
 
 With wrapping: `0 - 1 = 255` for `u8`
+
+### Python comparison
+
+In Python, integer overflow is **impossible** — Python's `int` type uses arbitrary precision:
+
+```python
+x = 2 ** 1000  # works fine, no overflow
+balance = 65535 + 1  # 65536, no problem
+```
+
+This is convenient but has a cost: every arithmetic operation allocates memory for a new big-int. Rust's fixed-size integers (`u8`, `u32`, `i64`, etc.) are far more efficient — the trade-off is that you must reason about ranges. For data engineering (row counts, byte sizes, timestamps), the Rust approach is usually what you want: the type encodes the constraint.
 
 ---
 
@@ -731,6 +778,18 @@ let y = 100u64;      // Equivalent to let y: u64 = 100;
 let z = 3.14f32;     // Equivalent to let z: f32 = 3.14;
 ```
 
+### Python comparison
+
+Python is **dynamically typed** — the same variable can hold an `int` or a `float` without any conversion:
+
+```python
+x = 5          # int
+x = 5.0        # float — no cast needed
+x = "hello"    # str — Python doesn't care
+```
+
+In Rust, types are static and explicit. When you need to convert, you write `as` (for primitives) or `try_into` (for fallible conversions, taught in 02-Ownership). For data engineering this matters: when you read a CSV column as `i64` and want to log it as `f64`, you have to write the conversion — the type system makes it visible in code review.
+
 ---
 
 ## 14. Concept: Unit Testing in Rust
@@ -785,11 +844,11 @@ Every project in this course follows the same pattern:
 4. **Your job:** As you read each section of the tutorial, replace `todo!()` with real code. Run `cd workshop && cargo test` after each step — more tests pass each time.
 
 ```
-Step 1:  0/24 tests pass  ← only todo!() stubs
-Step 2:  3/24 tests pass  ← first function implemented
-Step 3:  8/24 tests pass  ← more functions working
+Step 1:  0/35 tests pass  ← only todo!() stubs
+Step 2:  3/35 tests pass  ← first function implemented
+Step 3:  8/35 tests pass  ← more functions working
 ...
-Final:  24/24 tests pass  ← all green!
+Final:  35/35 tests pass  ← all green!
 ```
 
 ### How to Write Tests in Rust
@@ -1038,13 +1097,13 @@ Here's exactly how you'll use testing in every project:
 
 5. **Fix failing tests** — maybe `multiply` still has `todo!()`. Fix it, re-run.
 
-6. **Repeat** — each section unlocks more tests. The counter climbs: 4/24, 8/24, 16/24, 24/24.
+6. **Repeat** — each section unlocks more tests. The counter climbs: 4/35, 8/35, 16/35, 35/35.
 
 ```
-   ✅✅✅✅  ⬜⬜⬜⬜⬜⬜   ← 4/24 after Section 6
-   ✅✅✅✅✅✅✅✅  ⬜⬜⬜⬜⬜⬜⬜⬜   ← 8/24 after Section 7
+   ✅✅✅✅  ⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜   ← 4/35 after Section 6
+   ✅✅✅✅✅✅✅✅  ⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜   ← 8/35 after Section 7
    ...until...
-   ✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅   ← 24/24 done!
+   ✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅   ← 35/35 done!
 ```
 
 ### Concrete Example
@@ -1082,7 +1141,7 @@ mod tests {
 }
 ```
 
-Each `step_XX_name` module corresponds directly to a numbered section in this README. When you finish Section 4, the `step_04_integers` tests pass. When you finish Section 11, the `step_11_overflow` tests pass. And so on until all 24 tests pass.
+Each `step_XX_name` module corresponds directly to a numbered section in this README. When you finish Section 4, the `step_04_integers` tests pass. When you finish Section 11, the `step_11_overflow` tests pass. And so on until all 35 tests pass.
 
 ### Data Engineering Context
 
@@ -1210,10 +1269,10 @@ fn main() {
 ### Create the Project
 
 ```bash
-cargo new 1-BasicCalculator
-cd 1-BasicCalculator
-# Replace src/main.rs with the code above
-cd workshop && cargo run
+# The complete calculator is also available as a stretch goal in workshop/
+cd workshop
+# Compare your src/main.rs with the reference solution
+cargo run
 ```
 
 Expected output:

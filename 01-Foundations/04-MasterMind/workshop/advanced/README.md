@@ -2,7 +2,7 @@
 
 **Goal**: Implement all functions in `src/lib.rs`, `src/secret.rs`, and `src/game.rs` to pass all tests.
 
-> **Basic version** also available in [`../`](../) — complete it first before starting this advanced workshop.
+> **Basic version** also available in [`../`](../README.md) — complete it first before starting this advanced workshop.
 
 ## Structure
 

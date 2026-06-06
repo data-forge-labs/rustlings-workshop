@@ -292,34 +292,34 @@ The table below lists all core Rust concepts a learner should eventually see. **
 
 | Concept | Covered? | First Project |
 |---------|----------|---------------|
-| `cargo new`, `cargo build`, `cargo run` | ✅ | 01-02 |
-| `Cargo.toml` dependencies | ✅ | 01-02, 02-03 |
-| Variables (`let`, `let mut`) | ✅ | 01-01, 01-02 |
-| Data types (`u32`, `i32`, `f64`, `bool`, `char`, `usize`, `u8`) | ✅ | 01-01, 01-02, 01-03 |
-| `String` vs `&str` | ✅ | 01-02, 02-02 |
-| Ownership, borrowing, references (`&`, `&mut`) | ✅ | 01-02, 02-01, 02-05 |
-| `Vec<T>`, `vec![]` | ✅ | 01-02, 03-01, 03-02 |
-| `struct`, `impl`, methods (`&self`, `&mut self`) | ✅ | 01-02, 02-01 |
-| `Option<T>`, `Some`, `None`, `if let` | ✅ | 01-03, 02-03 |
-| `match` (basic) | ✅ | 01-03, 02-03 |
+| `cargo new`, `cargo build`, `cargo run` | ✅ | 01-01 |
+| `Cargo.toml` dependencies | ✅ | 01-02 |
+| Variables (`let`, `let mut`) | ✅ | 01-01 |
+| Data types (`u32`, `i32`, `f64`, `bool`, `char`, `usize`, `u8`) | ✅ | 01-01, 01-03 |
+| `String` vs `&str` | ✅ | 01-02 |
+| Ownership, borrowing, references (`&`, `&mut`) | ✅ | 01-04, 02-01, 02-05 |
+| `Vec<T>`, `vec![]` | ✅ | 01-04, 03-01, 03-02 |
+| `struct`, `impl`, methods (`&self`, `&mut self`) | ✅ | 01-04, 02-01 |
+| `Option<T>`, `Some`, `None`, `if let` | ✅ | 01-04, 02-03 |
+| `match` (basic) | ✅ | 01-02, 01-04 |
 | `match` with patterns (advanced) | ✅ | 02-03, 06-01, 05-11 |
-| `loop`, `while`, `continue`, `break` | ✅ | 01-02, 01-03 |
-| `const` | ✅ | 01-02 |
-| `if` / `else` branching | ✅ | 01-03 |
-| Integer overflow & saturating arithmetic | ✅ | 01-02 |
-| Iterators (`iter`, `map`, `filter`, `count`, `collect`, `zip`, `enumerate`, `any`, `all`) | ✅ | 01-02, 03-01, 03-12 |
-| Closures (`\|x\| x * 2`) | ✅ | 01-02, 03-12 |
-| `print!`, `println!` | ✅ | 01-02 |
+| `loop`, `while`, `continue`, `break` | ✅ | 01-01, 01-03 |
+| `const` | ✅ | 01-01 |
+| `if` / `else` branching | ✅ | 01-01 |
+| Integer overflow & saturating arithmetic | ✅ | 01-03 |
+| Iterators (`iter`, `map`, `filter`, `count`, `collect`, `zip`, `enumerate`, `any`, `all`) | ✅ | 01-04, 03-01, 03-12 |
+| Closures (`\|x\| x * 2`) | ✅ | 01-04, 03-12 |
+| `print!`, `println!` | ✅ | 01-01 |
 | `std::io::stdin()`, `read_line()` | ✅ | 01-02 |
 | `io::stdout().flush()` | ✅ | 01-02 |
 | String methods (`chars`, `trim`, `to_lowercase`, `is_ascii_digit`, `to_digit`) | ✅ | 01-02 |
-| Ranges (`0..=9`) | ✅ | 01-02, 01-03 |
+| Ranges (`0..=9`) | ✅ | 01-01, 01-03 |
 | `rand` crate (`rng`, `shuffle`, `choose`) | ✅ | 01-02, 03-02 |
-| Type casting (`as`) | ✅ | 01-02, 01-03 |
-| Tuples (creation, destructuring, return values) | ✅ | 01-01, 01-02 |
+| Type casting (`as`) | ✅ | 01-03 |
+| Tuples (creation, destructuring, return values) | ✅ | 01-01 |
 | `unwrap()` / basic error handling | ✅ | 01-02, 02-03 |
-| `Result<T, E>`, `?` operator | ✅ | 02-03, 06-01, 06-02, 04-01 |
-| `enum` (custom enums) | ✅ | 02-03, 06-01, 08-02, 05-11 |
+| `Result<T, E>`, `?` operator | ✅ | 01-02, 02-03, 06-01, 06-02, 04-01 |
+| `enum` (custom enums) | ✅ | 01-02, 06-01, 08-02, 05-11 |
 | `impl` with generics and traits | ✅ | 02-02, 03-01, 03-12, 02-04, 05-11 |
 | Arrays `[T; N]` | ✅ | 01-01, 03-01, 03-03 |
 | Slices `&[T]`, `&str` (borrowed views) | ✅ | 01-01, 03-01 |
@@ -332,13 +332,13 @@ The table below lists all core Rust concepts a learner should eventually see. **
 | `Box<T>`, `Rc<T>`, `Arc<T>` (smart pointers) | ✅ | 02-01, 05-03, 02-04, 05-11 |
 | Lifetimes and borrow checker annotations | ✅ | 03-01, 02-05 |
 | Stack vs heap memory | ✅ | 02-01 |
-| Error handling with `Result` and custom error types | ✅ | 02-03, 06-01, 06-02, 04-01 |
+| Error handling with `Result` and custom error types | ✅ | 01-02, 02-03, 06-01, 06-02, 04-01 |
 | `thiserror` crate | ✅ | 02-03 |
 | `TryFrom` / `TryInto` traits | ✅ | 02-03 |
 | `Option` combinators (`unwrap_or[_default]`, `map_or`, `ok_or`, `filter`, `or_else`, `transpose`) | ✅ | 02-06 |
-| `Result` combinators (`map_err`, `and_then`, `or_else`, `?` operator) | ✅ | 02-06 |
+| `Result` combinators (`map_err`, `and_then`, `or_else`, `?` operator) | ✅ | 01-02, 02-06 |
 | `From<E1>` for error conversion + `thiserror` | ✅ | 02-06 |
-| `mod`, `pub`, `use` (modules & visibility) | ✅ | 02-01, 06-02 |
+| `mod`, `pub`, `use` (modules & visibility) | ✅ | 01-04, 02-01, 06-02 |
 | External crates beyond `rand` | ✅ | 02-03, 05-01, 06-01, 07-01, 06-02, 04-01 |
 | File I/O (`std::fs`, `File`, `BufReader`) | ✅ | 04-01, 04-02 |
 | CSV parsing / writing (`csv` crate) | ✅ | 04-01, 04-02 |
@@ -353,8 +353,8 @@ The table below lists all core Rust concepts a learner should eventually see. **
 | Apache DataFusion (`SessionContext`, async SQL, Arrow zero-copy, Parquet write) | ✅ | 12-03 |
 | Ratatui terminal UIs (`ratatui`, `crossterm`, `TestBackend`, layouts, widgets) | ✅ | 06-03 |
 | Async CLIs with `clap` derive (subcommands, `#[tokio::main]`, `ExitCode`) | ✅ | 06-04 |
-| Testing (`#[test]`, `cargo test`) | ✅ | 01-02 |
-| Documentation (`///`, `cargo doc`) | ✅ | 01-02 |
+| Testing (`#[test]`, `cargo test`) | ✅ | 01-03 |
+| Documentation (`///`, `cargo doc`) | ✅ | 01-04 (advanced) |
 | `derive` macros (`Debug`, `Clone`, `Copy`, `PartialEq`, etc.) | ✅ | 02-02, 06-01, 06-02, 04-02 |
 | Trait definitions, bounds, and orphan rule | ✅ | 02-02 |
 | `Deref` / `Sized` / `From` / `Clone` / `Copy` / `Drop` traits | ✅ | 02-02 |

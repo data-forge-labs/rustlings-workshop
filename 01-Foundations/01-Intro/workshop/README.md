@@ -75,9 +75,9 @@ cargo test
 
 These topics are covered in later projects — don't worry about them yet:
 
-- `&[T]` slices and borrowing → [02-Ownership](../../02-Ownership/README.md)
-- `String` vs `&str`, `std::io`, `read_line`, `.expect()`, external crates (`rand`), custom `enum` → [02-GuessGame](../02-GuessGame/README.md)
-- `panic!`, integer overflow, `as` casting, `#[should_panic]` → [03-BasicCalculator](../03-BasicCalculator/README.md)
-- `Option<T>`, `Vec<T>`, `HashMap`, structs and `impl`, exhaustive `match` → [04-MasterMind](../04-MasterMind/README.md)
-- Ownership deep dive, `Result<T, E>`, the `?` operator → [02-Ownership](../../02-Ownership/README.md)
-- Full collection tour (`Vec`, `HashMap`, `HashSet`, etc.) → [03-Collections](../../03-Collections/README.md)
+- `&[T]` slices and borrowing → [02-Ownership](../../../02-Ownership/README.md)
+- `String` vs `&str`, `std::io`, `read_line`, `.expect()`, external crates (`rand`), custom `enum` → [02-GuessGame](../../02-GuessGame/README.md)
+- `panic!`, integer overflow, `as` casting, `#[should_panic]` → [03-BasicCalculator](../../03-BasicCalculator/README.md)
+- `Option<T>`, `Vec<T>`, `HashMap`, structs and `impl`, exhaustive `match` → [04-MasterMind](../../04-MasterMind/README.md)
+- Ownership deep dive, `Result<T, E>`, the `?` operator → [02-Ownership](../../../02-Ownership/README.md)
+- Full collection tour (`Vec`, `HashMap`, `HashSet`, etc.) → [03-Collections](../../../03-Collections/README.md)

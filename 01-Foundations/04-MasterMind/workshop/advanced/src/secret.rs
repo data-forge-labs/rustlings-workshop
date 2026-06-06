@@ -1,6 +1,6 @@
 /// The hidden 4-digit code with hint-tracking state.
 pub struct SecretCode {
-    digits: Vec<u8>,
+    pub(crate) digits: Vec<u8>,
     revealed_positions: Vec<bool>,
     revealed_digits: Vec<bool>,
 }

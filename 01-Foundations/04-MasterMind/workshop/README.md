@@ -2,7 +2,7 @@
 
 **Goal**: Implement all functions in `src/lib.rs` to pass all **30** tests.
 
-> **Advanced version** also available in [`advanced/`](./advanced/) — adds `clap` CLI args, module organization (`secret.rs`, `game.rs`), and documentation. Start here first, then level up.
+> **Advanced version** also available in [`advanced/`](./advanced/README.md) — adds `clap` CLI args, module organization (`secret.rs`, `game.rs`), and documentation. Start here first, then level up.
 
 ## Functions to Implement
 

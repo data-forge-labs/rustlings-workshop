@@ -1,7 +1,31 @@
-# Rust Collections
-### Collections in Rust
+# 🦀 RustCollectionsDoc — Rust Reference
+
+*A side-by-side comparison of every standard collection type in Rust, with fruit-salad examples for each.*
 
 > **Test-driven approach**: This project includes a Cargo project with progressive unit tests. Each function in `workshop/src/lib.rs` starts as a `todo!()` stub. As you follow each section, replace `todo!()` with real code and run `cd workshop && cargo test` to watch the pass count grow. Your goal: **all 8 tests pass**.
+
+---
+
+## Why This Reference?
+
+**Python pain:** Python's collections (`list`, `dict`, `set`, `deque`, `OrderedDict`) all have different creation syntaxes, methods, and performance trade-offs — and the official docs are scattered. You end up with browser tabs to five different pages.
+
+**Rust fix:** This document puts every `std::collections` type on one page with the *same* fruit-salad example, so you can compare `Vec`, `VecDeque`, `LinkedList`, `HashMap`, `BTreeMap`, `HashSet`, `BTreeSet`, and `BinaryHeap` side by side.
+
+## At a Glance
+
+| # | Concept | Rust | Python | Why it matters |
+|---|---------|------|--------|----------------|
+| 1 | Constant array | `const FRUITS: [&str; 10] = [...]` | `FRUITS = [...]` | Compile-time fixed, stack-allocated |
+| 2 | Dynamic array | `Vec<&str>` | `list` | Growable, contiguous, type-safe |
+| 3 | Owned strings | `Vec<String>` | `list[str]` | Mutable, owned growable text |
+| 4 | Fixed array reference | `&[&str; 10]` | N/A | Borrowed view of compile-time-size data |
+| 5 | Array slice | `&[&str]` | N/A | Borrowed view of any contiguous sequence |
+| 6 | `HashMap` | `HashMap<&str, u32>` | `dict` | Hash-based key-value lookup |
+| 7 | `BinaryHeap` | `BinaryHeap<Item>` | `heapq` | Priority queue (max-heap by default) |
+| 8 | Sorting | `.sort_by_key(\|x\| x.priority)` | `sorted(items, key=...)` | Comparator-based sort, no intermediate state |
+
+---
 
 Here are several ways to define a collection of fruits in Rust, mirroring the provided list:
 
@@ -225,3 +249,22 @@ The syntax `FRUITS: List[str] = [...]` is invalid in Rust due to its Python-styl
 3. **String Literals**:
    - The literals `"Orange"`, `"Apple"`, etc., are valid in Rust as `&str` (string slices with a `'static` lifetime).
    - However, the collection syntax must match Rustâ€™s collection types.
+
+---
+
+## Related Projects
+
+For guided learning of each collection type, see:
+
+- [01-TicketManagement](../01-TicketManagement/README.md) — `Vec`, `HashMap`, `BTreeMap`, iterators, lifetimes (canonical collections teaching)
+- [02-VectorFruitSalad](../02-VectorFruitSalad/README.md) — `Vec<T>`, `SliceRandom`, `rand` integration
+- [03-ArrayFruitSalad](../03-ArrayFruitSalad/README.md) — `[T; N]` fixed-size arrays
+- [04-HashMapCount](../04-HashMapCount/README.md) — `HashMap`, `.entry().or_insert()` upsert, `BTreeMap` for sorting
+- [05-LinkedListFruitSalad](../05-LinkedListFruitSalad/README.md) — `LinkedList`, when (not) to use it
+- [06-VecDequeFruitSalad](../06-VecDequeFruitSalad/README.md) — `VecDeque`, ring buffer
+- [07-HashMapLanguage](../07-HashMapLanguage/README.md) — `HashMap` with complex values
+- [09-BinaryHeapFruit](../09-BinaryHeapFruit/README.md) — priority queue
+- [10-BTreeSetFruit](../10-BTreeSetFruit/README.md) — ordered set
+- [11-HashSetFruit](../11-HashSetFruit/README.md) — unique items, membership testing
+- [12-RustIterators](../12-RustIterators/README.md) — lazy functional iteration
+- [13-MutableFruitSalad](../13-MutableFruitSalad/README.md) — `Vec` mutation patterns (push, pop, insert, remove, capacity)

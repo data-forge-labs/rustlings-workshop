@@ -1,6 +1,35 @@
-This tutorial provides a comprehensive guide to working with arrays (`[T; N]`) in Rust, focusing on their use in a fruit salad program similar to the previous examples. We'll explain key concepts like arrays, their differences from other collections like `Vec`, `VecDeque`, and `LinkedList`, and demonstrate their use in a program that shuffles and manipulates a fixed-size list of fruits. The program will be built step-by-step from a simple version to an advanced one, covering both basic and advanced Rust concepts, including traits, iterators, randomization, and error handling. We'll include reflection questions to mirror the format of the previous tutorials and provide additional challenges to deepen your understanding.
+# 🦀 ArrayFruitSalad — Python to Rust Workshop
+
+*Fixed-size arrays (`[T; N]`) for stack-allocated, compile-time-sized data.*
 
 > **Test-driven approach**: This project includes a Cargo project with progressive unit tests. Each function in `workshop/src/lib.rs` starts as a `todo!()` stub. As you follow each section, replace `todo!()` with real code and run `cd workshop && cargo test` to watch the pass count grow. Your goal: **all 7 tests pass**.
+
+---
+
+## Why Fixed-Size Arrays?
+
+**Python pain:** Python lists are always dynamic — there's no way to say "this collection has *exactly* 10 elements and never changes." You pay a hidden cost for every check (`len(self) == expected`), and off-by-one bugs hide in append/remove logic.
+
+**Rust fix:** `[T; N]` makes the size *part of the type*. The compiler knows the array is always 10 elements, allocates it on the stack (no heap), and rejects any attempt to add or remove elements.
+
+```rust
+// Rust — size is part of the type
+let scores: [i32; 5] = [90, 80, 85, 95, 88];  // exactly 5 elements
+let rgb: [u8; 3] = [255, 128, 0];              // 3 bytes, stack-only
+```
+
+## At a Glance
+
+| # | Concept | Rust | Python | Why it matters |
+|---|---------|------|--------|----------------|
+| 1 | Fixed-size arrays | `[T; N]` | `array.array` | Stack-allocated, compile-time-known length |
+| 2 | Stack vs heap | Stack allocation | All on heap | Arrays live on the stack — no GC, no allocator |
+| 3 | `Copy` trait | `T: Copy` | Always copies | Arrays of `Copy` types are themselves `Copy` |
+| 4 | `vec![]` macro | `vec![a, b, c]` | `[a, b, c]` | Convert fixed array to dynamic Vec in one call |
+| 5 | `from_fn` / `map` | `[0; 5]` or `arr.map(\|x\| x*2)` | list comprehension | Build arrays from expressions |
+| 6 | Array indexing | `arr[i]` | `arr[i]` | O(1) access, panics on out-of-bounds |
+| 7 | Array vs Vec | `Vec<T>` (dynamic) | `list` (always dynamic) | Choose stack `[T;N]` for fixed, heap `Vec` for growth |
+| 8 | `SliceRandom` | `fruits.shuffle(&mut rng)` | `random.shuffle(fruits)` | Shuffle via the `rand` crate trait |
 
 ---
 
