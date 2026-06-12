@@ -1,8 +1,8 @@
 # Project 60: Vortex — Extensible Columnar Format with Cascading Compression
 
-*Build a working Vortex file with pluggable encodings and zero-copy Arrow integration.*
-
 > **Test-driven approach**: Each function in `src/lib.rs` starts as a `todo!()` stub. **Goal: all 8 tests pass.**
+
+## Why Vortex?
 
 ---
 

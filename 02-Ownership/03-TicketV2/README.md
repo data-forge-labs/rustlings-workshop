@@ -1,12 +1,18 @@
 # Rust for Python Data Engineers — TicketV2: Enums & Error Handling
 
-*Learn Rust's enum system and the `Result` type — the foundation of robust error handling in data pipelines.*
-
 > **Test-driven approach**: This project includes a Cargo project with progressive unit tests. Each function in `workshop/src/lib.rs` starts as a `todo!()` stub. As you follow each section, replace `todo!()` with real code and run `cd workshop && cargo test` to watch the pass count grow. Your goal: **all 16 tests pass**.
+
+## Why Use Enums + Result for Error Handling?
+
+Ownership note: In Rust, values like `String` and `Vec` live on the heap, while primitive values (e.g., `i32`, `bool`) live on the stack. Ownership rules govern when heap data is cleaned up.
+
 
 ---
 
 ## Why Use Enums + Result for Error Handling?
+
+Ownership note: In Rust, values like `String` and `Vec` live on the heap, while primitive values (e.g., `i32`, `bool`) live on the stack. Ownership rules govern when heap data is cleaned up.
+
 
 **Python pain:** A function can return a value, return `None`, or raise an exception — you only know which one at runtime. A typo like `status == "Opeen"` slips through the type system, and Python 3.10+ `match`/`case` is *not* exhaustive, so the compiler won't warn when a new variant is added.
 
@@ -934,7 +940,7 @@ The following lesson files in this folder provide deeper dives into each concept
 
 ### Next Project
 
-Proceed to [01-TicketManagement](../03-Collections/01-TicketManagement/README.md) for **collections, iterators, and HashMap** — essential tools for data pipelines.
+Proceed to [01-TicketManagement](../../../03-Collections/01-TicketManagement/README.md) for **collections, iterators, and HashMap** — essential tools for data pipelines.
 
 ## Further Reading
 
@@ -951,5 +957,11 @@ If you want deeper reading on specific topics:
 | Custom error types and `impl Error` | §8 above | [Rust By Example — Errors](https://doc.rust-lang.org/rust-by-example/error.html) |
 | `?` operator | §9 above | [Rust Book §9.2](https://doc.rust-lang.org/book/ch09-02-recoverable-errors-with-result.html#a-shortcut-for-propagating-errors-the--operator) |
 | `thiserror` / `anyhow` | §10 above | [thiserror docs](https://docs.rs/thiserror), [anyhow docs](https://docs.rs/anyhow) |
-| Tuple-like variants, tuple structs | (New to you here? See [01-Intro §8 — Tuples](../../01-Foundations/01-Intro/README.md#8-tuples--grouping-values-of-different-types)) | [Rust Book §5.1](https://doc.rust-lang.org/book/ch05-01-defining-structs.html) |
+| Tuple-like variants, tuple structs | (New to you here? See [01-Intro §8 — Tuples](../../../../01-Foundations/01-Intro/README.md#8-tuples--grouping-values-of-different-types)) | [Rust Book §5.1](https://doc.rust-lang.org/book/ch05-01-defining-structs.html) |
 | "Parse, don't validate" pattern | Project-level example in the assembly below | [lexi-lambda blog](https://lexi-lambda.github.io/blog/2019/11/05/parse-don-t-validate/) |
+
+## Exercises
+
+* **Easy** – modify the existing function to handle an extra edge case.
+* **Medium** – extend the project with a new helper function that re‑uses the core logic.
+

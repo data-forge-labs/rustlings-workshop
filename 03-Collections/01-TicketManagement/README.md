@@ -1,12 +1,18 @@
 # 🦀 TicketManagement — Python to Rust Workshop
 
-*Master Rust's collections (Vec, HashMap) and the iterator pattern — the bread and butter of data processing in any language.*
-
 > **Test-driven approach**: This project includes a Cargo project with progressive unit tests. Each function in `workshop/src/lib.rs` starts as a `todo!()` stub. As you follow each section, replace `todo!()` with real code and run `cd workshop && cargo test` to watch the pass count grow. Your goal: **all 15 tests pass**.
+
+## Why Index Tickets with HashMap?
+
+Ownership note: In Rust, values like `String` and `Vec` live on the heap, while primitive values (e.g., `i32`, `bool`) live on the stack. Ownership rules govern when heap data is cleaned up.
+
 
 ---
 
 ## Why Index Tickets with HashMap?
+
+Ownership note: In Rust, values like `String` and `Vec` live on the heap, while primitive values (e.g., `i32`, `bool`) live on the stack. Ownership rules govern when heap data is cleaned up.
+
 
 **Python pain:** A `dict[Status, list[Ticket]]` is convenient, but you get no help from the type system: a typo in a status key silently creates a new bucket, and a missing key crashes your dashboard at 3 AM.
 
@@ -127,7 +133,7 @@ struct Color([u8; 3]);  // [R, G, B]
 
 ## 3. Concept: Vec — Dynamic Arrays
 
-> **Recap**: `Vec<T>` is taught in depth in [02-VectorFruitSalad](../02-VectorFruitSalad/README.md) (creation, push/pop, indexing, iteration, Python-list parallels) and [13-MutableFruitSalad](../13-MutableFruitSalad/README.md) covers the mutation patterns (insert, remove, sort, dedup, capacity). Read those first if you have not.
+> **Recap**: `Vec<T>` is taught in depth in [02-VectorFruitSalad](../../02-VectorFruitSalad/README.md) (creation, push/pop, indexing, iteration, Python-list parallels) and [13-MutableFruitSalad](../13-MutableFruitSalad/README.md) covers the mutation patterns (insert, remove, sort, dedup, capacity). Read those first if you have not.
 
 The only Vec-specific point that matters for *this* project: `Vec<T>` is the right type when you need an *owned, growable sequence* — which is exactly what we need as the **value type** in our `HashMap<Status, Vec<Ticket>>` index below.
 
@@ -160,7 +166,7 @@ See [§7 — HashMap](#7-concept-hashmap--key-value-store) below for the full `H
 
 ## 4. Concept: Slices — Views into Data
 
-> **Recap**: Slices `&[T]` and array-vs-slice trade-offs were taught in [01-Intro §9 — Arrays and Slices](../../01-Foundations/01-Intro/README.md#9-arrays-and-slices--fixed-and-dynamic-sequences) and in [14-Reference/collections-guide.md](../../14-Reference/collections-guide.md#arrays-tn-vs-slices-t). Read those first if you have not.
+> **Recap**: Slices `&[T]` and array-vs-slice trade-offs were taught in [01-Intro §9 — Arrays and Slices](../../../../01-Foundations/01-Intro/README.md#9-arrays-and-slices--fixed-and-dynamic-sequences) and in [14-Reference/collections-guide.md](../../14-Reference/collections-guide.md#arrays-tn-vs-slices-t). Read those first if you have not.
 
 The only slice-specific point that matters for *this* project: the function `get_tickets_by_status(&self, status: Status) -> &[Ticket]` returns a `&[Ticket]` slice borrowed from the `HashMap`'s `Vec` — no allocation, no copy, and the caller can iterate, sort, or filter without us having to clone:
 
@@ -840,7 +846,7 @@ The supplementary lesson files have been merged into the [Appendix](#12-appendix
 
 ### Next Project
 
-Proceed to [7-Threads](../05-Concurrency/01-Threads/README.md) for **concurrency** — running data pipelines in parallel.
+Proceed to [7-Threads](../../05-Concurrency/01-Threads/README.md) for **concurrency** — running data pipelines in parallel.
 
 ---
 
@@ -2017,3 +2023,9 @@ If you choose (or need) to implement them manually, be careful:
 
 - `Ord` and `PartialOrd` must be consistent with `Eq` and `PartialEq`.
 - `Ord` and `PartialOrd` must be consistent with each other.
+
+## Exercises
+
+* **Easy** – modify the existing function to handle an extra edge case.
+* **Medium** – extend the project with a new helper function that re‑uses the core logic.
+

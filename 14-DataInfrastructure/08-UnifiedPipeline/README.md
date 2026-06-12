@@ -214,3 +214,9 @@ PostgreSQL ─CDC→ Project 07 ─→ Project 08 (orchestrator) ─→ Kafka (P
 - [Apache Airflow vs Rust pipelines](https://www.prefect.io/blog/data-pipeline-orchestration-rust) — when to use which
 - [The Log: What every software engineer should know](https://engineering.linkedin.com/distributed-systems/log-what-every-software-engineer-should-know-about-real-time-datas-unifying) — LinkedIn's log philosophy
 - [Tokio tutorial](https://tokio.rs/tokio/tutorial) — async pipelines
+
+## Exercises
+
+* **Easy** – modify the existing function to handle an extra edge case.
+* **Medium** – extend the project with a new helper function that re‑uses the core logic.
+

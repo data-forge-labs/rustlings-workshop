@@ -6,6 +6,9 @@
 
 ## Why This Section?
 
+Ownership note: In Rust, values like `String` and `Vec` live on the heap, while primitive values (e.g., `i32`, `bool`) live on the stack. Ownership rules govern when heap data is cleaned up.
+
+
 ### The Problem — Python's Garbage Collector Tax
 
 Every Python data engineer has seen this:
@@ -76,28 +79,91 @@ fn process_records() {
 }
 ```
 
-This is the **single most important concept** in Rust. It affects every line of code you write. Master it here, and the rest of the course becomes straightforward.
-
 ---
 
-## What You'll Learn
+## Stack vs Heap — Rust's Memory Model
 
-| # | Concept | Rust | Python | Why it matters |
-|---|---------|------|--------|----------------|
-| 1 | Ownership rules | Ownership model | N/A (GC) | Every value has exactly one owner — no GC needed |
-| 2 | Move semantics | Move (`=`, function args) | N/A (all refs) | Ownership transfers, old binding invalidated |
-| 3 | Borrowing | `&T` (shared ref) | Pass-by-reference | Read data without taking ownership |
-| 4 | Mutable borrowing | `&mut T` (mutable ref) | N/A | Exclusive write access, prevents data races |
-| 5 | Lifetimes | `'a`, `'static` | N/A | Compiler tracks how long references are valid |
-| 6 | Structs | `struct`, `impl` | `class`, `dataclass` | Custom data types with methods |
-| 7 | Traits | `trait` | Protocol / ABC / interface | Define shared behavior across types |
-| 8 | Enums | `enum` | Enum / Union | Type-safe variants (Result, Option, custom) |
-| 9 | Error handling | `Result<T, E>` | Exceptions (`try`/`except`) | Recoverable errors as values |
-| 10 | Error propagation | `?` operator | `raise` / `try` | Short-circuit on error |
-| 11 | Trait derivation | `#[derive(...)]` | `@dataclass`, `@property` | Auto-implement common traits |
-| 12 | Copy & Clone | `Copy`, `Clone` traits | Assignment (always copies) | Explicit vs implicit duplication |
-| 13 | Drop trait | `Drop` | `__del__` (unreliable) | Cleanup on scope exit |
-| 14 | Stack vs heap | Stack / Heap memory | All on heap | Performance-critical distinction |
+Complex types like `String` and `Vec<T>` use a **hybrid approach**: the *metadata* lives on the fast Stack, the *actual data* lives on the dynamic Heap.
+
+### Memory Layout of a Rust `String`
+
+```text
+┌─────────────────────────────────────────────┐
+│  STACK (Variable `s`)                       │
+│  ┌──────────┬─────────┬──────────┐          │
+│  │ ptr      │ len=5   │ cap=8    │          │
+│  │ 0x7f9a.. │         │          │          │
+│  └────┬─────┴─────────┴──────────┘          │
+│       │ points to                            │
+└───────┼─────────────────────────────────────┘
+        ▼
+┌─────────────────────────────────────────────┐
+│  HEAP (Actual data)                         │
+│  ┌─────┬─────┬─────┬─────┬─────┬────┐      │
+│  │ 'H' │ 'e' │ 'l' │ 'l' │ 'o' │ .. │      │
+│  └─────┴─────┴─────┴─────┴─────┴────┘      │
+└─────────────────────────────────────────────┘
+```
+
+**Why split?** The Stack needs fixed-size items at compile time (24 bytes for `String`: 8 ptr + 8 len + 8 cap). The variable-length text lives on the Heap, managed by Rust's ownership rules.
+
+### Key Differences
+
+| Feature | The Stack | The Heap |
+| :--- | :--- | :--- |
+| **Data types** | `i32`, `f64`, `bool`, `char`, `&T` | `String`, `Vec<T>`, `Box<T>`, `HashMap` |
+| **Size** | Fixed at compile time | Dynamic, grows at runtime |
+| **Speed** | Fast (CPU cache friendly) | Slower (pointer chasing) |
+| **Management** | Automatic (push/pop on function call) | Rust's ownership & `Drop` trait |
+| **Capacity** | ~2-8 MB per thread | Limited by system RAM |
+
+**In Python:** every value is a heap-allocated object with ref‑counting overhead. Rust gives you the **choice**: cheap stack values for plain data, explicit heap allocation when you need dynamic growth.
+
+### How Ownership Deallocation Works
+
+When a `String` goes out of scope, Rust calls `drop()` automatically — no GC needed.
+
+```rust
+{
+    let s = String::from("hello"); // heap allocated
+    // ... use s ...
+} // ← s goes out of scope, heap memory freed immediately
+```
+
+Python's `__del__` is unreliable (GC timing); Rust's `Drop` is deterministic at compile time.
+
+### Step-by-Step Execution Trace — Three-Column View
+
+The following trace shows how Rust's ownership model manages stack and heap memory line by line for a realistic data-engineering scenario.
+
+```rust
+fn main() {
+    let x: i32 = 42;                    // Step 1
+    let name = String::from("Rust");    // Step 2
+    let v = vec![1, 2, 3];              // Step 3
+    let b = Box::new(99);               // Step 4
+    let y = x;                          // Step 5: i32: Copy
+    let z = name;                       // Step 6: String: Move!
+    // name is now invalid
+    println!("{}", z);                  // Step 7
+} // Everything dropped here             // Step 8
+```
+
+| Step | Code | Stack (before end of function) | Heap |
+|------|------|--------------------------------|------|
+| 1 | `let x: i32 = 42;` | `x: i32 = 42` (4B) | — |
+| 2 | `let name = String::from("Rust");` | `x: i32 = 42` (4B)<br>`name: String { ptr, len=4, cap=4 }` (24B) | `"Rust"` (4B) ← `name.ptr` |
+| 3 | `let v = vec![1, 2, 3];` | `x: i32 = 42` (4B)<br>`name: String { ptr, len=4, cap=4 }` (24B)<br>`v: Vec { ptr, len=3, cap=3 }` (24B) | `"Rust"` (4B) ← `name.ptr`<br>`[1, 2, 3]` (12B) ← `v.ptr` |
+| 4 | `let b = Box::new(99);` | `x: i32 = 42` (4B)<br>`name: String { ptr, len=4, cap=4 }` (24B)<br>`v: Vec { ptr, len=3, cap=3 }` (24B)<br>`b: Box { ptr }` (8B) | `"Rust"` (4B) ← `name.ptr`<br>`[1, 2, 3]` (12B) ← `v.ptr`<br>`99` (4B) ← `b.ptr` |
+| 5 | `let y = x;` | `x: i32 = 42` (4B)<br>`name: String { ptr, len=4, cap=4 }` (24B)<br>`v: Vec { ptr, len=3, cap=3 }` (24B)<br>`b: Box { ptr }` (8B)<br>`y: i32 = 42` (4B) | (unchanged — `i32` is `Copy`) |
+| 6 | `let z = name;` | `x: i32 = 42` (4B)<br>`name: INVALID (moved)` (24B)<br>`v: Vec { ptr, len=3, cap=3 }` (24B)<br>`b: Box { ptr }` (8B)<br>`y: i32 = 42` (4B)<br>`z: String { ptr, len=4, cap=4 }` (24B) | `"Rust"` (4B) ← `z.ptr`<br>`[1, 2, 3]` (12B) ← `v.ptr`<br>`99` (4B) ← `b.ptr` |
+| 7 | `println!("{}", z);` | (unchanged) | (unchanged — prints "Rust") |
+| 8 | `}` (scope end) | All stack vars dropped | `"Rust"` freed (via `z`)<br>`[1, 2, 3]` freed (via `v`)<br>`99` freed (via `b`) |
+
+**Key observations:**
+- **Step 5** (`y = x`): `i32` implements `Copy` — bitwise copy, both `x` and `y` valid
+- **Step 6** (`z = name`): `String` does **not** implement `Copy` — **move** transfers ownership, `name` becomes invalid
+- **Step 8**: RAII — `z`, `v`, `b` all implement `Drop`, heap memory freed automatically in reverse order
 
 ---
 
@@ -289,7 +355,7 @@ Equivalent to Python's `@dataclass(frozen=True)` — but with zero runtime overh
 
 ## Prerequisites
 
-- Completed [Section 1: Foundations](../01-Foundations/README.md)
+- Completed [Section 1: Foundations](../../../01-Foundations/README.md)
 - Understand basic Rust syntax and types
 
 ## Projects in This Section
@@ -310,3 +376,9 @@ Equivalent to Python's `@dataclass(frozen=True)` — but with zero runtime overh
 4. **04-OBRM** — apply ownership in a resource management project
 5. **05-OwnershipLifetimes** — deep dive into lifetime annotations
 6. **06-ConversionErrorHandling** — the missing reference: every `Option` / `Result` method, `?` with `From`, `thiserror`
+
+## Exercises
+
+* **Easy** – modify the existing function to handle an extra edge case.
+* **Medium** – extend the project with a new helper function that re‑uses the core logic.
+

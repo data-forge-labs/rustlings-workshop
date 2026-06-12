@@ -196,3 +196,9 @@ Run `cd workshop && cargo test` after each step. Groups: `step_01_graph_setup` (
 | Damping factor | Parameter `damping: f64` (default 0.85) | `alpha` parameter | `page_rank` |
 | Top-N ranking | Collect, sort desc, truncate | `sorted(dict.items(), key=-x[1])` | `top_pages` |
 | Convergence check | Sum of absolute deltas | `sum(abs(curr[k]-v) for k,v in prev.items())` | `score_delta` |
+
+## Exercises
+
+* **Easy** – modify the existing function to handle an extra edge case.
+* **Medium** – extend the project with a new helper function that re‑uses the core logic.
+

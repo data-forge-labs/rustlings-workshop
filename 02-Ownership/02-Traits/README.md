@@ -1,12 +1,18 @@
 # Rust for Python Data Engineers — Traits: Rust's Interfaces
 
-*Learn how traits work in Rust — the equivalent of Python's protocols/ABCs/interfaces — and how they enable polymorphism without inheritance.*
-
 > **Test-driven approach**: This project includes a Cargo project with progressive unit tests. Each function in `workshop/src/lib.rs` starts as a `todo!()` stub. As you follow each section, replace `todo!()` with real code and run `cd workshop && cargo test` to watch the pass count grow. Your goal: **all 10 tests pass**.
+
+## Why Use Traits for Shared Behavior?
+
+Ownership note: In Rust, values like `String` and `Vec` live on the heap, while primitive values (e.g., `i32`, `bool`) live on the stack. Ownership rules govern when heap data is cleaned up.
+
 
 ---
 
 ## Why Use Traits for Shared Behavior?
+
+Ownership note: In Rust, values like `String` and `Vec` live on the heap, while primitive values (e.g., `i32`, `bool`) live on the stack. Ownership rules govern when heap data is cleaned up.
+
 
 **Python pain:** Protocols and ABCs are *structural* — any class with matching methods satisfies the interface. A typo like `sumarize` instead of `summarize` only fails at runtime, and the compiler never complains. You also can't add behavior to types you don't own without monkey-patching.
 
@@ -386,7 +392,7 @@ let b = a.clone();  // Explicit deep copy — a still valid
 
 ## 8. Concept: `Drop` — Cleanup
 
-> **Recap**: The `Drop` trait is taught in depth in [04-OBRM §4 — The Drop Trait](../04-OBRM/README.md#4-concept-the-drop-trait--automatic-cleanup), which covers 4 worked examples, the resource-lifecycle diagram, and the data-engineering cleanup patterns. Read that section first if you have not.
+> **Recap**: The `Drop` trait is taught in depth in [04-OBRM §4 — The Drop Trait](../../04-OBRM/README.md#4-concept-the-drop-trait--automatic-cleanup), which covers 4 worked examples, the resource-lifecycle diagram, and the data-engineering cleanup patterns. Read that section first if you have not.
 
 The trait-mechanic view (the angle this Traits file adds): `Drop` is a trait with one method, `drop(&mut self)`, and the compiler calls it automatically at end of scope. That is the whole trait surface — there is no `derive` for `Drop`, you must `impl` it by hand.
 
@@ -398,7 +404,7 @@ trait Drop {
 
 > **Note**: You can move values *into* a `Drop` impl but you cannot return them — `drop` takes `&mut self`, not `self`. If you need to consume the value in cleanup, use the [`mem::take`](https://doc.rust-lang.org/std/mem/fn.take.html) or [`ManuallyDrop`](https://doc.rust-lang.org/std/mem/struct.ManuallyDrop.html) escape hatches.
 
-See [04-OBRM](../04-OBRM/README.md) for the full RAII story, including the borrowing-vs-owning cleanup distinction and the data-engineering ETL pipeline pattern.
+See [04-OBRM](../../04-OBRM/README.md) for the full RAII story, including the borrowing-vs-owning cleanup distinction and the data-engineering ETL pipeline pattern.
 
 ---
 
@@ -550,7 +556,7 @@ The original step-by-step tutorial content has been merged into the [Appendix](#
 
 ### Next Project
 
-Proceed to [5-TicketV2](../02-Ownership/03-TicketV2/README.md) to learn about **enums** and **error handling with `Result`** — essential for production data pipelines.
+Proceed to [5-TicketV2](../../../02-Ownership/03-TicketV2/README.md) to learn about **enums** and **error handling with `Result`** — essential for production data pipelines.
 
 ---
 
@@ -1938,3 +1944,9 @@ A few guidelines to keep in mind:
 #### Testing your knowledge
 
 Before moving on, let's go through one last exercise to consolidate what we've learned. You'll have minimal guidance this time—just the exercise description and the tests to guide you.
+
+## Exercises
+
+* **Easy** – modify the existing function to handle an extra edge case.
+* **Medium** – extend the project with a new helper function that re‑uses the core logic.
+

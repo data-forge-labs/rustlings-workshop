@@ -72,7 +72,7 @@ matching at scale.
 
 ## 2. Prerequisites
 
-- Completed [Section 3: Collections](../../03-Collections/README.md) --
+- Completed [Section 3: Collections](../../../../03-Collections/README.md) --
   `HashMap`, iterators
 - Understanding of closures and functional iteration
 - Basic familiarity with `cd workshop && cargo run` and CLI arguments
@@ -398,3 +398,9 @@ pub fn guess_shift_parallel(text: &str, depth: usize) -> (usize, String, f32) {
 | Functional iteration | `max(key=...)` | `guess_shift` |
 | Rayon parallel iterators | `concurrent.futures.ProcessPoolExecutor` | `guess_shift_parallel` |
 | Letter frequency scoring | `collections.Counter` + manual score | `score_text` |
+
+## Exercises
+
+* **Easy** – modify the existing function to handle an extra edge case.
+* **Medium** – extend the project with a new helper function that re‑uses the core logic.
+

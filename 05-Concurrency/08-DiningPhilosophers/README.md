@@ -4,39 +4,8 @@
 
 ## Why Order Lock Acquisition?
 
-**Python pain:** A deadlocked program simply hangs. There's no warning, no traceback — just two threads holding the lock the other needs, forever. Detection is manual and bug-prone:
+Ownership note: In Rust, values like `String` and `Vec` live on the heap, while primitive values (e.g., `i32`, `bool`) live on the stack. Ownership rules govern when heap data is cleaned up.
 
-```python
-def thread_a():                       # holds Lock1, waits Lock2
-    with lock1: with lock2: pass
-def thread_b():                       # holds Lock2, waits Lock1
-    with lock2: with lock1: pass
-# lucky timing → silent deadlock, "Done" never prints
-```
-
-**Rust fix:** Rust can't prevent deadlocks at compile time (it's undecidable), but it makes lock acquisition explicit and forces ownership to be thought through. Two well-known strategies work identically in both languages:
-
-```rust
-// Ordered acquisition — break circular wait
-if id % 2 == 0 {
-    let _ = left.lock().unwrap();
-    let _ = right.lock().unwrap();
-} else {
-    let _ = right.lock().unwrap();   // odd ids acquire right first
-    let _ = left.lock().unwrap();
-}
-// alternative: Mutex::try_lock() breaks hold-and-wait
-```
-
-## At a Glance
-
-| # | Concept | Rust | Python | Why it matters |
-|---|---------|------|--------|----------------|
-| 1 | Dining Philosophers | `struct` + `Mutex<Fork>` | `Thread` + `Lock` | Classic deadlock demonstration |
-| 2 | Deadlock Conditions | 4 necessary conditions | Same conditions | Understand why deadlocks occur |
-| 3 | Non-Blocking Lock | `Mutex::try_lock()` | `lock.acquire(blocking=False)` | Break hold-and-wait |
-| 4 | Ordered Acquisition | lock ordering strategy | Same strategy | Break circular wait |
-| 5 | Resource Structs | `Arc<Mutex<Fork>>` | `threading.Lock` | Represent shared resources |
 
 ---
 ---
@@ -62,8 +31,8 @@ In Python, deadlocks happen the same way with `threading.Lock`. The prevention t
 
 ## 2. Prerequisites
 
-- `Mutex` and `Arc` from [03-DataRace](../03-DataRace/README.md)
-- Thread spawning from [01-Threads](../01-Threads/README.md)
+- `Mutex` and `Arc` from [03-DataRace](../../03-DataRace/README.md)
+- Thread spawning from [01-Threads](../../01-Threads/README.md)
 
 ## 3. Concept: The dining philosophers problem
 
@@ -236,3 +205,9 @@ This runs the full dining simulation with 5 philosophers eating and thinking in 
 | Deadlock prevention 1 | `try_lock_both` (breaks hold-and-wait) | Same logic |
 | Deadlock prevention 2 | `lock_ordered` (breaks circular wait) | Same logic |
 | Thread synchronization | `Mutex` + `Arc` | `Lock` + no Arc needed |
+
+## Exercises
+
+* **Easy** – modify the existing function to handle an extra edge case.
+* **Medium** – extend the project with a new helper function that re‑uses the core logic.
+

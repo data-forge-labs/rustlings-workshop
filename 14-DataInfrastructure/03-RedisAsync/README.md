@@ -183,3 +183,9 @@ INFO cache stats hits=1 misses=0 ratio=1
 - [Redis Streams tutorial](https://redis.io/docs/latest/develop/data-types/streams/) — `XADD`/`XREADGROUP` semantics
 - [Consumer groups in Redis](https://redis.io/docs/latest/commands/xreadgroup/) — load balancing
 - [Idempotency keys in distributed systems](https://martin.kleppmann.com/blog/2016/02/08/how-to-do-distributed-locking.html) — Redlock and limits
+
+## Exercises
+
+* **Easy** – modify the existing function to handle an extra edge case.
+* **Medium** – extend the project with a new helper function that re‑uses the core logic.
+

@@ -2,6 +2,8 @@
 
 > **Test-driven approach**: This project includes a Cargo project with progressive unit tests. Each function in `workshop/src/lib.rs` starts as a `todo!()` stub. As you follow each section, replace `todo!()` with real code and run `cd workshop && cargo test` to watch the pass count grow. Your goal: **all 12 tests pass**.
 
+## Why Use Atomics for Counters?
+
 ---
 
 ## Why Use Atomics for Counters?
@@ -52,8 +54,8 @@ Atomics are the building blocks of lock-free data structures. They use CPU-level
 
 ## 2. Prerequisites
 
-- Threads from [01-Threads](../01-Threads/README.md)
-- `Arc` from [03-DataRace](../03-DataRace/README.md)
+- Threads from [01-Threads](../../01-Threads/README.md)
+- `Arc` from [03-DataRace](../../03-DataRace/README.md)
 
 ## 3. Concept: Atomic types
 
@@ -264,3 +266,9 @@ Note that `atomic_counter`, `relaxed_ordering_demo`, and `fetch_add_demo` alread
 | Acquire/Release | `Ordering::Acquire`/`Release` | No equivalent |
 | Atomic add | `fetch_add()` | No equivalent |
 | Atomic CAS | `compare_exchange()` | No equivalent |
+
+## Exercises
+
+* **Easy** – modify the existing function to handle an extra edge case.
+* **Medium** – extend the project with a new helper function that re‑uses the core logic.
+

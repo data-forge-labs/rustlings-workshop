@@ -60,21 +60,6 @@ This section shows you two concrete integration strategies:
 
 ---
 
-## What You'll Learn
-
-| # | Concept | Rust Tool / Module | Python Equivalent | Purpose |
-|---|---------|--------------------|------------------|---------|
-| 1 | Interactive Rust | `evcxr` Jupyter kernel | `ipykernel` | Run Rust cells in Jupyter |
-| 2 | Array operations | `ndarray` crate | `numpy` | N-dimensional arrays |
-| 3 | Plotting from Rust | `plotters` crate | `matplotlib` | Data visualization |
-| 4 | Parallel computation | `rayon` crate | `concurrent.futures` | Automatic parallelization |
-| 5 | DataFrames in Rust | `polars` (conceptual) | `pandas` | Fast DataFrame operations |
-| 6 | Python-Rust FFI | PyO3 (conceptual) | Cython, C extensions | Call Rust from Python |
-| 7 | Benchmarking | `criterion` crate | `timeit`, `pytest-benchmark` | Performance measurement |
-| 8 | Type safety | Compile-time checks | Runtime duck typing | Catch errors before execution |
-
----
-
 ## Concepts at a Glance
 
 ### 1. `evcxr` — Rust in Jupyter Notebooks
@@ -162,7 +147,7 @@ for result in reader.deserialize() {
 
 ## Prerequisites
 
-- Completed [Section 5: Concurrency](../05-Concurrency/README.md)
+- Completed [Section 5: Concurrency](../../../../../05-Concurrency/README.md)
 - Familiar with Jupyter notebooks
 
 ## Projects in This Section
@@ -180,3 +165,9 @@ for result in reader.deserialize() {
 2. Explore **01-ExploringPandas** to see Rust and Python working together
 3. **03-PyO3Bindings** shows the *producer* direction — write a Python module in Rust
 4. **04-GILRelease** shows the killer feature: `Python::allow_threads` releases the GIL so other Python threads can run while Rust computes
+
+## Exercises
+
+* **Easy** – modify the existing function to handle an extra edge case.
+* **Medium** – extend the project with a new helper function that re‑uses the core logic.
+

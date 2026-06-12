@@ -46,7 +46,7 @@ salad.sort();              // in-place sort
 
 - Ownership and borrowing basics (`&mut` references)
 - `Vec` creation and indexing
-- Project `../02-VectorFruitSalad/README.md` -- Vec fundamentals
+- Project `../../02-VectorFruitSalad/README.md` -- Vec fundamentals
 
 ## 3. Concept: Vec ownership and mutation
 
@@ -311,3 +311,9 @@ Write a function `compress<T: Clone + Eq>(v: &[T]) -> Vec<T>` that removes conse
 | `&mut Vec<T>` | Mutable reference for mutation | Any reference can mutate |
 
 Vec mutation patterns in Rust match Python's list operations closely, with the key difference that every mutation requires explicit `&mut` access. This makes data-flow clear and prevents aliasing bugs, especially in concurrent or complex code.
+
+## Exercises
+
+* **Easy** – modify the existing function to handle an extra edge case.
+* **Medium** – extend the project with a new helper function that re‑uses the core logic.
+

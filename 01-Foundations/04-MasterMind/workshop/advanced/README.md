@@ -54,3 +54,9 @@ cargo test
 | `///` doc comments | `secret.rs`, `game.rs` | Rustdoc documentation |
 | `#[cfg(test)] mod tests` | Each source file | Inline unit tests |
 | Library + binary crate | `Cargo.toml` | Separate logic from I/O |
+
+## Exercises
+
+* **Easy** – modify the existing function to handle an extra edge case.
+* **Medium** – extend the project with a new helper function that re‑uses the core logic.
+

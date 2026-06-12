@@ -180,3 +180,9 @@ INFO readback=50 revenue=12745.0 buckets=1
 - [ClickHouse MergeTree](https://clickhouse.com/docs/en/engines/table-engines/mergetree-family/mergetree) — engine reference
 - [Batching best practices](https://clickhouse.com/docs/en/cloud/bestpractices/batching-inserts) — when and how to batch
 - [ClickHouse Kafka table engine](https://clickhouse.com/docs/en/engines/table-engines/integrations/kafka) — direct Kafka sink (Project 07 alternative)
+
+## Exercises
+
+* **Easy** – modify the existing function to handle an extra edge case.
+* **Medium** – extend the project with a new helper function that re‑uses the core logic.
+

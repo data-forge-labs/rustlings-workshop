@@ -34,3 +34,9 @@
 ```bash
 cargo test
 ```
+
+## Exercises
+
+* **Easy** – modify the existing function to handle an extra edge case.
+* **Medium** – extend the project with a new helper function that re‑uses the core logic.
+

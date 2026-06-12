@@ -6,6 +6,9 @@
 
 ## Why This Section?
 
+Ownership note: In Rust, values like `String` and `Vec` live on the heap, while primitive values (e.g., `i32`, `bool`) live on the stack. Ownership rules govern when heap data is cleaned up.
+
+
 ### The Problem — Python's GIL Cage
 
 Python's Global Interpreter Lock (GIL) means your multi-threaded code **doesn't actually run in parallel**:
@@ -252,7 +255,7 @@ These marker traits tell the compiler what's safe to share:
 
 ## Prerequisites
 
-- Completed [Section 3: Collections](../03-Collections/README.md)
+- Completed [Section 3: Collections](../../../03-Collections/README.md)
 - Understand ownership deeply from Section 2
 
 ## Projects in This Section
@@ -281,3 +284,9 @@ These marker traits tell the compiler what's safe to share:
 3. Build **03-DataRace** to see Rust prevent data races at compile time
 4. Explore **04-Atomics** through **11-SendSync** for advanced concurrency
 5. Finish with **10-RayonChallenge** (data parallelism)
+
+## Exercises
+
+* **Easy** – modify the existing function to handle an extra edge case.
+* **Medium** – extend the project with a new helper function that re‑uses the core logic.
+

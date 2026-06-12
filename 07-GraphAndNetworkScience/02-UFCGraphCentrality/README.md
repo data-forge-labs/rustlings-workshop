@@ -228,3 +228,9 @@ Run `cd workshop && cargo test` after each step. Groups: `step_01_graph_building
 | Closeness centrality | `reachable / sum_dist` | `nx.closeness_centrality` | `closeness_centrality` |
 | Max by float key | `.max_by(partial_cmp)` | `max(dict, key=dict.get)` | `most_central_node` |
 | Sorted formatted output | Sort keys, `format!("{:.4}")` | f-string formatting | `format_centrality` |
+
+## Exercises
+
+* **Easy** – modify the existing function to handle an extra edge case.
+* **Medium** – extend the project with a new helper function that re‑uses the core logic.
+

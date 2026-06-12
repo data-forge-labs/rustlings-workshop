@@ -1,8 +1,8 @@
 # 🦀 Project 07: Next-Generation Columnar Formats — Beyond Parquet
 
-*Why Python data engineers are hitting Parquet's limits, and the four new formats (F3, Lance, Vortex, Nimble) racing to replace it.*
-
 > **Test-driven approach**: This project includes 4 Cargo sub-projects with progressive unit tests. Each function in `src/lib.rs` starts as a `todo!()` stub. As you follow each section, replace `todo!()` with real code and run `cargo test --workspace` to watch the pass count grow. Your goal: **all benchmark tests pass** plus write a working warehouse.
+
+## Why Move Beyond Parquet?
 
 ---
 
@@ -79,9 +79,9 @@ This project teaches the **four new formats** racing to fix these pain points:
 
 ## 2. Prerequisites
 
-- Completed [Project 55: Parquet](../03-Parquet/README.md) — comfortable with columnar concepts
-- Completed [Project 56: Arrow](../04-Arrow/README.md) — `RecordBatch` fluency
-- Familiarity with async Rust from [Section 5: Concurrency](../../05-Concurrency/README.md)
+- Completed [Project 55: Parquet](../../03-Parquet/README.md) — comfortable with columnar concepts
+- Completed [Project 56: Arrow](../../04-Arrow/README.md) — `RecordBatch` fluency
+- Familiarity with async Rust from [Section 5: Concurrency](../../../05-Concurrency/README.md)
 - The `tokio`, `lance`, and `vortex` crates are in the workspace `Cargo.toml`
 
 ## 3. Why Parquet Hits a Wall for AI
@@ -287,3 +287,9 @@ JSON and Markdown results are written to `warehouse/results/` after running `car
 - [F3 paper on ACM](https://dl.acm.org/doi/10.1145/3749163) — SIGMOD 2026
 
 ---
+
+## Exercises
+
+* **Easy** – modify the existing function to handle an extra edge case.
+* **Medium** – extend the project with a new helper function that re‑uses the core logic.
+

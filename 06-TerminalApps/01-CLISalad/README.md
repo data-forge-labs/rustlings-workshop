@@ -1,40 +1,8 @@
 # Project 18: CLI Salad -- Command-Line Parsing with clap
 
 > **Test-driven approach**: This project includes a Cargo project with progressive
-> unit tests. Each function in `workshop/src/lib.rs` starts as a `todo!()` stub. As you
-> follow each section, replace `todo!()` with real code and run `cd workshop && cargo test` to
-> watch the pass count grow. Your goal: **all 10 tests pass**.
 
 ## Why Use `clap` for CLI Parsing?
-
-**Python pain:** `argparse` works, but every project repeats the same `parser.add_argument(...)` boilerplate. A typo in an argument name is a runtime error, not a compile error. And the Python interpreter adds 100-300ms of startup per CLI call — adding up fast in pipelines that spawn hundreds of small tools.
-
-**Rust fix:** `clap`'s derive API turns CLI parsing into a single struct with `#[arg(...)]` attributes — automatic `--help`, compile-time validation, and single-digit millisecond startup:
-
-```rust
-use clap::Parser;
-
-#[derive(Parser)]
-struct Args {
-    #[arg(short, long, default_value_t = 5)]
-    count: usize,
-}
-
-fn main() { println!("Count: {}", Args::parse().count); }
-```
-
-## At a Glance
-
-| # | Concept | Rust | Python | Why it matters |
-|---|---------|------|--------|----------------|
-| 1 | Argument iteration | `std::env::args()` | `sys.argv` | Collect raw CLI argument strings |
-| 2 | Builder API | `clap::Command::new(...).arg(...)` | `argparse.ArgumentParser` | Define CLI args with help text |
-| 3 | Derive API | `#[derive(Parser)]` | `argparse.Namespace` | Auto-generate parser from struct |
-| 4 | Random shuffle | `rand::seq::SliceRandom` | `random.shuffle()` | Randomize fruit order in-place |
-| 5 | Random subset | `.choose_multiple()` | `random.sample()` | Pick N distinct random fruits |
-| 6 | Custom error enum | `enum SaladError` | `Exception` subclass | Model domain-specific errors |
-| 7 | Match on `Result` | `match` on `Result` | `try/except` | Handle each error variant distinctly |
-| 8 | Testable CLI | `fn(Vec<String>) -> Result<...>` | N/A | Unit-test CLI without spawning process |
 
 ---
 
@@ -258,3 +226,9 @@ Run `cd workshop && cargo test` after each step. Groups: `step_01_fruit_list` (3
 | Random subset | `choose_multiple` | `random.sample()` | Random selection |
 | Error handling | `Result<T, E>` + `match` | `try/except` | `fruit_salad_cli` |
 | Testing CLI logic | Function taking `Vec<String>`, returning `Result` | Function taking list, returning tuple | `fruit_salad_cli` |
+
+## Exercises
+
+* **Easy** – modify the existing function to handle an extra edge case.
+* **Medium** – extend the project with a new helper function that re‑uses the core logic.
+

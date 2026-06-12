@@ -64,9 +64,9 @@ hot paths. Understanding when and how to do this safely is critical.
 
 ## 2. Prerequisites
 
-- Completed [Section 2: Ownership](../../02-Ownership/README.md) -- references and
+- Completed [Section 2: Ownership](../../../../02-Ownership/README.md) -- references and
   borrowing concepts
-- Completed [Section 3: Collections](../../03-Collections/README.md) -- slices and
+- Completed [Section 3: Collections](../../../../03-Collections/README.md) -- slices and
   indexing
 
 ## 3. Concept: Safe Rust Guarantees
@@ -311,3 +311,9 @@ pub fn safety_concepts() -> Vec<&'static str> {
 | Raw pointers `*const T` / `*mut T` | No equivalent (ctypes is closest) | Parameter types in unsafe functions |
 | `split_at_mut` | List slicing (copies) | `safe_split_sum` |
 | When to use unsafe | N/A (always safe) | `safety_concepts` discussion |
+
+## Exercises
+
+* **Easy** – modify the existing function to handle an extra edge case.
+* **Medium** – extend the project with a new helper function that re‑uses the core logic.
+

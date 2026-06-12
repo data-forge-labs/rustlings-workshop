@@ -4,31 +4,8 @@
 
 ## Why Use Interior Mutability?
 
-**Python pain:** Any variable can be mutated through any reference (`r1 = data; r2 = data; r1.append(...)`). It's easy to write but impossible to reason about safely — share that code across threads and you've got a disaster.
+Ownership note: In Rust, values like `String` and `Vec` live on the heap, while primitive values (e.g., `i32`, `bool`) live on the stack. Ownership rules govern when heap data is cleaned up.
 
-**Rust fix:** `Cell<T>` and `RefCell<T>` opt into controlled interior mutability through a *shared* reference, with the trade-off that borrow rules move from compile time to runtime:
-
-```rust
-use std::cell::Cell;
-let counter = Cell::new(0usize);
-let r1 = &counter;
-let r2 = &counter;
-r1.set(r1.get() + 1);
-r2.set(r2.get() + 1);
-assert_eq!(counter.get(), 2);  // both refs mutated through &Cell
-```
-
-`Cell` is deliberately `!Sync` — the compiler will refuse to share it across threads and direct you to `Mutex` instead.
-
-## At a Glance
-
-| # | Concept | Rust | Python | Why it matters |
-|---|---------|------|--------|----------------|
-| 1 | Interior Mutability | `Cell<T>` | Direct variable mutation | Mutate through `&Cell<T>` (Copy types) |
-| 2 | Runtime Borrow Checking | `RefCell<T>` | N/A | Dynamic borrow rules for non-Copy types |
-| 3 | Data Race vs Race Condition | Rust concepts | Same concepts | One is caught at compile time, one isn't |
-| 4 | Compile-Time Prevention | `Send`/`Sync` + ownership | None | Data races eliminated by the compiler |
-| 5 | Programmer Responsibility | Race conditions | Same | Even safe Rust can't catch logic errors |
 
 ---
 
@@ -50,8 +27,8 @@ Rust's ownership rules prevent **data races** (unsynchronized concurrent memory 
 
 ## 2. Prerequisites
 
-- Ownership from [TicketV1](../../02-Ownership/01-TicketV1/README.md)
-- `Mutex` from [03-DataRace](../03-DataRace/README.md)
+- Ownership from [TicketV1](../../../../02-Ownership/01-TicketV1/README.md)
+- `Mutex` from [03-DataRace](../../03-DataRace/README.md)
 
 ## 3. Concept: Cell — interior mutability for Copy types
 
@@ -258,3 +235,9 @@ Implement each function in `workshop/src/lib.rs`:
 | Mutable borrow at runtime | `refcell.borrow_mut()` | No equivalent |
 | Data race | Rust eliminates at compile time | GIL + Lock |
 | Race condition | Programmer responsibility | Programmer responsibility |
+
+## Exercises
+
+* **Easy** – modify the existing function to handle an extra edge case.
+* **Medium** – extend the project with a new helper function that re‑uses the core logic.
+

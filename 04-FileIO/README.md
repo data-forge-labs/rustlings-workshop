@@ -202,7 +202,7 @@ Query "AVG(val)"     → read full file   → read one column
 
 ## Prerequisites
 
-- Completed [Section 3: Collections](../03-Collections/README.md)
+- Completed [Section 3: Collections](../../../03-Collections/README.md)
 - Understand `Result` and error handling
 
 ## Projects in This Section
@@ -228,3 +228,9 @@ Query "AVG(val)"     → read full file   → read one column
 6. Stream events with **06-JsonStream**
 7. Reflect with **DataManagementLessonReflection**
 8. Explore next-gen formats with **07-NextGenFormats** — benchmark Lance, Vortex, Nimble, and F3 against Parquet
+
+## Exercises
+
+* **Easy** – modify the existing function to handle an extra edge case.
+* **Medium** – extend the project with a new helper function that re‑uses the core logic.
+

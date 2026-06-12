@@ -172,7 +172,7 @@ DuckDB is **the** analytical database for embedded use. It's used in:
 
 ## 2. Prerequisites
 
-- Completed [04-FileIO/04-Arrow](../04-FileIO/04-Arrow/README.md) — comfortable with progressive workshops.
+- Completed [04-FileIO/04-Arrow](../../../04-FileIO/04-Arrow/README.md) — comfortable with progressive workshops.
 - Familiar with SQL basics (SELECT, INSERT, GROUP BY).
 - Understands `Result<T, E>`.
 

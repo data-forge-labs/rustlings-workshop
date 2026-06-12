@@ -1,8 +1,8 @@
 # Project 61: Nimble — Meta's Wide-Table Columnar Format (Design Study)
 
-*Nimble has no production Rust crate yet. This project teaches its design by sketching a hypothetical Rust API and comparing it to Parquet and Lance.*
-
 > **Test-driven approach**: Each function in `src/lib.rs` starts as a `todo!()` stub. **Goal: all 8 tests pass.**
+
+## Why Nimble?
 
 ---
 

@@ -8,6 +8,9 @@
 
 ## Why This Reference?
 
+Ownership note: In Rust, values like `String` and `Vec` live on the heap, while primitive values (e.g., `i32`, `bool`) live on the stack. Ownership rules govern when heap data is cleaned up.
+
+
 **Python pain:** Python's collections (`list`, `dict`, `set`, `deque`, `OrderedDict`) all have different creation syntaxes, methods, and performance trade-offs — and the official docs are scattered. You end up with browser tabs to five different pages.
 
 **Rust fix:** This document puts every `std::collections` type on one page with the *same* fruit-salad example, so you can compare `Vec`, `VecDeque`, `LinkedList`, `HashMap`, `BTreeMap`, `HashSet`, `BTreeSet`, and `BinaryHeap` side by side.
@@ -256,15 +259,21 @@ The syntax `FRUITS: List[str] = [...]` is invalid in Rust due to its Python-styl
 
 For guided learning of each collection type, see:
 
-- [01-TicketManagement](../01-TicketManagement/README.md) — `Vec`, `HashMap`, `BTreeMap`, iterators, lifetimes (canonical collections teaching)
-- [02-VectorFruitSalad](../02-VectorFruitSalad/README.md) — `Vec<T>`, `SliceRandom`, `rand` integration
-- [03-ArrayFruitSalad](../03-ArrayFruitSalad/README.md) — `[T; N]` fixed-size arrays
-- [04-HashMapCount](../04-HashMapCount/README.md) — `HashMap`, `.entry().or_insert()` upsert, `BTreeMap` for sorting
-- [05-LinkedListFruitSalad](../05-LinkedListFruitSalad/README.md) — `LinkedList`, when (not) to use it
-- [06-VecDequeFruitSalad](../06-VecDequeFruitSalad/README.md) — `VecDeque`, ring buffer
-- [07-HashMapLanguage](../07-HashMapLanguage/README.md) — `HashMap` with complex values
-- [09-BinaryHeapFruit](../09-BinaryHeapFruit/README.md) — priority queue
+- [01-TicketManagement](../../01-TicketManagement/README.md) — `Vec`, `HashMap`, `BTreeMap`, iterators, lifetimes (canonical collections teaching)
+- [02-VectorFruitSalad](../../02-VectorFruitSalad/README.md) — `Vec<T>`, `SliceRandom`, `rand` integration
+- [03-ArrayFruitSalad](../../03-ArrayFruitSalad/README.md) — `[T; N]` fixed-size arrays
+- [04-HashMapCount](../../04-HashMapCount/README.md) — `HashMap`, `.entry().or_insert()` upsert, `BTreeMap` for sorting
+- [05-LinkedListFruitSalad](../../05-LinkedListFruitSalad/README.md) — `LinkedList`, when (not) to use it
+- [06-VecDequeFruitSalad](../../06-VecDequeFruitSalad/README.md) — `VecDeque`, ring buffer
+- [07-HashMapLanguage](../../07-HashMapLanguage/README.md) — `HashMap` with complex values
+- [09-BinaryHeapFruit](../../09-BinaryHeapFruit/README.md) — priority queue
 - [10-BTreeSetFruit](../10-BTreeSetFruit/README.md) — ordered set
 - [11-HashSetFruit](../11-HashSetFruit/README.md) — unique items, membership testing
 - [12-RustIterators](../12-RustIterators/README.md) — lazy functional iteration
 - [13-MutableFruitSalad](../13-MutableFruitSalad/README.md) — `Vec` mutation patterns (push, pop, insert, remove, capacity)
+
+## Exercises
+
+* **Easy** – modify the existing function to handle an extra edge case.
+* **Medium** – extend the project with a new helper function that re‑uses the core logic.
+

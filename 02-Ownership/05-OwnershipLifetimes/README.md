@@ -1,13 +1,18 @@
 # Lifetime Annotations and Move Semantics -- Mastering the Borrow Checker
 
 > **Test-driven approach**: This project includes a Cargo project with progressive
-> unit tests. Each function in `workshop/src/lib.rs` starts as a `todo!()` stub. As you
-> follow each section, replace `todo!()` with real code and run `cd workshop && cargo test` to
-> watch the pass count grow. Your goal: **all 14 tests pass**.
+
+## Why Annotate Lifetimes?
+
+Ownership note: In Rust, values like `String` and `Vec` live on the heap, while primitive values (e.g., `i32`, `bool`) live on the stack. Ownership rules govern when heap data is cleaned up.
+
 
 ---
 
 ## Why Annotate Lifetimes?
+
+Ownership note: In Rust, values like `String` and `Vec` live on the heap, while primitive values (e.g., `i32`, `bool`) live on the stack. Ownership rules govern when heap data is cleaned up.
+
 
 **Python pain:** You never think about whether a reference is still valid — the GC keeps objects alive as long as anything references them. There's no way to express "this reference must not outlive that data," and you pay for that safety with reference-count updates, cycle detection, and unpredictable GC pauses.
 
@@ -76,9 +81,9 @@ In this workshop you will:
 
 Before starting, you should be comfortable with:
 
-- **Structs and `impl` blocks** -- covered in `../01-MasterMind/README.md`.
-- **References (`&T`, `&mut T`)** -- covered in `../02-Ownership/01-TicketV1/README.md`.
-- **Ownership basics** -- moving, borrowing, and the three ownership rules from `../02-Ownership/01-TicketV1/`.
+- **Structs and `impl` blocks** -- covered in `../../01-MasterMind/README.md`.
+- **References (`&T`, `&mut T`)** -- covered in `../../../02-Ownership/01-TicketV1/README.md`.
+- **Ownership basics** -- moving, borrowing, and the three ownership rules from `../../../02-Ownership/01-TicketV1/`.
 - Basic **function syntax** and **string slices (`&str`)** .
 
 If any of these feel unfamiliar, revisit the prerequisite projects first.
@@ -504,3 +509,9 @@ Implement `Config::new` and a `Config::endpoint` method that returns a `String` 
 **What you have learned**: You can now write functions and structs that use references with explicit lifetime annotations. You understand why Rust requires lifetimes (no GC) and how they differ from Python's reference-counting model. You can distinguish between move and copy semantics and know when each applies.
 
 **Next steps**: Continue to Section 3 (Collections) where you will use these same ownership and lifetime concepts with `Vec`, `HashMap`, and iterators -- all of which depend on understanding how references and lifetimes work.
+
+## Exercises
+
+* **Easy** – modify the existing function to handle an extra edge case.
+* **Medium** – extend the project with a new helper function that re‑uses the core logic.
+

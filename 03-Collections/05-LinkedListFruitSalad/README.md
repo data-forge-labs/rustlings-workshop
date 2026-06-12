@@ -8,6 +8,9 @@
 
 ## Why (Rarely) LinkedList?
 
+Ownership note: In Rust, values like `String` and `Vec` live on the heap, while primitive values (e.g., `i32`, `bool`) live on the stack. Ownership rules govern when heap data is cleaned up.
+
+
 **Python pain:** Python's `collections.deque` is fast at both ends, but there's no true linked list in the standard library. When you really need a linked structure, you reach for a third-party library or build your own.
 
 **Rust fix:** `LinkedList<T>` gives you a true doubly-linked list with O(1) splice/split — but the Rust docs explicitly recommend `Vec` or `VecDeque` for almost everything. This project teaches you *when* `LinkedList` is actually the right choice, and *when* it's a footgun (poor cache locality).
@@ -514,3 +517,9 @@ This tutorial built a fruit salad program using `LinkedList`, from basic list op
 - **Advanced Features**: Cursor-based middle insertions and robust error handling.
 - **Error Handling**: Robust checks for empty lists and invalid indices.
 - **Interactive Input**: Using `std::io` for user interaction.
+
+## Exercises
+
+* **Easy** – modify the existing function to handle an extra edge case.
+* **Medium** – extend the project with a new helper function that re‑uses the core logic.
+

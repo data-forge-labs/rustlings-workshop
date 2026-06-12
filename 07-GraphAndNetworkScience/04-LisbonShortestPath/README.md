@@ -267,3 +267,9 @@ Run `cd workshop && cargo test` after each step. Groups: `step_01_graph_setup` (
 | Path reconstruction | `prev` map, walk backwards | `prev` dict, reverse | `shortest_path` |
 | Path weight | `HashMap<(usize,usize), f64>` + `windows(2)` | dict lookup + loop | `path_weight` |
 | Path formatting | `map + join(" -> ")` | `" -> ".join(map(str, path))` | `format_path` |
+
+## Exercises
+
+* **Easy** – modify the existing function to handle an extra edge case.
+* **Medium** – extend the project with a new helper function that re‑uses the core logic.
+

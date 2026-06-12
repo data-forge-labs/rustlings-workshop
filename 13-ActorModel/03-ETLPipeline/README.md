@@ -167,3 +167,9 @@ cargo test
   source — each is a different kind of slowness).
 - **Horizontal scale**: each stage can be replaced with N parallel tasks
   (just clone the channel sender) to add throughput.
+
+## Exercises
+
+* **Easy** – modify the existing function to handle an extra edge case.
+* **Medium** – extend the project with a new helper function that re‑uses the core logic.
+

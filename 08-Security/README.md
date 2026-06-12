@@ -59,25 +59,6 @@ Python protects you from memory bugs via the **GC and runtime checks** — but a
 
 ---
 
-## What You'll Learn
-
-| # | Concept | Rust Type / Module | Python Equivalent | Purpose |
-|---|---------|--------------------|------------------|---------|
-| 1 | Unsafe Rust | `unsafe` keyword | N/A (always safe) | Raw pointer deref, FFI, intrinsics |
-| 2 | Raw pointers | `*const T`, `*mut T` | N/A | Direct memory access (no safety checks) |
-| 3 | FFI | `extern "C"` | `ctypes`, `cffi` | Call C libraries from Rust |
-| 4 | Safety invariants | Ownership rules | N/A | What unsafe code must uphold |
-| 5 | SHA hashing | `sha2::Sha256` | `hashlib.sha256` | Cryptographic hash computation |
-| 6 | BLAKE2 hashing | `blake2::Blake2b` | `hashlib.blake2b` | Fast, modern hash |
-| 7 | Digest trait | `Digest` trait | N/A | Unified hashing interface |
-| 8 | Caesar cipher | Character shifting | `str.translate()` | Classic cipher, cryptanalysis demo |
-| 9 | Frequency analysis | Statistical scoring | `collections.Counter` | Cipher breaking technique |
-| 10 | Parallel cracking | `rayon` | `concurrent.futures` | Brute-force in parallel |
-| 11 | Memory safety model | Ownership + borrowing | N/A | No buffer overflows, use-after-free |
-| 12 | Compile-time checks | The borrow checker | N/A | Bugs caught before runtime |
-
----
-
 ## Concepts at a Glance
 
 ### 1. `unsafe` — The Escape Hatch
@@ -203,7 +184,7 @@ Rust's **ownership model** eliminates 70% of the bugs that plague C/C++ — the 
 
 ## Prerequisites
 
-- Completed [Section 3: Collections](../03-Collections/README.md)
+- Completed [Section 3: Collections](../../../../../03-Collections/README.md)
 - Understand ownership and unsafe concepts
 
 ## Projects in This Section
@@ -230,3 +211,9 @@ Rust's **ownership model** eliminates 70% of the bugs that plague C/C++ — the 
 6. **05-Ed25519** for digital signatures (JWT, software updates, blockchain)
 7. **06-RustlsTLS** for memory-safe TLS (no OpenSSL CVEs)
 8. Reflect with **SafetyLessonReflection** and **SecurityLessonReflection**
+
+## Exercises
+
+* **Easy** – modify the existing function to handle an extra edge case.
+* **Medium** – extend the project with a new helper function that re‑uses the core logic.
+

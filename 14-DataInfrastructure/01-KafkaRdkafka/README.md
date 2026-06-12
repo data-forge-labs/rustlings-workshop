@@ -222,3 +222,9 @@ Open http://localhost:8080 (Kafka UI) to inspect the `order.order` topic.
 - [Apache Kafka — Idempotent Producer](https://kafka.apache.org/documentation/#producerconfigs_enable.idempotence) — broker-side guarantees
 - [Debezium Outbox Pattern](https://debezium.io/documentation/reference/stable/transformations/outbox-event-router.html) — production outbox
 - [Tokio `StreamConsumer` example](https://github.com/fede1024/rust-rdkafka/blob/master/examples/asynchronous_processing.rs) — async producer/consumer pattern
+
+## Exercises
+
+* **Easy** – modify the existing function to handle an extra edge case.
+* **Medium** – extend the project with a new helper function that re‑uses the core logic.
+

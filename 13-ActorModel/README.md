@@ -63,3 +63,9 @@ or consumers, sequential processing semantics, or a need for backpressure.
 Use locks when you have: simple, low-contention shared state, or need to
 read it from many tasks concurrently without coordination.
 
+
+## Exercises
+
+* **Easy** – modify the existing function to handle an extra edge case.
+* **Medium** – extend the project with a new helper function that re‑uses the core logic.
+

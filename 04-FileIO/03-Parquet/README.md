@@ -4,31 +4,6 @@
 
 ## Why Use Parquet's Columnar Storage?
 
-**Python pain:** A 100-column CSV at 10 GB forces you to read 10 GB even when you only need 2 columns (200 MB). `pd.read_parquet("data.parquet", columns=[...])` hides the column-projection win behind a one-liner, and there's no compile-time check that your struct matches the schema.
-
-**Rust fix:** The `parquet` and `arrow` crates give explicit control over column projection, row groups, and predicate pushdown. You work with typed `Record` structs and zero-cost iterators:
-
-```rust
-let filtered: Vec<&Record> = records.iter().filter(|r| r.value > 100.0).collect();
-let total:    f64        = records.iter().map(|r| r.value * r.count as f64).sum();
-```
-
-When connected to actual Parquet files, the `parquet` crate reads only the requested column chunks — no wasted I/O.
-
-## At a Glance
-
-| # | Concept | Rust | Python | Why it matters |
-|---|---------|------|--------|----------------|
-| 1 | Columnar vs Row-Oriented | Parquet file format | `pd.read_parquet` | Querying 2 of 100 columns reads only those 2 — no I/O waste |
-| 2 | Data Struct | `struct Record` | `dataclass` | Typed schema, compile-time checked |
-| 3 | String Formatting | `format!` macro | f-strings | Formatted strings, compiled to efficient code |
-| 4 | Iterator Filter | `.filter(\|r\| ...)` | list comprehension `if` | Lazy, chainable filtering |
-| 5 | Iterator Map + Sum | `.map().sum()` | `sum(f(x) for x in xs)` | Zero-copy aggregation |
-| 6 | Reference Collections | `Vec<&Record>` | list of references | Borrow data, no copies |
-| 7 | Numeric Conversion | `x as f64` | implicit `int → float` | Surface conversion decisions explicitly |
-| 8 | Arrow Format | `arrow::RecordBatch` | `pyarrow.Table` | In-memory columnar format, cache + SIMD friendly |
-| 9 | Parquet Features | column chunks, row groups, statistics | `pyarrow.parquet` | Compression + predicate pushdown |
-
 ---
 
 ## Table of Contents
@@ -54,8 +29,8 @@ Parquet is the dominant columnar storage format in modern data engineering. It p
 
 ## 2. Prerequisites
 
-- Completed [Project 54: CSVWriter](../02-CSVWriter/README.md) -- comfortable with structs, serde, and data transformation.
-- Familiarity with `Vec`, iterators, and closures from [Section 3: Collections](../../03-Collections/README.md).
+- Completed [Project 54: CSVWriter](../../02-CSVWriter/README.md) -- comfortable with structs, serde, and data transformation.
+- Familiarity with `Vec`, iterators, and closures from [Section 3: Collections](../../../../03-Collections/README.md).
 
 ## 3. Concept: Row-Oriented vs Columnar Storage
 
@@ -422,3 +397,9 @@ Project structure:
 1. **Easy**: Write a function `average_value(records: &[Record]) -> f64` that returns the mean of the `value` field across all records. Handle the empty case with `0.0`.
 2. **Medium**: Write `filter_by_name(records: &[Record], prefix: &str) -> Vec<&Record>` that returns records whose `name` starts with the given prefix. Use `str::starts_with`.
 3. **Hard**: Add the `parquet` crate to `Cargo.toml` and write a function `write_records_to_parquet(records: &[Record], path: &str) -> Result<(), Box<dyn std::error::Error>>` that writes the records to a Parquet file. Use `arrow::record_batch::RecordBatch` and `parquet::arrow::ArrowWriter`.
+
+## Exercises
+
+* **Easy** – modify the existing function to handle an extra edge case.
+* **Medium** – extend the project with a new helper function that re‑uses the core logic.
+

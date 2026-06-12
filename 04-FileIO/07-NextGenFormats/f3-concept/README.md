@@ -1,8 +1,8 @@
 # Project 62: F3 — The Future-Proof File Format (Concept Study)
 
-*F3 is a research prototype from CMU + Tsinghua, published at SIGMOD 2026. No production crate exists. This project teaches the core ideas: Wasm-embedded decoders and decoupled I/O layout.*
-
 > **Test-driven approach**: Each function in `src/lib.rs` starts as a `todo!()` stub. **Goal: all 8 tests pass.**
+
+## Why F3?
 
 ---
 

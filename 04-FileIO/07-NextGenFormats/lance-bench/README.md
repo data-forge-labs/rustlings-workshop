@@ -1,8 +1,8 @@
 # Project 59: Lance — Open Lakehouse Format for Multimodal AI
 
-*Build a working Lance dataset end-to-end and learn the format that beats Parquet 100x for random access.*
-
 > **Test-driven approach**: Each function in `src/lib.rs` starts as a `todo!()` stub. Implement step by step. **Goal: all 8 tests pass.**
+
+## Why Lance?
 
 ---
 

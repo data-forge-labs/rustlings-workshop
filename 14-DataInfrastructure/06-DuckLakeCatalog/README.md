@@ -194,3 +194,9 @@ INFO stats rows=5 revenue=149.85 customers=5
 - [duckdb crate docs](https://docs.rs/duckdb) — embedded DuckDB for Rust
 - [DuckDB time travel](https://duckdb.org/docs/stable/sql/time_travel.html) — `AT (VERSION => N)` syntax
 - [ducklake-sdk (incubating)](https://github.com/borchero/ducklake-sdk) — pre-1.0 Rust SDK
+
+## Exercises
+
+* **Easy** – modify the existing function to handle an extra edge case.
+* **Medium** – extend the project with a new helper function that re‑uses the core logic.
+

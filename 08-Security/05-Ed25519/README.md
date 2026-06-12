@@ -177,7 +177,7 @@ Ed25519 is used everywhere:
 
 ## 2. Prerequisites
 
-- Completed [08-Security/03-RustCryptoHashes](../03-RustCryptoHashes/README.md) — familiar with hashing.
+- Completed [08-Security/03-RustCryptoHashes](../../03-RustCryptoHashes/README.md) — familiar with hashing.
 - Comfortable with `Result`.
 
 ## 3. Concept: The Ed25519 Algorithm

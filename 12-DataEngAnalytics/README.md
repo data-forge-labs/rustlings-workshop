@@ -20,22 +20,9 @@ In Python, the equivalents are `pandas` (Polars is 5-30x faster), `duckdb` Pytho
 | **DuckDB** | Embedded SQL database | Ad-hoc analytics, BI tools | `duckdb` Python, SQLite |
 | **DataFusion** | Query planner + SQL executor | Custom query engines, distributed systems | `pyspark` SQL, `ibis` |
 
-## What You'll Learn
-
-| # | Concept | Rust | Python | Why it matters |
-|---|---------|------|--------|----------------|
-| 1 | DataFrame API | `polars::DataFrame` | `pandas.DataFrame` | Columnar analytics, lazy evaluation |
-| 2 | Lazy query plan | `polars::LazyFrame` | `dask.dataframe` | Query optimization, predicate pushdown |
-| 3 | In-process OLAP | `duckdb` crate | `duckdb` Python | SQL on DataFrames without server |
-| 4 | Zero-copy interop | Arrow `RecordBatch` | `pyarrow.Table` | Share data without serialization |
-| 5 | Custom query engine | `datafusion` crate | `pyspark` | Build distributed query systems |
-| 6 | SQL context | `datafusion::prelude::SessionContext` | `pyspark.sql.SparkSession` | Register tables, run SQL |
-| 7 | UDF registration | `create_udf` | `pyspark.sql.functions.udf` | Custom scalar/aggregate functions |
-| 8 | Parquet I/O | `polars`, `datafusion` | `pyarrow.parquet` | Read/write Parquet without schema duplication |
-
 ## Prerequisites
 
-- Completed [Section 4: File I/O](../04-FileIO/README.md) — comfortable with Arrow, Parquet, CSV, JSON.
+- Completed [Section 4: File I/O](../../../../../04-FileIO/README.md) — comfortable with Arrow, Parquet, CSV, JSON.
 - Understands `Result` and `Box<dyn Error>`.
 - Familiar with `Vec`, `HashMap`, iterators.
 
@@ -69,3 +56,9 @@ In production data-platform code, you will often see **all three used together**
 - [DuckDB Rust API](https://duckdb.org/docs/api/rust.html)
 - [DataFusion documentation](https://arrow.apache.org/datafusion/)
 - Alex Merced, "Polars vs DataFusion" (Medium, 2025-2026)
+
+## Exercises
+
+* **Easy** – modify the existing function to handle an extra edge case.
+* **Medium** – extend the project with a new helper function that re‑uses the core logic.
+

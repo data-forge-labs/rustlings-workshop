@@ -165,3 +165,9 @@ Each property runs 32 random inputs by default; to expand coverage:
 ```bash
 PROPTEST_CASES=10000 cargo test
 ```
+
+## Exercises
+
+* **Easy** – modify the existing function to handle an extra edge case.
+* **Medium** – extend the project with a new helper function that re‑uses the core logic.
+

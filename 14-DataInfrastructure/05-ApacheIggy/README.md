@@ -171,3 +171,9 @@ INFO consumer state offset=1 dedup_size=1
 - [iggy crate docs](https://docs.rs/iggy) — Rust SDK
 - [Iggy architecture deep-dive](https://iggy.rs/blog) — thread-per-core + io_uring
 - [Iggy vs Kafka benchmark](https://iggy.rs/blog) — single-node throughput
+
+## Exercises
+
+* **Easy** – modify the existing function to handle an extra edge case.
+* **Medium** – extend the project with a new helper function that re‑uses the core logic.
+

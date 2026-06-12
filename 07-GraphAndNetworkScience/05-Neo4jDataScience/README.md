@@ -235,3 +235,9 @@ Run `cd workshop && cargo test` after each step. Groups: `step_01_graph_creation
 | Betweenness centrality | Brandes' BFS-based algorithm | `nx.betweenness_centrality` | `compute_betweenness_centrality` |
 | Top-N ranking | Collect, sort by score desc, truncate | `sorted(dict.items(), key=-x[1])` | `top_n_central` |
 | Summary stats | Fold for min/max, sum/count for mean | `min/max/sum/len` | `centrality_summary` |
+
+## Exercises
+
+* **Easy** – modify the existing function to handle an extra edge case.
+* **Medium** – extend the project with a new helper function that re‑uses the core logic.
+

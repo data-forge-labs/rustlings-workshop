@@ -164,3 +164,9 @@ the alternative broker (Iggy) and the alternative lake
 - [DuckLake announcement](https://duckdb.org/2025/05/13/announcing-ducklake.html) — design rationale
 - [Debezium documentation](https://debezium.io/documentation/reference/stable/index.html) — CDC
 - [PostgreSQL logical replication](https://www.postgresql.org/docs/current/logical-replication.html) — `wal2json` / `pgoutput`
+
+## Exercises
+
+* **Easy** – modify the existing function to handle an extra edge case.
+* **Medium** – extend the project with a new helper function that re‑uses the core logic.
+

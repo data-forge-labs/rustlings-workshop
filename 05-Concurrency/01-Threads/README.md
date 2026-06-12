@@ -2,61 +2,18 @@
 
 > **Test-driven approach**: This project includes a Cargo project with progressive unit tests. Each function in `workshop/src/lib.rs` starts as a `todo!()` stub. As you follow each section, replace `todo!()` with real code and run `cd workshop && cargo test` to watch the pass count grow. Your goal: **all 9 tests pass**.
 
-## Table of Contents
-1. [Introduction](#1-introduction)
-2. [Prerequisites](#2-prerequisites)
-3. [Concept: Threads — spawn and join](#3-concept-threads--spawn-and-join)
-4. [Concept: Scoped threads](#4-concept-scoped-threads)
-5. [Concept: Message passing with mpsc](#5-concept-message-passing-with-mpsc)
-6. [Concept: Arc\<Mutex\> — shared mutable state](#6-concept-arcmutex--shared-mutable-state)
-7. [Concept: RwLock — read-write lock](#7-concept-rwlock--read-write-lock)
-8. [Putting It All Together](#8-putting-it-all-together)
-9. [Exercises](#9-exercises)
-10. [Summary](#10-summary)
-
-## 1. Introduction
-
-In Python, the Global Interpreter Lock (GIL) prevents true parallel execution of threads. Rust gives you true OS threads with no GIL, and its ownership system prevents data races at compile time. You will learn the core Rust concurrency primitives: spawning threads, passing messages through channels, and safely sharing state with locks.
-
-**Data engineering context**: Splitting a large CSV file across threads for parallel parsing, accumulating row counts from concurrent workers, and reading a shared config from multiple threads.
-
-In Python, `threading.Thread` and `queue.Queue` are the standard tools. Rust offers `std::thread`, `std::sync::mpsc`, and `std::sync::{Mutex, RwLock}` — faster, safer, and without a GIL.
-
 ## Why Use Real OS Threads?
 
-**Python pain:** The GIL serializes all your threads onto a single core — 8 threads still run on 1 core, no matter how many CPUs you have. And the GIL doesn't even protect you: a missing `threading.Lock()` around a shared counter produces silent wrong results, not an error.
+Ownership note: In Rust, values like `String` and `Vec` live on the heap, while primitive values (e.g., `i32`, `bool`) live on the stack. Ownership rules govern when heap data is cleaned up.
 
-**Rust fix:** True OS threads with no GIL — all cores run in parallel. Ownership rules prevent data races **at compile time**: forget the `Mutex` and the program won't compile:
-
-```rust
-let counter = Arc::new(Mutex::new(0usize));
-for _ in 0..8 {
-    let c = Arc::clone(&counter);
-    thread::spawn(move || { *c.lock().unwrap() += 1; });
-}
-// without the Mutex, this wouldn't compile
-```
-
-## At a Glance
-
-| # | Concept | Rust | Python | Why it matters |
-|---|---------|------|--------|----------------|
-| 1 | Thread Spawning | `std::thread::spawn` | `threading.Thread` | Real OS threads, no GIL — true parallel execution |
-| 2 | Thread Joining | `handle.join()` | `t.join()` | Wait for a thread to finish; returns `Result` |
-| 3 | Move Closures | `move \|\|` | N/A (implicit) | Transfer ownership into a thread |
-| 4 | Scoped Threads | `thread::scope` | N/A | Borrow data across threads safely — no `move` needed |
-| 5 | Message Passing | `mpsc::channel` | `queue.Queue` | Send data between threads via typed channels |
-| 6 | Shared State | `Arc<Mutex<T>>` | `threading.Lock` | Safely mutate shared data — compiler enforces |
-| 7 | Read-Write Lock | `Arc<RwLock<T>>` | N/A in stdlib | Multiple readers OR one writer |
-| 8 | Data Race Prevention | ownership + `Send`/`Sync` | None (runtime) | Concurrency bugs caught at compile time |
 
 ---
 
 ## 2. Prerequisites
 
-- Ownership and borrowing from [TicketV1](../../02-Ownership/01-TicketV1/README.md)
-- `Arc<T>` basics (introduced in [TicketV2](../../02-Ownership/03-TicketV2/README.md))
-- Closures from [MasterMind](../../01-Foundations/04-MasterMind/README.md)
+- Ownership and borrowing from [TicketV1](../../../../02-Ownership/01-TicketV1/README.md)
+- `Arc<T>` basics (introduced in [TicketV2](../../../../02-Ownership/03-TicketV2/README.md))
+- Closures from [MasterMind](../../../../01-Foundations/04-MasterMind/README.md)
 
 ## 3. Concept: Threads — spawn and join
 
@@ -344,3 +301,9 @@ Now implement each function in `workshop/src/lib.rs` by replacing `todo!()` with
 | Shared mutable state | `Arc<Mutex<T>>` | `threading.Lock` |
 | Read-write lock | `Arc<RwLock<T>>` | No stdlib equivalent |
 | Wait for thread | `.join()` | `.join()` |
+
+## Exercises
+
+* **Easy** – modify the existing function to handle an extra edge case.
+* **Medium** – extend the project with a new helper function that re‑uses the core logic.
+

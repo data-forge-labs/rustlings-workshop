@@ -192,3 +192,9 @@ cargo test
 ## Production Notes
 - Ractor 0.13 is the current version; see https://docs.rs/ractor.
 - For Erlang-style supervisors and clustering, enable the `cluster` feature.
+
+## Exercises
+
+* **Easy** – modify the existing function to handle an extra edge case.
+* **Medium** – extend the project with a new helper function that re‑uses the core logic.
+

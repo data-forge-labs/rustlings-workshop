@@ -91,13 +91,13 @@ performance — no hidden overhead.
 
 ## 2. Prerequisites
 
-- [01-Foundations/04-MasterMind](../../01-Foundations/04-MasterMind/README.md) --
+- [01-Foundations/04-MasterMind](../../../../01-Foundations/04-MasterMind/README.md) --
   structs, Vec, Option
-- [02-Ownership/03-TicketV2](../../02-Ownership/03-TicketV2/README.md) -- Result,
+- [02-Ownership/03-TicketV2](../../../../02-Ownership/03-TicketV2/README.md) -- Result,
   error handling with `?`
-- [03-Collections/04-HashMapCount](../../03-Collections/04-HashMapCount/README.md) --
+- [03-Collections/04-HashMapCount](../../../../03-Collections/04-HashMapCount/README.md) --
   HashMap entry API
-- [03-Collections/12-RustIterators](../../03-Collections/12-RustIterators/README.md) --
+- [03-Collections/12-RustIterators](../../../../03-Collections/12-RustIterators/README.md) --
   iterators, closures
 - Installed: Rust toolchain, `cargo`
 
@@ -457,3 +457,9 @@ pub fn summary_stats(records: &[FruitRecord]) -> (f64, f64, f64, usize) {
    year. Write unit tests for it.
 3. (Hard) Implement a `sort_by_price()` function that returns records sorted by
    price ascending. Benchmark it against `records.sort_by()`.
+
+## Exercises
+
+* **Easy** – modify the existing function to handle an extra edge case.
+* **Medium** – extend the project with a new helper function that re‑uses the core logic.
+

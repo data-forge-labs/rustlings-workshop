@@ -170,8 +170,8 @@ DataFusion is the **Apache** query engine. It has been a top-level Apache projec
 
 ## 2. Prerequisites
 
-- Completed [04-FileIO/04-Arrow](../04-FileIO/04-Arrow/README.md) — comfortable with Arrow `RecordBatch`es.
-- Familiar with `async/await` from [05-Concurrency/02-Futures](../05-Concurrency/02-Futures/README.md) (or [12-DataEngAnalytics/02-DuckDB](../02-DuckDB/README.md)).
+- Completed [04-FileIO/04-Arrow](../../../04-FileIO/04-Arrow/README.md) — comfortable with Arrow `RecordBatch`es.
+- Familiar with `async/await` from [05-Concurrency/02-Futures](../../../05-Concurrency/02-Futures/README.md) (or [12-DataEngAnalytics/02-DuckDB](../../02-DuckDB/README.md)).
 - Comfortable with `Result` and `Box<dyn Error>`.
 
 ## 3. Concept: `SessionContext` and Async SQL
@@ -240,7 +240,7 @@ The `as_any().downcast_ref::<T>()` pattern is the standard Arrow idiom for typed
 
 ## 6. Concept: Parquet Write
 
-DataFusion itself doesn't have a built-in `df.write.parquet()` like Polars does, but you can write `RecordBatch`es to Parquet using the `parquet::arrow::ArrowWriter` from the `parquet` crate (covered in [04-FileIO/03-Parquet](../04-FileIO/03-Parquet/README.md)):
+DataFusion itself doesn't have a built-in `df.write.parquet()` like Polars does, but you can write `RecordBatch`es to Parquet using the `parquet::arrow::ArrowWriter` from the `parquet` crate (covered in [04-FileIO/03-Parquet](../../../04-FileIO/03-Parquet/README.md)):
 
 ```rust
 use parquet::arrow::ArrowWriter;

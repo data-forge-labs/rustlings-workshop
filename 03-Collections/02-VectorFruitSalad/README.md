@@ -1,8 +1,8 @@
 # Rust for Python Data Engineers â€” Vector Fruit Salad
 
-*Your first data-engineering style project in Rust: select, shuffle, and serve random fruit combinations using vectors â€” the Rust equivalent of Python lists.*
-
 > **Test-driven approach**: This project includes a Cargo project with progressive unit tests. Each function in `workshop/src/lib.rs` starts as a `todo!()` stub. As you follow each section, replace `todo!()` with real code and run `cd workshop && cargo test` to watch the pass count grow. Your goal: **all 4 tests pass**.
+
+## Why Use Vec for Data Collections?
 
 ---
 
@@ -80,8 +80,8 @@ make_salad()
 
 ## 2. Prerequisites
 
-- Completed [Basic Calculator](../01-Foundations/03-BasicCalculator/README.md)
-- Familiar with `Vec<T>` from [TicketManagement](../03-Collections/01-TicketManagement/README.md)
+- Completed [Basic Calculator](../../../01-Foundations/03-BasicCalculator/README.md)
+- Familiar with `Vec<T>` from [TicketManagement](../../../03-Collections/01-TicketManagement/README.md)
 - Understand `for` loops and `if/else`
 
 ---
@@ -489,4 +489,10 @@ Vectors in Rust = Lists in Python. The core operations are the same, but Rust gi
 
 ### Next Project
 
-Proceed to [10-ArrayFruitSalad](../03-Collections/03-ArrayFruitSalad/README.md) to compare **arrays** vs **vectors** in Rust.
+Proceed to [10-ArrayFruitSalad](../../../03-Collections/03-ArrayFruitSalad/README.md) to compare **arrays** vs **vectors** in Rust.
+
+## Exercises
+
+* **Easy** – modify the existing function to handle an extra edge case.
+* **Medium** – extend the project with a new helper function that re‑uses the core logic.
+

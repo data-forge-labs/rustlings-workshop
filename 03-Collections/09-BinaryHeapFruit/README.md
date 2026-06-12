@@ -313,3 +313,9 @@ Create a generic `PriorityQueue<P, T>` struct where `P: Ord` is the priority and
 | Max-heap default | Largest element popped first | Negate values for Python max-heap |
 
 Priority queues are essential for scheduling, streaming top-K, and graph algorithms. Rust's `BinaryHeap` gives you this with zero external dependencies and a clear ownership model.
+
+## Exercises
+
+* **Easy** – modify the existing function to handle an extra edge case.
+* **Medium** – extend the project with a new helper function that re‑uses the core logic.
+

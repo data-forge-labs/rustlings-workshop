@@ -1,22 +1,25 @@
 # Rust for Python Data Engineers — TicketV1: Structs & Ownership
 
-*The most important workshop in this course. Master Rust's ownership system — the concept that makes Rust unique — by building a ticket tracking system.*
-
 > **Test-driven approach**: This project includes a Cargo project with progressive unit tests. Each function in `workshop/src/lib.rs` starts as a `todo!()` stub. As you follow each section, replace `todo!()` with real code and run `cd workshop && cargo test` to watch the pass count grow. Your goal: **all 20 tests pass**.
+
+## Why Model Tickets with Structs?
+
+Ownership note: In Rust, values like `String` and `Vec` live on the heap, while primitive values (e.g., `i32`, `bool`) live on the stack. Ownership rules govern when heap data is cleaned up.
+
 
 ---
 
 > ### 📋 Prerequisites — Read These First
 >
-> This is the first workshop in **Section 2: Ownership** and assumes fluency with three concepts introduced in Section 1's [`04-MasterMind`](../01-Foundations/04-MasterMind/README.md):
+> This is the first workshop in **Section 2: Ownership** and assumes fluency with three concepts introduced in Section 1's [`04-MasterMind`](../../../01-Foundations/04-MasterMind/README.md):
 >
-> 1. **`&self` vs `&mut self` method receivers** — [MasterMind §9](../01-Foundations/04-MasterMind/README.md#9-concept-self-vs-mut-self--method-receivers)
+> 1. **`&self` vs `&mut self` method receivers** — [MasterMind §9](../../../01-Foundations/04-MasterMind/README.md#9-concept-self-vs-mut-self--method-receivers)
 >    *Why?* This workshop uses both forms extensively. If a method changes a field, it takes `&mut self`; if it only reads, it takes `&self`. You need to recognize the difference at a glance.
 >
-> 2. **`pub` visibility and module organization** — [MasterMind §10](../01-Foundations/04-MasterMind/README.md#10-concept-pub-visibility)
+> 2. **`pub` visibility and module organization** — [MasterMind §10](../../../01-Foundations/04-MasterMind/README.md#10-concept-pub-visibility)
 >    *Why?* The complete solution in §13 splits code across `src/ticket.rs` and `src/lib.rs`. The `mod ticket;` declaration and `pub` keywords on every item in `lib.rs` are not optional.
 >
-> 3. **The `Drop` trait (30-second preview)** — see [OBRM §4](../04-OBRM/README.md) for the full treatment (this is a *forward reference* — you don't need it to complete TicketV1)
+> 3. **The `Drop` trait (30-second preview)** — see [OBRM §4](../../04-OBRM/README.md) for the full treatment (this is a *forward reference* — you don't need it to complete TicketV1)
 >    *Why?* §12 of this workshop mentions `Drop` briefly. The canonical teaching is in `04-OBRM`, which comes later in this section. TicketV1 only needs the concept that *"values clean up when they go out of scope"*.
 >
 > **Time required to review:** ~10 minutes if you completed MasterMind recently; ~20 minutes otherwise. Skipping this will make the borrow-checker errors in §11 feel like walls instead of guardrails.
@@ -24,6 +27,9 @@
 ---
 
 ## Why Model Tickets with Structs?
+
+Ownership note: In Rust, values like `String` and `Vec` live on the heap, while primitive values (e.g., `i32`, `bool`) live on the stack. Ownership rules govern when heap data is cleaned up.
+
 
 **Python pain:** A function that takes a `list` of `dict`s can mutate the caller's list silently — there is no way to know who "owns" the data, and the GC never tells you. A 10,000-line ETL pipeline can lose data integrity to one accidental `.append()`.
 
@@ -105,7 +111,7 @@ We'll build a **ticket tracking system** (like Jira or Trello) that:
 
 ## 2. Prerequisites
 
-- Completed [Basic Calculator](../01-Foundations/03-BasicCalculator/README.md)
+- Completed [Basic Calculator](../../../01-Foundations/03-BasicCalculator/README.md)
 - Understand integers, `if/else`, loops
 - Familiar with `cd workshop && cargo run`, `cd workshop && cargo test`
 
@@ -705,7 +711,41 @@ println!("Vec<i32>:{} bytes", std::mem::size_of::<Vec<i32>>());// 24
 
 > A `String` is only 24 bytes on the stack — it's the **pointer to the heap** data, plus length and capacity.
 
+### Step-by-Step Execution Trace — Three-Column View
+
+The following trace shows how Rust's ownership model manages stack and heap memory line by line for a realistic data-engineering scenario.
+
+```rust
+fn main() {
+    let x: i32 = 42;                    // Step 1
+    let name = String::from("Rust");    // Step 2
+    let v = vec![1, 2, 3];              // Step 3
+    let b = Box::new(99);               // Step 4
+    let y = x;                          // Step 5: i32: Copy
+    let z = name;                       // Step 6: String: Move!
+    // name is now invalid
+    println!("{}", z);                  // Step 7
+} // Everything dropped here             // Step 8
+```
+
+| Step | Code | Stack (before end of function) | Heap |
+|------|------|--------------------------------|------|
+| 1 | `let x: i32 = 42;` | `x: i32 = 42` (4B) | — |
+| 2 | `let name = String::from("Rust");` | `x: i32 = 42` (4B)<br>`name: String { ptr, len=4, cap=4 }` (24B) | `"Rust"` (4B) ← `name.ptr` |
+| 3 | `let v = vec![1, 2, 3];` | `x: i32 = 42` (4B)<br>`name: String { ptr, len=4, cap=4 }` (24B)<br>`v: Vec { ptr, len=3, cap=3 }` (24B) | `"Rust"` (4B) ← `name.ptr`<br>`[1, 2, 3]` (12B) ← `v.ptr` |
+| 4 | `let b = Box::new(99);` | `x: i32 = 42` (4B)<br>`name: String { ptr, len=4, cap=4 }` (24B)<br>`v: Vec { ptr, len=3, cap=3 }` (24B)<br>`b: Box { ptr }` (8B) | `"Rust"` (4B) ← `name.ptr`<br>`[1, 2, 3]` (12B) ← `v.ptr`<br>`99` (4B) ← `b.ptr` |
+| 5 | `let y = x;` | `x: i32 = 42` (4B)<br>`name: String { ptr, len=4, cap=4 }` (24B)<br>`v: Vec { ptr, len=3, cap=3 }` (24B)<br>`b: Box { ptr }` (8B)<br>`y: i32 = 42` (4B) | (unchanged — `i32` is `Copy`) |
+| 6 | `let z = name;` | `x: i32 = 42` (4B)<br>`name: INVALID (moved)` (24B)<br>`v: Vec { ptr, len=3, cap=3 }` (24B)<br>`b: Box { ptr }` (8B)<br>`y: i32 = 42` (4B)<br>`z: String { ptr, len=4, cap=4 }` (24B) | `"Rust"` (4B) ← `z.ptr`<br>`[1, 2, 3]` (12B) ← `v.ptr`<br>`99` (4B) ← `b.ptr` |
+| 7 | `println!("{}", z);` | (unchanged) | (unchanged — prints "Rust") |
+| 8 | `}` (scope end) | All stack vars dropped | `"Rust"` freed (via `z`)<br>`[1, 2, 3]` freed (via `v`)<br>`99` freed (via `b`) |
+
+**Key observations:**
+- **Step 5** (`y = x`): `i32` implements `Copy` — bitwise copy, both `x` and `y` valid
+- **Step 6** (`z = name`): `String` does **not** implement `Copy` — **move** transfers ownership, `name` becomes invalid
+- **Step 8**: RAII — `z`, `v`, `b` all implement `Drop`, heap memory freed automatically in reverse order
+
 ---
+
 
 ## 11. Concept: References and Borrowing
 
@@ -827,7 +867,7 @@ impl Ticket {
 
 > ### ⏭️ Forward Reference — Don't Get Stuck Here
 >
-> The `Drop` trait and RAII cleanup are **taught in depth in a later project**: [04-OBRM §4 — The Drop Trait](../04-OBRM/README.md#4-concept-the-drop-trait--automatic-cleanup). That workshop has the full conceptual coverage:
+> The `Drop` trait and RAII cleanup are **taught in depth in a later project**: [04-OBRM §4 — The Drop Trait](../../04-OBRM/README.md#4-concept-the-drop-trait--automatic-cleanup). That workshop has the full conceptual coverage:
 >
 > - 4 worked examples (file handles, database connections, custom buffers, smart pointers)
 > - An ASCII lifecycle diagram showing exactly when `drop` runs
@@ -847,12 +887,12 @@ fn main() {
 }
 ```
 
-**Mental model for now:** every `String`, `Vec`, and other heap-allocated value cleans itself up. You don't need to call `free()` or `close()` — the language does it. The custom `impl Drop for YourType { ... }` syntax is for *your own* types that own resources (file handles, network sockets, locks). You'll write your first `impl Drop` block in [04-OBRM](../04-OBRM/README.md).
+**Mental model for now:** every `String`, `Vec`, and other heap-allocated value cleans itself up. You don't need to call `free()` or `close()` — the language does it. The custom `impl Drop for YourType { ... }` syntax is for *your own* types that own resources (file handles, network sockets, locks). You'll write your first `impl Drop` block in [04-OBRM](../../04-OBRM/README.md).
 
 **Recommended learning order:**
 1. ✅ Finish this TicketV1 (the `Drop` references will be clear from the §13 examples)
-2. ➡️ Move to [02-Traits](../02-Traits/README.md) → [03-TicketV2](../03-TicketV2/README.md)
-3. 📖 Read [04-OBRM §4](../04-OBRM/README.md#4-concept-the-drop-trait--automatic-cleanup) for the canonical `Drop` teaching
+2. ➡️ Move to [02-Traits](../../02-Traits/README.md) → [03-TicketV2](../03-TicketV2/README.md)
+3. 📖 Read [04-OBRM §4](../../04-OBRM/README.md#4-concept-the-drop-trait--automatic-cleanup) for the canonical `Drop` teaching
 4. ↩️ Return here for a second pass — the §13 `impl Drop` examples will then make full sense
 
 ---
@@ -1126,7 +1166,7 @@ The [Appendix](#appendix-original-step-by-step-tutorial) at the end of this docu
 
 ### Next Project
 
-Proceed to [02-Traits](../02-Traits/README.md) to learn about **traits** — Rust's version of interfaces and protocols.
+Proceed to [02-Traits](../../02-Traits/README.md) to learn about **traits** — Rust's version of interfaces and protocols.
 
 ---
 
@@ -2369,3 +2409,9 @@ you explicitly choose to [leak memory](../07_threads/03_leak.md).
 We've covered a lot of foundational Rust concepts in this chapter.\
 Before moving on, let's go through one last exercise to consolidate what we've learned.
 You'll have minimal guidance this time—just the exercise description and the tests to guide you.
+
+## Exercises
+
+* **Easy** – modify the existing function to handle an extra edge case.
+* **Medium** – extend the project with a new helper function that re‑uses the core logic.
+

@@ -166,7 +166,7 @@ This pattern lets you **unit-test the CLI logic** by calling `lib::run(args)` di
 
 ## Prerequisites
 
-- Completed [Section 5: Concurrency](../05-Concurrency/README.md) — async/await + Tokio are required for AsyncClap
+- Completed [Section 5: Concurrency](../../05-Concurrency/README.md) — async/await + Tokio are required for AsyncClap
 - Comfortable with `Result`, `?`, and module organization
 - Cargo installed and on `PATH`
 
@@ -193,4 +193,10 @@ This pattern lets you **unit-test the CLI logic** by calling `lib::run(args)` di
 - **Builds on**: Section 3 (Collections, error handling), Section 5 (async/await, Tokio for the AsyncClap project)
 - **Sets up for**: Section 7 (Graph projects use `clap` for input), Section 9 (Production CLI services), Section 10 (REST APIs with `clap`-style request validation)
 
-For graph algorithms and Neo4j, jump to [Section 7: Graph & Network Science](../07-GraphAndNetworkScience/README.md).
+For graph algorithms and Neo4j, jump to [Section 7: Graph & Network Science](../../07-GraphAndNetworkScience/README.md).
+
+## Exercises
+
+* **Easy** – modify the existing function to handle an extra edge case.
+* **Medium** – extend the project with a new helper function that re‑uses the core logic.
+

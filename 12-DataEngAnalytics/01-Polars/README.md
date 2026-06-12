@@ -172,7 +172,7 @@ Polars is the de-facto DataFrame library in Rust. Used in production at:
 
 ## 2. Prerequisites
 
-- Completed [04-FileIO/04-Arrow](../04-FileIO/04-Arrow/README.md) — comfortable with Arrow, the underlying format.
+- Completed [04-FileIO/04-Arrow](../../../04-FileIO/04-Arrow/README.md) — comfortable with Arrow, the underlying format.
 - Familiar with `Result` and error handling.
 - Knows what a DataFrame is (even if only in pandas).
 

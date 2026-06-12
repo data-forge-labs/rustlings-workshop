@@ -4,31 +4,8 @@
 
 ## Why Use Send/Sync Marker Traits?
 
-**Python pain:** There's no way to declare a type thread-safe or not. Every object can be passed between threads freely — `Rc` clones, `RefCell` borrows, all of it — and a missing `Lock()` produces a silent wrong answer, not an error.
+Ownership note: In Rust, values like `String` and `Vec` live on the heap, while primitive values (e.g., `i32`, `bool`) live on the stack. Ownership rules govern when heap data is cleaned up.
 
-**Rust fix:** `Send` and `Sync` are auto-derived from field types. The compiler enforces thread-safety; the standard library is hand-checked to maintain that property:
-
-```rust
-// Arc<Mutex<i32>> is Send + Sync — safe for threads
-let safe = Arc::new(Mutex::new(42i32));
-verify_send(&safe);   // ✓ compiles
-
-// Rc<i32> is !Send — thread::spawn won't accept it
-// verify_send(&Rc::new(42));   // compile error
-```
-
-When the compiler can't see through a type (e.g., raw pointers), you can write `unsafe impl Send for MyType {}` — promising the invariant is upheld.
-
-## At a Glance
-
-| # | Concept | Rust | Python | Why it matters |
-|---|---------|------|--------|----------------|
-| 1 | `Send` | `std::marker::Send` | N/A | Ownership transferable across threads |
-| 2 | `Sync` | `std::marker::Sync` | N/A | `&T` shareable across threads |
-| 3 | Auto-Implementation | field composition | N/A | Compiler derives from field types |
-| 4 | Unsafe Impl | `unsafe impl Send`/`Sync` | N/A | Manual declaration for custom types |
-| 5 | Thread-Safe Pattern | `Arc<Mutex<T>>` | `threading.Lock` | Standard shared mutable state |
-| 6 | Non-Thread-Safe Types | `Rc`, `Cell`, `RefCell` | All types "thread-safe" | Thread-unsafety is in the type signature |
 
 ---
 
@@ -54,8 +31,8 @@ In Python, there is no equivalent concept. Any object can be shared between thre
 
 ## 2. Prerequisites
 
-- Threads from [01-Threads](../01-Threads/README.md)
-- `Arc` and `Mutex` from [03-DataRace](../03-DataRace/README.md)
+- Threads from [01-Threads](../../01-Threads/README.md)
+- `Arc` and `Mutex` from [03-DataRace](../../03-DataRace/README.md)
 
 ## 3. Concept: The Send trait
 
@@ -233,3 +210,9 @@ The `Wrapper` struct and its `unsafe impl Send for Wrapper` / `unsafe impl Sync 
 | Automatic implementation | By field composition | N/A |
 | Manual implementation | `unsafe impl Send`/`Sync` | N/A |
 | Standard thread-safe pattern | `Arc<Mutex<T>>` | `threading.Lock` |
+
+## Exercises
+
+* **Easy** – modify the existing function to handle an extra edge case.
+* **Medium** – extend the project with a new helper function that re‑uses the core logic.
+

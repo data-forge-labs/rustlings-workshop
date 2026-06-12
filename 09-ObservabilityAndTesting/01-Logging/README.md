@@ -55,7 +55,7 @@ Logging is the data engineer's stethoscope. In Python you reach for **loguru** o
 ## 2. Prerequisites
 
 - Basic Rust syntax (functions, strings, Vec)
-- **Project**: [01-BasicCalculator](../../01-Foundations/01-Intro/README.md)
+- **Project**: [01-BasicCalculator](../../../../01-Foundations/01-Intro/README.md)
 - Python knowledge: you have used loguru or the stdlib `logging` module
 
 ## 3. The `log` Crate — A Universal Facade
@@ -302,3 +302,9 @@ pub fn loguru_equivalents() -> Vec<(&'static str, &'static str)> {
 | `tracing` spans | Nested context tracking | `loguru.contextualize()` |
 | `RUST_LOG` env var | Level filtering | `loguru.remove()/add()` |
 | Structured logging | Key-value format | `loguru.bind()`, structlog |
+
+## Exercises
+
+* **Easy** – modify the existing function to handle an extra edge case.
+* **Medium** – extend the project with a new helper function that re‑uses the core logic.
+

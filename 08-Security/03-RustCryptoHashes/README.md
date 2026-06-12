@@ -74,7 +74,7 @@ for pipeline security.
 
 ## 2. Prerequisites
 
-- Completed [Section 3: Collections](../../03-Collections/README.md) -- basic
+- Completed [Section 3: Collections](../../../../03-Collections/README.md) -- basic
   iteration and string manipulation
 - Familiarity with byte-level operations (XOR, modulo)
 
@@ -352,3 +352,9 @@ pub fn hash_properties() -> Vec<&'static str> {
 | SHA-256 | `hashlib.sha256` | `hash_algorithms` |
 | BLAKE2b | `hashlib.blake2b` | `hash_algorithms` |
 | `Digest` trait | N/A (no unified trait in Python) | Conceptual reference |
+
+## Exercises
+
+* **Easy** – modify the existing function to handle an extra edge case.
+* **Medium** – extend the project with a new helper function that re‑uses the core logic.
+

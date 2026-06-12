@@ -210,3 +210,9 @@ INFO marked outbox processed kafka_event=order.created
 - [Transactional Outbox Pattern](https://microservices.io/patterns/data/transactional-outbox.html) — pattern rationale
 - [Debezium Outbox SMT](https://debezium.io/documentation/reference/stable/transformations/outbox-event-router.html) — Kafka-native outbox
 - [PostgreSQL logical replication](https://www.postgresql.org/docs/current/logical-replication.html) — used by Debezium
+
+## Exercises
+
+* **Easy** – modify the existing function to handle an extra edge case.
+* **Medium** – extend the project with a new helper function that re‑uses the core logic.
+

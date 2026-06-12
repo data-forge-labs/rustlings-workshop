@@ -8,6 +8,9 @@
 
 ## Why Learn Apache Arrow's Zero-Copy Format?
 
+Ownership note: In Rust, values like `String` and `Vec` live on the heap, while primitive values (e.g., `i32`, `bool`) live on the stack. Ownership rules govern when heap data is cleaned up.
+
+
 **Python pain:** Every time you call `pyarrow.Table.from_pandas(df)`, Python makes a *copy* of every column, converts the data into Arrow's memory layout, and hands the result to a C-extension. Loading 1 GB of data into pandas then converting to Arrow can take several seconds and temporarily double your memory:
 
 ```python
@@ -179,8 +182,8 @@ Understanding Arrow is therefore **foundational** for every data-engineering pro
 
 ## 2. Prerequisites
 
-- Completed [Project 56: Parquet](../03-Parquet/README.md) — comfortable with columnar concepts and the `arrow` crate.
-- Familiarity with `Vec`, iterators, and `Result`/`?` from [Section 3: Collections](../../03-Collections/README.md) and [Section 2: Ownership](../../02-Ownership/README.md).
+- Completed [Project 56: Parquet](../../03-Parquet/README.md) — comfortable with columnar concepts and the `arrow` crate.
+- Familiarity with `Vec`, iterators, and `Result`/`?` from [Section 3: Collections](../../../../03-Collections/README.md) and [Section 2: Ownership](../../../../02-Ownership/README.md).
 - The `arrow = "53"` crate is in `workshop/Cargo.toml` — it pulls in CSV + IPC + compute features by default.
 
 ## 3. Concept: Primitive Arrow Arrays
@@ -867,3 +870,9 @@ cargo test
 ```
 
 All 20 tests should fail with `todo!()` until you implement each function.
+
+## Exercises
+
+* **Easy** – modify the existing function to handle an extra edge case.
+* **Medium** – extend the project with a new helper function that re‑uses the core logic.
+

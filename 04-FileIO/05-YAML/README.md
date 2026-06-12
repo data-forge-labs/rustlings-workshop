@@ -160,9 +160,9 @@ YAML is the lingua franca of DevOps and data engineering. Airflow DAGs, Kubernet
 
 ## 2. Prerequisites
 
-- Completed [04-FileIO/04-Arrow](../04-Arrow/README.md) — familiar with progressive `todo!()` workshops.
-- Comfortable with `serde::Serialize`/`Deserialize` from [04-FileIO/02-CSVWriter](../02-CSVWriter/README.md).
-- Understands `Result<T, E>` and `Box<dyn Error>` from [Section 1: Foundations](../../01-Foundations/README.md).
+- Completed [04-FileIO/04-Arrow](../../04-Arrow/README.md) — familiar with progressive `todo!()` workshops.
+- Comfortable with `serde::Serialize`/`Deserialize` from [04-FileIO/02-CSVWriter](../../02-CSVWriter/README.md).
+- Understands `Result<T, E>` and `Box<dyn Error>` from [Section 1: Foundations](../../../../01-Foundations/README.md).
 
 ## 3. Concept: `serde` and `serde_yaml`
 

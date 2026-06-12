@@ -90,11 +90,11 @@ directive. No framework — you build the HTML string yourself.
 
 ## 2. Prerequisites
 
-- [02-Ownership/01-TicketV1](../../02-Ownership/01-TicketV1/README.md) --
+- [02-Ownership/01-TicketV1](../../../../02-Ownership/01-TicketV1/README.md) --
   structs, ownership, generics
-- [02-Ownership/03-TicketV2](../../02-Ownership/03-TicketV2/README.md) --
+- [02-Ownership/03-TicketV2](../../../../02-Ownership/03-TicketV2/README.md) --
   Result, Option, pattern matching
-- [03-Collections/12-RustIterators](../../03-Collections/12-RustIterators/README.md) --
+- [03-Collections/12-RustIterators](../../../../03-Collections/12-RustIterators/README.md) --
   iterators
 - Installed: Rust toolchain, `cargo`
 - Optional: `evcxr_jupyter` kernel (`cargo install evcxr_jupyter`)
@@ -571,3 +571,9 @@ pub fn rust_notebook_use_cases() -> Vec<&'static str> {
    Matrix with rows and columns swapped.
 3. (Hard) Write an evcxr notebook cell that loads a CSV file using the `csv`
    crate, populates a `SimpleDataFrame`, and displays it as HTML.
+
+## Exercises
+
+* **Easy** – modify the existing function to handle an extra edge case.
+* **Medium** – extend the project with a new helper function that re‑uses the core logic.
+

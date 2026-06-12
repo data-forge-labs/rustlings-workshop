@@ -209,3 +209,9 @@ Run `cd workshop && cargo test` after each step. Groups: `step_01_data_basics` (
 | String repetition | `"█".repeat(n)` | `"█" * n` | `ascii_bar_chart` |
 | Labeled tuples | `zip` into `Vec<(&str, f64)>` | `zip()` into list of tuples | `create_series` |
 | Format alignment | `format!("{:<10}", label)` | `f"{label:<10}"` | `ascii_bar_chart` |
+
+## Exercises
+
+* **Easy** – modify the existing function to handle an extra edge case.
+* **Medium** – extend the project with a new helper function that re‑uses the core logic.
+

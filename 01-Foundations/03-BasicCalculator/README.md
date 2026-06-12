@@ -1,18 +1,24 @@
 # Rust for Python Data Engineers — Basic Calculator
 
-*A hands-on workshop that teaches Rust fundamentals by building a command-line calculator — all concepts mapped to Python equivalents.*
-
 > **Test-driven approach**: This project includes a Cargo project with progressive unit tests. Each `workshop/src/lib.rs` function starts as a `todo!()` stub. As you follow each section of this tutorial, replace `todo!()` with real code and run `cd workshop && cargo test` to watch the pass count grow. Your goal: **all 35 tests pass**.
+
+## Why Use Integer Math in Rust?
+
+Ownership note: In Rust, values like `String` and `Vec` live on the heap, while primitive values (e.g., `i32`, `bool`) live on the stack. Ownership rules govern when heap data is cleaned up.
+
 
 ---
 
 ## Why Use Integer Math in Rust?
 
+Ownership note: In Rust, values like `String` and `Vec` live on the heap, while primitive values (e.g., `i32`, `bool`) live on the stack. Ownership rules govern when heap data is cleaned up.
+
+
 **Python pain:** A row counter like `total += partition.row_count` "just works" forever in Python — until the same code compiled to a C extension silently wraps at 4,294,967,295 and reports 0 rows. There is no compile-time check on integer width.
 
 **Rust fix:** Pick the *right* type for the job — `u8` for byte data, `u32` for row counts, `u64` for large datasets, `usize` for sizes — and arithmetic either panics, wraps, or saturates *predictably*. `#[test]` is built into the language, no `pytest` install needed.
 
-> **Note:** Variables, mutability, `if`/`else` expressions, and the `bool`-only rule are taught in [Project 0: Intro](../01-Intro/README.md). This project focuses only on **integer-specific** Rust.
+> **Note:** Variables, mutability, `if`/`else` expressions, and the `bool`-only rule are taught in [Project 0: Intro](../../01-Intro/README.md). This project focuses only on **integer-specific** Rust.
 
 ---
 
@@ -75,13 +81,13 @@ We'll build a **command-line calculator** that can:
 | `as` casting | Converting between types |
 | `#[test]`, `assert_eq!`, `#[should_panic]` | Unit testing — first-class language feature |
 
-> Variables, mutability, and `if`/`else` expressions are covered in [Project 0: Intro](../01-Intro/README.md).
+> Variables, mutability, and `if`/`else` expressions are covered in [Project 0: Intro](../../01-Intro/README.md).
 
 ---
 
 ## 2. Prerequisites
 
-- Rust installed (see [Project 0: Intro](../01-Intro/README.md))
+- Rust installed (see [Project 0: Intro](../../01-Intro/README.md))
 - Basic Python knowledge
 - Familiarity with `cargo new` and `cd workshop && cargo run`
 
@@ -201,7 +207,7 @@ fn main() {
 
 ## 5. Concept: Variables and Mutability (Recap)
 
-> **Already covered in [Project 0: Intro](../01-Intro/README.md#6-variables-and-mutability).** Below is a quick refresher — open the Intro project for the full teaching with Python comparison, ASCII diagram, and shadowing example.
+> **Already covered in [Project 0: Intro](../../01-Intro/README.md#6-variables-and-mutability).** Below is a quick refresher — open the Intro project for the full teaching with Python comparison, ASCII diagram, and shadowing example.
 
 Variables are **immutable by default**. Use `mut` to opt in:
 
@@ -293,7 +299,7 @@ fn main() {
 
 ## 7. Concept: Control Flow — `if`/`else` (Recap)
 
-> **Already covered in [Project 0: Intro §7](../01-Intro/README.md#7-ifelse-making-decisions).** Quick refresher:
+> **Already covered in [Project 0: Intro §7](../../01-Intro/README.md#7-ifelse-making-decisions).** Quick refresher:
 
 In Rust, `if` is an **expression** (it returns a value), not a statement:
 
@@ -320,7 +326,7 @@ Use this in the calculator's `divide` function (next section) to guard against d
 
 ## 8. Concept: No Truthy/Falsy — the `bool` Type (Recap)
 
-> **Already covered in [Project 0: Intro](../01-Intro/README.md#4-syntax-side-by-side).** Quick refresher:
+> **Already covered in [Project 0: Intro](../../01-Intro/README.md#4-syntax-side-by-side).** Quick refresher:
 
 Rust conditions must be `bool` — there are no truthy/falsy values like Python:
 
@@ -451,7 +457,7 @@ fn main() {
 }
 ```
 
-You saw `Result` briefly in [02-GuessGame §7](../02-GuessGame/README.md#7-concept-resultt-e-and-parse). The deep dive — including the `?` operator and `From` conversions — is in [Section 02: Ownership](../../02-Ownership/README.md). For this project, the `divide` function uses `panic!` (it's an internal tool, not a library).
+You saw `Result` briefly in [02-GuessGame §7](../../02-GuessGame/README.md#7-concept-resultt-e-and-parse). The deep dive — including the `?` operator and `From` conversions — is in [Section 02: Ownership](../../../../02-Ownership/README.md). For this project, the `divide` function uses `panic!` (it's an internal tool, not a library).
 
 ---
 
@@ -1407,7 +1413,7 @@ fn main() {
 
 ## 17. Summary
 
-This project focused on **integer-specific Rust**. For variables, mutability, `if`/`else` expressions, and `bool` rules, see [Project 0: Intro](../01-Intro/README.md).
+This project focused on **integer-specific Rust**. For variables, mutability, `if`/`else` expressions, and `bool` rules, see [Project 0: Intro](../../01-Intro/README.md).
 
 | Concept | Description | Python Equivalent |
 |---|---|---|
@@ -1424,4 +1430,10 @@ This project focused on **integer-specific Rust**. For variables, mutability, `i
 
 ### Next Project
 
-Proceed to [04-MasterMind](../04-MasterMind/README.md) to solidify these concepts with a game, then [02-Ownership/01-TicketV1](../../02-Ownership/01-TicketV1/README.md) to learn about **ownership** — Rust's most unique and important feature.
+Proceed to [04-MasterMind](../../04-MasterMind/README.md) to solidify these concepts with a game, then [02-Ownership/01-TicketV1](../../../../02-Ownership/01-TicketV1/README.md) to learn about **ownership** — Rust's most unique and important feature.
+
+## Exercises
+
+* **Easy** – modify the existing function to handle an extra edge case.
+* **Medium** – extend the project with a new helper function that re‑uses the core logic.
+

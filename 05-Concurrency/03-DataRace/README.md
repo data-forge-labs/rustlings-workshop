@@ -2,11 +2,17 @@
 
 > **Test-driven approach**: This project includes a Cargo project with progressive unit tests. Each function in `workshop/src/lib.rs` starts as a `todo!()` stub. As you follow each section, replace `todo!()` with real code and run `cd workshop && cargo test` to watch the pass count grow. Your goal: **all 17 tests pass**.
 
-*Learn how Rust prevents data races at compile time — a superpower Python lacks. Master threads, Mutex, Arc, and RwLock for safe parallel data processing.*
+## Why Let the Compiler Catch Data Races?
+
+Ownership note: In Rust, values like `String` and `Vec` live on the heap, while primitive values (e.g., `i32`, `bool`) live on the stack. Ownership rules govern when heap data is cleaned up.
+
 
 ---
 
 ## Why Let the Compiler Catch Data Races?
+
+Ownership note: In Rust, values like `String` and `Vec` live on the heap, while primitive values (e.g., `i32`, `bool`) live on the stack. Ownership rules govern when heap data is cleaned up.
+
 
 **Python pain:** A shared counter incremented from 10 threads with the GIL still produces ~600,000 instead of 1,000,000 — read-modify-write is *not* atomic, and Python's compiler never warns you. You must remember to add `threading.Lock()` everywhere, by hand, every time.
 
@@ -111,8 +117,8 @@ for i in 0..3 {
 
 ## 2. Prerequisites
 
-- Completed ownership ([TicketV1](../../02-Ownership/01-TicketV1/README.md))
-- Understand closures (briefly covered in [MasterMind](../../01-Foundations/04-MasterMind/README.md))
+- Completed ownership ([TicketV1](../../../../02-Ownership/01-TicketV1/README.md))
+- Understand closures (briefly covered in [MasterMind](../../../../01-Foundations/04-MasterMind/README.md))
 
 ---
 
@@ -636,3 +642,9 @@ fn parallel_process(items: Vec<i32>) -> Vec<i32> {
 3. **Pipeline stages** — Each stage runs in its own thread, passing data via channels
 
 > "If it compiles, it doesn't have data races" — Rust's fearless concurrency promise.
+
+## Exercises
+
+* **Easy** – modify the existing function to handle an extra edge case.
+* **Medium** – extend the project with a new helper function that re‑uses the core logic.
+

@@ -4,32 +4,6 @@
 
 ## Why Model Consistency in the Type System?
 
-**Python pain:** Distributed-systems guarantees are hidden in the database client's *string* parameter — `consistency_level="ONE"` is just a string, the type system can't tell you if you picked the right one. The CAP theorem is taught conceptually, but rarely *coded*.
-
-**Rust fix:** Algebraic types (`enum` + `match`) model consistency models precisely and force you to handle every case:
-
-```rust
-match (consistency, availability, partition_tolerance) {
-    (true,  true,  false) => "CA",
-    (true,  false, true ) => "CP",
-    (false, true,  true ) => "AP",
-    _ => "Invalid",  // match forces exhaustive handling
-}
-```
-
-`match` exhaustiveness means no silent fallthrough — exactly the property that catches production outages in distributed code.
-
-## At a Glance
-
-| # | Concept | Rust | Python | Why it matters |
-|---|---------|------|--------|----------------|
-| 1 | CAP Theorem | `match` on bools | `if/elif` | Model consistency/availability trade-offs |
-| 2 | Eventual Consistency | `HashSet` dedup | `set()` dedup | Simulate convergence |
-| 3 | CRDT Merge | vector union | `set` union | Conflict-free data merging |
-| 4 | Leader Election | highest-ID logic | `max(range(...))` | Select a coordinating node |
-| 5 | Quorum Reads | `HashMap` counting | `collections.Counter` | Read with replica agreement |
-| 6 | Exhaustive Matching | `match` arms | No equivalent | Force handling all states at compile time |
-
 ---
 
 ## Table of Contents
@@ -253,3 +227,9 @@ Implement each function in `workshop/src/lib.rs`:
 | CRDT merge | Vector union | `set` union |
 | Leader election | Highest-ID selection | `max(range)` |
 | Quorum read | HashMap frequency count | `collections.Counter` |
+
+## Exercises
+
+* **Easy** – modify the existing function to handle an extra edge case.
+* **Medium** – extend the project with a new helper function that re‑uses the core logic.
+

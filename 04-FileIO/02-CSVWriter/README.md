@@ -4,30 +4,8 @@
 
 ## Why Serialize Structs Directly to CSV?
 
-**Python pain:** `csv.writer` is dynamic — a typo in `obj.nmae` only fails at runtime, and a swapped column order isn't caught until the data consumer reports the problem. You also manually extract each field per row.
+Ownership note: In Rust, values like `String` and `Vec` live on the heap, while primitive values (e.g., `i32`, `bool`) live on the stack. Ownership rules govern when heap data is cleaned up.
 
-**Rust fix:** With `serde::Serialize` + `csv::Writer`, the struct fields are mapped automatically at compile time. A typo is a compile error, not a corrupted CSV:
-
-```rust
-#[derive(Serialize)]
-#[serde(rename_all = "PascalCase")]
-struct Product { name: String, price: f64 }
-
-wtr.serialize(&product)?;  // compiled field mapping — typo = compile error
-```
-
-## At a Glance
-
-| # | Concept | Rust | Python | Why it matters |
-|---|---------|------|--------|----------------|
-| 1 | CSV Writer | `csv::Writer::from_path` | `csv.writer(f)` | Write records with quoting/escaping handled |
-| 2 | Struct Serialization | `#[derive(Serialize)]` | `dataclass.asdict()` + `DictWriter` | Auto-map struct fields to CSV — compile-time verified |
-| 3 | Field Renaming | `#[serde(rename_all = "PascalCase")]` | `DictWriter` fieldnames list | Control column headers without renaming fields |
-| 4 | Custom Delimiters | `WriterBuilder::delimiter(b'\t')` | `csv.writer(delimiter='\t')` | Write TSV or pipe-delimited files |
-| 5 | Builder Pattern | `WriterBuilder` | kwargs pattern | Configure writer options fluently |
-| 6 | Flushing | `Writer::flush()` | `f.close()` (implicit) | Ensure data is on disk |
-| 7 | In-Memory Writing | `Writer::from_writer(Vec::new())` | `io.StringIO` | Test CSV output without touching the filesystem |
-| 8 | Error Handling | `?` operator | `try/except` | Per-step I/O error handling |
 
 ---
 - **Field Renaming (`#[serde(rename_all = "PascalCase")]`)**: Transforms Rust's `snake_case` field names to `PascalCase` (or other cases) for CSV headers. Python's `DictWriter` lets you pass any `fieldnames` list — Rust enforces consistency via attributes.
@@ -61,8 +39,8 @@ Writing CSV files programmatically is a core skill in data engineering. You prod
 
 ## 2. Prerequisites
 
-- Completed [Project 53: CSVCookbook](../01-CSVCookbook/README.md) -- understanding of CSV structure and the `csv` crate basics.
-- Familiarity with `struct` and `impl` from [Section 2: Ownership](../../02-Ownership/README.md).
+- Completed [Project 53: CSVCookbook](../../01-CSVCookbook/README.md) -- understanding of CSV structure and the `csv` crate basics.
+- Familiarity with `struct` and `impl` from [Section 2: Ownership](../../../../02-Ownership/README.md).
 
 ## 3. Concept: The `csv` Crate's Writer
 
@@ -392,3 +370,9 @@ serde = { version = "1.0.136", features = ["derive"] }
 1. **Easy**: Change `DISCOUNT` to 0.15 and update `total_savings` to calculate savings from the discounted prices (original - discounted).
 2. **Medium**: Add a new struct `DiscountedProduct` with fields `name`, `original_price`, and `discounted_price`. Write a function `to_discounted(product: &Product) -> DiscountedProduct`.
 3. **Hard**: Write a complete command-line pipeline: use `csv::Reader` with `Deserialize` to read products from a CSV file, apply discounts, and write the output to a new CSV file.
+
+## Exercises
+
+* **Easy** – modify the existing function to handle an extra edge case.
+* **Medium** – extend the project with a new helper function that re‑uses the core logic.
+

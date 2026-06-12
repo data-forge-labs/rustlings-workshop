@@ -69,41 +69,7 @@ This section gives you the foundational Rust toolkit to write **safe, fast, pred
 
 ---
 
-## What You'll Learn
 
-| # | Concept | Rust | Python | Why it matters | First Project |
-|---|---------|------|--------|----------------|---------------|
-| 1 | Program entry | `fn main()` | `if __name__ == "__main__"` | Where execution begins | 01-Intro |
-| 2 | Variable binding | `let`, `let mut` | Variable assignment | Immutable by default — no accidental mutation | 01-Intro |
-| 3 | Integer types | `i32`, `u32`, `i64`, `usize`, `u8` | `int` | Fixed-width, no hidden cost of big ints | 01-Intro |
-| 4 | Float types | `f64`, `f32` | `float` | IEEE 754, single or double precision | 01-Intro |
-| 5 | Boolean | `bool` | `bool` | True/false | 01-Intro |
-| 6 | String types | `String`, `&str` | `str` | Owned vs borrowed string data | 01-Intro (mention), 02-GuessGame (deep) |
-| 7 | Branching | `if` / `else` | `if` / `else` | Expressions, not statements | 01-Intro |
-| 8 | Loops | `loop`, `while`, `for` | `while`, `for` | Three loop forms for different needs | 01-Intro |
-| 9 | Tuples | `(T1, T2)` | `tuple` | Fixed-size heterogeneous grouping | 01-Intro |
-| 10 | Fixed-size arrays | `[T; N]` | `list` (size not enforced) | Stack-allocated, compile-time size | 01-Intro |
-| 11 | Unrecoverable errors | `panic!` | `raise Exception` | Crash with a message | 03-BasicCalculator |
-| 12 | Recoverable errors | `Result<T, E>` | try/except | Fallible operations, compiler-enforced handling | 02-GuessGame |
-| 13 | Safe overflow | saturating / wrapping methods | N/A (unbounded) | No silent overflow bugs | 03-BasicCalculator |
-| 14 | Type conversion | `as` casting | `int()`, `float()`, `str()` | Explicit numeric conversion | 03-BasicCalculator |
-| 15 | Custom enums | `enum`, `#[derive(...)]` | `class X(Enum)` | Type-safe "one of N variants" | 02-GuessGame |
-| 16 | Custom data | `struct`, `impl` | `class`, dataclass | Bundle data + methods | 04-MasterMind |
-| 17 | Constructor | `fn new() -> Self` | `__init__` | Idiomatic constructor pattern | 04-MasterMind |
-| 18 | Method receivers | `&self`, `&mut self` | `self` (no enforcement) | Read-only vs mutating methods | 04-MasterMind |
-| 19 | Visibility | `pub` | `_` convention | Items private by default | 04-MasterMind |
-| 20 | Dynamic arrays | `Vec<T>` | `list` | Growable, type-safe collection | 04-MasterMind |
-| 21 | Null safety | `Option<T>` | `None`, `Optional` | No null pointer exceptions | 04-MasterMind |
-| 22 | Pattern matching | `match` | `match`/`case` (3.10+) | Exhaustive, safe branching | 02-GuessGame (basic), 04-MasterMind (exhaustive) |
-| 23 | `if let` | `if let Some(x) = opt` | `if x is not None` | Match a single variant of an enum | 04-MasterMind |
-| 24 | Console output | `println!`, `print!` | `print()` | Formatted output macro | 01-Intro |
-| 25 | Console input | `std::io::stdin()` | `input()` | Read user input | 02-GuessGame |
-| 26 | Random numbers | `rand` crate | `random` module | Shuffling, sampling, generation | 02-GuessGame |
-| 27 | Ranges | `0..n`, `0..=n` | `range(n)` | Sequence generation | 01-Intro |
-| 28 | Iterators | `.iter()`, `.zip()`, `.filter()`, `.count()`, `.enumerate()`, `.collect()` | `for`, `map`, `filter`, `zip`, `enumerate`, `list()` | Lazy, composable functional iteration | 04-MasterMind |
-| 29 | Closures | `\|x\| x + 1` | `lambda x: x + 1` | Anonymous functions for iterator adapters | 04-MasterMind |
-| 30 | String manipulation | `.trim()`, `.chars()`, `.to_digit()` | `str.strip()`, list(str) | String processing | 02-GuessGame |
-| 31 | Unit testing | `#[test]`, `#[should_panic]`, `assert_eq!` | `pytest` / `unittest` | First-class built-in testing | 03-BasicCalculator |
 
 ---
 
@@ -300,3 +266,9 @@ match result {
 3. Build **03-BasicCalculator** to deepen integers, control flow, overflow handling, and Rust's built-in `#[test]` framework (35 tests)
 4. Build **04-MasterMind (Basic)** to learn `struct` + `impl`, `Vec`, `Option`, iterators, and the `&self`/`&mut self` distinction (30 tests)
 5. (Optional) Refactor in **04-MasterMind (Advanced)** to learn modules, `pub` visibility, and `clap` CLI parsing
+
+## Exercises
+
+* **Easy** – modify the existing function to handle an extra edge case.
+* **Medium** – extend the project with a new helper function that re‑uses the core logic.
+

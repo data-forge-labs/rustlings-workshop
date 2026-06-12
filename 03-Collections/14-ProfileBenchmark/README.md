@@ -1,8 +1,8 @@
 # 🦀 ProfileBenchmark — Dev vs Release, Cargo Profiles, and Criterion
 
-*Compare Rust's debug and release builds on real collection workloads, learn to configure Cargo profiles, and write criterion benchmarks that survive both modes.*
-
 > **Test-driven approach**: This project includes a Cargo project with progressive unit tests. Each function in `workshop/src/lib.rs` starts as a `todo!()` stub. As you follow each section, replace `todo!()` with real code and run `cd workshop && cargo test` to watch the pass count grow. Your goal: **all 14 tests pass**. After that, run `cargo bench` to see how the same code runs 10-50x faster in release mode.
+
+## Why Profile at All?
 
 ---
 
@@ -82,9 +82,9 @@ Then we will write **criterion benchmarks** that compare them in both `dev` and 
 
 ## 2. Prerequisites
 
-- Completed [01-TicketManagement](../01-TicketManagement/README.md) — comfortable with `Vec` and `HashMap`
-- Completed [04-HashMapCount](../04-HashMapCount/README.md) — comfortable with the `entry().or_insert()` pattern
-- Familiarity with `cargo test` (covered in [01-Intro](../../01-Foundations/01-Intro/README.md) and the [09-03-Testing](../../09-ObservabilityAndTesting/03-Testing/README.md) deep dive)
+- Completed [01-TicketManagement](../../01-TicketManagement/README.md) — comfortable with `Vec` and `HashMap`
+- Completed [04-HashMapCount](../../04-HashMapCount/README.md) — comfortable with the `entry().or_insert()` pattern
+- Familiarity with `cargo test` (covered in [01-Intro](../../../../01-Foundations/01-Intro/README.md) and the [09-03-Testing](../../../09-ObservabilityAndTesting/03-Testing/README.md) deep dive)
 
 ## 3. Setup: Create the Project from Scratch
 
@@ -211,7 +211,7 @@ The compiler applies dozens of optimizations in release mode:
 | Bounds check elimination | Off | On (where provable) | Skips `vec[i]` bounds checks |
 | Overflow checks | **On** | **Off** | Panics in dev, wraps in release |
 
-That last row is critical — see the [BasicCalculator](../../01-Foundations/03-BasicCalculator/README.md) project for the full story on integer overflow. In short: **`u8 = 255; u8 + 1` panics in dev but wraps to 0 in release**. This is the canonical "works on my machine" bug for new Rustaceans.
+That last row is critical — see the [BasicCalculator](../../../../01-Foundations/03-BasicCalculator/README.md) project for the full story on integer overflow. In short: **`u8 = 255; u8 + 1` panics in dev but wraps to 0 in release**. This is the canonical "works on my machine" bug for new Rustaceans.
 
 ### Applying to Our Project
 
@@ -281,7 +281,7 @@ Lower numbers = more cross-module inlining = faster runtime, slower link. For da
 overflow-checks = true   # panic on integer overflow in release
 ```
 
-The [BasicCalculator project](../../01-Foundations/03-BasicCalculator/README.md) recommends this for safety-critical code. The cost is ~1-3% runtime, but you get the same `u8 = 255 + 1` panic that catches bugs in dev.
+The [BasicCalculator project](../../../../01-Foundations/03-BasicCalculator/README.md) recommends this for safety-critical code. The cost is ~1-3% runtime, but you get the same `u8 = 255 + 1` panic that catches bugs in dev.
 
 ### `debug` — How much debug info to keep
 
@@ -944,12 +944,18 @@ Use `cargo flamegraph` (an external cargo subcommand) to generate a flame graph 
 - [The Cargo Book — Profiles](https://doc.rust-lang.org/cargo/reference/profiles.html)
 - [criterion.rs documentation](https://github.com/bheisler/criterion.rs)
 - [Rust Performance Book](https://nnethercote.github.io/perf-book/)
-- [Section 9: Testing](../../09-ObservabilityAndTesting/03-Testing/README.md) — for the unit-test side of the same code
-- [BasicCalculator](../../01-Foundations/03-BasicCalculator/README.md) — for the full integer-overflow story
+- [Section 9: Testing](../../../09-ObservabilityAndTesting/03-Testing/README.md) — for the unit-test side of the same code
+- [BasicCalculator](../../../../01-Foundations/03-BasicCalculator/README.md) — for the full integer-overflow story
 
 ## Related Projects
 
-- [08-RustCollectionsDoc](../08-RustCollectionsDoc/README.md) — uses `criterion` to compare all `std::collections` types
-- [04-HashMapCount](../04-HashMapCount/README.md) — deep dive on `HashMap::entry().or_insert()` for counting
-- [09-BinaryHeapFruit](../09-BinaryHeapFruit/README.md) — priority queue used in `top_n`
+- [08-RustCollectionsDoc](../../08-RustCollectionsDoc/README.md) — uses `criterion` to compare all `std::collections` types
+- [04-HashMapCount](../../04-HashMapCount/README.md) — deep dive on `HashMap::entry().or_insert()` for counting
+- [09-BinaryHeapFruit](../../09-BinaryHeapFruit/README.md) — priority queue used in `top_n`
 - [10-BTreeSetFruit](../10-BTreeSetFruit/README.md) — ordered collections, the basis for `BTreeMap` understanding
+
+## Exercises
+
+* **Easy** – modify the existing function to handle an extra edge case.
+* **Medium** – extend the project with a new helper function that re‑uses the core logic.
+

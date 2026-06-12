@@ -192,3 +192,9 @@ INFO checkpoint processed=2 last_lsn=1
 - [Postgres logical replication](https://www.postgresql.org/docs/current/logical-replication.html) — `wal2json`, `pgoutput`
 - [async-trait crate](https://docs.rs/async-trait) — async methods in traits
 - [At-least-once vs exactly-once](https://martin.kleppmann.com/blog/2016/02/08/how-to-do-distributed-locking.html) — why dedup matters
+
+## Exercises
+
+* **Easy** – modify the existing function to handle an extra edge case.
+* **Medium** – extend the project with a new helper function that re‑uses the core logic.
+

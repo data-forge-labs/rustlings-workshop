@@ -179,7 +179,7 @@ to watch the pass count grow. The test module names match the section headings.
 
 ## 2. Prerequisites
 
-- Completed [04-FileIO/04-Arrow](../04-FileIO/04-Arrow/README.md) — comfortable with progressive workshops.
+- Completed [04-FileIO/04-Arrow](../../04-FileIO/04-Arrow/README.md) — comfortable with progressive workshops.
 - Familiar with `Result` and `Box<dyn Error>`.
 
 ## 3. Concept: Immediate-Mode TUI and `Frame`

@@ -233,3 +233,9 @@ Write a function `dedup_stable<T: Clone + Eq + Hash>(items: &[T]) -> Vec<T>` tha
 | Deduplication pattern | `HashSet` + `HashMap` for unique + count | `collections.Counter` |
 
 `HashSet` is your go-to for fast membership testing and deduplication. When you also need ordered iteration, reach for `BTreeSet` instead.
+
+## Exercises
+
+* **Easy** – modify the existing function to handle an extra edge case.
+* **Medium** – extend the project with a new helper function that re‑uses the core logic.
+

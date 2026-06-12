@@ -4,30 +4,6 @@
 
 ## Why Use Rayon for Data Parallelism?
 
-**Python pain:** Parallelizing even a simple operation requires an executor, manual chunking, task submission, and result collection — all boilerplate. Threads hit the GIL, so you're forced into process pools with pickle overhead.
-
-**Rust fix:** Rayon's `.par_iter()` is a drop-in replacement for `.iter()` — add `par_` and your sequential iterator becomes parallel:
-
-```rust
-use rayon::prelude::*;
-data.into_par_iter().map(|x| x + 1).collect()
-//          ^^^^^^^^ that's the only difference from .iter()
-```
-
-No executor, no manual chunking, no result-collection boilerplate. Rayon manages a thread pool and uses work stealing automatically.
-
-## At a Glance
-
-| # | Concept | Rust | Python | Why it matters |
-|---|---------|------|--------|----------------|
-| 1 | Parallel Iterator | `rayon::par_iter()` | `executor.map()` | Drop-in parallel iteration |
-| 2 | Parallel Sum | `par_iter().sum()` | `sum()` (sequential) | Parallel reduce |
-| 3 | Parallel Map | `par_iter().map().collect()` | `executor.map()` | Parallel transform |
-| 4 | Parallel Filter | `par_iter().filter().collect()` | `filter()` (sequential) | Parallel selection |
-| 5 | Parallel Frequency | `par_iter().fold().reduce()` | `Counter()` (sequential) | Parallel word count |
-| 6 | CPU Count | `num_cpus::get()` | `os.cpu_count()` | Query available cores |
-| 7 | Speedup Model | Amdahl's law | N/A | Predict max parallel speedup |
-
 ---
 
 ## Table of Contents
@@ -50,8 +26,8 @@ In Python, `concurrent.futures.ProcessPoolExecutor` provides similar functionali
 
 ## 2. Prerequisites
 
-- Iterators from [Rust Iterators](../../03-Collections/12-RustIterators/README.md)
-- Threads from [01-Threads](../01-Threads/README.md)
+- Iterators from [Rust Iterators](../../../../03-Collections/12-RustIterators/README.md)
+- Threads from [01-Threads](../../01-Threads/README.md)
 
 ## 3. Concept: par_iter — parallel iterators
 
@@ -209,3 +185,9 @@ num_cpus = "1.13.1"
 | Parallel frequency | `par_iter().fold().reduce()` | `Counter()` (sequential) |
 | CPU count | `num_cpus::get()` | `os.cpu_count()` |
 | Speedup model | Amdahl's law | No standard equivalent |
+
+## Exercises
+
+* **Easy** – modify the existing function to handle an extra edge case.
+* **Medium** – extend the project with a new helper function that re‑uses the core logic.
+

@@ -91,7 +91,7 @@ Testing is where Rust truly shines. The language bakes testing into the compiler
 ## 2. Prerequisites
 
 - Functions, `Result<T, E>`, `Option<T>`
-- **Projects**: [01-Intro](../../01-Foundations/01-Intro/README.md), [04-MasterMind](../../01-Foundations/04-MasterMind/README.md) (for pattern matching)
+- **Projects**: [01-Intro](../../../../01-Foundations/01-Intro/README.md), [04-MasterMind](../../../../01-Foundations/04-MasterMind/README.md) (for pattern matching)
 
 ## 3. `#[test]` — The Unit Test Attribute
 
@@ -423,3 +423,9 @@ mod tests {
 | `#[cfg(test)]` | Test module wrapper | `if __name__ == "__main__"` |
 | `tests/` directory | Integration test crate | `tests/` in pytest |
 | Property patterns | Fibonacci properties | `@given` in hypothesis |
+
+## Exercises
+
+* **Easy** – modify the existing function to handle an extra edge case.
+* **Medium** – extend the project with a new helper function that re‑uses the core logic.
+

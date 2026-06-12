@@ -213,3 +213,8 @@ match get_language_year(&languages, "Rust") {
 - Using the Entry API effectively
 - Understanding HashMap performance characteristics
 - Handling errors and edge cases 
+## Exercises
+
+* **Easy** – modify the existing function to handle an extra edge case.
+* **Medium** – extend the project with a new helper function that re‑uses the core logic.
+

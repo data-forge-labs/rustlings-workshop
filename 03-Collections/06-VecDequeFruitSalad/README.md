@@ -8,6 +8,9 @@
 
 ## Why Double-Ended Queues?
 
+Ownership note: In Rust, values like `String` and `Vec` live on the heap, while primitive values (e.g., `i32`, `bool`) live on the stack. Ownership rules govern when heap data is cleaned up.
+
+
 **Python pain:** `list.pop(0)` is O(n) — every pop shifts all remaining elements. For a 10K-element queue processed 10K times, that's 100M operations. `collections.deque` is the Python answer, but it lacks a clean `Vec` integration.
 
 **Rust fix:** `VecDeque<T>` is a ring buffer with O(1) `push_front`, `push_back`, `pop_front`, `pop_back` — and you can still index into it like a `Vec`. No shifting, no reallocation surprises.
@@ -507,3 +510,9 @@ This tutorial built a fruit salad program using `VecDeque`, from basic queue ope
 - **Double-Ended Operations**: Demonstrated with `push_front`, `push_back`, `pop_front`, and `pop_back`.
 - **Randomization**: Using `rand`â€™s `SliceRandom` for shuffling and selection.
 - **Error Handling**: Robust checks for empty queues.
+
+## Exercises
+
+* **Easy** – modify the existing function to handle an extra edge case.
+* **Medium** – extend the project with a new helper function that re‑uses the core logic.
+

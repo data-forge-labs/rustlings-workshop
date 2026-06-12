@@ -57,24 +57,6 @@ Same `petgraph` types can be persisted to a Neo4j graph database, visualized as 
 
 ---
 
-## What You'll Learn
-
-| # | Concept | Rust | Python | Why it matters |
-|---|---------|------|--------|----------------|
-| 1 | Graph data structure | `petgraph::Graph` | `networkx.Graph` | Directed, undirected, weighted graphs |
-| 2 | Node/edge iteration | `node_indices()`, `edge_indices()` | `G.nodes`, `G.edges` | Visit every node/edge |
-| 3 | Strongly connected components | Kosaraju's algorithm via `petgraph::algo::kosaraju_scc` | `networkx.kosaraju` | Community detection |
-| 4 | Centrality metrics | degree, closeness, betweenness (custom impl) | `nx.degree_centrality`, etc. | Identify influential nodes |
-| 5 | Shortest path | `petgraph::algo::dijkstra` | `nx.single_source_dijkstra_path_length` | Routing & optimization |
-| 6 | PageRank | Iterative power method (custom impl) | `nx.pagerank` | Link analysis, ranking |
-| 7 | Priority queue as Dijkstra core | `BinaryHeap` + `Reverse` | `heapq.heappush` | Min-heap via wrapper |
-| 8 | Graph DB | Neo4j via Rust driver | `neo4j` Python driver | Production graph persistence |
-| 9 | ASCII visualization | `rasciigraph` crate | `matplotlib` (overkill) | Quick terminal bar charts |
-| 10 | Graph connectivity | DFS + `HashMap` memoization | `nx.is_connected` | Connected components |
-| 11 | `&dyn` and trait objects | `&dyn GraphVisitor` | duck-typed dispatch | Pluggable graph algorithms |
-
----
-
 ## Concepts at a Glance
 
 ### 1. `petgraph` — Directed and Undirected Graphs
@@ -179,7 +161,7 @@ fn count_connected(g: &Graph, start: NodeIndex, seen: &mut HashSet<NodeIndex>) -
 
 ## Prerequisites
 
-- Completed [Section 5: Concurrency](../05-Concurrency/README.md) — some projects use parallel iteration (Rayon)
+- Completed [Section 5: Concurrency](../../../../../05-Concurrency/README.md) — some projects use parallel iteration (Rayon)
 - Comfortable with `HashMap`, `HashSet`, iterators, closures
 - For Neo4j projects: Docker installed (we run Neo4j in a container)
 
@@ -214,4 +196,10 @@ fn count_connected(g: &Graph, start: NodeIndex, seen: &mut HashSet<NodeIndex>) -
 - **Builds on**: Section 3 (Collections, especially `HashMap`/`HashSet` for memoization), Section 5 (Rayon for parallel graph algorithms)
 - **Sets up for**: Section 9 (Observability — sometimes you monitor a graph pipeline), Section 10 (production services that expose graph queries via REST)
 
-For terminal applications (CLIs, TUIs), revisit [Section 6: Terminal Apps](../06-TerminalApps/README.md).
+For terminal applications (CLIs, TUIs), revisit [Section 6: Terminal Apps](../../../../../06-TerminalApps/README.md).
+
+## Exercises
+
+* **Easy** – modify the existing function to handle an extra edge case.
+* **Medium** – extend the project with a new helper function that re‑uses the core logic.
+

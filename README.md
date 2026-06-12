@@ -309,7 +309,6 @@ Browse the full list of projects in the [Projects](#projects) table above.
 The table below lists all core Rust concepts a learner should eventually see. **Checked items** are already introduced in at least one existing workshop.
 
 | Concept | Covered? | First Project |
-|---------|----------|---------------|
 | `cargo new`, `cargo build`, `cargo run` | ✅ | 01-01 |
 | `Cargo.toml` dependencies | ✅ | 01-02 |
 | Variables (`let`, `let mut`) | ✅ | 01-01 |

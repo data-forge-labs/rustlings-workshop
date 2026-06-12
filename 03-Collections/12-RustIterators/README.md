@@ -283,3 +283,9 @@ Implement a custom iterator `Fibonacci` that yields Fibonacci numbers. It should
 | Zero-cost | Compiler inlines iterator chains | N/A (Python has runtime overhead) |
 
 Rust iterators are lazy, composable, and zero-cost. They let you express complex data transformations in a clear, functional style while matching or exceeding hand-written loop performance.
+
+## Exercises
+
+* **Easy** – modify the existing function to handle an extra edge case.
+* **Medium** – extend the project with a new helper function that re‑uses the core logic.
+

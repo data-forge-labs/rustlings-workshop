@@ -1,6 +1,41 @@
 # Heap Memory Architecture — Rust vs Python
 
-## Stack vs Heap — The Basics
+## Stack vs Heap — Step-by-Step Execution Trace
+
+The following trace shows how Rust's ownership model manages stack and heap memory line by line.
+
+```rust
+fn main() {
+    let x: i32 = 42;           // Step 1
+    let name = String::from("Rust");  // Step 2
+    let v = vec![1, 2, 3];     // Step 3
+    let b = Box::new(99);      // Step 4
+    let y = x;                 // Step 5: i32: Copy
+    let z = name;              // Step 6: String: Move!
+    // name is now invalid
+    println!("{}", z);         // Step 7
+} // Everything dropped here    // Step 8
+```
+
+### Execution Trace — Three-Column View
+
+| Step | Code | Stack (before end of function) | Heap |
+|------|------|--------------------------------|------|
+| 1 | `let x: i32 = 42;` | `x: i32 = 42` (4B) | — |
+| 2 | `let name = String::from("Rust");` | `x: i32 = 42` (4B)<br>`name: String { ptr, len=4, cap=4 }` (24B) | `"Rust"` (4B) ← `name.ptr` |
+| 3 | `let v = vec![1, 2, 3];` | `x: i32 = 42` (4B)<br>`name: String { ptr, len=4, cap=4 }` (24B)<br>`v: Vec { ptr, len=3, cap=3 }` (24B) | `"Rust"` (4B) ← `name.ptr`<br>`[1, 2, 3]` (12B) ← `v.ptr` |
+| 4 | `let b = Box::new(99);` | `x: i32 = 42` (4B)<br>`name: String { ptr, len=4, cap=4 }` (24B)<br>`v: Vec { ptr, len=3, cap=3 }` (24B)<br>`b: Box { ptr }` (8B) | `"Rust"` (4B) ← `name.ptr`<br>`[1, 2, 3]` (12B) ← `v.ptr`<br>`99` (4B) ← `b.ptr` |
+| 5 | `let y = x;` | `x: i32 = 42` (4B)<br>`name: String { ptr, len=4, cap=4 }` (24B)<br>`v: Vec { ptr, len=3, cap=3 }` (24B)<br>`b: Box { ptr }` (8B)<br>`y: i32 = 42` (4B) | (unchanged — `i32` is `Copy`) |
+| 6 | `let z = name;` | `x: i32 = 42` (4B)<br>`name: INVALID (moved)` (24B)<br>`v: Vec { ptr, len=3, cap=3 }` (24B)<br>`b: Box { ptr }` (8B)<br>`y: i32 = 42` (4B)<br>`z: String { ptr, len=4, cap=4 }` (24B) | `"Rust"` (4B) ← `z.ptr`<br>`[1, 2, 3]` (12B) ← `v.ptr`<br>`99` (4B) ← `b.ptr` |
+| 7 | `println!("{}", z);` | (unchanged) | (unchanged — prints "Rust") |
+| 8 | `}` (scope end) | All stack vars dropped | `"Rust"` freed (via `z`)<br>`[1, 2, 3]` freed (via `v`)<br>`99` freed (via `b`) |
+
+**Key observations:**
+- **Step 5** (`y = x`): `i32` implements `Copy` — bitwise copy, both `x` and `y` valid
+- **Step 6** (`z = name`): `String` does **not** implement `Copy` — **move** transfers ownership, `name` becomes invalid
+- **Step 8**: RAII — `z`, `v`, `b` all implement `Drop`, heap memory freed automatically in reverse order
+
+### Stack vs Heap — The Basics
 
 ```
   ┌───────────────────┐      ┌──────────────────────┐

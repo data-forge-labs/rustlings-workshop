@@ -1157,3 +1157,9 @@ Test the API exactly like your FastAPI project – the endpoints are identical:
 | `seed.py` | `db::seed_database` function called at startup |
 
 You now have a production-ready, fully async shop management API in Rust, matching every feature of the original FastAPI backend. Enjoy the speed and safety! 🦀
+
+## Exercises
+
+* **Easy** – modify the existing function to handle an extra edge case.
+* **Medium** – extend the project with a new helper function that re‑uses the core logic.
+

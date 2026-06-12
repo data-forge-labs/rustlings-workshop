@@ -219,3 +219,9 @@ Run `cd workshop && cargo test` after each step. Groups: `step_01_connected_node
 | Full connectivity | Iterate all nodes, shared cache | For loop with shared dict | `fully_connected_graph` |
 | Complete graph generation | Double loop `j = i + 1` | Nested `for` with `range` | `generate_fully_connected_edges` |
 | Node ID generation | Loop with `push` | List comprehension `range` | `generate_nodes` |
+
+## Exercises
+
+* **Easy** – modify the existing function to handle an extra edge case.
+* **Medium** – extend the project with a new helper function that re‑uses the core logic.
+

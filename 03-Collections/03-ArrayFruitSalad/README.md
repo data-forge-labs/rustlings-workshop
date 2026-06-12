@@ -1,12 +1,18 @@
 # 🦀 ArrayFruitSalad — Python to Rust Workshop
 
-*Fixed-size arrays (`[T; N]`) for stack-allocated, compile-time-sized data.*
-
 > **Test-driven approach**: This project includes a Cargo project with progressive unit tests. Each function in `workshop/src/lib.rs` starts as a `todo!()` stub. As you follow each section, replace `todo!()` with real code and run `cd workshop && cargo test` to watch the pass count grow. Your goal: **all 7 tests pass**.
+
+## Why Fixed-Size Arrays?
+
+Ownership note: In Rust, values like `String` and `Vec` live on the heap, while primitive values (e.g., `i32`, `bool`) live on the stack. Ownership rules govern when heap data is cleaned up.
+
 
 ---
 
 ## Why Fixed-Size Arrays?
+
+Ownership note: In Rust, values like `String` and `Vec` live on the heap, while primitive values (e.g., `i32`, `bool`) live on the stack. Ownership rules govern when heap data is cleaned up.
+
 
 **Python pain:** Python lists are always dynamic — there's no way to say "this collection has *exactly* 10 elements and never changes." You pay a hidden cost for every check (`len(self) == expected`), and off-by-one bugs hide in append/remove logic.
 
@@ -492,4 +498,10 @@ This tutorial built a fruit salad program using arrays, from basic creation to a
 - **Use Cases**: Scenarios where arrays excel (fixed-size, performance-critical) and their limitations (no resizing).
 - **Randomization**: Using `rand`â€™s `SliceRandom` for shuffling and selection.
 - **Advanced Features**: Error handling, slice operations, and array manipulation.
+
+
+## Exercises
+
+* **Easy** – modify the existing function to handle an extra edge case.
+* **Medium** – extend the project with a new helper function that re‑uses the core logic.
 

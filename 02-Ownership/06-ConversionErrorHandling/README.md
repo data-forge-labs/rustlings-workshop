@@ -11,6 +11,9 @@
 
 ## Why Error Handling Is a First-Class Concept in Rust
 
+Ownership note: In Rust, values like `String` and `Vec` live on the heap, while primitive values (e.g., `i32`, `bool`) live on the stack. Ownership rules govern when heap data is cleaned up.
+
+
 **Python pain:** A pipeline function returns `None` for "missing", `""` for
 "empty", `-1` for "not found", raises `ValueError` for "bad input", and
 sometimes `print("error")` and returns `None`. The caller has to know which
@@ -169,3 +172,9 @@ to watch the pass count grow. The test module names match the section headings.
 ```bash
 cargo test
 ```
+
+## Exercises
+
+* **Easy** – modify the existing function to handle an extra edge case.
+* **Medium** – extend the project with a new helper function that re‑uses the core logic.
+

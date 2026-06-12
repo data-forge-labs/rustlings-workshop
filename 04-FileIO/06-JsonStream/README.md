@@ -159,8 +159,8 @@ This workshop covers both, plus untyped `Value` walking for when you don't know 
 
 ## 2. Prerequisites
 
-- Completed [04-FileIO/05-YAML](../05-YAML/README.md) — `serde` derive, custom enums.
-- Familiarity with `BufReader`/`BufWriter` from [04-FileIO/01-CSVCookbook](../01-CSVCookbook/README.md).
+- Completed [04-FileIO/05-YAML](../../05-YAML/README.md) — `serde` derive, custom enums.
+- Familiarity with `BufReader`/`BufWriter` from [04-FileIO/01-CSVCookbook](../../01-CSVCookbook/README.md).
 
 ## 3. Concept: `serde_json` and Typed Parsing
 

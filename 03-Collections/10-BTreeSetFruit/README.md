@@ -229,3 +229,9 @@ Compare the performance of `BTreeSet` vs `HashSet` for this workload: insert 100
 | Deduplication | Automatic on insert | `set` (same behavior) |
 
 Choose `BTreeSet` when you need ordered iteration, range queries, or consistent comparison-based ordering. Choose `HashSet` when you only need fast membership testing and don't care about order.
+
+## Exercises
+
+* **Easy** – modify the existing function to handle an extra edge case.
+* **Medium** – extend the project with a new helper function that re‑uses the core logic.
+

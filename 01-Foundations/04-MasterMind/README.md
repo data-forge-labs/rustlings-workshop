@@ -1,12 +1,18 @@
 # Rust for Python Data Engineers — MasterMind
 
-*A hands-on workshop that teaches Strings, Vectors, Structs, Option, Iterators, and I/O by building a MasterMind code-breaking game.*
-
 > **Test-driven approach**: This project includes two Cargo projects with progressive unit tests. The **basic** workshop (`workshop/`) implements the core game; the **advanced** workshop (`workshop/advanced/`) adds modules, CLI args with `clap`, and documentation. Each function in `src/lib.rs` starts as a `todo!()` stub. Run `cd workshop && cargo test` (basic) or `cd workshop/advanced && cargo test` (advanced) to watch the pass count grow. Your goal: **all 30 tests pass (basic) and all tests pass (advanced)**.
+
+## Why Build a Code-Breaking Game?
+
+Ownership note: In Rust, values like `String` and `Vec` live on the heap, while primitive values (e.g., `i32`, `bool`) live on the stack. Ownership rules govern when heap data is cleaned up.
+
 
 ---
 
 ## Why Build a Code-Breaking Game?
+
+Ownership note: In Rust, values like `String` and `Vec` live on the heap, while primitive values (e.g., `i32`, `bool`) live on the stack. Ownership rules govern when heap data is cleaned up.
+
 
 **Python pain:** A pipeline like `record["value"] * 2` is just a dictionary lookup disguised as a typed operation — typos, missing fields, and `None` propagating through five layers of code all crash at runtime, far from the cause. There is no way to ask the type system "what fields does this record have?".
 
@@ -81,9 +87,9 @@ MasterMind is a classic code-breaking game:
 
 ## 2. Prerequisites
 
-- Completed [01-Intro](../01-Intro/README.md) — variables, mutability, `if`/`else`, loops, tuples, arrays
-- Completed [02-GuessGame](../02-GuessGame/README.md) — `String` vs `&str`, `enum`, `Result`, `.parse()`, `match`
-- Completed [03-BasicCalculator](../03-BasicCalculator/README.md) — integer types, overflow, `#[test]`
+- Completed [01-Intro](../../01-Intro/README.md) — variables, mutability, `if`/`else`, loops, tuples, arrays
+- Completed [02-GuessGame](../../02-GuessGame/README.md) — `String` vs `&str`, `enum`, `Result`, `.parse()`, `match`
+- Completed [03-BasicCalculator](../../03-BasicCalculator/README.md) — integer types, overflow, `#[test]`
 - Rust installed and working
 - Basic familiarity with `cd workshop && cargo run`
 
@@ -113,7 +119,7 @@ Refactor the game into a library + binary crate with `clap` CLI args and documen
 
 ## 4. Concept: `String` vs `&str` (Deeper Dive)
 
-You met `String` and `&str` briefly in [02-GuessGame §5](../02-GuessGame/README.md#5-concept-string-vs-str). This section deepens the distinction for data-engineering work.
+You met `String` and `&str` briefly in [02-GuessGame §5](../../02-GuessGame/README.md#5-concept-string-vs-str). This section deepens the distinction for data-engineering work.
 
 ### Explanation
 
@@ -809,7 +815,7 @@ The test stubs in `workshop/src/lib.rs` are organized into five progressive modu
 
 | Step | Concept (read this first) | Function to implement | Tests that pass |
 |------|---------------------------|----------------------|-----------------|
-| 1 | [§4 String vs &str](../02-GuessGame/README.md#5-concept-string-vs-str) | `has_unique_digits(s: &str) -> bool` | `step_01_validation` (7 tests) |
+| 1 | [§4 String vs &str](../../02-GuessGame/README.md#5-concept-string-vs-str) | `has_unique_digits(s: &str) -> bool` | `step_01_validation` (7 tests) |
 | 2 | [§6 struct + impl](#6-concept-struct-and-impl-custom-data-types), [§8 iterators](#8-concept-iterators-and-closures) | `SecretCode::new`, `SecretCode::evaluate_guess` | `step_02_secret_code` (8 tests) |
 | 3 | [§7 Option](#7-concept-optiont-handling-missing-data) | `SecretCode::can_give_*_hint`, `SecretCode::give_*_hint` | `step_03_hints` (8 tests) |
 | 4 | [§6 struct + impl](#6-concept-struct-and-impl-custom-data-types) | `MastermindGame::new` | `step_04_game_setup` (5 tests) |
@@ -1341,11 +1347,11 @@ cargo run
 >
 > | You just used (MasterMind) | You'll deeply understand in (Section 2) |
 > |---------------------------|------------------------------------------|
-> | `&self` and `&mut self` on methods | [01-TicketV1 §9-11](../../02-Ownership/01-TicketV1/README.md#9-concept-ownership-the-key-to-rust) — why Rust enforces "many readers OR one writer" |
-> | `pub` on every item in `lib.rs` | [01-TicketV1 §7-8](../../02-Ownership/01-TicketV1/README.md#7-concept-modules-and-visibility) — module trees, `pub(crate)`, `pub(super)` |
-> | `&str` vs `String` (implicit) | [01-TicketV1 §9](../../02-Ownership/01-TicketV1/README.md#9-concept-ownership-the-key-to-rust) — *why* `&str` doesn't own its data, and what "borrowing" means |
-> | `Drop` mentioned briefly | [04-OBRM §4](../../02-Ownership/04-OBRM/README.md) — the full `impl Drop` pattern and RAII |
-> | `panic!`-free `Option` handling | [03-TicketV2 §6-7](../../02-Ownership/03-TicketV2/README.md) — `Result<T, E>` and the `?` operator for production error handling |
+> | `&self` and `&mut self` on methods | [01-TicketV1 §9-11](../../../../02-Ownership/01-TicketV1/README.md#9-concept-ownership-the-key-to-rust) — why Rust enforces "many readers OR one writer" |
+> | `pub` on every item in `lib.rs` | [01-TicketV1 §7-8](../../../../02-Ownership/01-TicketV1/README.md#7-concept-modules-and-visibility) — module trees, `pub(crate)`, `pub(super)` |
+> | `&str` vs `String` (implicit) | [01-TicketV1 §9](../../../../02-Ownership/01-TicketV1/README.md#9-concept-ownership-the-key-to-rust) — *why* `&str` doesn't own its data, and what "borrowing" means |
+> | `Drop` mentioned briefly | [04-OBRM §4](../../../../02-Ownership/04-OBRM/README.md) — the full `impl Drop` pattern and RAII |
+> | `panic!`-free `Option` handling | [03-TicketV2 §6-7](../../../../02-Ownership/03-TicketV2/README.md) — `Result<T, E>` and the `?` operator for production error handling |
 >
 > **If you want to proceed with the full mental model before tackling Section 2**, spend 5 minutes re-reading §9 (method receivers) and §10 (`pub` visibility) above. The borrow-checker errors in TicketV1 will feel like guardrails instead of walls.
 
@@ -1928,17 +1934,17 @@ cargo run -- --max-attempts 10
 
 | Concept | First taught in | Used here for |
 |---------|-----------------|----------------|
-| Variables, mutability, basic types | [01-Intro §6](../01-Intro/README.md#6-variables-and-mutability) | `let mut attempts_left: u32 = 20;` |
-| `const` | [01-Intro §6](../01-Intro/README.md#6-variables-and-mutability) | `DEFAULT_ATTEMPTS`, `HINT_*_COST` |
-| `if`/`else` as expressions | [01-Intro §7](../01-Intro/README.md#7-ifelse-making-decisions) | Hint cost checks |
-| `while` loop | [01-Intro §8](../01-Intro/README.md#8-loops-repeating-work) | Game loop in `play()` |
-| `String`/`&str` (intro) | [02-GuessGame §5](../02-GuessGame/README.md#5-concept-string-vs-str) | `String::new()` buffer, `&str` params |
-| `Result`, `.expect()` | [02-GuessGame §7](../02-GuessGame/README.md#7-concept-resultt-e-and-parse) | `io::stdin().read_line(...).unwrap()` |
-| `match` | [02-GuessGame §7](../02-GuessGame/README.md#7-concept-resultt-e-and-parse) | `match input.trim().parse()` |
-| `panic!` (covered lightly) | [03-BasicCalculator §9](../03-BasicCalculator/README.md#9-concept-panics-unrecoverable-errors) | `unwrap()` on I/O |
-| `#[test]`, `assert_eq!` | [03-BasicCalculator §14](../03-BasicCalculator/README.md#14-concept-unit-testing-in-rust) | 30 tests in `workshop/src/lib.rs` |
-| External crates | [02-GuessGame §4](../02-GuessGame/README.md#4-concept-adding-an-external-crate) | `rand = "0.10"` in `Cargo.toml` |
-| Random numbers | [02-GuessGame §4](../02-GuessGame/README.md#4-concept-adding-an-external-crate) | `rand::seq::SliceRandom` for shuffling |
+| Variables, mutability, basic types | [01-Intro §6](../../01-Intro/README.md#6-variables-and-mutability) | `let mut attempts_left: u32 = 20;` |
+| `const` | [01-Intro §6](../../01-Intro/README.md#6-variables-and-mutability) | `DEFAULT_ATTEMPTS`, `HINT_*_COST` |
+| `if`/`else` as expressions | [01-Intro §7](../../01-Intro/README.md#7-ifelse-making-decisions) | Hint cost checks |
+| `while` loop | [01-Intro §8](../../01-Intro/README.md#8-loops-repeating-work) | Game loop in `play()` |
+| `String`/`&str` (intro) | [02-GuessGame §5](../../02-GuessGame/README.md#5-concept-string-vs-str) | `String::new()` buffer, `&str` params |
+| `Result`, `.expect()` | [02-GuessGame §7](../../02-GuessGame/README.md#7-concept-resultt-e-and-parse) | `io::stdin().read_line(...).unwrap()` |
+| `match` | [02-GuessGame §7](../../02-GuessGame/README.md#7-concept-resultt-e-and-parse) | `match input.trim().parse()` |
+| `panic!` (covered lightly) | [03-BasicCalculator §9](../../03-BasicCalculator/README.md#9-concept-panics-unrecoverable-errors) | `unwrap()` on I/O |
+| `#[test]`, `assert_eq!` | [03-BasicCalculator §14](../../03-BasicCalculator/README.md#14-concept-unit-testing-in-rust) | 30 tests in `workshop/src/lib.rs` |
+| External crates | [02-GuessGame §4](../../02-GuessGame/README.md#4-concept-adding-an-external-crate) | `rand = "0.10"` in `Cargo.toml` |
+| Random numbers | [02-GuessGame §4](../../02-GuessGame/README.md#4-concept-adding-an-external-crate) | `rand::seq::SliceRandom` for shuffling |
 
 ### What you should be able to do now
 
@@ -1953,8 +1959,14 @@ After completing both workshops (basic + advanced), you can:
 
 ### What's next
 
-Proceed to [Section 02: Ownership](../../02-Ownership/README.md) to learn the **borrow checker** — Rust's central feature. You'll revisit `&self`/`&mut self` and learn the rules that make Rust memory-safe without a garbage collector.
+Proceed to [Section 02: Ownership](../../../../02-Ownership/README.md) to learn the **borrow checker** — Rust's central feature. You'll revisit `&self`/`&mut self` and learn the rules that make Rust memory-safe without a garbage collector.
 
 ---
 
 *You finished Project 1.4 — MasterMind. You now know how to model domain types, handle missing data, and process collections with iterators. The borrow checker in Section 02 will make all of this feel even safer.*
+
+## Exercises
+
+* **Easy** – modify the existing function to handle an extra edge case.
+* **Medium** – extend the project with a new helper function that re‑uses the core logic.
+

@@ -6,6 +6,9 @@
 
 ## Why This Section?
 
+Ownership note: In Rust, values like `String` and `Vec` live on the heap, while primitive values (e.g., `i32`, `bool`) live on the stack. Ownership rules govern when heap data is cleaned up.
+
+
 ### The Problem — Python's Collection Tax
 
 Every Python data engineer has felt the pain of processing data at scale:
@@ -69,23 +72,6 @@ Every collection in `std::collections` is designed for a specific use case with 
 
 ---
 
-## What You'll Learn
-
-| # | Concept | Rust | Python | Why it matters |
-|---|---------|------|--------|----------------|
-| 1 | Dynamic arrays | `Vec<T>` | `list` | Type-safe, contiguous growable array |
-| 2 | Fixed-size arrays | `[T; N]` | `array.array` | Stack-allocated, known-length collection |
-| 3 | Key-value maps | `HashMap<K, V>` | `dict` | Hash-based key-value storage |
-| 4 | Ordered maps | `BTreeMap<K, V>` | `sortedcontainers.SortedDict` | Sorted key-value pairs (by key) |
-| 5 | Hash sets | `HashSet<T>` | `set` | Unique elements, fast membership |
-| 6 | Ordered sets | `BTreeSet<T>` | `sortedcontainers.SortedSet` | Sorted unique elements |
-| 7 | Double-ended queues | `VecDeque<T>` | `collections.deque` | Push/pop from both ends, ring buffer |
-| 8 | Priority queues | `BinaryHeap<T>` | `heapq` | Max-heap, priority-based extraction |
-| 9 | Linked lists | `LinkedList<T>` | `collections.deque` (diff) | Doubly-linked, O(1) splice/split |
-| 10 | Entry API | `.entry().or_insert()` | `dict.setdefault()` | Upsert / insert-or-modify pattern |
-| 11 | Lazy iteration | `Iterator` trait | Iterator protocol | Functional chain: `map`, `filter`, `fold` |
-| 12 | Slices | `&[T]` | `list[:]` (view) | Borrowed view into a contiguous sequence |
-| 13 | Array slices | `&[T; N]` → `&[T]` | N/A | Coerce array to slice for function args |
 
 ---
 
@@ -250,7 +236,7 @@ println!("{}", sum(&vec[1..4]));  // 2 + 3 + 4 = 9
 
 ## Prerequisites
 
-- Completed [Section 2: Ownership](../02-Ownership/README.md)
+- Completed [Section 2: Ownership](../../../02-Ownership/README.md)
 - Understand ownership and borrowing
 
 ## Projects in This Section
@@ -279,3 +265,9 @@ println!("{}", sum(&vec[1..4]));  // 2 + 3 + 4 = 9
 4. Explore **09-BinaryHeapFruit**, **10-BTreeSetFruit**, **11-HashSetFruit** for specialized collections
 5. Finish with **12-RustIterators** and **13-MutableFruitSalad** for iteration and mutation
 6. Cap the section with **14-ProfileBenchmark** — measure what you've built with `criterion`, configure Cargo profiles, and observe the 10-50x dev-vs-release gap
+
+## Exercises
+
+* **Easy** – modify the existing function to handle an extra edge case.
+* **Medium** – extend the project with a new helper function that re‑uses the core logic.
+

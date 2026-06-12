@@ -1,12 +1,18 @@
 # 🦀 Rust for Python Data Engineers — Rust Reference
 
-*A gentle first look at Rust — written for data engineers who already know Python.*
-
 > **Test-driven approach**: This project includes a Cargo workspace with progressive unit tests. Each function in `workshop/src/lib.rs` starts as a `todo!()` stub. As you work through each section, replace `todo!()` with real code and run `cd workshop && cargo test` to watch the pass count grow. The `workshop/src/main.rs` file provides a runnable demo (calling the same functions) — use `cargo run` to see your code in action. Your goal: **all 26 tests pass**.
+
+## Why This Reference?
+
+Ownership note: In Rust, values like `String` and `Vec` live on the heap, while primitive values (e.g., `i32`, `bool`) live on the stack. Ownership rules govern when heap data is cleaned up.
+
 
 ---
 
 ## Why This Reference?
+
+Ownership note: In Rust, values like `String` and `Vec` live on the heap, while primitive values (e.g., `i32`, `bool`) live on the stack. Ownership rules govern when heap data is cleaned up.
+
 
 **Python pain:** If you've written Python pipelines long enough, you've hit the familiar walls: a job that's too slow to scale, a service eating memory under load, or a bug that only shows up in production at 2 AM.
 
@@ -26,6 +32,7 @@
 | 8 | Control flow | `if x > 0 { ... } else { ... }` | `if x > 0: ... else: ...` | `if` is an expression — returns a value |
 | 9 | Loops | `loop`, `while`, `for x in 0..10` | `while`, `for x in range(10)` | `loop` has no Python equivalent — infinite by default |
 | 10 | Pattern match | `match x { 0 => ..., _ => ... }` | `match x: case 0: ...` | Exhaustive — compiler enforces all cases |
+| 11 | Unicode scalar | `char` | single-character string (e.g., `'a'`) | 4-byte Unicode scalar value |
 
 ---
 
@@ -708,7 +715,7 @@ let mut a: [i32; 3] = [1, 2, 3];
 // a.push(4);   // ❌ ERROR — arrays don't have methods
 ```
 
-For growable sequences, you need `Vec<T>` — that's covered in [04-MasterMind](../04-MasterMind/README.md).
+For growable sequences, you need `Vec<T>` — that's covered in [04-MasterMind](../../../04-MasterMind/README.md).
 
 ### Why fixed-size arrays matter for data engineering
 
@@ -782,7 +789,7 @@ for ch in "hello".chars() {       // ch: char
 }
 ```
 
-For now, treat `char` as a 4-byte Unicode scalar. The deeper UTF-8 story (why `String` is byte-indexed, not char-indexed) is covered in the **§4 "Common pitfalls"** of [04-MasterMind](../04-MasterMind/README.md#4-concept-string-vs-str-deeper-dive).
+For now, treat `char` as a 4-byte Unicode scalar. The deeper UTF-8 story (why `String` is byte-indexed, not char-indexed) is covered in the **§4 "Common pitfalls"** of [04-MasterMind](../../../04-MasterMind/README.md#4-concept-string-vs-str-deeper-dive).
 
 ---
 
@@ -912,7 +919,7 @@ cargo test             # more tests should pass now
 
 You now know the Rust basics: variables, functions, control flow, tuples, and fixed-size arrays. That's enough to read and write simple Rust programs.
 
-The next project, [02-GuessGame](../02-GuessGame/README.md), builds your **first interactive Rust program** — the classic "Guess the Number" game. It introduces six new concepts the intro project deliberately skipped:
+The next project, [02-GuessGame](../../../02-GuessGame/README.md), builds your **first interactive Rust program** — the classic "Guess the Number" game. It introduces six new concepts the intro project deliberately skipped:
 
 - **`String` vs `&str`** — owned growable text vs borrowed views
 - **Custom `enum`** with `#[derive(Debug, PartialEq, Eq, Copy, Clone)]`
@@ -921,7 +928,7 @@ The next project, [02-GuessGame](../02-GuessGame/README.md), builds your **first
 - **Basic `match`** on `Result` and on a custom enum
 - **Adding an external crate** (`rand`) via `Cargo.toml`
 
-After that, [03-BasicCalculator](../03-BasicCalculator/README.md) takes you deeper into **integer-specific Rust**:
+After that, [03-BasicCalculator](../../../03-BasicCalculator/README.md) takes you deeper into **integer-specific Rust**:
 
 - Integer types: `i32` vs `u32` vs `i64` vs `usize` (Python only has one int)
 - Integer overflow and the `panic!` macro
@@ -929,17 +936,17 @@ After that, [03-BasicCalculator](../03-BasicCalculator/README.md) takes you deep
 - The `as` keyword for type conversion
 - Built-in unit testing with `#[test]` and `#[should_panic]`
 
-Then [04-MasterMind](../04-MasterMind/README.md) introduces **structs**, **`Vec`**, **`Option`**, and **exhaustive `match`** — moving you from "tutorial snippets" to a real game project with multiple files.
+Then [04-MasterMind](../../../04-MasterMind/README.md) introduces **structs**, **`Vec`**, **`Option`**, and **exhaustive `match`** — moving you from "tutorial snippets" to a real game project with multiple files.
 
 Topics that come even later:
 
-- **Ownership and borrowing** ([Section 02: Ownership](../../02-Ownership/README.md)) — Rust's central idea, including the `&` reference and `&[T]` slice
+- **Ownership and borrowing** ([Section 02: Ownership](../../../../../../02-Ownership/README.md)) — Rust's central idea, including the `&` reference and `&[T]` slice
 - **Error handling** with `Result<T, E>` and the `?` operator (deep dive)
-- **Collections** ([Section 03: Collections](../../03-Collections/README.md)) — `Vec`, `HashMap`, `HashSet`, iterators
-- **File I/O** ([Section 04: File I/O](../../04-FileIO/README.md)) — reading CSVs and Parquet
-- **Concurrency** ([Section 05: Concurrency](../../05-Concurrency/README.md)) — threads, async, channels
+- **Collections** ([Section 03: Collections](../../../../../../03-Collections/README.md)) — `Vec`, `HashMap`, `HashSet`, iterators
+- **File I/O** ([Section 04: File I/O](../../../../04-FileIO/README.md)) — reading CSVs and Parquet
+- **Concurrency** ([Section 05: Concurrency](../../../../05-Concurrency/README.md)) — threads, async, channels
 
-Don't worry about any of these yet. Make sure all **26 tests pass** in `workshop/`, then move on to [02-GuessGame](../02-GuessGame/README.md).
+Don't worry about any of these yet. Make sure all **26 tests pass** in `workshop/`, then move on to [02-GuessGame](../../../02-GuessGame/README.md).
 
 ---
 
@@ -947,16 +954,23 @@ Don't worry about any of these yet. Make sure all **26 tests pass** in `workshop
 
 After this introduction, continue your Rust journey with these hands-on workshops:
 
-- [02-GuessGame](../02-GuessGame/README.md) — `String` vs `&str`, custom enums, console I/O, `Result`, external crates
-- [03-BasicCalculator](../03-BasicCalculator/README.md) — integers, branching, loops
-- [04-MasterMind](../04-MasterMind/README.md) — `struct`, `Vec`, `Option`, console I/O
+- [02-GuessGame](../../../02-GuessGame/README.md) — `String` vs `&str`, custom enums, console I/O, `Result`, external crates
+- [03-BasicCalculator](../../../03-BasicCalculator/README.md) — integers, branching, loops
+- [04-MasterMind](../../../04-MasterMind/README.md) — `struct`, `Vec`, `Option`, console I/O
 
 For deeper exploration of the foundations covered here:
 
-- [02-Ownership/01-TicketV1](../../02-Ownership/01-TicketV1/README.md) — ownership, stack vs heap (the next big concept after syntax)
-- [02-Ownership/02-Traits](../../02-Ownership/02-Traits/README.md) — traits, `derive`, bounds
-- [03-Collections/01-TicketManagement](../../03-Collections/01-TicketManagement/README.md) — `Vec`, `HashMap`, iterators (where collections begin)
+- [02-Ownership/01-TicketV1](../../../../../../02-Ownership/01-TicketV1/README.md) — ownership, stack vs heap (the next big concept after syntax)
+- [02-Ownership/02-Traits](../../../../../../02-Ownership/02-Traits/README.md) — traits, `derive`, bounds
+- [03-Collections/01-TicketManagement](../../../../../../03-Collections/01-TicketManagement/README.md) — `Vec`, `HashMap`, iterators (where collections begin)
+- [Pattern Matching: @ Bindings and Guards](../README.md#pattern-matching--bindings-and-guards) — advanced `match` patterns (`@` bindings and guards)
 
 ---
 
 *Next up - Project 1.2: Guess the Number Game. You'll learn `String` vs `&str`, custom enums, console I/O, `Result`, and external crates by building a real interactive game.*
+
+## Exercises
+
+* **Easy** – modify the existing function to handle an extra edge case.
+* **Medium** – extend the project with a new helper function that re‑uses the core logic.
+

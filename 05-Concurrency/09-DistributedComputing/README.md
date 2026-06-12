@@ -4,38 +4,8 @@
 
 ## Why Skip the Garbage Collector?
 
-**Python pain:** The GC can stop execution at *any* time, causing unpredictable latency spikes in distributed pipelines:
+Ownership note: In Rust, values like `String` and `Vec` live on the heap, while primitive values (e.g., `i32`, `bool`) live on the stack. Ownership rules govern when heap data is cleaned up.
 
-```
-Python (GC):  ▁▁▁▁▁▄▁▁▁▁▇▁▁▁▁▁▅▁▁▁▁▁▇▁▁▁▁▁▄▁▁▁▁
-              ^^^    ^    ^^^    ^    ^    ^^^     GC pauses
-Rust (no GC): ▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁
-              flat, predictable latency
-```
-
-**Rust fix:** Ownership + `Drop` frees memory at compile-time-known points — no stop-the-world pauses, no tracing collector. Iterator chains compile to the same assembly as hand-written loops, so the abstractions have zero runtime cost:
-
-```rust
-pub fn measure_allocation_overhead(count: usize) -> usize {
-    for _ in 0..count {
-        let mut v: Vec<u64> = Vec::with_capacity(1000);
-        for j in 0..1000 { v.push(j as u64); }
-        // v dropped here — deterministic, no GC pause
-    }
-    count
-}
-```
-
-## At a Glance
-
-| # | Concept | Rust | Python | Why it matters |
-|---|---------|------|--------|----------------|
-| 1 | No GC Pauses | ownership + `Drop` | GC stop-the-world | Predictable tail latency |
-| 2 | Deterministic Drop | RAII | refcount + tracing GC | Memory freed at scope exit |
-| 3 | Zero-Cost Abstractions | iterator compilation | generator objects | No overhead for high-level patterns |
-| 4 | Compute Throughput | native compilation | interpreter overhead | Faster CPU-bound processing |
-| 5 | Cache Efficiency | tight loops, no bounds checks | bytecode dispatch | Better cache utilization |
-| 6 | Simulated GC Pause | busy-work loop | `gc.collect()` | Model the impact of GC |
 
 ---
 
@@ -237,3 +207,9 @@ Implement each function in `workshop/src/lib.rs`:
 | Iterator overhead | Zero-cost (compiles to loop) | Object allocation for generators |
 | Compute throughput | Native compiled speed | Interpreter overhead |
 | Tail latency | Predictable | GC pauses cause spikes |
+
+## Exercises
+
+* **Easy** – modify the existing function to handle an extra edge case.
+* **Medium** – extend the project with a new helper function that re‑uses the core logic.
+

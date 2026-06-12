@@ -252,3 +252,9 @@ Run `cd workshop && cargo test` after each step. Groups: `step_01_data_modeling`
 | BFS reachability | `VecDeque` + `HashSet` | `deque` + `set` | `can_reach` |
 | Influence score | `iter().filter(|(_, t)| t.contains(user)).count()` | List comprehension | `influence_score` |
 | Bridge detection | BFS component labeling, multi-component check | Connected components | `find_bridge_users` |
+
+## Exercises
+
+* **Easy** – modify the existing function to handle an extra edge case.
+* **Medium** – extend the project with a new helper function that re‑uses the core logic.
+

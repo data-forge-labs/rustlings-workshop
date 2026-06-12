@@ -4,30 +4,8 @@
 
 ## Why Use Async/Await?
 
-**Python pain:** `asyncio` is powerful but easy to misuse — a single `time.sleep(1)` in an async handler blocks the *entire* event loop, and you only discover it when latency spikes in production. There's no compile-time distinction between async and sync functions, and coroutines allocate on the heap every time.
+Ownership note: In Rust, values like `String` and `Vec` live on the heap, while primitive values (e.g., `i32`, `bool`) live on the stack. Ownership rules govern when heap data is cleaned up.
 
-**Rust fix:** Rust's async model is **zero-cost** — a future that is never awaited compiles to *nothing*. The type system prevents blocking calls inside `async fn`:
-
-```rust
-pub async fn good_handler() -> String {
-    tokio::time::sleep(Duration::from_secs(1)).await;  // yields, doesn't block
-    "done".to_string()
-}
-```
-
-The compiler enforces the boundary — you can't accidentally call `std::thread::sleep` from inside an async function.
-
-## At a Glance
-
-| # | Concept | Rust | Python | Why it matters |
-|---|---------|------|--------|----------------|
-| 1 | Async Functions | `async fn` | `async def` | Returns a lazy `Future` — zero-cost if never awaited |
-| 2 | Awaiting Futures | `future.await` | `await` | Drive a future to completion; yields to the runtime |
-| 3 | Task Spawning | `tokio::spawn` | `asyncio.create_task` | Run futures concurrently on the runtime |
-| 4 | Async Runtime | `#[tokio::main]` | `asyncio.run()` | Multi-threaded or current-thread executor |
-| 5 | Async Sleep | `tokio::time::sleep().await` | `asyncio.sleep` | Non-blocking delay that yields |
-| 6 | Task Joining | `JoinHandle` → `.await` | `await task` | Collect results from spawned tasks |
-| 7 | Runtime Config | `#[tokio::main(flavor = "multi_thread")]` | `asyncio.run` (always single-thread) | Choose scheduler at the macro level |
 
 ---
 
@@ -54,7 +32,7 @@ This project uses **Tokio**, the leading async runtime in Rust. Think of it as `
 
 ## 2. Prerequisites
 
-- Threads basics from [01-Threads](../01-Threads/README.md)
+- Threads basics from [01-Threads](../../01-Threads/README.md)
 - Basic closures and ownership
 
 ## 3. Concept: async fn and .await
@@ -261,3 +239,9 @@ Run `cd workshop && cargo test` after each implementation. Note that async test 
 | Block on runtime | `Runtime::block_on` | `asyncio.run` |
 | Async sleep | `tokio::time::sleep` | `asyncio.sleep` |
 | Runtime crate | `tokio` | `asyncio` (stdlib) |
+
+## Exercises
+
+* **Easy** – modify the existing function to handle an extra edge case.
+* **Medium** – extend the project with a new helper function that re‑uses the core logic.
+

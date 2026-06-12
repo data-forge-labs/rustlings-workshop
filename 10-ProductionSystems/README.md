@@ -87,21 +87,6 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
 ---
 
-## What You'll Learn
-
-| # | Concept | Rust Type / Module | Python Equivalent | Purpose |
-|---|---------|--------------------|------------------|---------|
-| 1 | Async runtime | `tokio` | `asyncio` | Multi-threaded async executor |
-| 2 | TCP networking | `tokio::net` | `asyncio.start_server` | Async TCP server/client |
-| 3 | Zero-copy buffering | `bytes::BytesMut` | `bytearray` | Efficient buffer management |
-| 4 | Shared state | `Arc<RwLock<T>>` | N/A (GC handles) | Thread-safe shared data |
-| 5 | Wire protocol | RESP | N/A | Redis serialization protocol |
-| 6 | TTL expiry | `chrono` + `HashMap` | `time` + `dict` | Time-based key expiration |
-| 7 | Async I/O traits | `AsyncRead`, `AsyncWrite` | Async context mgrs | Non-blocking read/write |
-| 8 | Task spawning | `tokio::spawn` | `asyncio.create_task` | Concurrent connection handling |
-
----
-
 ## Concepts at a Glance
 
 ### 1. `tokio` — The Async Runtime
@@ -191,7 +176,7 @@ impl Entry {
 
 ## Prerequisites
 
-- Completed [Section 5: Concurrency](../05-Concurrency/README.md)
+- Completed [Section 5: Concurrency](../../../../../05-Concurrency/README.md)
 - Understand `async`/`.await` and Tokio from project 8
 
 ## Projects in This Section
@@ -211,3 +196,9 @@ impl Entry {
 2. Build **02-AxumShop** to create a full async web API with Axum, matching a FastAPI project end-to-end
 3. **03-AxumAuth** adds JWT bearer auth + role checks — drop-in for any Axum service
 4. **04-OpenTelemetry** adds structured JSON logging, spans, and atomic metrics — the OTel data model without a collector
+
+## Exercises
+
+* **Easy** – modify the existing function to handle an extra edge case.
+* **Medium** – extend the project with a new helper function that re‑uses the core logic.
+

@@ -1,13 +1,18 @@
 # Ownership-Based Resource Management — RAII and the Drop Trait
 
 > **Test-driven approach**: This project includes a Cargo project with progressive
-> unit tests. Each function in `workshop/src/lib.rs` starts as a `todo!()` stub. As you
-> follow each section, replace `todo!()` with real code and run `cd workshop && cargo test` to
-> watch the pass count grow. Your goal: **all 11 tests pass**.
+
+## Why RAII for Data Pipelines?
+
+Ownership note: In Rust, values like `String` and `Vec` live on the heap, while primitive values (e.g., `i32`, `bool`) live on the stack. Ownership rules govern when heap data is cleaned up.
+
 
 ---
 
 ## Why RAII for Data Pipelines?
+
+Ownership note: In Rust, values like `String` and `Vec` live on the heap, while primitive values (e.g., `i32`, `bool`) live on the stack. Ownership rules govern when heap data is cleaned up.
+
 
 **Python pain:** File handles, DB connections, and sockets need to be closed. Forget `with` and the resource leaks. Early returns need careful `try/finally` placement. `__del__` is non-deterministic — the GC decides when it runs, *if ever*. In a production ETL pipeline, a single forgotten `f.close()` can exhaust file descriptors and crash the job.
 
@@ -79,11 +84,11 @@ For production data pipelines, this determinism is invaluable.
 Before starting, you should be comfortable with:
 
 - **Basic Rust syntax**: functions, variables, `println!`
-  ([01-Foundations/01-Intro](../../01-Foundations/01-Intro/README.md))
+  ([01-Foundations/01-Intro](../../../../01-Foundations/01-Intro/README.md))
 
-  ([01-Foundations/04-MasterMind](../../01-Foundations/04-MasterMind/README.md))
+  ([01-Foundations/04-MasterMind](../../../../01-Foundations/04-MasterMind/README.md))
 - **Ownership basics**: moves, copies, borrowing
-  ([02-Ownership/01-TicketV1](../../02-Ownership/01-TicketV1/README.md))
+  ([02-Ownership/01-TicketV1](../../../../02-Ownership/01-TicketV1/README.md))
 
 ---
 
@@ -635,5 +640,11 @@ use `RefCell` if you've seen it, or just use a raw pointer with `unsafe` for now
 - [RAII in C++ (inspiration for Rust's approach)](https://en.cppreference.com/w/cpp/language/raii)
 - Previous workshop: [02-Ownership/01-TicketV1](../01-TicketV1/README.md) —
   ownership fundamentals
-- Next workshop: [02-Ownership/05-OwnershipLifetimes](../05-OwnershipLifetimes/README.md)
+- Next workshop: [02-Ownership/05-OwnershipLifetimes](../../05-OwnershipLifetimes/README.md)
   — lifetimes and the borrow checker
+
+## Exercises
+
+* **Easy** – modify the existing function to handle an extra edge case.
+* **Medium** – extend the project with a new helper function that re‑uses the core logic.
+

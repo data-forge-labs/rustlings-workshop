@@ -1,12 +1,18 @@
 # 🦀 Rust for Python Data Engineers — Guess the Number Game
 
-*A hands-on workshop that teaches `String`/`&str`, `Result`, console I/O, external crates, and basic `match` by building the classic "Guess the Number" game.*
-
 > **Test-driven approach**: This project includes a Cargo project with progressive unit tests. Each function in `workshop/src/lib.rs` starts as a `todo!()` stub. As you follow each section, replace `todo!()` with real code and run `cd workshop && cargo test` to watch the pass count grow. The `workshop/src/main.rs` file provides a runnable game (calling the same functions) — use `cargo run` to play. Your goal: **all 20 tests pass**.
+
+## Why Build a Number-Guessing Game?
+
+Ownership note: In Rust, values like `String` and `Vec` live on the heap, while primitive values (e.g., `i32`, `bool`) live on the stack. Ownership rules govern when heap data is cleaned up.
+
 
 ---
 
 ## Why Build a Number-Guessing Game?
+
+Ownership note: In Rust, values like `String` and `Vec` live on the heap, while primitive values (e.g., `i32`, `bool`) live on the stack. Ownership rules govern when heap data is cleaned up.
+
 
 **Python pain:** A script that "asks the user for a number, parses it, and compares" is three lines of Python — but in Rust each step pulls in a new concept you haven't seen yet: *owned* strings (`String`) vs *borrowed* views (`&str`), `Result<T, E>` for parsing failures, mutable references for input buffers, and external crates for randomness. The guess game is the smallest realistic program that exercises *all* of them.
 
@@ -37,7 +43,7 @@ match check_guess(secret, guess) {
 | 10 | `match` (basic) | `match outcome { A => ..., B => ... }` | `match`/`case` (3.10+) | Pattern-based dispatch — we'll use it for `Result` and our enum here |
 | 11 | `continue` | skip to next loop iteration | `continue` | Same as Python — used when input is invalid |
 
-> **Coming up next**: [03-BasicCalculator](../03-BasicCalculator/README.md) deepens integers, overflow, and `panic!`. [04-MasterMind](../04-MasterMind/README.md) then uses the same I/O and `match` ideas on a more complex game with `struct`, `Vec`, and `Option`.
+> **Coming up next**: [03-BasicCalculator](../../03-BasicCalculator/README.md) deepens integers, overflow, and `panic!`. [04-MasterMind](../../04-MasterMind/README.md) then uses the same I/O and `match` ideas on a more complex game with `struct`, `Vec`, and `Option`.
 
 ---
 
@@ -94,7 +100,7 @@ If you've written the same game in Python, the Rust version is longer on the scr
 
 ## 2. Prerequisites
 
-- Completed [01-Intro](../01-Intro/README.md) — you should be comfortable with `let`, `let mut`, functions, `if/else`, `for` loops, tuples, and fixed-size arrays
+- Completed [01-Intro](../../01-Intro/README.md) — you should be comfortable with `let`, `let mut`, functions, `if/else`, `for` loops, tuples, and fixed-size arrays
 - Rust installed (covered in 01-Intro §2)
 - `cd workshop && cargo test` / `cargo run` is second nature
 
@@ -318,7 +324,7 @@ io::stdin().read_line(&mut input).expect("failed to read line");
 
 ### Why a mutable reference?
 
-`read_line` *modifies* `input` — it appends to it. So it needs `&mut input`, not just `&input`. (This is the same `let mut` you met in 01-Intro — except now the mutability is on a *reference*, not a value. We'll go much deeper on this in the [Ownership section](../../02-Ownership/README.md).)
+`read_line` *modifies* `input` — it appends to it. So it needs `&mut input`, not just `&input`. (This is the same `let mut` you met in 01-Intro — except now the mutability is on a *reference*, not a value. We'll go much deeper on this in the [Ownership section](../../../../02-Ownership/README.md).)
 
 ### Flushing the prompt
 
@@ -458,7 +464,7 @@ pub fn play_round(secret: u32, input: &str) -> Result<GuessOutcome, String> {
 }
 ```
 
-`?` makes it one line. We'll use it more in the [Ownership section](../../02-Ownership/README.md).
+`?` makes it one line. We'll use it more in the [Ownership section](../../../../02-Ownership/README.md).
 
 ---
 
@@ -594,7 +600,7 @@ Implement `Difficulty::attempts(&self) -> u32` and `Difficulty::range(&self) -> 
 
 You now know how to read user input, parse it safely, dispatch on outcomes, and pull in an external crate. That's the **core of every interactive CLI** you'll build in Rust.
 
-The next project, [03-BasicCalculator](../03-BasicCalculator/README.md), takes a different angle: **integer-specific Rust**. It deepens what you already know with:
+The next project, [03-BasicCalculator](../../03-BasicCalculator/README.md), takes a different angle: **integer-specific Rust**. It deepens what you already know with:
 
 - Integer types: `i32` vs `u32` vs `i64` vs `usize` (Python only has one int)
 - Integer overflow and the `panic!` macro
@@ -602,18 +608,25 @@ The next project, [03-BasicCalculator](../03-BasicCalculator/README.md), takes a
 - The `as` keyword for type conversion
 - Built-in unit testing with `#[test]` and `#[should_panic]`
 
-After that, [04-MasterMind](../04-MasterMind/README.md) brings everything together: `struct`, `Vec`, `Option`, more `match` patterns, and the same I/O loop you built here — this time on a 4-digit code with bull/cow hints.
+After that, [04-MasterMind](../../04-MasterMind/README.md) brings everything together: `struct`, `Vec`, `Option`, more `match` patterns, and the same I/O loop you built here — this time on a 4-digit code with bull/cow hints.
 
 Topics that come even later:
 
-- **Ownership and borrowing** ([Section 02: Ownership](../../02-Ownership/README.md)) — Rust's central idea. This is the biggest mindset shift from Python.
+- **Ownership and borrowing** ([Section 02: Ownership](../../../../02-Ownership/README.md)) — Rust's central idea. This is the biggest mindset shift from Python.
 - **Slices** `&[T]` and **borrowed views** — covered alongside ownership.
-- **Collections** ([Section 03: Collections](../../03-Collections/README.md)) — `Vec`, `HashMap`, `HashSet`, iterators.
-- **File I/O** ([Section 04: File I/O](../../04-FileIO/README.md)) — reading CSVs and Parquet.
-- **Concurrency** ([Section 05: Concurrency](../../05-Concurrency/README.md)) — threads, async, channels.
+- **Collections** ([Section 03: Collections](../../../../03-Collections/README.md)) — `Vec`, `HashMap`, `HashSet`, iterators.
+- **File I/O** ([Section 04: File I/O](../../../04-FileIO/README.md)) — reading CSVs and Parquet.
+- **Concurrency** ([Section 05: Concurrency](../../../05-Concurrency/README.md)) — threads, async, channels.
+- **Pattern Matching: @ Bindings and Guards** ([root appendix](../README.md#pattern-matching--bindings-and-guards)) — advanced `match` patterns with `@` bindings and guards.
 
-Make sure all **20 tests pass** in `workshop/`, then move on to [03-BasicCalculator](../03-BasicCalculator/README.md).
+Make sure all **20 tests pass** in `workshop/`, then move on to [03-BasicCalculator](../../03-BasicCalculator/README.md).
 
 ---
 
 *Next up — Project 1.3: Basic Calculator. You'll go deeper on integer types, arithmetic, control flow, and error handling.*
+
+## Exercises
+
+* **Easy** – modify the existing function to handle an extra edge case.
+* **Medium** – extend the project with a new helper function that re‑uses the core logic.
+

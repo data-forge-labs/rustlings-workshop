@@ -20,7 +20,7 @@ This repository is a **full Rust data engineering course** — not just a langua
 
 ## 2. Repository Architecture
 
-The repo is organized into **14 numbered concept sections**, each containing related projects:
+The repo is organized into **15 numbered concept sections** (14–15 merged from original structure), each containing related projects:
 
 ```
 RustTut/
@@ -53,14 +53,16 @@ RustTut/
 │   ├── 10-BTreeSetFruit/              ← Ordered set
 │   ├── 11-HashSetFruit/               ← Unique items / set operations
 │   ├── 12-RustIterators/              ← Lazy functional iteration
-│   └── 13-MutableFruitSalad/          ← Vec mutation patterns
+│   ├── 13-MutableFruitSalad/          ← Vec mutation patterns
+│   └── 14-ProfileBenchmark/           ← Cargo profiles + criterion benchmarking
 ├── 04-FileIO/                         ← Section 4: file I/O & data formats
 │   ├── 01-CSVCookbook/                ← Read/write CSV with csv crate
 │   ├── 02-CSVWriter/                  ← CSV writing with serde
 │   ├── 03-Parquet/                    ← Apache Parquet
 │   ├── 04-Arrow/                      ← Apache Arrow in-memory columnar
 │   ├── 05-YAML/                       ← YAML config & data
-│   └── 06-JsonStream/                 ← JSON & NDJSON streaming
+│   ├── 06-JsonStream/                 ← JSON & NDJSON streaming
+│   └── 07-NextGenFormats/             ← Lance, Vortex, Nimble, F3 benchmarks
 ├── 05-Concurrency/                    ← Section 5: threads, async, atomics
 │   ├── 01-Threads/                    ← Threads, channels, locks
 │   ├── 02-Futures/                    ← async/await, tokio
@@ -123,7 +125,17 @@ RustTut/
 │   ├── 01-DIY-Actor/                  ← DIY actor with mpsc + oneshot
 │   ├── 02-Ractor/                     ← Production actor framework
 │   └── 03-ETLPipeline/                ← Source → Transform → Sink as actors
-└── 14-Reference/                      ← Section 14: concept reference & cheatsheets (appendix)
+├── 14-DataInfrastructure/             ← Section 14: data infra & integration
+│   ├── README.md                      ← Section overview
+│   ├── 01-KafkaRdkafka/               ← Kafka produce/consume
+│   ├── 02-PostgreSQLSqlx/             ← PostgreSQL with sqlx
+│   ├── 03-RedisAsync/                 ← Redis async
+│   ├── 04-ClickHouseIngestion/        ← ClickHouse OLAP sink
+│   ├── 05-ApacheIggy/                 ← Rust-native message streaming
+│   ├── 06-DuckLakeCatalog/            ← DuckDB lakehouse catalog
+│   ├── 07-CdcPipeline/                ← Debezium-style CDC
+│   └── 08-UnifiedPipeline/            ← Multi-sink orchestrator
+└── 15-Reference/                      ← Section 15: concept reference & cheatsheets (appendix)
     ├── README.md                      ← Section overview
     ├── collections-guide.md           ← Collections comparison & selection guide
     ├── concurrency-reference.md       ← Concurrency model review
@@ -458,7 +470,140 @@ The file `15-Reference/crate-catalog.md` is the **course-wide crate index** — 
 
 This covers every goal from Section 6.3 (AGENTS.md) — but we add this custom instruction because it's a course-wide asset, not a single workshop.
 
---- 
+
+
+---
+
+## 12. Recent Improvements (Batch Fix — June 2025)
+
+A systematic batch-fix was applied across sections **01–Foundations**, **02–Ownership**, **03–Collections**, **04–FileIO**, **05–Concurrency**, and **06–TerminalApps** to enforce the compact-preamble standard and improve consistency.
+
+### Changes applied
+
+| Fix | What was done | Files affected |
+|-----|---------------|----------------|
+| **Compact preamble** | Trimmed each README to exactly 3 blocks before `---`: H1 + tagline, test‑driven banner, `## Why {meaningful phrase}?` heading. Removed extra prose before separator. | All project `README.md` files in sections 01–06 |
+| **Cross‑section links** | Fixed broken relative paths: `../Section/` → `../../Section/` for inter‑section references. | All `README.md` files in sections 01–06 + root |
+| **Python comparisons** | Added missing Python cells for `char`, `Option`, `Result` in At‑a‑Glance tables. | `01-Foundations/01-Intro/README.md`, `02-Ownership/04-OBRM/README.md`, `02-Ownership/05-OwnershipLifetimes/README.md` |
+| **Duplicate tables** | Removed redundant "What You'll Learn" tables from section READMEs (redundant with the "At a Glance" table + root coverage table). | `01-Foundations/README.md`, `02-Ownership/README.md`, `03-Collections/README.md` |
+| **Exercises** | Added placeholder `## Exercises` section (Easy/Medium) to every workshop README that lacked one. | All workshop `README.md` files across sections 01–06 |
+| **Stack vs Heap guide** | Replaced a simple note with a compact, course‑consistent diagram + summary table in the Ownership section. ASCII chart showing `String` layout across stack and heap, comparison table, and Python analogy. | `02-Ownership/README.md` |
+| **Root coverage table** | Deduplicated "First Project" entries so each concept has only the earliest project listed. | `README.md` (root) |
+| **Pattern‑matching reference** | Added a "See also" link to the `@` bindings and guards appendix from `01-Intro` and `02-GuessGame`. | `01-Foundations/01-Intro/README.md`, `01-Foundations/02-GuessGame/README.md` |
+| **Ownership note** | Added a brief ownership‑note paragraph to project READMEs that mention ownership. | Project READMEs across sections 01–06 |
+
+### Style rules reinforced
+
+- Each workshop README must have **exactly** H1 + tagline, banner, `## Why …?` heading, then `---` before body content.
+- "At a Glance" table must have **5 columns**: `# | Concept | Rust | Python | Why it matters`.
+- Every Rust concept must have an **explicit Python comparison** (either in the "Python" table cell or in the accompanying text).
+- ASCII diagrams should be **compact** (5–15 lines) and use box‑drawing characters (`┌───┐` style).
+- Cross‑section relative links must use `../../Section-NNN/ProjectName/README.md` (two levels up from the project folder).
+
+---
+
+## 13. Comprehensive To-Do List for Remaining Subjects
+
+The following sections have **not yet been fully audited** for compact-preamble compliance, Python comparisons, and consistency. Each should receive the same treatment as sections 01–06 in a future pass.
+
+### Section 07 — GraphAndNetworkScience (8 projects)
+
+| Task | Priority | Notes |
+|------|----------|-------|
+| Audit all `README.md` files for compact preamble compliance | High | Many may have old long preamble |
+| Fix cross‑section links (`../Section/` → `../../Section/`) | High | Links to Ownership, Foundations, Collections |
+| Verify At‑a‑Glance tables have 5 columns | High | May be missing Python column |
+| Add Python comparisons for `petgraph` concepts | Medium | E.g., `DiGraph` ↔ `networkx.DiGraph`, Dijkstra ↔ `networkx.shortest_path` |
+| Add placeholder Exercises | Medium | |
+| Add "Why it matters for graph pipelines?" context | Low | |
+
+### Section 08 — Security (6 projects)
+
+| Task | Priority | Notes |
+|------|----------|-------|
+| Compact preamble audit | High | |
+| Fix links to ProductionSystems (10‑) | High | Some may use wrong depth |
+| Add Python comparisons for `unsafe`, crypto concepts | Medium | `unsafe` ↔ ctypes, SHA‑2 ↔ `hashlib` |
+| Add Exercises | Medium | |
+| Add data‑engineering context (e.g., "Why TLS for data pipelines?") | Low | |
+
+### Section 09 — ObservabilityAndTesting (6 projects)
+
+| Task | Priority | Notes |
+|------|----------|-------|
+| Compact preamble audit | High | |
+| Fix links | High | |
+| Verify Python comparisons for logging, config, testing | Medium | `log` ↔ `logging`, `proptest` ↔ `hypothesis`, `mockall` ↔ `unittest.mock` |
+| Add Exercises | Medium | |
+| Add "Why it matters for pipeline reliability?" context | Low | |
+
+### Section 10 — ProductionSystems (4 projects)
+
+| Task | Priority | Notes |
+|------|----------|-------|
+| Compact preamble audit | High | AxumShop, Radish may have long introductions before separator |
+| Fix cross‑section links to Ownership/Collections/Concurrency | High | Many links currently broken (see earlier scan) |
+| Add Python comparisons for async, Axum, JWT | Medium | Axum ↔ FastAPI, JWT ↔ PyJWT, RESP ↔ `redis-py` |
+| Verify Cargo.toml compiles after link fixes | Medium | Check with `cargo check` |
+| Add Exercises | Medium | |
+
+### Section 11 — Interop (4 projects)
+
+| Task | Priority | Notes |
+|------|----------|-------|
+| Compact preamble audit | High | |
+| Fix links | High | |
+| Add Python comparisons for PyO3, evcxr | Medium | PyO3 ↔ cffi/ctypes, evcxr ↔ Jupyter |
+| Add Exercises | Medium | |
+
+### Section 12 — DataEngAnalytics (3 projects)
+
+| Task | Priority | Notes |
+|------|----------|-------|
+| Compact preamble audit | High | Section README and project READMEs |
+| Fix links to FileIO/Arrow, Concurrency/Futures | High | |
+| Add Python comparisons for Polars, DuckDB, DataFusion | Medium | Polars ↔ pandas DuckDB ↔ sqlite3, DataFusion ↔ SparkSQL |
+| Add Exercises | Medium | |
+| Add "Why columnar engines for data pipelines?" context | Low | |
+
+### Section 13 — ActorModel (3 projects)
+
+| Task | Priority | Notes |
+|------|----------|-------|
+| Compact preamble audit | High | |
+| Fix links | High | |
+| Add Python comparisons for actors | Medium | DIY actor ↔ `threading` + `Queue`, ractor ↔ `actorio`/`pykka` |
+| Add Exercises | Medium | |
+| Add Pipeline context section | Low | |
+
+### Section 14 — DataInfrastructure (8 projects)
+
+| Task | Priority | Notes |
+|------|----------|-------|
+| Compact preamble audit | High | |
+| Fix links to other sections | High | |
+| Verify external‑service dependencies documented | High | Kafka, PostgreSQL, etc. need Docker Compose notes |
+| Add Python comparisons for Kafka, PostgreSQL, Redis | Medium | `rdkafka` ↔ `confluent_kafka`, `sqlx` ↔ `asyncpg`, `redis` ↔ `redis-py` |
+| Add Exercises (if possible without external services) | Low | |
+| Add "Why production data infrastructure?" context | Low | |
+
+### Section 15 — Reference (no Cargo projects)
+
+| Task | Priority | Notes |
+|------|----------|-------|
+| Verify all reference `.md` files are up‑to‑date with new concepts | Medium | Coverage table in root should match |
+| Ensure `crate-catalog.md` includes all new crates added | Medium | |
+| Update `heap-memory.md` if needed | Low | |
+
+### Cross‑cutting tasks
+
+| Task | Priority | Notes |
+|------|----------|-------|
+| Run `cargo check` on all 95+ projects after fixes | High | Verify no compile errors introduced |
+| Verify test counts in each README banner match actual `#[test]` counts | Medium | Script already run; fix mismatches |
+| Ensure all concept explanations include "Why it matters for data pipelines" sentence | Medium | Concept‑by‑concept audit |
+| Add `Pattern Matching: @ Bindings and Guards` as a real mini‑project or consolidated exercise | Low | Currently only an appendix; consider making it a short standalone project |
+| Standardise "Format" column in section project tables (Project, Tutorial, Optional) | Low | See misaligned entries in 01‑Foundations table |
 
 ## 11. Running Code via WSL
 
@@ -471,9 +616,9 @@ This repository is developed on Windows. All Rust compilation and testing is don
 cd E:\MyProjects\RustTut\01-Foundations\01-Intro\workshop
 
 # Run cargo commands via WSL
-wsl -d ubuntu bash -c "cd /mnt/e/MyProjects/RustTut/01-Foundations/01-Intro/workshop && cargo check"
-wsl -d ubuntu bash -c "cd /mnt/e/MyProjects/RustTut/01-Foundations/01-Intro/workshop && cargo test"
-wsl -d ubuntu bash -c "cd /mnt/e/MyProjects/RustTut/01-Foundations/01-Intro/workshop && cargo run"
+wsl -d Ubuntu-26.04 bash -c "cd /mnt/e/MyProjects/RustTut/01-Foundations/01-Intro/workshop && cargo check"
+wsl -d Ubuntu-26.04 bash -c "cd /mnt/e/MyProjects/RustTut/01-Foundations/01-Intro/workshop && cargo test"
+wsl -d Ubuntu-26.04 bash -c "cd /mnt/e/MyProjects/RustTut/01-Foundations/01-Intro/workshop && cargo run"
 ```
 
 ### Shorthand helper
@@ -481,7 +626,7 @@ wsl -d ubuntu bash -c "cd /mnt/e/MyProjects/RustTut/01-Foundations/01-Intro/work
 Create a reusable alias in PowerShell to avoid repeating the full path:
 
 ```powershell
-function crun { wsl -d ubuntu bash -c "cd /mnt/e/MyProjects/RustTut/$args[0] && cargo $args[1]" }
+function crun { wsl -d Ubuntu-26.04 bash -c "cd /mnt/e/MyProjects/RustTut/$args[0] && cargo $args[1]" }
 # Usage: crun "01-Foundations/01-Intro/workshop" test
 ```
 
@@ -490,8 +635,8 @@ function crun { wsl -d ubuntu bash -c "cd /mnt/e/MyProjects/RustTut/$args[0] && 
 Pass the project-relative path from the repo root:
 
 ```powershell
-function ck { wsl -d ubuntu bash -c "cd /mnt/e/MyProjects/RustTut/$args && cargo check" }
-function ct { wsl -d ubuntu bash -c "cd /mnt/e/MyProjects/RustTut/$args && cargo test" }
+function ck { wsl -d Ubuntu-26.04 bash -c "cd /mnt/e/MyProjects/RustTut/$args && cargo check" }
+function ct { wsl -d Ubuntu-26.04 bash -c "cd /mnt/e/MyProjects/RustTut/$args && cargo test" }
 
 # Usage
 ck "01-Foundations/01-Intro/workshop"
@@ -525,7 +670,7 @@ find . -name "*.sh" -exec sed -i 's/\r$//' {} \;
 ### Running a single project's tests
 
 ```powershell
-wsl -d ubuntu bash -c "cd /mnt/e/MyProjects/RustTut/01-Foundations/01-Intro/workshop && cargo test"
+wsl -d Ubuntu-26.04 bash -c "cd /mnt/e/MyProjects/RustTut/01-Foundations/01-Intro/workshop && cargo test"
 ```
 
 ### Running all projects' checks

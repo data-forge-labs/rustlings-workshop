@@ -4,30 +4,8 @@
 
 ## Why Use Send/Sync Markers?
 
-**Python pain:** A plain `dict` shared across threads produces wrong values with no compile-time warning. There's no type-level distinction between thread-safe and non-thread-safe types — bugs surface only at runtime, often in production.
+Ownership note: In Rust, values like `String` and `Vec` live on the heap, while primitive values (e.g., `i32`, `bool`) live on the stack. Ownership rules govern when heap data is cleaned up.
 
-**Rust fix:** The `Send` and `Sync` marker traits are auto-derived from field types. The compiler refuses to share anything that isn't provably safe:
-
-```rust
-let data = std::sync::Arc::new(RwLock::new(42i32));  // RwLock is Sync
-
-thread::scope(|s| {
-    s.spawn(|| { let _ = data.read().unwrap(); });   // multiple readers OK
-    s.spawn(|| { let _ = data.read().unwrap(); });
-});
-// use Rc instead of Arc? compile error: Rc is !Send
-```
-
-## At a Glance
-
-| # | Concept | Rust | Python | Why it matters |
-|---|---------|------|--------|----------------|
-| 1 | `Send` | `std::marker::Send` | N/A | Ownership transferable across threads |
-| 2 | `Sync` | `std::marker::Sync` | N/A | `&T` shareable across threads |
-| 3 | `RwLock` | `std::sync::RwLock` | N/A in stdlib | Multiple readers OR one writer |
-| 4 | Scoped Threads | `thread::scope` | N/A | Borrow refs across threads without `move` |
-| 5 | Parallel Sum | scoped threads + `chunks` | `concurrent.futures` | Divide-and-conquer reduce |
-| 6 | Parallel Map | scoped threads + mapper | `executor.map()` | Divide-and-conquer transform |
 
 ---
 
@@ -52,8 +30,8 @@ This project explores these traits, demonstrates `RwLock` for concurrent reads w
 
 ## 2. Prerequisites
 
-- Threads from [01-Threads](../01-Threads/README.md)
-- `Arc` and `Mutex` from [03-DataRace](../03-DataRace/README.md)
+- Threads from [01-Threads](../../01-Threads/README.md)
+- `Arc` and `Mutex` from [03-DataRace](../../03-DataRace/README.md)
 
 ## 3. Concept: Send and Sync marker traits
 
@@ -274,3 +252,9 @@ Implement each function in `workshop/src/lib.rs`:
 | Scoped threads | `thread::scope` | No equivalent |
 | Parallel sum | Scoped threads + chunks | `concurrent.futures` |
 | Parallel map | Scoped threads + mapper | `executor.map()` |
+
+## Exercises
+
+* **Easy** – modify the existing function to handle an extra edge case.
+* **Medium** – extend the project with a new helper function that re‑uses the core logic.
+

@@ -61,28 +61,6 @@ These aren't just "nice to haves" — they're **essential** for data pipelines t
 
 ---
 
-## What You'll Learn
-
-| # | Concept | Rust | Python | Why it matters |
-|---|---------|------|--------|----------------|
-| 1 | Logging facade | `log` crate | `logging` module | Library-agnostic logging API |
-| 2 | Environment logger | `env_logger` | `logging.basicConfig` | Configure via `RUST_LOG` env var |
-| 3 | Structured tracing | `tracing` crate | `structlog` | Span-based, structured logging |
-| 4 | Log levels | `error!`, `warn!`, `info!`, `debug!`, `trace!` | same | Granular verbosity control |
-| 5 | Config management | `config` crate | `configparser` + `pyyaml` | Multi-format, layered config |
-| 6 | TOML parsing | `toml` crate | `tomllib` / `toml` | Structured config files |
-| 7 | Environment overrides | env var merging | `os.environ` | Deploy-specific overrides |
-| 8 | Unit testing | `#[test]`, `assert_eq!` | `pytest`, `unittest` | Built-in test framework |
-| 9 | Expected failures | `#[should_panic]` | `pytest.raises` | Test that code panics correctly |
-| 10 | `Result` in tests | `-> Result<()>` | N/A | Use `?` inside tests |
-| 11 | Test organization | `#[cfg(test)]` | `test_*.py` | Conditional compilation of tests |
-| 12 | Integration tests | `tests/` directory | `tests/` | End-to-end testing |
-| 13 | Property-based testing | `proptest` crate | `hypothesis` | Generate random test cases |
-| 14 | Trait mocking | `mockall` crate | `unittest.mock` | Mock I/O, time, randomness |
-| 15 | Snapshot testing | `insta` crate | `pytest-snapshot` | Capture exact output once |
-
----
-
 ## Concepts at a Glance
 
 ### 1. The `log` Crate — Logging Facade
@@ -237,7 +215,7 @@ The first run creates a `.snap` file. Subsequent runs compare against it; if the
 
 ## Prerequisites
 
-- Completed [Section 3: Collections](../03-Collections/README.md) — comfortable with `Result` and `?`
+- Completed [Section 3: Collections](../../../../../03-Collections/README.md) — comfortable with `Result` and `?`
 - Familiar with `cargo test` and basic Rust
 
 ## Projects in This Section
@@ -267,4 +245,10 @@ The first run creates a `.snap` file. Subsequent runs compare against it; if the
 - **Builds on**: Section 2 (ownership, `Result`, `?`), Section 3 (collections, iterators)
 - **Sets up for**: Section 10 (production services that need structured logging + config + tests), Section 11 (Rust ↔ Python interop benefits from stable, tested Rust cores)
 
-Without these practices, the services in [Section 10: Production Systems](../10-ProductionSystems/README.md) cannot be operated safely.
+Without these practices, the services in [Section 10: Production Systems](../../../10-ProductionSystems/README.md) cannot be operated safely.
+
+## Exercises
+
+* **Easy** – modify the existing function to handle an extra edge case.
+* **Medium** – extend the project with a new helper function that re‑uses the core logic.
+

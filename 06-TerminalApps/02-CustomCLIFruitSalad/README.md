@@ -1,49 +1,8 @@
 # Project 33: Advanced CLI with clap + CSV Reading -- Modules and Project Structure
 
 > **Test-driven approach**: This project includes a Cargo project with progressive
-> unit tests. Each function in `workshop/src/lib.rs` starts as a `todo!()` stub. As you
-> follow each section, replace `todo!()` with real code and run `cd workshop && cargo test` to
-> watch the pass count grow. Your goal: **all 10 tests pass**.
 
 ## Why Separate lib.rs from main.rs?
-
-**Python pain:** A typical CLI tool mixes parsing, logic, and I/O in one script. Testing the shuffling logic means mocking `sys.argv` or invoking a subprocess — there's no enforced module boundary.
-
-**Rust fix:** Cargo's two-file layout is a convention with real teeth: `lib.rs` holds all business logic and unit tests; `main.rs` is a thin CLI wrapper that calls into `lib.rs`:
-
-```rust
-// lib.rs -- all logic, all tests
-pub fn csv_to_vec(csv: &str) -> Vec<String> {
-    csv.split(',').map(|s| s.trim().to_string()).collect()
-}
-pub fn create_fruit_salad(mut fruits: Vec<String>) -> Vec<String> {
-    let mut rng = rand::rng();
-    fruits.shuffle(&mut rng);
-    fruits
-}
-
-// main.rs -- thin CLI wrapper
-fn main() {
-    let args = Args::parse();
-    let fruits = custom_cli_fruit_salad::csv_to_vec(&args.fruits);
-    let salad = custom_cli_fruit_salad::create_fruit_salad(fruits);
-    println!("{}", custom_cli_fruit_salad::display_fruit_salad(&salad));
-}
-```
-```
-
-Logic is fully testable through `lib.rs` without ever invoking `main`.
-
-## At a Glance
-
-| # | Concept | Rust | Python | Why it matters |
-|---|---------|------|--------|----------------|
-| 1 | CSV string parsing | `split(',').map(str::trim).collect()` | `str.split(",")` + comprehension | Parse comma-separated input |
-| 2 | Random shuffle | `SliceRandom::shuffle` | `random.shuffle()` | Randomize fruit order in-place |
-| 3 | Thread-local RNG | `rng()` | `random.Random()` | Per-thread random numbers |
-| 4 | String building | `String::from` + `push_str` + `format!` | String concatenation | Build display output line by line |
-| 5 | CLI argument parsing | `clap::Parser` derive | `argparse.ArgumentParser` | Parse CLI from struct definition |
-| 6 | lib/main split | `lib.rs` (logic + tests) + `main.rs` (CLI) | module file + `__main__.py` | Separate testable logic from entry point |
 
 ---
 
@@ -239,3 +198,9 @@ Run `cd workshop && cargo test` after each step. Groups: `step_01_csv_parsing` (
 | String building | `String::from` + `push_str` + `format!` | String concatenation | `display_fruit_salad` |
 | CLI argument parsing | `clap::Parser` derive | `argparse` | `main.rs` |
 | Library/executable split | `lib.rs` (logic + tests) / `main.rs` (CLI) | Module + `__main__.py` | Project structure |
+
+## Exercises
+
+* **Easy** – modify the existing function to handle an extra edge case.
+* **Medium** – extend the project with a new helper function that re‑uses the core logic.
+

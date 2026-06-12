@@ -253,3 +253,9 @@ Run `cd workshop && cargo test` after each step to verify. The tests are grouped
 | Kosaraju SCC | Two-pass with post-order + reverse DFS | `nx.strongly_connected_components` | `kosaraju_scc` |
 | Counting distinct | `HashSet` | `set()` | `count_distinct_users` |
 | Frequency ranking | `HashMap` + sort by value | `collections.Counter` | `top_n_users` |
+
+## Exercises
+
+* **Easy** – modify the existing function to handle an extra edge case.
+* **Medium** – extend the project with a new helper function that re‑uses the core logic.
+

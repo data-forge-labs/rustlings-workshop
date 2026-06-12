@@ -8,6 +8,9 @@
 
 ## Why HashMap for Frequency Counting?
 
+Ownership note: In Rust, values like `String` and `Vec` live on the heap, while primitive values (e.g., `i32`, `bool`) live on the stack. Ownership rules govern when heap data is cleaned up.
+
+
 **Python pain:** The `dict.get(k, 0) + 1` idiom is everywhere, but it's three lookups for one logical operation: read, default, write. Worse, in hot loops the bytecodes add up — 100M rows means 300M dict operations.
 
 **Rust fix:** `.entry().or_insert(0)` does the same thing in *one* hash lookup. The `Entry` API is designed for "insert-or-modify" patterns, and the borrow checker prevents you from accidentally aliasing the same key.
@@ -506,3 +509,9 @@ This tutorial built a frequency-counting program from a basic `HashMap` implemen
 - **BTreeMap**: Sorted output by key.
 - **Custom Sorting**: Sorting by frequency using `Vec` and `sort_by`.
 - **Error Handling**: Using `Result` for robust code.
+
+## Exercises
+
+* **Easy** – modify the existing function to handle an extra edge case.
+* **Medium** – extend the project with a new helper function that re‑uses the core logic.
+

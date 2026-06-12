@@ -185,7 +185,7 @@ to watch the pass count grow. The test module names match the section headings.
 
 ## 2. Prerequisites
 
-- Completed [10-ProductionSystems/02-AxumShop](../10-ProductionSystems/02-AxumShop/README.md) — comfortable with async Rust + tokio.
+- Completed [10-ProductionSystems/02-AxumShop](../../10-ProductionSystems/02-AxumShop/README.md) — comfortable with async Rust + tokio.
 - Familiar with `Result` and `Box<dyn Error>`.
 
 ## 3. Concept: `rustls` and Crypto Backends

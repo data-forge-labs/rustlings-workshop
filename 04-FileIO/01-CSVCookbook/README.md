@@ -2,6 +2,8 @@
 
 > **Test-driven approach**: This project includes a Cargo project with progressive unit tests. Each function in `workshop/src/lib.rs` starts as a `todo!()` stub. As you follow each section, replace `todo!()` with real code and run `cd workshop && cargo test` to watch the pass count grow. Your goal: **all 7 tests pass**.
 
+## Why Stream CSVs in Rust?
+
 ---
 
 ## Why Stream CSVs in Rust?
@@ -60,7 +62,7 @@ CSV (Comma-Separated Values) is the most common data exchange format in data eng
 
 ## 2. Prerequisites
 
-- Completed [Section 3: Collections](../03-Collections/README.md) -- comfortable with `Vec<String>`, iterators, and string slicing.
+- Completed [Section 3: Collections](../../../03-Collections/README.md) -- comfortable with `Vec<String>`, iterators, and string slicing.
 - Basic familiarity with Rust's `&str` vs `String` distinction.
 
 ## 3. Concept: CSV Data Model
@@ -422,3 +424,9 @@ The `Cargo.toml` has no external dependencies -- we use only Rust's standard lib
 1. **Easy**: Modify `column_values` to skip the header line (first line) when extracting values.
 2. **Medium**: Write a `has_header(content: &str) -> bool` function that checks if the first line contains only alphabetic field names.
 3. **Hard**: Add the `csv` crate to `Cargo.toml` and write a new function `read_csv_file(path: &str) -> Result<Vec<Vec<String>>, csv::Error>` that reads a real CSV file from disk.
+
+## Exercises
+
+* **Easy** – modify the existing function to handle an extra edge case.
+* **Medium** – extend the project with a new helper function that re‑uses the core logic.
+

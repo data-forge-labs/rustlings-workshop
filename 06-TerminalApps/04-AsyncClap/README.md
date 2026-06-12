@@ -180,8 +180,8 @@ The `clap` crate is the de-facto standard for CLI parsing in Rust. It's used in:
 
 ## 2. Prerequisites
 
-- Completed [06-TerminalApps/01-CLISalad](../01-CLISalad/README.md) — comfortable with basic clap.
-- Familiar with `async/await` from [05-Concurrency/02-Futures](../05-Concurrency/02-Futures/README.md).
+- Completed [06-TerminalApps/01-CLISalad](../../01-CLISalad/README.md) — comfortable with basic clap.
+- Familiar with `async/await` from [05-Concurrency/02-Futures](../../05-Concurrency/02-Futures/README.md).
 - Comfortable with `Result` and `Box<dyn Error>`.
 
 ## 3. Concept: The `Parser` and `Subcommand` Derives

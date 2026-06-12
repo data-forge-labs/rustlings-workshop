@@ -92,7 +92,7 @@ Every data pipeline needs configuration: database URLs, hostnames, feature flags
 
 - Structs, derives (`#[derive(Debug)]`)
 - `Result<T, E>` and error handling
-- **Projects**: [01-BasicCalculator](../../01-Foundations/01-Intro/README.md), [02-Traits](../../02-Ownership/02-Traits/README.md)
+- **Projects**: [01-BasicCalculator](../../../../01-Foundations/01-Intro/README.md), [02-Traits](../../../../02-Ownership/02-Traits/README.md)
 
 ## 3. Serde — The Universal Serialization Framework
 
@@ -315,3 +315,9 @@ pub fn get_or_default(config: &AppConfig, key: &str) -> String {
 | `FileFormat::Yaml` | YAML parsing | `yaml.safe_load()` |
 | `set_override()` | Env variable merge | `os.environ.get()` override |
 | Pattern matching fallback | `get_or_default` | `config.get(key, default)` |
+
+## Exercises
+
+* **Easy** – modify the existing function to handle an extra edge case.
+* **Medium** – extend the project with a new helper function that re‑uses the core logic.
+

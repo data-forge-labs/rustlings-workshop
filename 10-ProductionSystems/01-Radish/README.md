@@ -118,11 +118,11 @@ Understanding how Redis works under the hood — especially the async event loop
 
 Before starting, you should have completed or be familiar with:
 
-- **[Project 3: TicketV1](../02-Ownership/01-TicketV1/README.md)** — Ownership, borrowing, `struct`, `impl`
-- **[Project 5: TicketV2](../02-Ownership/03-TicketV2/README.md)** — Enums, `Result`, `match`
-- **[Project 6: TicketManagement](../03-Collections/01-TicketManagement/README.md)** — `HashMap`, iterators
-- **[Project 8: Futures](../05-Concurrency/02-Futures/README.md)** — `async`/`.await`, Tokio runtime
-- **[Project 34: DataRace](../05-Concurrency/03-DataRace/README.md)** — `Arc`, `Mutex`, `Rc`, `RefCell`
+- **[Project 3: TicketV1](../../../02-Ownership/01-TicketV1/README.md)** — Ownership, borrowing, `struct`, `impl`
+- **[Project 5: TicketV2](../../../02-Ownership/03-TicketV2/README.md)** — Enums, `Result`, `match`
+- **[Project 6: TicketManagement](../../../03-Collections/01-TicketManagement/README.md)** — `HashMap`, iterators
+- **[Project 8: Futures](../../../05-Concurrency/02-Futures/README.md)** — `async`/`.await`, Tokio runtime
+- **[Project 34: DataRace](../../../05-Concurrency/03-DataRace/README.md)** — `Arc`, `Mutex`, `Rc`, `RefCell`
 - Familiarity with TCP/IP networking basics
 - `redis-cli` installed locally (for testing)
 
@@ -1018,3 +1018,9 @@ Now that you have built a production-grade async TCP server, you are ready to:
 - Redis source code — the `server.c` event loop
 - Tokio documentation on `LocalSet` and `spawn_local`
 - The `bytes` crate for zero-copy buffer management
+
+## Exercises
+
+* **Easy** – modify the existing function to handle an extra edge case.
+* **Medium** – extend the project with a new helper function that re‑uses the core logic.
+
