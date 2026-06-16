@@ -216,6 +216,7 @@ Projects are grouped into **sections** that map concepts a Python data engineer 
 | 02 | **AxumShop** — Shop Manager API with Axum | `axum::Router`, `tokio` async, `sqlx` async DB, `serde` JSON, `tower-http` CORS, `tower-sessions`, `FromRequestParts` auth, SHA-256 hashing, DB transactions |
 | 03 | **AxumAuth** — JWT + Bearer middleware for Axum 0.8 | `jsonwebtoken` 9, HS256 sign/verify, typed `Claims`, role-based access, refresh tokens, `kid` header inspection |
 | 04 | **OpenTelemetry** — Traces, spans, and correlation IDs | `tracing` 0.1, `tracing-subscriber` JSON output, OTel attribute model, `AtomicU64` pipeline metrics, `Uuid` correlation ids |
+| 05 | **For-Inspiration / Tansu** — Kafka-compatible broker + data lake | Kafka protocol, schema registry, storage engines (PostgreSQL/S3/SQLite), Iceberg/Delta Lake, single binary |
 
 ### Section 11: Rust + Python Interop
 

@@ -183,12 +183,18 @@ impl Entry {
 
 | # | Project | Concepts | Format |
 |---|---------|----------|--------|
-| # | Project | Concepts | Format |
-|---|---------|----------|--------|
 | 59 | **Radish** — Redis-compatible KV store | `tokio` async, RESP protocol, TCP networking, `Rc<RefCell>`, `BytesMut`, TTL expiry | Project |
 | 60 | **AxumShop** — Shop Manager API with Axum | `axum::Router`, `tokio` async, `sqlx` async DB, `serde` JSON, `tower-http` CORS, `tower-sessions`, `FromRequestParts` auth, SHA-256 hashing, DB transactions | Workshop |
 | 61 | **AxumAuth** — JWT + Bearer middleware for Axum 0.8 | `jsonwebtoken` 9, HS256 sign/verify, typed `Claims`, role-based access, refresh tokens, `kid` header inspection | Workshop |
 | 62 | **OpenTelemetry** — Traces, spans, and correlation IDs | `tracing` 0.1, `tracing-subscriber` JSON output, OTel attribute model, `AtomicU64` pipeline metrics, `Uuid` correlation ids | Workshop |
+
+## For Inspiration — Production-Ready Reference Repos
+
+| # | Repository | Focus | Why Study It |
+|---|------------|-------|--------------|
+| 63 | **Tansu** — Kafka-compatible broker + data lake | Kafka protocol, schema registry, storage engines, Iceberg/Delta Lake | Production-grade Kafka replacement in pure Rust with data lake integration |
+
+[**View For-Inspiration →**](./For-Inspiration/README.md)
 
 ## Learning Path
 
@@ -196,6 +202,7 @@ impl Entry {
 2. Build **02-AxumShop** to create a full async web API with Axum, matching a FastAPI project end-to-end
 3. **03-AxumAuth** adds JWT bearer auth + role checks — drop-in for any Axum service
 4. **04-OpenTelemetry** adds structured JSON logging, spans, and atomic metrics — the OTel data model without a collector
+5. **Explore For-Inspiration** — Study production-ready Rust data engineering repos like Tansu
 
 ## Exercises
 
