@@ -6,12 +6,20 @@
 
 ---
 
-## Why Learn Apache Arrow's Zero-Copy Format?
+## What Is Apache Arrow?
 
-Ownership note: In Rust, values like `String` and `Vec` live on the heap, while primitive values (e.g., `i32`, `bool`) live on the stack. Ownership rules govern when heap data is cleaned up.
+An in-memory columnar format that enables zero-copy data sharing between systems — the lingua franca of the modern Rust data stack.
 
+### Python equivalent
 
-**Python pain:** Every time you call `pyarrow.Table.from_pandas(df)`, Python makes a *copy* of every column, converts the data into Arrow's memory layout, and hands the result to a C-extension. Loading 1 GB of data into pandas then converting to Arrow can take several seconds and temporarily double your memory:
+```python
+import pyarrow as pa
+import pandas as pd
+
+df = pd.read_parquet("events.parquet")      # 1 GB in pandas
+tbl = pa.Table.from_pandas(df)               # 1 GB MORE in Arrow (copy)
+result = tbl.filter(tbl["age"] > 30)         # yet another copy
+```
 
 ```python
 import pandas as pd, pyarrow as pa

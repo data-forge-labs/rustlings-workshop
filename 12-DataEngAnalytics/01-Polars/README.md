@@ -9,11 +9,18 @@
 
 ---
 
-## Why Polars for Single-Node Analytics?
+## What Is Polars?
 
-**Python pain:** `pandas` is the default for data work in Python, but it's slow on large data, single-threaded, and has a heavy memory footprint. You spend more time waiting on `groupby().agg()` than writing logic. `modin` and `dask` help, but they're a layer on top of pandas with their own bugs.
+A from-scratch DataFrame library — 5-30x faster than pandas, parallel by default, built on Arrow.
 
-**Rust fix:** Polars is a **from-scratch** DataFrame library built on Apache Arrow. It's 5-30x faster than pandas, uses a fraction of the memory, and is **parallel by default**. The lazy query planner applies the same optimizations as a database (predicate pushdown, projection pushdown, query fusion):
+### Python equivalent
+
+```python
+import pandas as pd
+
+df = pd.read_csv("sales.csv")
+result = df[df["amount"] > 100].groupby("region")["revenue"].sum()
+``` The lazy query planner applies the same optimizations as a database (predicate pushdown, projection pushdown, query fusion):
 
 ```rust
 let df = LazyFrame::scan_csv("data/sales.csv", ScanArgsCsv::default())?

@@ -5,11 +5,19 @@
 > follow each section, replace `todo!()` with real code and run `cd workshop && cargo test` to
 > watch the pass count grow. Your goal: **all 12 tests pass**.
 
-## Why Hash in RustCrypto Instead of `hashlib`?
+## What Is This Project?
 
-**Python pain:** `hashlib` is convenient, but for bulk data integrity checks — millions of files, Merkle trees, content-addressing in data lakes — every chunk crosses the Python-to-C boundary while the GIL is held, limiting throughput.
+Cryptographic hashing with RustCrypto — SHA-2, SHA-3, and BLAKE2 for data integrity.
 
-**Rust fix:** The RustCrypto ecosystem exposes a unified `Digest` trait across SHA-2, SHA-3, and BLAKE2 with zero crossing overhead and no GIL — combine with Rayon or Tokio for parallel hashing:
+### Python equivalent
+
+```python
+import hashlib
+
+data = b"hello world"
+h = hashlib.sha256(data).hexdigest()
+print(h)  # b94d27b9934d3e08a52e52d7da7dabfac484efe37a5380ee9088f7ace2efcde9
+```
 
 ```rust
 use sha2::{Sha256, Digest};

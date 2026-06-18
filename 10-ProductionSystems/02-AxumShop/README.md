@@ -6,11 +6,21 @@
 
 ---
 
-## Why Migrate FastAPI to Axum?
+## What Is This Project?
 
-**Python pain:** FastAPI is great for prototyping, but the GIL limits concurrency, every request allocates Python objects (10K concurrent = 500MB+ GC pressure), SQLAlchemy lazy loading causes N+1 queries, and the Docker image is 200MB+ vs Rust's ~15MB.
+A shop manager API built with Axum — the FastAPI of Rust, with async, typed routes, and SQLx.
 
-**Rust fix:** Axum on Tokio — async, single-binary, ~15MB Docker image, no GIL, no per-request Python allocation:
+### Python equivalent
+
+```python
+from fastapi import FastAPI
+
+app = FastAPI()
+
+@app.get("/products")
+async def list_products():
+    return [{"id": 1, "name": "Widget"}]
+```
 
 ```rust
 use axum::{Router, routing::get, extract::State};

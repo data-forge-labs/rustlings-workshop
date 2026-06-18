@@ -2,15 +2,23 @@
 
 > **Test-driven approach**: This project includes a Cargo project with progressive unit tests. Each function in `workshop/src/lib.rs` starts as a `todo!()` stub. As you follow each section, replace `todo!()` with real code and run `cd workshop && cargo test` to watch the pass count grow. Your goal: **all 12 tests pass**.
 
-## Why Use Atomics for Counters?
+## What Are Atomics?
 
----
+Lock-free atomic types for high-performance concurrent counters — CPU-level instructions instead of OS mutexes.
 
-## Why Use Atomics for Counters?
+### Python equivalent
 
-**Python pain:** Every shared counter needs a `Lock` — and that means **syscalls, context switches, and contention**, even for a simple integer increment. A high-volume counter (processed records, API hits) becomes a bottleneck. Lock cycles: ~1–10 µs. Atomic instructions: ~1–10 ns — a 100–1000× speed difference.
+```python
+import threading
 
-**Rust fix:** Atomic types use **CPU-level instructions** (like `LOCK XADD` on x86) — no OS kernel calls, no context switches, no lock contention:
+counter = 0
+lock = threading.Lock()
+
+def increment():
+    global counter
+    with lock:  # syscall + context switch per increment
+        counter += 1
+```
 
 ```rust
 let counter = AtomicUsize::new(0);

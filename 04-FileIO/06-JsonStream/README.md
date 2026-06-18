@@ -9,11 +9,19 @@
 
 ---
 
-## Why NDJSON for Data Streams?
+## What Is This Project?
 
-**Python pain:** `json.load(open("users.json"))` loads the **entire file** into memory. A 10 GB log file becomes 50 GB of `dict` objects in RAM, and you OOM. The fix in Python is to read line-by-line with `for line in f:`, but then you have to call `json.loads(line)` on every line — slow and unsafe (no schema).
+Streaming JSON / NDJSON parsing with `serde_json` — memory-efficient processing of large JSON files.
 
-**Rust fix:** `serde_json::from_str` parses one line at a time, with a typed `User` struct — every line is validated at parse time. `BufReader::lines()` streams the file, so memory stays constant regardless of file size. The whole file can be gigabytes; your process holds one line at a time plus a `Vec` of parsed structs (or you can process them one at a time and discard).
+### Python equivalent
+
+```python
+import json
+
+# Loads entire file into memory — OOM on large files
+with open("users.json") as f:
+    data = json.load(f)  # 10 GB file = 50 GB of dicts in RAM
+```
 
 ## At a Glance
 

@@ -2,27 +2,27 @@
 
 > **Test-driven approach**: This project includes a Cargo project with progressive
 
-## Why RAII for Data Pipelines?
+## What Is RAII?
 
-Ownership note: In Rust, values like `String` and `Vec` live on the heap, while primitive values (e.g., `i32`, `bool`) live on the stack. Ownership rules govern when heap data is cleaned up.
+Ownership-Based Resource Management — tying resource lifetime to variable scope so cleanup is automatic and deterministic.
 
+### Python equivalent
 
----
+```python
+# Python — manual resource management
+def process_data(path):
+    f = open(path)
+    try:
+        data = f.read()
+        return transform(data)
+    finally:
+        f.close()  # easy to forget, easy to skip on early return
 
-## Why RAII for Data Pipelines?
-
-Ownership note: In Rust, values like `String` and `Vec` live on the heap, while primitive values (e.g., `i32`, `bool`) live on the stack. Ownership rules govern when heap data is cleaned up.
-
-
-**Python pain:** File handles, DB connections, and sockets need to be closed. Forget `with` and the resource leaks. Early returns need careful `try/finally` placement. `__del__` is non-deterministic — the GC decides when it runs, *if ever*. In a production ETL pipeline, a single forgotten `f.close()` can exhaust file descriptors and crash the job.
-
-**Rust fix:** **Ownership-Based Resource Management (RAII)** ties resource lifetime to variable scope. Acquire on creation, release automatically when the owner goes out of scope — no `with`, no `try/finally`, no GC. The compiler inserts cleanup at every scope exit, even on early return or panic:
-
-```rust
-{
-    let f = File::open("data.csv")?;
-    // use f...
-} // f is automatically closed here — guaranteed by the compiler
+# Or using context managers (better, but still manual)
+def process_data(path):
+    with open(path) as f:
+        data = f.read()
+        return transform(data)
 ```
 
 ## At a Glance
@@ -84,11 +84,11 @@ For production data pipelines, this determinism is invaluable.
 Before starting, you should be comfortable with:
 
 - **Basic Rust syntax**: functions, variables, `println!`
-  ([01-Foundations/01-Intro](../../../../01-Foundations/01-Intro/README.md))
+  ([01-Foundations/01-Intro](../../01-Foundations/01-Intro/README.md))
 
-  ([01-Foundations/04-MasterMind](../../../../01-Foundations/04-MasterMind/README.md))
-- **Ownership basics**: moves, copies, borrowing
-  ([02-Ownership/01-TicketV1](../../../../02-Ownership/01-TicketV1/README.md))
+  ([01-Foundations/04-MasterMind](../../01-Foundations/04-MasterMind/README.md))
+
+  ([02-Ownership/01-TicketV1](../01-TicketV1/README.md))
 
 ---
 

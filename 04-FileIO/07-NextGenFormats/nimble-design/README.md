@@ -2,15 +2,19 @@
 
 > **Test-driven approach**: Each function in `src/lib.rs` starts as a `todo!()` stub. **Goal: all 8 tests pass.**
 
-## Why Nimble?
+## What Is Nimble?
 
----
+Meta's wide-table columnar format — independent column streams with zero-parse FlatBuffer metadata.
 
-## Why Nimble?
+### Python equivalent
 
-**Python pain:** You build a 10,000-column feature store for a recommendation model. PyArrow reads the Parquet footer to get schema + statistics for every column — 250 MB of JSON, takes 8 seconds to parse. Then you query **2 columns** for a single inference. The engine still loaded the whole footer.
+```python
+import pyarrow.parquet as pq
 
-**Rust fix:** Nimble treats each column as an independent **stream** with its own encoding. Metadata is a FlatBuffer (zero-parse binary). You can jump to column 5,000 in microseconds without parsing 1–4,999. Cascading encodings (one codec per chunk) keep storage dense. SIMD-friendly encodings saturate GPU during training.
+# Parquet: must parse entire footer (250 MB JSON) to find 2 columns
+schema = pq.read_schema("features.parquet")  # parses ALL columns
+table = pq.read_table("features.parquet", columns=["user_id", "country"])
+```
 
 ```rust
 // Hypothetical Rust API (Nimble has no Rust crate yet):

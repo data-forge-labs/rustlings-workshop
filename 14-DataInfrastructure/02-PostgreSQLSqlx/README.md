@@ -9,17 +9,17 @@
 
 ---
 
-## Why sqlx in Rust?
+## What Is This Project?
 
-**Python pain:** SQLAlchemy gives you ORM ergonomics, but you give up the
-ability to know your queries are correct at *build time*. A typo in a column
-name surfaces in production at 3 AM, and async support requires a separate
-greenlet juggling act.
+Transactional outbox pattern with sqlx — compile-time-checked SQL queries.
+
+### Python equivalent
 
 ```python
-# Bug: 'quanity' is misspelled. Unit test passes (no rows in dev).
-# Production 3 AM: KeyError: 'quantity' crashes the consumer.
-df = session.query(Order).filter(Order.quanity > 0).all()
+from sqlalchemy import create_engine, Column, Integer, String
+
+engine = create_engine("postgresql://localhost/mydb")
+# ORM: convenient but typos surface in production, not at build time
 ```
 
 **Rust fix:** `sqlx` with the `query!` macro does **compile-time SQL

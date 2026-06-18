@@ -10,16 +10,19 @@
 
 ---
 
-## Why Property Tests for Data Pipelines?
+## What Are Property Tests?
 
-**Python pain:** A parser reads a million rows. You wrote 5 unit tests with
-hand-picked inputs. The 6th test on production data finds a buffer overflow
-on negative numbers in column 3. You add the 6th test. The 7th test on
-production finds a UTF-8 BOM issue. The list never ends.
+Describe invariants, let the framework generate thousands of inputs and shrink counter-examples.
 
-**Rust fix:** A property test says "for **all** valid inputs, this invariant
-holds." Proptest then *generates* thousands of inputs, **shrinking** any
-counter-example to its smallest form before reporting. The test for
+### Python equivalent
+
+```python
+from hypothesis import given, strategies as st
+
+@given(st.lists(st.integers()))
+def test_sort_is_idempotent(xs):
+    assert sorted(sorted(xs)) == sorted(xs)
+``` The test for
 `count_above` becomes a single line: *the result equals the hand-written
 reference*. Proptest tries negative numbers, empty vecs, all-equal inputs,
 boundary values, and shrinks a failure down to `vec![-1]` with `threshold = 0`.

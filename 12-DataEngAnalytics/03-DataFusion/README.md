@@ -9,11 +9,20 @@
 
 ---
 
-## Why DataFusion for Custom Query Engines?
+## What Is DataFusion?
 
-**Python pain:** You need to expose SQL to your application's users, but Postgres is overkill and SQLite is too slow for analytical queries. You start writing a hand-rolled query parser and discover it's a year-long project.
+A fully-featured SQL query engine built on Arrow — parsing, planning, optimization, and execution.
 
-**Rust fix:** Apache DataFusion is a fully-featured SQL query engine built on Arrow. It handles parsing, planning, optimization, and execution. You write 5 lines of Rust to expose a SQL endpoint:
+### Python equivalent
+
+```python
+# No direct Python equivalent — this is a Rust-native query engine
+# Python would use sqlite3, DuckDB, or SparkSQL for similar work
+import sqlite3
+conn = sqlite3.connect(":memory:")
+conn.execute("CREATE TABLE t (x INTEGER)")
+result = conn.execute("SELECT COUNT(*) FROM t").fetchone()
+``` It handles parsing, planning, optimization, and execution. You write 5 lines of Rust to expose a SQL endpoint:
 
 ```rust
 let ctx = SessionContext::new();

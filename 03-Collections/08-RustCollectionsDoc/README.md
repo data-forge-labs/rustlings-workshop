@@ -6,14 +6,18 @@
 
 ---
 
-## Why This Reference?
+## What Is This Reference?
 
-Ownership note: In Rust, values like `String` and `Vec` live on the heap, while primitive values (e.g., `i32`, `bool`) live on the stack. Ownership rules govern when heap data is cleaned up.
+A side-by-side comparison of every standard collection type in Rust, with fruit-salad examples for each.
 
+### Python equivalent
 
-**Python pain:** Python's collections (`list`, `dict`, `set`, `deque`, `OrderedDict`) all have different creation syntaxes, methods, and performance trade-offs — and the official docs are scattered. You end up with browser tabs to five different pages.
-
-**Rust fix:** This document puts every `std::collections` type on one page with the *same* fruit-salad example, so you can compare `Vec`, `VecDeque`, `LinkedList`, `HashMap`, `BTreeMap`, `HashSet`, `BTreeSet`, and `BinaryHeap` side by side.
+```python
+# Python has list, dict, set, deque, OrderedDict — different APIs each
+fruits = ["Orange", "Apple", "Banana"]
+fruit_set = set(fruits)
+fruit_counts = {"Orange": 1, "Apple": 2}
+```
 
 ## At a Glance
 

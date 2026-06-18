@@ -5,16 +5,22 @@
 > follow each section, replace `todo!()` with real code and run `cd workshop && cargo test` to
 > watch the pass count grow. Your goal: **all 16 tests pass**.
 
-## Why Analyze a Retweet Graph Without Pandas?
+## What Is This Project?
 
-**Python pain:** A typical social-graph pipeline loads CSV into pandas, converts to `networkx`, then runs analysis. Each conversion copies data and creates Python wrappers. For 100K tweets, that's 300K+ Python objects and ~8s of overhead:
+Social graph analysis — building a retweet network and detecting influence patterns.
 
+### Python equivalent
+
+```python
+import pandas as pd
+import networkx as nx
+
+df = pd.read_csv("tweets.csv")
+G = nx.DiGraph()
+for _, row in df.iterrows():
+    if pd.notna(row["retweet_of"]):
+        G.add_edge(row["user"], row["retweet_of"])
 ```
-Python pandas + networkx (100K tweets):  ~8 seconds
-Rust HashMap + Vec (100K tweets):        ~0.1 seconds
-```
-
-**Rust fix:** Build the graph in a single pass into `HashMap<String, Vec<String>>` — no intermediate library, no copy, no GC pauses:
 
 ```rust
 pub fn build_retweet_graph(tweets: &[Tweet]) -> HashMap<String, Vec<String>> {

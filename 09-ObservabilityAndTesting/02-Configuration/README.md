@@ -2,9 +2,19 @@
 
 > **Test-driven approach**: This project includes a Cargo project with progressive unit tests. Each function in `workshop/src/lib.rs` starts as a `todo!()` stub. As you follow each section, replace `todo!()` with real code and run `cd workshop && cargo test` to watch the pass count grow. Your goal: **all 11 tests pass**.
 
-## Why Use the `config` Crate + `serde`?
+## What Is This Project?
 
-**Python pain:** Configuration is fragmented — TOML/JSON/YAML/INI/ENV each have a different API, merging env vars with files is manual, and there's no type safety (every value comes out as a `dict` or `str`):
+Unified configuration with `config` crate + `serde` — one API for TOML, JSON, YAML, and env vars.
+
+### Python equivalent
+
+```python
+import yaml
+
+with open("config.yaml") as f:
+    config = yaml.safe_load(f)  # untyped dict, no validation
+host = config.get("server", {}).get("host", "localhost")
+```
 
 ```python
 import json, yaml, configparser, os

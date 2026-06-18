@@ -14,11 +14,20 @@
 
 ---
 
-## Why DuckDB for In-Process Analytics?
+## What Is DuckDB?
 
-**Python pain:** You need to run an analytical SQL query, but spinning up Postgres or a data warehouse is overkill. Pandas is fine for small data but breaks at 1 GB. You want SQLite but it's row-oriented and slow for analytics. You start downloading CSV files and writing imperative Python.
+"SQLite for analytics" — embedded analytical SQL with columnar storage, directly from Rust.
 
-**Rust fix:** DuckDB is a single embedded C++ library with a `Connection` that supports the full SQL standard, runs on columnar storage, and returns Arrow `RecordBatch`es. There's no server, no schema migration, no separate process. Open a connection, run SQL, get typed results:
+### Python equivalent
+
+```python
+import duckdb
+
+conn = duckdb.connect(":memory:")
+conn.execute("CREATE TABLE t (x INTEGER, y TEXT)")
+result = conn.execute("SELECT COUNT(*) FROM t").fetchone()
+print(result[0])
+```
 
 ```rust
 let conn = Connection::open_in_memory()?;

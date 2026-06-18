@@ -13,11 +13,20 @@
 
 ---
 
-## Why Rustls for TLS?
+## What Is This Project?
 
-**Python pain:** TLS in Python is invisible — `ssl.wrap_socket()` "just works" because `requests`, `urllib3`, and `http.client` all use OpenSSL under the hood. You never think about it until a CVE drops and you realize your whole stack is vulnerable to a 25-year-old C library's memory unsafety.
+TLS server and client with `rustls` — pure-Rust TLS 1.2/1.3 with no C dependencies.
 
-**Rust fix:** `rustls` is a TLS 1.2/1.3 implementation in pure Rust, with `aws-lc-rs` providing the cryptographic primitives. No C dependencies, no memory unsafety, no CVEs from OpenSSL. The API is async-first and integrates with `tokio` via `tokio-rustls`:
+### Python equivalent
+
+```python
+import ssl
+import requests
+
+# Python TLS is invisible — uses OpenSSL under the hood
+resp = requests.get("https://example.com")  # TLS "just works"
+# Until a CVE drops in OpenSSL...
+```
 
 ```rust
 use rustls::{ServerConfig, pki_types::CertificateDer};

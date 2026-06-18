@@ -9,16 +9,20 @@
 
 ---
 
-## Why CDC in Rust?
+## What Is This Project?
 
-**Python pain:** Real CDC in Python usually means running
-Debezium (JVM) + a Kafka Connect cluster + a Python consumer
-that deserializes Avro. The JVM alone is 4 GB, and Python's
-GIL means you cannot parallelize the consumer without `multiprocessing`.
+Change Data Capture pipeline — streaming Postgres row-level changes through a typed async pipeline.
 
-**Rust fix:** Debezium's *logical replication* protocol is just a
-Postgres TCP stream of `BEGIN; UPDATE; COMMIT;` rows. A Rust
-service can:
+### Python equivalent
+
+```python
+# Debezium (JVM) + Kafka Connect + Python consumer
+# JVM alone is 4 GB, Python GIL limits parallelism
+from confluent_kafka import Consumer
+
+consumer = Consumer({"bootstrap.servers": "localhost:9092"})
+consumer.subscribe(["dbserver1.public.orders"])
+```
 
 - Replicate the same envelope shape (`before`, `after`, `op`,
   `ts_ms`, `tx_id`)

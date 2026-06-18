@@ -9,19 +9,22 @@
 
 ---
 
-## Why JWT for an Axum API?
+## What Is This Project?
 
-**Python pain:** A FastAPI service needs auth. Most teams reach for `fastapi-users`
-or hand-rolled `Depends(get_current_user)`. The session/cookie variant is fine
-for browser apps, but mobile + service-to-service callers need bearer tokens.
-`python-jose` and `pyjwt` work, but the validation/role logic is always
-re-implemented per project — and gets it wrong (`alg: none`, missing exp check,
-role checks in the wrong layer).
+JWT + Bearer middleware for Axum — typed `Claims` extractor with role-based access control.
 
-**Rust fix:** `jsonwebtoken` is the canonical HS256/RS256/EdDSA signer. Pair
-it with a typed `Claims` struct, derive `Serialize`/`Deserialize` for free
-JSON, and the borrow checker prevents accidentally trusting an unverified
-token. `axum::extract::FromRequestParts` makes the auth check itself an
+### Python equivalent
+
+```python
+from fastapi import Depends, HTTPException
+from fastapi.security import HTTPBearer
+
+security = HTTPBearer()
+
+async def get_current_user(token = Depends(security)):
+    # manual JWT validation, role checks
+    return decode_token(token.credentials)
+``` `axum::extract::FromRequestParts` makes the auth check itself an
 extractor; the handler body never sees a token it hasn't validated.
 
 ```rust

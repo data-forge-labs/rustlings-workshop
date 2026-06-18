@@ -9,20 +9,21 @@
 
 ---
 
-## Why Async CLIs in Rust?
+## What Is This Project?
 
-**Python pain:** You write a CLI with `argparse` and `asyncio.run(main())`. The parser is imperative; you check each arg by hand. Subcommands mean nested `if __name__ == "__main__":` blocks. Validation happens at runtime, after the user has already typed 20 characters.
+Async CLI tools with `clap` derive parsing and `tokio` integration — compile-time validated arguments.
 
-**Rust fix:** `clap`'s derive mode turns a struct into a full parser at compile time. The parser knows:
-- Required vs optional fields
-- Short and long flags
-- Subcommand trees
-- Help text generated from doc comments
-- Type validation (e.g., `u8`, `PathBuf`)
+### Python equivalent
 
-Combined with `tokio` for async, you get a CLI that:
-- Validates args at parse time (no `--parallelism 99999` accepted)
-- Generates `--help` automatically
+```python
+import argparse
+import asyncio
+
+parser = argparse.ArgumentParser()
+parser.add_argument("--input", required=True)
+parser.add_argument("--parallelism", type=int, default=4)
+args = parser.parse_args()  # validation at runtime, after user typed everything
+```
 - Runs async I/O (DB queries, network calls) without blocking
 
 ## At a Glance

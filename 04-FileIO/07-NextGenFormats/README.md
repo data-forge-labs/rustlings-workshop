@@ -2,15 +2,19 @@
 
 > **Test-driven approach**: This project includes 4 Cargo sub-projects with progressive unit tests. Each function in `src/lib.rs` starts as a `todo!()` stub. As you follow each section, replace `todo!()` with real code and run `cargo test --workspace` to watch the pass count grow. Your goal: **all benchmark tests pass** plus write a working warehouse.
 
-## Why Move Beyond Parquet?
+## What Are Next-Gen Formats?
 
----
+Four new columnar formats — F3, Lance, Vortex, Nimble — that solve Parquet's random-access and encoding limitations for AI/ML workloads.
 
-## Why Move Beyond Parquet?
+### Python equivalent
 
-**Python pain:** You trained a PyTorch model on a 500 GB Parquet dataset. Your GPU costs $3/hr. While the data loader shuffles rows, your GPU sits idle **85% of the time** — the bottleneck isn't compute, it's **decompression and random access on Parquet's row-group architecture**. NVIDIA's RAPIDS team reports this exact pattern in TPC-H benchmarks. Read amplification + rigid encoding + fat footer = GPU starvation.
+```python
+import pyarrow.parquet as pq
 
-**Rust fix:** Four new columnar formats — **F3**, **Lance**, **Vortex**, **Nimble** — re-architect from the ground up: structural encoding for O(1) random access, cascading compression that adapts to data shape, FlatBuffer metadata for zero-parse column lookup, and (in F3) embedded WebAssembly decoders so files stay forward-compatible forever.
+# Parquet: random access is slow (must decompress entire row group)
+table = pq.read_table("events.parquet")
+row = table.slice(50_000_000, 1)  # decompresses 128 MB row group for 1 row
+```
 
 ```rust
 // Lance: read 1000 random rows from a 1B-row dataset

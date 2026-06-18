@@ -2,27 +2,27 @@
 
 > **Test-driven approach**: This project includes a Cargo project with progressive unit tests. Each function in `workshop/src/lib.rs` starts as a `todo!()` stub. As you follow each section, replace `todo!()` with real code and run `cd workshop && cargo test` to watch the pass count grow. Your goal: **all 10 tests pass**.
 
-## Why Use Traits for Shared Behavior?
+## What Are Traits?
 
-Ownership note: In Rust, values like `String` and `Vec` live on the heap, while primitive values (e.g., `i32`, `bool`) live on the stack. Ownership rules govern when heap data is cleaned up.
+Rust's version of interfaces and protocols — a way to define shared behavior across types.
 
+### Python equivalent
 
----
+```python
+from typing import Protocol
 
-## Why Use Traits for Shared Behavior?
+class Summarizable(Protocol):
+    def summarize(self) -> str: ...
 
-Ownership note: In Rust, values like `String` and `Vec` live on the heap, while primitive values (e.g., `i32`, `bool`) live on the stack. Ownership rules govern when heap data is cleaned up.
+def print_summary(item: Summarizable):
+    print(item.summarize())
 
-
-**Python pain:** Protocols and ABCs are *structural* — any class with matching methods satisfies the interface. A typo like `sumarize` instead of `summarize` only fails at runtime, and the compiler never complains. You also can't add behavior to types you don't own without monkey-patching.
-
-**Rust fix:** Traits are **nominal** — `impl Summary for Ticket` is explicit, the compiler checks every method matches, and the *orphan rule* prevents conflicting implementations across crates. Polymorphism without inheritance, with the same flexibility as Python duck typing but compile-time verified:
-
-```rust
-trait Summary { fn summarize(&self) -> String; }
-impl Summary for Ticket { fn summarize(&self) -> String { /* ... */ } }
-fn print_summary(item: &impl Summary) { println!("{}", item.summarize()); }
+# Structural: any class with summarize() satisfies the protocol
+# A typo like sumarize() only fails at runtime
 ```
+
+In this project you'll learn to write this in Rust — and along the way
+you'll discover **trait definitions**, **trait bounds**, **`derive` macros**, **`From`/`Into` conversions**, **`Clone`/`Copy`**, and **operator overloading**.
 
 ## At a Glance
 
@@ -556,7 +556,7 @@ The original step-by-step tutorial content has been merged into the [Appendix](#
 
 ### Next Project
 
-Proceed to [5-TicketV2](../../../02-Ownership/03-TicketV2/README.md) to learn about **enums** and **error handling with `Result`** — essential for production data pipelines.
+Proceed to [5-TicketV2](../03-TicketV2/README.md) to learn about **enums** and **error handling with `Result`** — essential for production data pipelines.
 
 ---
 

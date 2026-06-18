@@ -9,11 +9,19 @@
 
 ---
 
-## Why Observability for Data Pipelines?
+## What Is This Project?
 
-**Python pain:** A Python ETL pipeline fails silently. You only know because
-yesterday's `customer_count` is in the row count table — three hours late.
-The traceback is gone. The Airflow log was rotated. You re-run the job and
+Structured observability with `tracing` — traces, spans, and correlation IDs for data pipelines.
+
+### Python equivalent
+
+```python
+import logging
+
+logging.basicConfig(level=logging.INFO)
+logging.info("Processing batch %s", batch_id)
+# No spans, no correlation IDs, no structured JSON output
+``` You re-run the job and
 it works. You're scared of the next failure.
 
 **Rust fix:** `tracing` gives you structured events with spans — the same

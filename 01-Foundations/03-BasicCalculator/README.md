@@ -2,23 +2,30 @@
 
 > **Test-driven approach**: This project includes a Cargo project with progressive unit tests. Each `workshop/src/lib.rs` function starts as a `todo!()` stub. As you follow each section of this tutorial, replace `todo!()` with real code and run `cd workshop && cargo test` to watch the pass count grow. Your goal: **all 35 tests pass**.
 
-## Why Use Integer Math in Rust?
+## What Is This Calculator?
 
-Ownership note: In Rust, values like `String` and `Vec` live on the heap, while primitive values (e.g., `i32`, `bool`) live on the stack. Ownership rules govern when heap data is cleaned up.
+A command-line integer calculator that demonstrates Rust's fixed-size integer types, overflow behavior, and built-in unit testing.
 
+### Python equivalent
 
----
+```python
+# Python — one int type, no overflow
+def add(a, b):
+    return a + b
 
-## Why Use Integer Math in Rust?
+def factorial(n):
+    result = 1
+    for i in range(1, n + 1):
+        result *= i
+    return result
 
-Ownership note: In Rust, values like `String` and `Vec` live on the heap, while primitive values (e.g., `i32`, `bool`) live on the stack. Ownership rules govern when heap data is cleaned up.
+x = 2 ** 1000  # Python handles arbitrarily large integers
+```
 
+In this project you'll learn to build this in Rust — and along the way
+you'll discover **fixed-size integer types**, **overflow and saturating arithmetic**, **`panic!`**, and **built-in unit testing with `#[test]`**.
 
-**Python pain:** A row counter like `total += partition.row_count` "just works" forever in Python — until the same code compiled to a C extension silently wraps at 4,294,967,295 and reports 0 rows. There is no compile-time check on integer width.
-
-**Rust fix:** Pick the *right* type for the job — `u8` for byte data, `u32` for row counts, `u64` for large datasets, `usize` for sizes — and arithmetic either panics, wraps, or saturates *predictably*. `#[test]` is built into the language, no `pytest` install needed.
-
-> **Note:** Variables, mutability, `if`/`else` expressions, and the `bool`-only rule are taught in [Project 0: Intro](../../01-Intro/README.md). This project focuses only on **integer-specific** Rust.
+> **Note:** Variables, mutability, `if`/`else` expressions, and the `bool`-only rule are taught in [Project 0: Intro](../01-Intro/README.md). This project focuses only on **integer-specific** Rust.
 
 ---
 
@@ -81,13 +88,13 @@ We'll build a **command-line calculator** that can:
 | `as` casting | Converting between types |
 | `#[test]`, `assert_eq!`, `#[should_panic]` | Unit testing — first-class language feature |
 
-> Variables, mutability, and `if`/`else` expressions are covered in [Project 0: Intro](../../01-Intro/README.md).
+> Variables, mutability, and `if`/`else` expressions are covered in [Project 0: Intro](../01-Intro/README.md).
 
 ---
 
 ## 2. Prerequisites
 
-- Rust installed (see [Project 0: Intro](../../01-Intro/README.md))
+- Rust installed (see [Project 0: Intro](../01-Intro/README.md))
 - Basic Python knowledge
 - Familiarity with `cargo new` and `cd workshop && cargo run`
 
@@ -457,7 +464,7 @@ fn main() {
 }
 ```
 
-You saw `Result` briefly in [02-GuessGame §7](../../02-GuessGame/README.md#7-concept-resultt-e-and-parse). The deep dive — including the `?` operator and `From` conversions — is in [Section 02: Ownership](../../../../02-Ownership/README.md). For this project, the `divide` function uses `panic!` (it's an internal tool, not a library).
+You saw `Result` briefly in [02-GuessGame §7](../02-GuessGame/README.md#7-concept-resultt-e-and-parse). The deep dive — including the `?` operator and `From` conversions — is in [Section 02: Ownership](../../02-Ownership/README.md). For this project, the `divide` function uses `panic!` (it's an internal tool, not a library).
 
 ---
 
@@ -1413,7 +1420,7 @@ fn main() {
 
 ## 17. Summary
 
-This project focused on **integer-specific Rust**. For variables, mutability, `if`/`else` expressions, and `bool` rules, see [Project 0: Intro](../../01-Intro/README.md).
+This project focused on **integer-specific Rust**. For variables, mutability, `if`/`else` expressions, and `bool` rules, see [Project 0: Intro](../01-Intro/README.md).
 
 | Concept | Description | Python Equivalent |
 |---|---|---|
@@ -1430,7 +1437,7 @@ This project focused on **integer-specific Rust**. For variables, mutability, `i
 
 ### Next Project
 
-Proceed to [04-MasterMind](../../04-MasterMind/README.md) to solidify these concepts with a game, then [02-Ownership/01-TicketV1](../../../../02-Ownership/01-TicketV1/README.md) to learn about **ownership** — Rust's most unique and important feature.
+Proceed to [04-MasterMind](../04-MasterMind/README.md) to solidify these concepts with a game, then [02-Ownership/01-TicketV1](../../02-Ownership/01-TicketV1/README.md) to learn about **ownership** — Rust's most unique and important feature.
 
 ## Exercises
 

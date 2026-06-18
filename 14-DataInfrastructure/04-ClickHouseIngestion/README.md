@@ -9,11 +9,19 @@
 
 ---
 
-## Why ClickHouse in Rust?
+## What Is This Project?
 
-**Python pain:** `clickhouse-driver` (sync) and `asynch` (async) work
-fine, but they hide *batching*, *retries*, and *backpressure* behind
-defaults. A small Python service can accidentally DoS a ClickHouse
+ClickHouse ingestion with batched inserts, retry, and backpressure control.
+
+### Python equivalent
+
+```python
+from clickhouse_driver import Client
+
+client = Client("localhost")
+client.execute("INSERT INTO events VALUES", [(1, "a"), (2, "b")])
+# Manual batching, no built-in retry or backpressure
+``` A small Python service can accidentally DoS a ClickHouse
 cluster with thousands of small inserts per second.
 
 **Rust fix:** `clickhouse-rs` (the official client) gives you a

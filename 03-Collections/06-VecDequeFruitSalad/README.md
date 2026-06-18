@@ -6,14 +6,19 @@
 
 ---
 
-## Why Double-Ended Queues?
+## What Is This Project?
 
-Ownership note: In Rust, values like `String` and `Vec` live on the heap, while primitive values (e.g., `i32`, `bool`) live on the stack. Ownership rules govern when heap data is cleaned up.
+Double-ended queues with O(1) push/pop at both ends — the ring buffer that beats `list.pop(0)`.
 
+### Python equivalent
 
-**Python pain:** `list.pop(0)` is O(n) — every pop shifts all remaining elements. For a 10K-element queue processed 10K times, that's 100M operations. `collections.deque` is the Python answer, but it lacks a clean `Vec` integration.
+```python
+from collections import deque
 
-**Rust fix:** `VecDeque<T>` is a ring buffer with O(1) `push_front`, `push_back`, `pop_front`, `pop_back` — and you can still index into it like a `Vec`. No shifting, no reallocation surprises.
+queue = deque([10, 20, 30])
+queue.appendleft(0)    # O(1) — unlike list.insert(0, x)
+first = queue.popleft()  # O(1) — unlike list.pop(0)
+```
 
 ```rust
 use std::collections::VecDeque;

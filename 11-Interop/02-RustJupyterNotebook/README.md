@@ -5,11 +5,18 @@
 > follow each section, replace `todo!()` with real code and run `cd workshop && cargo test` to
 > watch the pass count grow. Your goal: **all 21 tests pass**.
 
-## Why Run Rust in Jupyter via `evcxr`?
+## What Is This Project?
 
-**Python pain:** Jupyter transformed Python data workflows — Shift+Enter, see DataFrame as HTML, iterate fast. Rust users had no equivalent: 3-second compile cycles, plain text output, no rich rendering, no inline documentation.
+Rust in Jupyter via `evcxr` — interactive Rust cells with rich HTML output.
 
-**Rust fix:** The `evcxr_jupyter` kernel brings Rust into Jupyter — write Rust in cells, get rich HTML output, iterate without recompiling:
+### Python equivalent
+
+```python
+# Jupyter: Shift+Enter, see DataFrame as HTML, iterate fast
+import pandas as pd
+df = pd.DataFrame({"city": ["Lisbon", "Porto"], "pop": [504718, 249633]})
+df  # rendered as HTML table in Jupyter
+```
 
 ```rust
 :dep rust_jupyter_notebook = { path = "." }

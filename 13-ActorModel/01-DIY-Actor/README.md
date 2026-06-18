@@ -9,14 +9,24 @@
 
 ---
 
-## Why Build Your Own Actor First?
+## What Is a DIY Actor?
 
-**Python pain:** You reach for Celery, Dramatiq, or RQ to get task queues. The
-trade-off: a worker process, a broker (Redis/RabbitMQ), serialization on every
-message, and a deployment story. For in-process concurrency — "I want a serial
-event loop with mutable state" — the overhead is enormous.
+Building an actor from `mpsc` + `oneshot` — 30 lines of Tokio, no crate, no magic.
 
-**Rust fix:** An actor in Tokio is **just an `mpsc` loop with mutable state**.
+### Python equivalent
+
+```python
+from queue import Queue
+from threading import Thread
+
+def actor_loop(queue):
+    state = {}
+    while True:
+        msg = queue.get()
+        if msg == "stop":
+            break
+        # process message, update state
+```
 A `tokio::spawn` task owns the state, processes one message at a time, replies
 to `oneshot` senders. No locks, no broker, no serialization (in-process).
 This workshop builds one in 30 lines so you understand what crates like

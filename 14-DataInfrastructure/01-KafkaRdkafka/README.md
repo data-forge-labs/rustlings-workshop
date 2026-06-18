@@ -9,11 +9,21 @@
 
 ---
 
-## Why idempotent Kafka in Rust?
+## What Is This Project?
 
-**Python pain:** A `confluent-kafka-python` consumer that processes events
-straight from `consumer.poll()` will re-deliver on rebalance, and there is no
-language-level guarantee that your `db.commit()` only happens once. You end
+Kafka produce/consume with `rdkafka` — idempotent producer, manual commit, FIFO dedup cache.
+
+### Python equivalent
+
+```python
+from confluent_kafka import Consumer, Producer
+
+consumer = Consumer({"bootstrap.servers": "localhost:9092"})
+msg = consumer.poll(1.0)
+if msg:
+    process(msg.value())  # may duplicate on rebalance
+    consumer.commit(msg)
+``` You end
 up wrapping every handler in a "have-I-seen-this-id" Redis check or buying a
 dedup library:
 

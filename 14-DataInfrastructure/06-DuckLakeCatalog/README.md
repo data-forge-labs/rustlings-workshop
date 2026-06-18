@@ -9,15 +9,17 @@
 
 ---
 
-## Why DuckLake in Rust?
+## What Is DuckLake?
 
-**Python pain:** A "lakehouse" in Python is usually PyIceberg or
-Delta Lake on Spark — both are JVM-heavy and slow to start. The
-data-engineering community wanted something closer to DuckDB's
-ergonomics.
+SQL-on-Parquet lakehouse layer — catalog, time-travel, and merge-upsert without JVM.
 
-**Rust + DuckLake fix:** DuckLake (open-sourced by the DuckDB team
-in 2025) is:
+### Python equivalent
+
+```python
+# PyIceberg / Delta Lake on Spark — JVM-heavy, slow to start
+from pyspark.sql import SparkSession
+spark = SparkSession.builder.getOrCreate()
+```
 
 - **Catalog**: SQL tables in DuckDB/Postgres/SQLite
 - **Data**: Parquet files on local disk or S3

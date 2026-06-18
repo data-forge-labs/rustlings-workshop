@@ -2,15 +2,19 @@
 
 > **Test-driven approach**: Each function in `src/lib.rs` starts as a `todo!()` stub. **Goal: all 8 tests pass.**
 
-## Why Vortex?
+## What Is Vortex?
 
----
+An extensible columnar format with cascading compression — each chunk picks its own encoding for optimal storage.
 
-## Why Vortex?
+### Python equivalent
 
-**Python pain:** You store a feature store in Parquet. Some columns are dense floats, others are sparse booleans, others are high-cardinality strings. Parquet forces you to pick **one codec per column** — Snappy on everything. The dense floats are bigger than they need to be, the sparse booleans waste time decompressing empty space, the strings don't use FSST. You've over-spent on storage and CPU.
+```python
+import vortex
 
-**Rust fix:** Vortex is an **encoding engine** with **cascading compression**. Each chunk of a column can pick its own encoding, recursively. The 1M-row boolean column might encode as: 300k run-end → 200k RLE → 500k bit-packed. The same engine decides for every chunk. Result: similar size to Parquet, much faster scans (operate on compressed data), and **100x faster random access** for AI workloads.
+# Parquet: one codec per column (Snappy on everything)
+# Vortex: cascading compression adapts to data shape per chunk
+vx.write("data.vortex", pa_table)  # automatic encoding selection
+```
 
 ```rust
 // Python: vortex-data

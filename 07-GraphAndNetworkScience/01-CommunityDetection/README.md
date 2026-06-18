@@ -5,16 +5,20 @@
 > follow each section, replace `todo!()` with real code and run `cd workshop && cargo test` to
 > watch the pass count grow. Your goal: **all 17 tests pass**.
 
-## Why Build SCC from Scratch in Rust?
+## What Is This Project?
 
-**Python pain:** `networkx.strongly_connected_components` is a one-liner — but on a graph with millions of nodes (common in social network analysis), networkx can take *minutes* where a hand-tuned Rust implementation takes *seconds*:
+Kosaraju's strongly-connected-components algorithm — finding communities in directed graphs.
 
+### Python equivalent
+
+```python
+import networkx as nx
+
+G = nx.DiGraph()
+G.add_edges_from([(0, 1), (1, 2), (2, 0), (3, 4)])
+sccs = list(nx.strongly_connected_components(G))
+print(sccs)  # [{0, 1, 2}, {3}, {4}]
 ```
-networkx (100K nodes):  ~12 seconds
-Rust HashMap/Vec:       ~0.3 seconds
-```
-
-**Rust fix:** Plain `HashMap<usize, Vec<usize>>` and `Vec` stacks, no wrapper overhead, no GC pauses:
 
 ```rust
 pub fn kosaraju_scc(edges: &[(usize, usize)], node_count: usize) -> Vec<Vec<usize>> {

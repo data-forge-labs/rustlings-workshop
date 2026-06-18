@@ -9,10 +9,22 @@
 
 ---
 
-## Why Apache Iggy in Rust?
+## What Is Apache Iggy?
 
-**Python pain:** Kafka needs ZooKeeper (or KRaft) and 2 GB of JVM
-heap to run a single broker. Lighter alternatives (NATS, Redis
+Rust-native message streaming — thread-per-core, Kafka-style consumer groups, no ZooKeeper.
+
+### Python equivalent
+
+```python
+from kafka import KafkaProducer, KafkaConsumer
+
+producer = KafkaProducer(bootstrap_servers="localhost:9092")
+producer.send("events", b"hello")
+
+consumer = KafkaConsumer("events", group_id="my-group")
+for msg in consumer:
+    print(msg.value)
+``` Lighter alternatives (NATS, Redis
 Streams) lack Kafka's consumer-group semantics.
 
 **Rust fix:** Apache Iggy (incubating, project-of-record since Feb

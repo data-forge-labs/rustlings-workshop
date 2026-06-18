@@ -9,11 +9,22 @@
 
 ---
 
-## Why Argon2 for Password Hashing?
+## What Is Argon2?
 
-**Python pain:** `hashlib` gives you SHA-256, but SHA-256 is **fast**, and fast is bad for password hashing. A modern GPU computes 10 billion SHA-256 hashes per second. A user with a 6-character password gets cracked in seconds. `bcrypt` is better, but it has a 72-byte password limit and is not the modern standard.
+OWASP-recommended password hashing — memory-hard, parallel, and resistant to GPU attacks.
 
-**Rust fix:** Argon2id is the **OWASP-recommended** password hashing algorithm. It has three knobs (memory, iterations, parallelism) that you crank up over time as hardware gets faster. The `argon2` crate gives you a clean API:
+### Python equivalent
+
+```python
+import hashlib
+import bcrypt
+
+# hashlib SHA-256: too fast for passwords (GPU cracks in seconds)
+h = hashlib.sha256(b"password").hexdigest()
+
+# bcrypt: better, but 72-byte limit and not the modern standard
+hashed = bcrypt.hashpw(b"password", bcrypt.gensalt())
+```
 
 ```rust
 use argon2::Argon2;

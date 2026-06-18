@@ -14,16 +14,20 @@
 
 ---
 
-## Why Embed Rust Inside a Python Process?
+## What Are PyO3 Bindings?
 
-**Python pain:** NumPy is fast, but custom numerical logic, regex, parsing,
-cryptography, or anything CPU-heavy still bottlenecks pure-Python loops. A
-team typically drops into Cython or C extensions, which is its own build-tool
-nightmare and silently segfaults on bad refcounts.
+Calling Rust functions from Python as native C-extensions via `pyo3` and `maturin`.
 
-**Rust fix:** With `pyo3` + `maturin` you write the hot path in Rust (memory
-safe, no GC pauses, no refcounting) and call it from Python with zero-copy
-buffers. The build is `maturin develop`; the import is `import <your_module>`.
+### Python equivalent
+
+```python
+# Pure Python: slow loops for CPU-heavy work
+def moving_average(data, window):
+    return [sum(data[i:i+window]) / window for i in range(len(data) - window + 1)]
+```
+
+In this project you'll learn to build this in Rust — and along the way
+you'll discover **`#[pyfunction]`**, **`#[pymodule]`**, **feature-gated FFI**, and **`maturin` build workflows**.
 
 ```python
 import pyo3_bindings_workshop as r

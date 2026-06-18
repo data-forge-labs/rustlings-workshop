@@ -5,9 +5,21 @@
 > follow each section, replace `todo!()` with real code and run `cd workshop && cargo test` to
 > watch the pass count grow. Your goal: **all 14 tests pass**.
 
-## Why Compute Centrality Locally Without Neo4j?
+## What Is This Project?
 
-**Python pain:** In production, graph data lives in Neo4j. Calling GDS in Python requires a database connection, network round-trips, and the GDS plugin (paid in some deployments):
+Graph centrality algorithms (degree, closeness, betweenness) — self-contained, no database required.
+
+### Python equivalent
+
+```python
+from neo4j import GraphDatabase
+
+driver = GraphDatabase.driver("bolt://localhost:7687")
+with driver.session() as session:
+    result = session.run("CALL gds.degree.stream('myGraph')")
+    for record in result:
+        print(record["nodeName"], record["score"])
+```
 
 ```python
 from neo4j import GraphDatabase

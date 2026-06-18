@@ -2,21 +2,25 @@
 
 > **Test-driven approach**: This project includes a Cargo project with progressive unit tests. Each function in `workshop/src/lib.rs` starts as a `todo!()` stub. As you follow each section, replace `todo!()` with real code and run `cd workshop && cargo test` to watch the pass count grow. Your goal: **all 17 tests pass**.
 
-## Why Let the Compiler Catch Data Races?
+## What Are Data Races?
 
-Ownership note: In Rust, values like `String` and `Vec` live on the heap, while primitive values (e.g., `i32`, `bool`) live on the stack. Ownership rules govern when heap data is cleaned up.
+Compile-time prevention of concurrent data access bugs — Rust's borrow checker eliminates data races before the program runs.
 
+### Python equivalent
 
----
+```python
+import threading
 
-## Why Let the Compiler Catch Data Races?
+counter = 0
+lock = threading.Lock()
 
-Ownership note: In Rust, values like `String` and `Vec` live on the heap, while primitive values (e.g., `i32`, `bool`) live on the stack. Ownership rules govern when heap data is cleaned up.
+def increment():
+    global counter
+    with lock:  # must remember to add this everywhere
+        counter += 1
 
-
-**Python pain:** A shared counter incremented from 10 threads with the GIL still produces ~600,000 instead of 1,000,000 — read-modify-write is *not* atomic, and Python's compiler never warns you. You must remember to add `threading.Lock()` everywhere, by hand, every time.
-
-**Rust fix:** Rust prevents data races at **compile time**. You cannot share mutable data across threads without synchronization, and the compiler enforces it:
+threads = [threading.Thread(target=increment) for _ in range(10)]
+```
 
 ```rust
 let counter = Arc::new(Mutex::new(0usize));

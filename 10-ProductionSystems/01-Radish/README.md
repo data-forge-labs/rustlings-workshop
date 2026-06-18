@@ -1,8 +1,18 @@
 # Radish — Build a Redis-Compatible KV Store in Rust
 
-## Why Build a Redis Server from Scratch?
+## What Is Radish?
 
-**Python pain:** `redis-py` is just a *client* — it connects to an external Redis server. You never see the wire protocol, the event loop, or the shared-state management:
+A Redis-compatible KV store built from scratch — raw TCP, RESP protocol, async I/O.
+
+### Python equivalent
+
+```python
+import redis
+
+r = redis.Redis()
+r.set("key", "value")  # client only — connects to external server
+print(r.get("key"))
+```
 
 ```python
 r = redis.Redis()

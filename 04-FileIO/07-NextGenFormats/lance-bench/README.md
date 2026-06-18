@@ -2,15 +2,19 @@
 
 > **Test-driven approach**: Each function in `src/lib.rs` starts as a `todo!()` stub. Implement step by step. **Goal: all 8 tests pass.**
 
-## Why Lance?
+## What Is Lance?
 
----
+An open lakehouse format optimized for ML training — 100x faster random access than Parquet for AI workloads.
 
-## Why Lance?
+### Python equivalent
 
-**Python pain:** You load 1B rows into a Parquet dataset for ML training. PyTorch's `DataLoader` shuffles and asks for row 50M. You wait 3 seconds for a 128 MB row group to decompress — your GPU sat idle. You do this 10,000 times per epoch.
+```python
+import lance
 
-**Rust fix:** Lance stores 8 MB **disk pages** with **structural encoding** (a B-tree of mini-blocks). To fetch row 50M, the engine reads ~8 MB total, not 128 MB. Result: 100x faster random access, comparable scan speed to Parquet, native vector index for RAG.
+ds = lance.dataset("events.lance")
+# Random row access: still fast due to disk-page architecture
+batch = ds.take([50_000_321, 17_888_402], columns=["id", "value"])
+```
 
 ```rust
 // Python: pylance

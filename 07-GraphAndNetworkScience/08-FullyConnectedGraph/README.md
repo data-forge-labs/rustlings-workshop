@@ -5,11 +5,22 @@
 > follow each section, replace `todo!()` with real code and run `cd workshop && cargo test` to
 > watch the pass count grow. Your goal: **all 8 tests pass**.
 
-## Why Memoize Connectivity Checks?
+## What Is This Project?
 
-**Python pain:** The naive O(N²) check re-examines pairs that earlier iterations already verified, and each lookup is O(E) on a flat list — repeated checks on a 1K-node graph take 0.5-1s.
+Checking graph connectivity with memoization — efficiently determining if all nodes are reachable.
 
-**Rust fix:** Cache verified `(a, b)` connections in a `HashMap`; the second time you visit a pair, the lookup is O(1) and you skip the scan:
+### Python equivalent
+
+```python
+def is_fully_connected(nodes, edges):
+    adj = {n: [] for n in nodes}
+    for a, b in edges:
+        adj[a].append(b)
+        adj[b].append(a)
+    visited = set()
+    dfs(nodes[0], adj, visited)
+    return len(visited) == len(nodes)
+```
 
 ```rust
 pub fn fully_connected_graph(nodes: &[i32], edges: &[(i32, i32)]) -> bool {

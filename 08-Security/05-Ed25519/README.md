@@ -9,11 +9,20 @@
 
 ---
 
-## Why Ed25519 for Digital Signatures?
+## What Are Ed25519 Signatures?
 
-**Python pain:** You need to sign a JWT, an API request, or a software update. The Python `cryptography` library exposes Ed25519, but the API is stateful and the key serialization is awkward. Worse, key formats are inconsistent between libraries.
+Digital signatures with the Ed25519 elliptic-curve algorithm — fast, deterministic, and compact.
 
-**Rust fix:** Ed25519 is **the** modern signature algorithm. It's deterministic (the same message + key always produces the same signature), fast (~70,000 sigs/sec on a laptop), and produces short signatures (64 bytes). The `ed25519-dalek` crate gives you a clean, hard-to-misuse API:
+### Python equivalent
+
+```python
+from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
+
+private_key = Ed25519PrivateKey.generate()
+signature = private_key.sign(b"message to sign")
+public_key = private_key.public_key()
+public_key.verify(signature, b"message to sign")  # raises if invalid
+```
 
 ```rust
 use ed25519_dalek::{SigningKey, Signer, Verifier};

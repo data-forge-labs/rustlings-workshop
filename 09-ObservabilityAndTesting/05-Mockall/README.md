@@ -9,11 +9,20 @@
 
 ---
 
-## Why Mock an External Dependency?
+## What Is Mockall?
 
-**Python pain:** To test your `EtlPipeline`, you spin up a Postgres container
-in `docker-compose`, seed it with fixture data, run the pipeline, assert, tear
-down. CI takes 15 minutes. The pipeline test occasionally flakes when the
+Mocking traits for testable pipelines — test against fakes without disk, network, or databases.
+
+### Python equivalent
+
+```python
+from unittest.mock import MagicMock
+
+pipeline = EtlPipeline()
+pipeline.source = MagicMock()
+pipeline.source.read.return_value = [1, 2, 3]
+result = pipeline.run()
+``` The pipeline test occasionally flakes when the
 container is slow to start. A colleague's laptop doesn't have Docker.
 
 **Rust fix:** Define a `DataSource` trait. The production code uses

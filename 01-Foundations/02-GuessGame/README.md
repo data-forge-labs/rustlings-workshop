@@ -2,21 +2,36 @@
 
 > **Test-driven approach**: This project includes a Cargo project with progressive unit tests. Each function in `workshop/src/lib.rs` starts as a `todo!()` stub. As you follow each section, replace `todo!()` with real code and run `cd workshop && cargo test` to watch the pass count grow. The `workshop/src/main.rs` file provides a runnable game (calling the same functions) — use `cargo run` to play. Your goal: **all 20 tests pass**.
 
-## Why Build a Number-Guessing Game?
-
-Ownership note: In Rust, values like `String` and `Vec` live on the heap, while primitive values (e.g., `i32`, `bool`) live on the stack. Ownership rules govern when heap data is cleaned up.
-
-
 ---
 
-## Why Build a Number-Guessing Game?
+## What Is This Game?
 
-Ownership note: In Rust, values like `String` and `Vec` live on the heap, while primitive values (e.g., `i32`, `bool`) live on the stack. Ownership rules govern when heap data is cleaned up.
+The computer picks a random number between 1 and 100. You have 7 attempts to guess it. After each guess the program tells you "Too high!", "Too low!", or "You win!". It's the classic beginner game — and in Rust it's the smallest program that exercises several important concepts at once.
 
+### Python version
 
-**Python pain:** A script that "asks the user for a number, parses it, and compares" is three lines of Python — but in Rust each step pulls in a new concept you haven't seen yet: *owned* strings (`String`) vs *borrowed* views (`&str`), `Result<T, E>` for parsing failures, mutable references for input buffers, and external crates for randomness. The guess game is the smallest realistic program that exercises *all* of them.
+```python
+import random
 
-**Rust fix:** The same game, in Rust, looks longer on screen — but the types force every assumption to be explicit. The compiler tells you when you've forgotten to handle a parse error or when a string is owned vs borrowed, so the bug never reaches production:
+secret = random.randint(1, 100)
+attempts = 7
+
+for attempt in range(1, attempts + 1):
+    guess = int(input(f"Attempt {attempt}/{attempts} > "))
+    if guess == secret:
+        print("You win!")
+        break
+    elif guess > secret:
+        print("Too high!")
+    else:
+        print("Too low!")
+else:
+    print(f"Out of attempts! The secret was {secret}.")
+```
+
+Five lines of logic — but Python hides a lot: `int()` can throw, strings are always safe, and there's only one `str` type. In Rust, each of those assumptions becomes an explicit concept.
+
+### Rust version
 
 ```rust
 let guess: u32 = input.trim().parse().expect("Please enter a number");
@@ -26,6 +41,19 @@ match check_guess(secret, guess) {
     GuessOutcome::TooLow  => println!("Too low!"),
 }
 ```
+
+### Topics covered in this project
+
+| # | Concept | Why it matters |
+|---|---------|----------------|
+| 1 | External crate (`rand`) | Adding dependencies — Rust's `pip install` |
+| 2 | `String` vs `&str` | Owned text (heap) vs borrowed views — the biggest adjustment for Python devs |
+| 3 | Custom `enum` | Type-safe "one of these" — compiler tracks every variant |
+| 4 | `#[derive]` macros | Auto-implement `Debug`, `PartialEq`, etc. |
+| 5 | `std::io` — `read_line`, `flush` | Reading from stdin with mutable buffers |
+| 6 | `Result<T, E>` and `.parse()` | Rust's error type — compiler forces you to handle failures |
+| 7 | `match` (basic) | Pattern-based dispatch on `Result` and enums |
+| 8 | `?` operator | Propagate errors up without writing `match` blocks |
 
 ## At a Glance
 
@@ -249,6 +277,32 @@ This project's `Cargo.toml` already declares `rand = "0.10"`. The `generate_secr
 
 ---
 
+### A quick word on Stack vs Heap
+
+Before we dive into `String` vs `&str`, here's the memory distinction that matters:
+
+- **Stack** — fast, fixed-size data. Primitive types like `i32`, `bool`, `f64` live here. The compiler knows their size at compile time, so it can allocate and free them automatically.
+- **Heap** — flexible, dynamically-sized data. Types like `String` and `Vec` store their content on the heap because the size can change at runtime.
+
+```
+┌─────────────── Stack ───────────────┐
+│  let x: i32 = 42;       (4 bytes)  │
+│  let flag: bool = true;  (1 byte)   │
+├─────────────────────────────────────┤
+│  let s: String = ...;               │
+│  ┌─── ptr ──┐     ┌─── Heap ─────┐ │
+│  │ address  │────>│ "hello"      │ │
+│  └──────────┘     │ (5 bytes)    │ │
+│                   └──────────────┘ │
+└─────────────────────────────────────┘
+```
+
+In Python, *everything* lives on the heap and the garbage collector handles cleanup. In Rust, the compiler knows exactly when each value goes out of scope and frees it — no garbage collector needed. This is what **ownership** is about, and you'll learn it in depth in [Section 02: Ownership](../../02-Ownership/README.md).
+
+> **Ownership note:** In Rust, values like `String` and `Vec` live on the heap, while primitive values (e.g., `i32`, `bool`) live on the stack. Ownership rules govern when heap data is cleaned up.
+
+---
+
 ## 5. Concept: `String` vs `&str`
 
 This is the **single biggest adjustment** for Python developers. In Python, `"hello"` is just a `str`. In Rust, there are **two** string types you'll meet on day one:
@@ -324,7 +378,7 @@ io::stdin().read_line(&mut input).expect("failed to read line");
 
 ### Why a mutable reference?
 
-`read_line` *modifies* `input` — it appends to it. So it needs `&mut input`, not just `&input`. (This is the same `let mut` you met in 01-Intro — except now the mutability is on a *reference*, not a value. We'll go much deeper on this in the [Ownership section](../../../../02-Ownership/README.md).)
+`read_line` *modifies* `input` — it appends to it. So it needs `&mut input`, not just `&input`. (This is the same `let mut` you met in 01-Intro — except now the mutability is on a *reference*, not a value. We'll go much deeper on this in the [Ownership section](../../02-Ownership/README.md).)
 
 ### Flushing the prompt
 
@@ -464,7 +518,7 @@ pub fn play_round(secret: u32, input: &str) -> Result<GuessOutcome, String> {
 }
 ```
 
-`?` makes it one line. We'll use it more in the [Ownership section](../../../../02-Ownership/README.md).
+`?` makes it one line. We'll use it more in the [Ownership section](../../02-Ownership/README.md).
 
 ---
 
@@ -612,11 +666,11 @@ After that, [04-MasterMind](../../04-MasterMind/README.md) brings everything tog
 
 Topics that come even later:
 
-- **Ownership and borrowing** ([Section 02: Ownership](../../../../02-Ownership/README.md)) — Rust's central idea. This is the biggest mindset shift from Python.
+- **Ownership and borrowing** ([Section 02: Ownership](../../02-Ownership/README.md)) — Rust's central idea. This is the biggest mindset shift from Python.
 - **Slices** `&[T]` and **borrowed views** — covered alongside ownership.
-- **Collections** ([Section 03: Collections](../../../../03-Collections/README.md)) — `Vec`, `HashMap`, `HashSet`, iterators.
-- **File I/O** ([Section 04: File I/O](../../../04-FileIO/README.md)) — reading CSVs and Parquet.
-- **Concurrency** ([Section 05: Concurrency](../../../05-Concurrency/README.md)) — threads, async, channels.
+- **Collections** ([Section 03: Collections](../../03-Collections/README.md)) — `Vec`, `HashMap`, `HashSet`, iterators.
+- **File I/O** ([Section 04: File I/O](../../04-FileIO/README.md)) — reading CSVs and Parquet.
+- **Concurrency** ([Section 05: Concurrency](../../05-Concurrency/README.md)) — threads, async, channels.
 - **Pattern Matching: @ Bindings and Guards** ([root appendix](../README.md#pattern-matching--bindings-and-guards)) — advanced `match` patterns with `@` bindings and guards.
 
 Make sure all **20 tests pass** in `workshop/`, then move on to [03-BasicCalculator](../../03-BasicCalculator/README.md).

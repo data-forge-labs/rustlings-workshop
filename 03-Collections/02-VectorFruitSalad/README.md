@@ -2,20 +2,17 @@
 
 > **Test-driven approach**: This project includes a Cargo project with progressive unit tests. Each function in `workshop/src/lib.rs` starts as a `todo!()` stub. As you follow each section, replace `todo!()` with real code and run `cd workshop && cargo test` to watch the pass count grow. Your goal: **all 4 tests pass**.
 
-## Why Use Vec for Data Collections?
+## What Is This Project?
 
----
+A hands-on introduction to `Vec<T>` — Rust's growable, type-homogeneous array — by building a fruit salad shuffler.
 
-## Why Use Vec for Data Collections?
+### Python equivalent
 
-**Python pain:** A `list` of strings like `["Orange", "Apple", "Banana"]` is convenient but each element is a heap-allocated `PyObject` — 28+ bytes per entry plus a pointer. For datasets with millions of rows, that memory overhead adds up fast.
-
-**Rust fix:** `Vec<T>` stores elements in **contiguous memory** — cache-friendly iteration, no pointer chasing, and the type is fixed at compile time (`Vec<&str>`) so the compiler guarantees every element is the right type:
-
-```rust
-// Rust — contiguous memory, no pointer overhead
-let fruits = vec!["Orange", "Apple", "Banana"];
-fruits.shuffle(&mut rng);  // in-place, zero allocations
+```python
+fruits = ["Orange", "Apple", "Banana"]
+fruits.append("Mango")
+fruits.sort()
+print(fruits[0])  # no compile-time type check
 ```
 
 ## At a Glance

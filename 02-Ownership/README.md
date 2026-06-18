@@ -355,7 +355,7 @@ Equivalent to Python's `@dataclass(frozen=True)` — but with zero runtime overh
 
 ## Prerequisites
 
-- Completed [Section 1: Foundations](../../../01-Foundations/README.md)
+- Completed [Section 1: Foundations](../01-Foundations/README.md)
 - Understand basic Rust syntax and types
 
 ## Projects in This Section

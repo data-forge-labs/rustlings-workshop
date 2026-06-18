@@ -2,15 +2,26 @@
 
 > **Test-driven approach**: This project includes a Cargo project with progressive unit tests. Each function in `workshop/src/lib.rs` starts as a `todo!()` stub. As you follow each section, replace `todo!()` with real code and run `cd workshop && cargo test` to watch the pass count grow. Your goal: **all 14 tests pass**. After that, run `cargo bench` to see how the same code runs 10-50x faster in release mode.
 
-## Why Profile at All?
+## What Is This Project?
 
----
+Cargo profiles (`dev` vs `release`) and the `criterion` crate for statistically rigorous benchmarks.
 
-## Why Profile at All?
+### Python equivalent
 
-**Python pain:** Python has *one* runtime. You cannot compile Python to a fast binary; you just `python script.py` and hope. When performance matters, Python engineers reach for PyPy, Cython, Numba, or rewrite the hot loop in C. There is no built-in "production mode" that strips safety checks and turns on optimization.
+```python
+# Python — no built-in release mode; you get one runtime
+import time
 
-**Rust fix:** Cargo ships with **two default profiles** — `dev` (fast compile, slow run, full checks) and `release` (slow compile, fast run, minimal checks). You flip between them with `--release`. Production deployments always use release, and you can tune the release profile in `Cargo.toml` (opt-level, LTO, codegen-units, overflow checks, etc.). Combined with the `criterion` crate, you get statistically rigorous, comparable benchmarks in two commands.
+def count_words(text):
+    counts = {}
+    for word in text.split():
+        counts[word] = counts.get(word, 0) + 1
+    return counts
+
+start = time.time()
+count_words("the cat sat on the mat " * 1_000_000)
+print(f"Elapsed: {time.time() - start:.3f}s")
+```
 
 ```rust
 // lib.rs — same code, two very different runtimes

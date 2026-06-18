@@ -6,14 +6,19 @@
 
 ---
 
-## Why HashMap for Frequency Counting?
+## What Is This Project?
 
-Ownership note: In Rust, values like `String` and `Vec` live on the heap, while primitive values (e.g., `i32`, `bool`) live on the stack. Ownership rules govern when heap data is cleaned up.
+Word frequency counting with `HashMap`, the `entry` API, and `BTreeMap` for sorted output.
 
+### Python equivalent
 
-**Python pain:** The `dict.get(k, 0) + 1` idiom is everywhere, but it's three lookups for one logical operation: read, default, write. Worse, in hot loops the bytecodes add up — 100M rows means 300M dict operations.
+```python
+from collections import Counter
 
-**Rust fix:** `.entry().or_insert(0)` does the same thing in *one* hash lookup. The `Entry` API is designed for "insert-or-modify" patterns, and the borrow checker prevents you from accidentally aliasing the same key.
+text = "the cat sat on the mat"
+counts = Counter(text.split())
+print(counts.most_common(3))  # [('the', 2), ('cat', 1), ('sat', 1)]
+```
 
 ```rust
 // Rust — single hash lookup

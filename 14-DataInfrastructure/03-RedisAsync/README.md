@@ -9,12 +9,19 @@
 
 ---
 
-## Why async Redis in Rust?
+## What Is This Project?
 
-**Python pain:** `redis-py` is sync by default, and `aioredis` (now
-folded back into `redis-py`) is callback-shaped. Caches under load need
-*pooled* connections, *batched* pipelines, and *atomic* SETNX-style
-operations. Python often ends up ad-hoc.
+Async Redis with `redis-rs` — cache, streams, idempotency, and consumer groups.
+
+### Python equivalent
+
+```python
+import redis
+
+r = redis.Redis()
+r.set("key", "value", nx=True, ex=60)  # race condition possible
+value = r.get("key")
+``` Python often ends up ad-hoc.
 
 ```python
 # Race condition: two workers both see the lock as free.

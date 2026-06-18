@@ -2,15 +2,18 @@
 
 > **Test-driven approach**: This project includes a Cargo project with progressive unit tests. Each function in `workshop/src/lib.rs` starts as a `todo!()` stub. As you follow each section, replace `todo!()` with real code and run `cd workshop && cargo test` to watch the pass count grow. Your goal: **all 7 tests pass**.
 
-## Why Stream CSVs in Rust?
+## What Is This Cookbook?
 
----
+Streaming CSV read/write with the `csv` crate — lazy, type-safe, and memory-efficient.
 
-## Why Stream CSVs in Rust?
+### Python equivalent
 
-**Python pain:** `pandas.read_csv("5gb.csv")` reads the entire file into memory, guesses types, and stores Python objects for every cell — peak memory is roughly 4× the file size, and a malformed row only surfaces hours into a batch job. There is no compile-time check that the columns match the schema.
+```python
+import pandas as pd
 
-**Rust fix:** The `csv` crate processes rows **lazily** — one row at a time, ~1 KB working set, types enforced at compile time via `serde`:
+df = pd.read_csv("transactions.csv")  # loads entire file into memory
+print(df[df["amount"] > 100])         # filter
+```
 
 ```rust
 use csv::ReaderBuilder;

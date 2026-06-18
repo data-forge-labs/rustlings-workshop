@@ -9,11 +9,20 @@
 
 ---
 
-## Why Pipeline Stages as Independent Tasks?
+## What Is This Project?
 
-**Python pain:** A pandas ETL script reads CSV, transforms in a loop, writes
-to Postgres. Memory blows up at 50M rows because the loop holds every row in
-memory. Adding backpressure requires manual chunking. Adding parallelism
+ETL pipeline with Source → Transform → Sink as independent Tokio tasks with bounded channels.
+
+### Python equivalent
+
+```python
+import pandas as pd
+
+# Monolithic: reads everything into memory
+df = pd.read_csv("input.csv")
+df["value"] = df["value"] * 2
+df.to_parquet("output.parquet")
+``` Adding backpressure requires manual chunking. Adding parallelism
 requires Dask or a thread pool. The pipeline is one function — you can't
 inspect it mid-run, you can't scale one stage, you can't restart the
 transform without re-reading the source.

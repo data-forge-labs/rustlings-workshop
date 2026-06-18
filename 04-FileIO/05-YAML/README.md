@@ -9,11 +9,21 @@
 
 ---
 
-## Why YAML for Pipeline Config?
+## What Is This Project?
 
-**Python pain:** Pipeline configurations live in YAML, but you load them with `yaml.safe_load(open("config.yaml"))` and get back a `dict` — no schema, no validation, no autocomplete. A typo in `pool_szie: 10` silently becomes `None`, and your pipeline crashes 4 hours after deploy.
+Typed YAML parsing with `serde_yaml` — turning untyped `dict`s into validated structs.
 
-**Rust fix:** `serde_yaml` + `serde::Deserialize` give you typed `PipelineConfig` structs. A typo is a compile error. Custom enums serialize with `#[serde(rename_all = "lowercase")]` so `status: success` parses into `JobStatus::Success` directly.
+### Python equivalent
+
+```python
+import yaml
+
+with open("config.yaml") as f:
+    config = yaml.safe_load(f)  # returns a dict — no schema, no validation
+
+# A typo like pool_szie silently becomes None
+db_pool = config["database"]["pool_szie"]  # KeyError or None
+```
 
 ## At a Glance
 

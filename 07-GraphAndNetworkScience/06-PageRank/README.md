@@ -5,16 +5,19 @@
 > follow each section, replace `todo!()` with real code and run `cd workshop && cargo test` to
 > watch the pass count grow. Your goal: **all 18 tests pass**.
 
-## Why Run PageRank Without `networkx`?
+## What Is This Project?
 
-**Python pain:** `nx.pagerank` is a one-liner, but behind it `networkx` wraps every node and edge in Python objects, and the power method runs as pure Python loops. On a 100K-node web crawl that's *minutes*:
+PageRank algorithm — iterative ranking with damping factor for web graphs.
 
+### Python equivalent
+
+```python
+import networkx as nx
+
+G = nx.DiGraph()
+G.add_edges_from([(0, 1), (1, 2), (2, 0), (3, 0)])
+ranks = nx.pagerank(G, alpha=0.85)
 ```
-networkx PageRank (100K nodes, 50 iters):  ~3-5 minutes
-Rust PageRank (100K nodes, 50 iters):      ~0.2 seconds
-```
-
-**Rust fix:** Power method directly on flat `HashMap` structures — iterating at machine speed:
 
 ```rust
 pub fn page_rank(edges: &[(usize, usize)], node_count: usize,

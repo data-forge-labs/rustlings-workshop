@@ -2,21 +2,22 @@
 
 > **Test-driven approach**: This project includes a Cargo project with progressive unit tests. Each function in `workshop/src/lib.rs` starts as a `todo!()` stub. As you follow each section, replace `todo!()` with real code and run `cd workshop && cargo test` to watch the pass count grow. Your goal: **all 15 tests pass**.
 
-## Why Index Tickets with HashMap?
+## What Is This Project?
 
-Ownership note: In Rust, values like `String` and `Vec` live on the heap, while primitive values (e.g., `i32`, `bool`) live on the stack. Ownership rules govern when heap data is cleaned up.
+A ticket management system that demonstrates `Vec`, `HashMap`, `BTreeMap`, and iterators — the core data structures for grouping and querying data.
 
+### Python equivalent
 
----
+```python
+from collections import defaultdict
 
-## Why Index Tickets with HashMap?
+tickets = [{"status": "Open", "title": "Bug"}, {"status": "Closed", "title": "Feature"}]
 
-Ownership note: In Rust, values like `String` and `Vec` live on the heap, while primitive values (e.g., `i32`, `bool`) live on the stack. Ownership rules govern when heap data is cleaned up.
-
-
-**Python pain:** A `dict[Status, list[Ticket]]` is convenient, but you get no help from the type system: a typo in a status key silently creates a new bucket, and a missing key crashes your dashboard at 3 AM.
-
-**Rust fix:** `HashMap<Status, Vec<Ticket>>` is type-checked end-to-end. The `Status` enum (or string slice) is the *only* allowed key, every value is a `Vec<Ticket>`, and the compiler prevents the silent-aliasing bugs that haunt Python pipelines.
+# Group by status — no type safety on keys
+by_status = defaultdict(list)
+for t in tickets:
+    by_status[t["status"]].append(t)  # typo in key = silent new bucket
+```
 
 ```rust
 // Rust — typed index

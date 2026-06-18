@@ -5,11 +5,17 @@
 > follow each section, replace `todo!()` with real code and run `cd workshop && cargo test` to
 > watch the pass count grow. Your goal: **all 13 tests pass**.
 
-## Why Use `unsafe` at All?
+## What Is This Project?
 
-**Python pain:** Python is *always* "safe" — the runtime checks every memory access, holds the GIL, and pays GC costs. You never have to think about memory layout, but you also can't talk directly to hardware or implement a zero-copy parser.
+Safe vs unsafe Rust — understanding the boundary between compiler-guaranteed safety and manual control.
 
-**Rust fix:** Safe Rust is the default — the compiler enforces no nulls, no overflows, no use-after-free, no data races. `unsafe` is a *narrow, audited* opt-out for exactly the cases where you need to: talking to C, raw pointers, or hot-path bounds-check skipping.
+### Python equivalent
+
+```python
+# Python is always "safe" — runtime checks everything
+v = [1, 2, 3, 4, 5]
+print(v[10])  # IndexError at runtime, not compile time
+```
 
 ```rust
 let mut v = vec![1, 2, 3, 4, 5];

@@ -10,12 +10,18 @@
 
 ---
 
-## Why Snapshot Tests for Data Pipeline Output?
+## What Is Snapshot Testing?
 
-**Python pain:** You write `assert pretty_print(df) == "id | name\n---+-----\n1  | a"`.
-You re-run the pipeline after a Polars upgrade, the output changes from
-`"1  | a"` to `"1 | a"` (one less space — pandas 2.0). You check the diff
-manually, decide it's fine, update the string. Three months later, you
+Capture expected output once, review changes on every PR with `cargo insta review`.
+
+### Python equivalent
+
+```python
+def test_format_output():
+    result = pretty_print(df)
+    expected = "id | name\n---+-----\n1  | a"
+    assert result == expected  # breaks on minor formatting changes
+``` Three months later, you
 update 12 such strings and miss one. CI fails. You re-discover the change.
 
 **Rust fix:** `insta` records the output as a snapshot. The first run writes

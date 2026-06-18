@@ -13,11 +13,24 @@
 
 ---
 
-## Why Release the GIL from Rust?
+## What Is GIL Release?
 
-**Python pain:** A pure-Python `for i in range(50_000_000): total += i` blocks
-every other Python thread on the same process. CPython's GIL (Global Interpreter
-Lock) prevents true parallelism for CPU-bound work. Spawning 4 Python threads to
+Freeing the Python GIL from Rust — letting other Python threads run while Rust computes.
+
+### Python equivalent
+
+```python
+import threading
+
+total = 0
+def compute():
+    global total
+    for i in range(50_000_000):
+        total += i  # blocks all other threads (GIL)
+
+threads = [threading.Thread(target=compute) for _ in range(4)]
+# All 4 threads run sequentially due to GIL
+``` Spawning 4 Python threads to
 do CPU work often **runs slower than 1 thread** because of GIL contention.
 
 **Rust fix:** When CPython calls into a PyO3 function, you can wrap the

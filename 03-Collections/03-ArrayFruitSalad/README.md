@@ -2,21 +2,17 @@
 
 > **Test-driven approach**: This project includes a Cargo project with progressive unit tests. Each function in `workshop/src/lib.rs` starts as a `todo!()` stub. As you follow each section, replace `todo!()` with real code and run `cd workshop && cargo test` to watch the pass count grow. Your goal: **all 7 tests pass**.
 
-## Why Fixed-Size Arrays?
+## What Is This Project?
 
-Ownership note: In Rust, values like `String` and `Vec` live on the heap, while primitive values (e.g., `i32`, `bool`) live on the stack. Ownership rules govern when heap data is cleaned up.
+Fixed-size arrays `[T; N]` — stack-allocated, type-safe collections where the length is known at compile time.
 
+### Python equivalent
 
----
-
-## Why Fixed-Size Arrays?
-
-Ownership note: In Rust, values like `String` and `Vec` live on the heap, while primitive values (e.g., `i32`, `bool`) live on the stack. Ownership rules govern when heap data is cleaned up.
-
-
-**Python pain:** Python lists are always dynamic — there's no way to say "this collection has *exactly* 10 elements and never changes." You pay a hidden cost for every check (`len(self) == expected`), and off-by-one bugs hide in append/remove logic.
-
-**Rust fix:** `[T; N]` makes the size *part of the type*. The compiler knows the array is always 10 elements, allocates it on the stack (no heap), and rejects any attempt to add or remove elements.
+```python
+# Python — no fixed-size array; always dynamic
+scores = [90, 80, 85, 95, 88]
+scores.append(100)  # silently grows — no compile-time check
+```
 
 ```rust
 // Rust — size is part of the type

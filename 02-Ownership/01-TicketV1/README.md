@@ -11,12 +11,12 @@ Ownership note: In Rust, values like `String` and `Vec` live on the heap, while 
 
 > ### 📋 Prerequisites — Read These First
 >
-> This is the first workshop in **Section 2: Ownership** and assumes fluency with three concepts introduced in Section 1's [`04-MasterMind`](../../../01-Foundations/04-MasterMind/README.md):
+> This is the first workshop in **Section 2: Ownership** and assumes fluency with three concepts introduced in Section 1's [`04-MasterMind`](../../01-Foundations/04-MasterMind/README.md):
 >
-> 1. **`&self` vs `&mut self` method receivers** — [MasterMind §9](../../../01-Foundations/04-MasterMind/README.md#9-concept-self-vs-mut-self--method-receivers)
+> 1. **`&self` vs `&mut self` method receivers** — [MasterMind §9](../../01-Foundations/04-MasterMind/README.md#9-concept-self-vs-mut-self--method-receivers)
 >    *Why?* This workshop uses both forms extensively. If a method changes a field, it takes `&mut self`; if it only reads, it takes `&self`. You need to recognize the difference at a glance.
 >
-> 2. **`pub` visibility and module organization** — [MasterMind §10](../../../01-Foundations/04-MasterMind/README.md#10-concept-pub-visibility)
+> 2. **`pub` visibility and module organization** — [MasterMind §10](../../01-Foundations/04-MasterMind/README.md#10-concept-pub-visibility)
 >    *Why?* The complete solution in §13 splits code across `src/ticket.rs` and `src/lib.rs`. The `mod ticket;` declaration and `pub` keywords on every item in `lib.rs` are not optional.
 >
 > 3. **The `Drop` trait (30-second preview)** — see [OBRM §4](../../04-OBRM/README.md) for the full treatment (this is a *forward reference* — you don't need it to complete TicketV1)
@@ -26,23 +26,29 @@ Ownership note: In Rust, values like `String` and `Vec` live on the heap, while 
 
 ---
 
-## Why Model Tickets with Structs?
+## What Is This Ticket System?
 
-Ownership note: In Rust, values like `String` and `Vec` live on the heap, while primitive values (e.g., `i32`, `bool`) live on the stack. Ownership rules govern when heap data is cleaned up.
+A ticket tracking system (like Jira) that demonstrates structs, ownership, borrowing, and encapsulation — Rust's core memory safety features.
 
+### Python equivalent
 
-**Python pain:** A function that takes a `list` of `dict`s can mutate the caller's list silently — there is no way to know who "owns" the data, and the GC never tells you. A 10,000-line ETL pipeline can lose data integrity to one accidental `.append()`.
+```python
+from dataclasses import dataclass
 
-**Rust fix:** Every value has **exactly one owner**. Pass by **move** (transfer ownership) or **borrow** (`&T` for read-only, `&mut T` for exclusive write). The compiler enforces these rules — no GC, no aliasing, no silent mutation. The same code as a `Ticket` struct is type-checked and validated at compile time:
+@dataclass
+class Ticket:
+    title: str
+    description: str
+    status: str
 
-```rust
-fn add_outlier(data: Vec<i32>) -> Vec<i32> {
-    let mut d = data;   // moved in
-    d.push(999999);     // OK, we own it
-    d                   // moved out
-}
-// records is now invalid — the compiler says so
+# Any function can mutate the caller's data
+def add_outlier(records):
+    records.append(999999)  # silently modifies the caller's list
+    return records
 ```
+
+In this project you'll learn to build this in Rust — and along the way
+you'll discover **structs with `impl`**, **ownership and move semantics**, **borrowing (`&T` / `&mut T`)**, **stack vs heap**, and **the `Drop` trait**.
 
 ## At a Glance
 
@@ -111,7 +117,7 @@ We'll build a **ticket tracking system** (like Jira or Trello) that:
 
 ## 2. Prerequisites
 
-- Completed [Basic Calculator](../../../01-Foundations/03-BasicCalculator/README.md)
+- Completed [Basic Calculator](../../01-Foundations/03-BasicCalculator/README.md)
 - Understand integers, `if/else`, loops
 - Familiar with `cd workshop && cargo run`, `cd workshop && cargo test`
 
@@ -891,7 +897,7 @@ fn main() {
 
 **Recommended learning order:**
 1. ✅ Finish this TicketV1 (the `Drop` references will be clear from the §13 examples)
-2. ➡️ Move to [02-Traits](../../02-Traits/README.md) → [03-TicketV2](../03-TicketV2/README.md)
+2. ➡️ Move to [02-Traits](../02-Traits/README.md) → [03-TicketV2](../03-TicketV2/README.md)
 3. 📖 Read [04-OBRM §4](../../04-OBRM/README.md#4-concept-the-drop-trait--automatic-cleanup) for the canonical `Drop` teaching
 4. ↩️ Return here for a second pass — the §13 `impl Drop` examples will then make full sense
 
@@ -1166,7 +1172,7 @@ The [Appendix](#appendix-original-step-by-step-tutorial) at the end of this docu
 
 ### Next Project
 
-Proceed to [02-Traits](../../02-Traits/README.md) to learn about **traits** — Rust's version of interfaces and protocols.
+Proceed to [02-Traits](../02-Traits/README.md) to learn about **traits** — Rust's version of interfaces and protocols.
 
 ---
 

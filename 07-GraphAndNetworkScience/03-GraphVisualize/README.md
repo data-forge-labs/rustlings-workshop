@@ -5,11 +5,19 @@
 > follow each section, replace `todo!()` with real code and run `cd workshop && cargo test` to
 > watch the pass count grow. Your goal: **all 16 tests pass**.
 
-## Why Render ASCII Bar Charts by Hand?
+## What Is This Project?
 
-**Python pain:** On a remote box you can't open a GUI, and even terminal libraries like `plotext` add 50-100ms of import time per script. Installing `matplotlib` pulls in hundreds of dependencies — overkill for a bar chart.
+ASCII bar charts for terminal data visualization — no GUI dependencies, works over SSH.
 
-**Rust fix:** Render ASCII bar charts with string repetition — no dependencies beyond `std`, instant startup, works over SSH:
+### Python equivalent
+
+```python
+import matplotlib.pyplot as plt
+
+# matplotlib: heavy dependency, needs display
+plt.barh(["A", "B", "C"], [10, 25, 15])
+plt.savefig("chart.png")
+```
 
 ```rust
 pub fn ascii_bar_chart(data: &[f64], labels: &[&str]) -> Vec<String> {

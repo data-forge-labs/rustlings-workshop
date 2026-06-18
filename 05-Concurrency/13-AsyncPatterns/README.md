@@ -9,20 +9,22 @@
 
 ---
 
-## Why Tokio Patterns Beat Ad-Hoc Async
+## What Are Async Patterns?
 
-**Python pain:** `asyncio.gather` returns when all are done. `asyncio.wait_for`
-times out. But you need to *cancel the rest when one fails* (`.gather` with
-`return_exceptions=False`). You need to *limit concurrency* (use
-`asyncio.Semaphore` and acquire per task). You need *graceful shutdown* (set
-a flag and check it in every coroutine). The same five lines appear in every
-codebase, slightly differently, all subtly broken.
+Production-ready Tokio patterns — `select!`, `Semaphore`, `Notify`, `JoinSet`, `CancellationToken`.
 
-**Rust fix:** Tokio gives you battle-tested primitives. `tokio::select!`
-is the asynchronous equivalent of a `match` over futures — whichever
-completes first wins, the rest are cancelled. `tokio::sync::Semaphore` is
-`asyncio.Semaphore` but lock-free and cloneable. `tokio_util::sync::CancellationToken`
-is the standard shutdown signal: parent cancels, all `child.cancelled().await`
+### Python equivalent
+
+```python
+import asyncio
+
+async def fetch(url):
+    async with aiohttp.ClientSession() as session:
+        return await session.get(url)
+
+# Ad-hoc: gather, timeout, cancel, semaphore — all manual
+results = await asyncio.gather(*[fetch(u) for u in urls])
+```
 futures wake up simultaneously.
 
 ```rust

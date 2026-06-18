@@ -2,31 +2,19 @@
 
 > **Test-driven approach**: This project includes a Cargo project with progressive
 
-## Why Annotate Lifetimes?
+## What Are Lifetimes?
 
-Ownership note: In Rust, values like `String` and `Vec` live on the heap, while primitive values (e.g., `i32`, `bool`) live on the stack. Ownership rules govern when heap data is cleaned up.
+Compile-time annotations that ensure references never outlive the data they point to — eliminating dangling pointers at zero runtime cost.
 
+### Python equivalent
 
----
+```python
+# Python — GC keeps everything alive as long as something references it
+def get_first(items):
+    return items[0]  # returns a reference; GC ensures it stays alive
 
-## Why Annotate Lifetimes?
-
-Ownership note: In Rust, values like `String` and `Vec` live on the heap, while primitive values (e.g., `i32`, `bool`) live on the stack. Ownership rules govern when heap data is cleaned up.
-
-
-**Python pain:** You never think about whether a reference is still valid — the GC keeps objects alive as long as anything references them. There's no way to express "this reference must not outlive that data," and you pay for that safety with reference-count updates, cycle detection, and unpredictable GC pauses.
-
-**Rust fix:** **Lifetimes** are compile-time annotations (`'a`) that connect reference lifetimes. The borrow checker ensures no reference outlives its data — and the cost is *zero at runtime*. Returning a reference to a local variable is a compile error, not a runtime crash:
-
-```rust
-fn longest<'a>(x: &'a str, y: &'a str) -> &'a str {
-    if x.len() >= y.len() { x } else { y }
-}
-
-fn dangling() -> &str {
-    let s = String::from("hello");
-    &s  // ❌ compile error: s is dropped at end of scope
-}
+# No way to express "this reference must not outlive that data"
+# The cost: reference-count updates, cycle detection, GC pauses
 ```
 
 > **Note:** Move/Copy semantics recap: see [01-TicketV1 §9 — Ownership](../01-TicketV1/README.md#9-concept-ownership--the-key-to-rust).
@@ -82,8 +70,8 @@ In this workshop you will:
 Before starting, you should be comfortable with:
 
 - **Structs and `impl` blocks** -- covered in `../../01-MasterMind/README.md`.
-- **References (`&T`, `&mut T`)** -- covered in `../../../02-Ownership/01-TicketV1/README.md`.
-- **Ownership basics** -- moving, borrowing, and the three ownership rules from `../../../02-Ownership/01-TicketV1/`.
+- **References (`&T`, `&mut T`)** -- covered in `../01-TicketV1/README.md`.
+- **Ownership basics** -- moving, borrowing, and the three ownership rules from `../01-TicketV1/`.
 - Basic **function syntax** and **string slices (`&str`)** .
 
 If any of these feel unfamiliar, revisit the prerequisite projects first.

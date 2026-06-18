@@ -5,16 +5,20 @@
 > follow each section, replace `todo!()` with real code and run `cd workshop && cargo test` to
 > watch the pass count grow. Your goal: **all 14 tests pass**.
 
-## Why Run Dijkstra in Rust?
+## What Is This Project?
 
-**Python pain:** `nx.shortest_path` is fine for a single query, but route-planning engines run thousands per second. Each `networkx` call creates Python wrappers for edges, heap entries, and distances — microseconds of overhead per operation:
+Dijkstra's shortest-path algorithm on weighted graphs — route planning with `BinaryHeap`.
 
+### Python equivalent
+
+```python
+import networkx as nx
+
+G = nx.DiGraph()
+G.add_edge("A", "B", weight=4)
+G.add_edge("B", "C", weight=2)
+path = nx.shortest_path(G, "A", "C", weight="weight")
 ```
-networkx shortest_path (10K edges):     ~8 ms per query
-Rust BinaryHeap Dijkstra (10K edges):  ~0.1 ms per query
-```
-
-**Rust fix:** Implement Dijkstra directly with `BinaryHeap` (wrapped in `Reverse` for min-heap) and flat `HashMap` distances — no object overhead, just numbers in flat data structures:
 
 ```rust
 use std::collections::{HashMap, BinaryHeap};

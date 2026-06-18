@@ -9,23 +9,26 @@
 
 ---
 
-## Why Error Handling Is a First-Class Concept in Rust
+## What Is This Reference?
 
-Ownership note: In Rust, values like `String` and `Vec` live on the heap, while primitive values (e.g., `i32`, `bool`) live on the stack. Ownership rules govern when heap data is cleaned up.
+A comprehensive reference for `Option<T>` and `Result<T, E>` combinators — the 20+ methods that turn `if let` towers into single expressions.
 
+### Python equivalent
 
-**Python pain:** A pipeline function returns `None` for "missing", `""` for
-"empty", `-1` for "not found", raises `ValueError` for "bad input", and
-sometimes `print("error")` and returns `None`. The caller has to know which
-convention this specific function uses. The IDE can't help. Refactors are
-scary because removing a `try/except` block might break callers in a
-non-obvious way.
+```python
+# Python — inconsistent error conventions
+def find_user(id):
+    if id == 0:
+        return None  # "missing"
+    if id < 0:
+        return ""    # "empty"
+    return {"id": id}  # "found"
+# Caller must guess which convention this function uses
 
-**Rust fix:** `Option<T>` (presence/absence) and `Result<T, E>` (success/failure
-with reason) are *enums* — the compiler enforces that you check both
-variants. The `From` trait lets `?` automatically convert one error type into
-another. Combinators like `map`, `and_then`, `unwrap_or`, `ok_or` turn 10
-lines of `if let` into one expression that the compiler can verify is total.
+# Rust: Option<T> and Result<T, E> are enums — the compiler
+# forces you to handle both variants. Combinators like .map(),
+# .and_then(), .unwrap_or() chain operations cleanly.
+```
 
 ```rust
 fn read_age(s: &str) -> Result<u32, AppError> {

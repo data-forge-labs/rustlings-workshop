@@ -9,19 +9,20 @@
 
 ---
 
-## Why a Crate When You Can DIY?
+## What Is Ractor?
 
-**Python pain:** You built the DIY actor in project 01-DIY-Actor. It works.
-But you discover you need: link monitoring (reconnect on peer death), remote
-actor references, `GenServer`-style calls, supervisor restart strategies.
-You re-implement them. Every project re-implements them, slightly differently,
-all subtly broken.
+Production-grade actor framework — supervision, RPC, and clustering built on the DIY pattern.
 
-**Rust fix:** `ractor` provides the production patterns. It implements the
-Erlang `gen_server` model: a typed `Actor` trait with `pre_start`, `handle`,
-`post_stop`. `cast` for fire-and-forget, `call` for typed request/response
-with `CallResult`. Supervision and clustering are opt-in features. The DIY
-project shows you what ractor is doing under the hood.
+### Python equivalent
+
+```python
+# Python actor frameworks: pykka, actorio, thespian
+from thespian.actors import Actor
+
+class MyActor(Actor):
+    def receiveMessage(self, message, sender):
+        self.send(sender, "processed")
+```
 
 ```rust
 impl Actor for Counter {

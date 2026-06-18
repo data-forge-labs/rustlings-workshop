@@ -9,20 +9,19 @@
 
 ---
 
-## Why a unified pipeline?
+## What Is This Project?
 
-**Python pain:** Each Python data service reinvents the same
-plumbing: pull from Kafka, transform, write to ClickHouse, retry
-on failure, dead-letter on poison messages, checkpoint for
-restarts. Every team writes its own `airbyte/`, `prefect/`,
-`dagster/`, `kafka-connect/`, or `custom-script.py`. None of them
-share a common shape.
+Multi-sink orchestrator — one pipeline config, many sinks, retries, dead-letters, and live counters.
 
-**Rust fix:** A single `PipelineConfig` + `PipelineEvent` +
-`SinkOutcome` triad gives every team the same skeleton. The
-**orchestrator** is a small `for event in stream: fanout(event)`
-loop; the **sinks** are independent `async` tasks. You can
-swap ClickHouse for DuckHouse, Kafka for Iggy, or add a Redis
+### Python equivalent
+
+```python
+# Each Python data service reinvents the same plumbing
+# pull from Kafka, transform, write to ClickHouse, retry...
+import confluent_kafka
+
+consumer = confluent_kafka.Consumer({"bootstrap.servers": "localhost:9092"})
+```
 cache layer, without rewriting the pipeline.
 
 This is the capstone of Section 14 — it composes Projects 01–07.

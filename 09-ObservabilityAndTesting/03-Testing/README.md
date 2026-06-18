@@ -2,11 +2,22 @@
 
 > **Test-driven approach**: This project includes a Cargo project with progressive unit tests. Each function in `workshop/src/lib.rs` starts as a `todo!()` stub. As you follow each section, replace `todo!()` with real code and run `cd workshop && cargo test` to watch the pass count grow. Your goal: **all 18 tests pass**.
 
-## Why Use `cargo test` Instead of pytest?
+## What Is This Project?
 
-**Python pain:** Python testing relies on a third-party runner (pytest), tests run at runtime with no compile-time check, and `assert` can be globally disabled with `python -O`. No built-in way to express "this test should panic" without a context manager.
+Rust's built-in testing framework — `#[test]`, `assert_eq!`, `#[should_panic]` without external dependencies.
 
-**Rust fix:** Testing is baked into the language and `cargo` — attributes, assertions, organisation are all built in:
+### Python equivalent
+
+```python
+import pytest
+
+def test_divide():
+    assert divide(10.0, 2.0) == 5.0
+
+def test_divide_by_zero():
+    with pytest.raises(ZeroDivisionError):
+        divide(10.0, 0.0)
+```
 
 ```rust
 #[test]

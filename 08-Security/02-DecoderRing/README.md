@@ -5,11 +5,23 @@
 > follow each section, replace `todo!()` with real code and run `cd workshop && cargo test` to
 > watch the pass count grow. Your goal: **all 7 tests pass**.
 
-## Why Crack Ciphers in Parallel?
+## What Is This Project?
 
-**Python pain:** Frequency analysis for Caesar ciphers is straightforward but slow on large corpora — each shift decrypts and scores sequentially while CPU cores sit idle. Parallelising with `ProcessPoolExecutor` adds boilerplate, pickling overhead, and manual thread management.
+Caesar cipher cracking with parallel frequency analysis — using Rayon for data-parallel computation.
 
-**Rust fix:** Rayon's `into_par_iter()` replaces `into_iter()` — automatic work-stealing across CPU cores, no thread pools, no futures, no manual scheduling:
+### Python equivalent
+
+```python
+from multiprocessing import Pool
+
+def score_shift(args):
+    shift, text = args
+    decrypted = ''.join(chr((ord(c) - shift) % 26) for c in text)
+    return shift, score(decrypted)
+
+with Pool() as pool:
+    results = pool.map(score_shift, [(i, text) for i in range(26)])
+```
 
 ```rust
 use rayon::prelude::*;

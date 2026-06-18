@@ -2,15 +2,19 @@
 
 > **Test-driven approach**: Each function in `src/lib.rs` starts as a `todo!()` stub. **Goal: all 8 tests pass.**
 
-## Why F3?
+## What Is F3?
 
----
+A future-proof file format that embeds WebAssembly decoders — files are self-describing AND self-decoding.
 
-## Why F3?
+### Python equivalent
 
-**Python pain:** You store critical data in Parquet. Parquet 2.10 adds a new encoding (`DELTA_BINARY_PACKED_V2`). Your Spark cluster runs Parquet 2.7 and can't read it. **Your data is locked in a format that the ecosystem hasn't upgraded to read.** This is the "spec freeze" problem — a format can't evolve faster than every engine that reads it.
+```python
+# Parquet: format versions can't be read by older engines
+import pyarrow.parquet as pq
 
-**Rust fix:** F3 embeds **WebAssembly decoders inside the file itself**. When an old engine encounters a new encoding, it can run the Wasm decoder for that encoding (with 10-30% overhead vs native). The format can ship new encodings without waiting for the entire ecosystem to upgrade. **The file is self-describing AND self-decoding.**
+# If Parquet 2.10 adds a new encoding, Spark 2.7 can't read it
+# F3 solves this by embedding decoders inside the file itself
+```
 
 ```
 ┌──────────────────────────────────────────────────────────────┐

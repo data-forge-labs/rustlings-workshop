@@ -319,16 +319,19 @@ The workshop must be a Markdown file that follows this template. Every workshop 
 
 ### 6.1 Compact Preamble (the only block before `---`)
 
-The preamble is **always exactly three elements** and never more than ~20 lines:
+The preamble is **always exactly three elements** and never more than ~25 lines:
 
 1. **H1 + tagline** — the project name and a one-line description.
 2. **Test-driven banner** — `> **Test-driven approach**: ...` with the test count goal.
-3. **`## Why {meaningful phrase}?` heading** — project-specific (NOT the generic "Why This Project?"). Below it:
-   - One short "Python pain" paragraph (2–3 lines, optionally a 1–2 line code snippet)
-   - One short "Rust fix" paragraph (2–3 lines, optionally a 1–2 line code snippet)
+3. **`## What Is This {Project/Concept}?` heading** — project-specific. Below it:
+   - A 1–2 sentence description of what the project/concept does.
+   - **Python equivalent** — a short Python code snippet showing the equivalent final result (if Python has one). Keep it to 5–15 lines. If the concept has no Python equivalent, note that briefly.
+   - **Transition line** — `In this project you'll learn to build this in Rust — and along the way you'll discover {concept1}, {concept2}, ...`
    - **One unified `## At a Glance` table** with 5 columns: `# | Concept | Rust | Python | Why it matters`
 
 The "Why it matters" column absorbs everything that used to live in the prose-only "Concepts at a Glance" section. **Do not add a separate "Concepts at a Glance" section** — that is the duplication we are eliminating.
+
+> **NEVER use "Python pain" / "Rust fix" framing.** The old template framed Python as "broken" and Rust as the "fix." The new template simply shows the Python equivalent (when one exists) and explains what the learner will build in Rust. This is more respectful of the learner's Python background and more accurate — Python is fine for many tasks; Rust offers different tradeoffs.
 
 ```markdown
 # 🦀 Project Name — Python to Rust Workshop
@@ -342,11 +345,19 @@ The "Why it matters" column absorbs everything that used to live in the prose-on
 
 ---
 
-## Why {Meaningful Phrase}?
+## What Is This {Project/Concept}?
 
-**Python pain:** [2-3 line problem, optionally a tiny code snippet]
+[1-2 sentence description of the project or concept.]
 
-**Rust fix:** [2-3 line solution, optionally a tiny code snippet]
+### Python equivalent
+
+```python
+# Short Python snippet showing the equivalent result (5-15 lines)
+# Only include if Python has a direct equivalent for this concept
+```
+
+In this project you'll learn to build this in Rust — and along the way
+you'll discover **{concept1}**, **{concept2}**, and **{concept3}**.
 
 ## At a Glance
 
@@ -404,8 +415,9 @@ Table listing the new concepts covered, with short descriptions and where they w
 
 ### 6.3 Important notes
 
-- **Every** project README must have the **compact preamble (§6.1)** before the `---` separator. The preamble is at most ~20 lines, not ~80.
-- The "Why {meaningful phrase}?" heading is **always project-specific** (e.g., "Why RAII for data pipelines?", "Why model tickets with structs?", "Why parallel CSV parsing?"). Never use the generic "Why This Project?".
+- **Every** project README must have the **compact preamble (§6.1)** before the `---` separator. The preamble is at most ~25 lines, not ~80.
+- The `## What Is This {Project/Concept}?` heading is **always project-specific** (e.g., "What is RAII?", "What is a ticket system?", "What is parallel CSV parsing?"). Never use the generic "Why This Project?".
+- **NEVER use "Python pain" / "Rust fix" framing.** Show the Python equivalent (when one exists) and explain what the learner will build in Rust. The transition line should list the Rust concepts that will be discovered.
 - The "At a Glance" table is the **only** concept-list section in the preamble. No separate "Concepts at a Glance" prose section — the table's "Why it matters" column carries that information.
 - The "Concept" sections in the body must come **before** the final assembly.
 - Every concept section must include a **Python comparison** — this is not optional.
@@ -478,6 +490,19 @@ This covers every goal from Section 6.3 (AGENTS.md) — but we add this custom i
 
 A systematic batch-fix was applied across sections **01–Foundations**, **02–Ownership**, **03–Collections**, **04–FileIO**, **05–Concurrency**, and **06–TerminalApps** to enforce the compact-preamble standard and improve consistency.
 
+### Preamble format update (July 2025)
+
+The preamble format was updated course-wide to remove the "Python pain" / "Rust fix" framing. The new format:
+
+- **Before:** `## Why {phrase}?` → "Python pain" paragraph → "Rust fix" paragraph → At a Glance table
+- **After:** `## What Is This {Project/Concept}?` → 1-2 sentence description → Python equivalent code snippet → "In this project you'll learn..." transition → At a Glance table
+
+This change applies to **all 74 project READMEs** across sections 01–14. Each project's preamble should:
+1. Describe what the project/concept is (1-2 sentences)
+2. Show the Python equivalent code if one exists (5-15 lines)
+3. List the Rust concepts that will be discovered in this project
+4. Include the At a Glance table
+
 ### Changes applied
 
 | Fix | What was done | Files affected |
@@ -506,6 +531,8 @@ A systematic batch-fix was applied across sections **01–Foundations**, **02–
 
 The following sections have **not yet been fully audited** for compact-preamble compliance, Python comparisons, and consistency. Each should receive the same treatment as sections 01–06 in a future pass.
 
+**Global task:** Replace "Python pain" / "Rust fix" framing with "Python equivalent" + "What you'll learn" in all 74 project READMEs across sections 01–14.
+
 ### Section 07 — GraphAndNetworkScience (8 projects)
 
 | Task | Priority | Notes |
@@ -513,6 +540,7 @@ The following sections have **not yet been fully audited** for compact-preamble 
 | Audit all `README.md` files for compact preamble compliance | High | Many may have old long preamble |
 | Fix cross‑section links (`../Section/` → `../../Section/`) | High | Links to Ownership, Foundations, Collections |
 | Verify At‑a‑Glance tables have 5 columns | High | May be missing Python column |
+| Replace "Python pain" / "Rust fix" with Python equivalent + transition | High | All 8 projects |
 | Add Python comparisons for `petgraph` concepts | Medium | E.g., `DiGraph` ↔ `networkx.DiGraph`, Dijkstra ↔ `networkx.shortest_path` |
 | Add placeholder Exercises | Medium | |
 | Add "Why it matters for graph pipelines?" context | Low | |
@@ -522,6 +550,7 @@ The following sections have **not yet been fully audited** for compact-preamble 
 | Task | Priority | Notes |
 |------|----------|-------|
 | Compact preamble audit | High | |
+| Replace "Python pain" / "Rust fix" with Python equivalent + transition | High | All 6 projects |
 | Fix links to ProductionSystems (10‑) | High | Some may use wrong depth |
 | Add Python comparisons for `unsafe`, crypto concepts | Medium | `unsafe` ↔ ctypes, SHA‑2 ↔ `hashlib` |
 | Add Exercises | Medium | |
@@ -532,6 +561,7 @@ The following sections have **not yet been fully audited** for compact-preamble 
 | Task | Priority | Notes |
 |------|----------|-------|
 | Compact preamble audit | High | |
+| Replace "Python pain" / "Rust fix" with Python equivalent + transition | High | All 6 projects |
 | Fix links | High | |
 | Verify Python comparisons for logging, config, testing | Medium | `log` ↔ `logging`, `proptest` ↔ `hypothesis`, `mockall` ↔ `unittest.mock` |
 | Add Exercises | Medium | |
@@ -542,6 +572,7 @@ The following sections have **not yet been fully audited** for compact-preamble 
 | Task | Priority | Notes |
 |------|----------|-------|
 | Compact preamble audit | High | AxumShop, Radish may have long introductions before separator |
+| Replace "Python pain" / "Rust fix" with Python equivalent + transition | High | All 4 projects |
 | Fix cross‑section links to Ownership/Collections/Concurrency | High | Many links currently broken (see earlier scan) |
 | Add Python comparisons for async, Axum, JWT | Medium | Axum ↔ FastAPI, JWT ↔ PyJWT, RESP ↔ `redis-py` |
 | Verify Cargo.toml compiles after link fixes | Medium | Check with `cargo check` |
@@ -552,6 +583,7 @@ The following sections have **not yet been fully audited** for compact-preamble 
 | Task | Priority | Notes |
 |------|----------|-------|
 | Compact preamble audit | High | |
+| Replace "Python pain" / "Rust fix" with Python equivalent + transition | High | All 4 projects |
 | Fix links | High | |
 | Add Python comparisons for PyO3, evcxr | Medium | PyO3 ↔ cffi/ctypes, evcxr ↔ Jupyter |
 | Add Exercises | Medium | |
@@ -561,6 +593,7 @@ The following sections have **not yet been fully audited** for compact-preamble 
 | Task | Priority | Notes |
 |------|----------|-------|
 | Compact preamble audit | High | Section README and project READMEs |
+| Replace "Python pain" / "Rust fix" with Python equivalent + transition | High | All 3 projects |
 | Fix links to FileIO/Arrow, Concurrency/Futures | High | |
 | Add Python comparisons for Polars, DuckDB, DataFusion | Medium | Polars ↔ pandas DuckDB ↔ sqlite3, DataFusion ↔ SparkSQL |
 | Add Exercises | Medium | |
@@ -571,6 +604,7 @@ The following sections have **not yet been fully audited** for compact-preamble 
 | Task | Priority | Notes |
 |------|----------|-------|
 | Compact preamble audit | High | |
+| Replace "Python pain" / "Rust fix" with Python equivalent + transition | High | All 3 projects |
 | Fix links | High | |
 | Add Python comparisons for actors | Medium | DIY actor ↔ `threading` + `Queue`, ractor ↔ `actorio`/`pykka` |
 | Add Exercises | Medium | |
@@ -581,6 +615,7 @@ The following sections have **not yet been fully audited** for compact-preamble 
 | Task | Priority | Notes |
 |------|----------|-------|
 | Compact preamble audit | High | |
+| Replace "Python pain" / "Rust fix" with Python equivalent + transition | High | All 8 projects |
 | Fix links to other sections | High | |
 | Verify external‑service dependencies documented | High | Kafka, PostgreSQL, etc. need Docker Compose notes |
 | Add Python comparisons for Kafka, PostgreSQL, Redis | Medium | `rdkafka` ↔ `confluent_kafka`, `sqlx` ↔ `asyncpg`, `redis` ↔ `redis-py` |

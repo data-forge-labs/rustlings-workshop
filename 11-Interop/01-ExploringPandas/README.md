@@ -5,11 +5,19 @@
 > follow each section, replace `todo!()` with real code and run `cd workshop && cargo test` to
 > watch the pass count grow. Your goal: **all 17 tests pass**.
 
-## Why Build DataFrame Operations from Primitives?
+## What Is This Project?
 
-**Python pain:** Pandas DataFrames copy data, coerce types at runtime (`"123"` might become int or stay str), and have no compile-time validation — bugs surface in production at 3 AM. For 10GB ETL jobs, the 2x memory multiplier wastes money.
+Building DataFrame operations from Rust primitives — understanding what pandas does under the hood.
 
-**Rust fix:** Build the same operations from explicit, zero-cost primitives — no hidden allocations, no type surprises, compile-time checked:
+### Python equivalent
+
+```python
+import pandas as pd
+
+df = pd.read_csv("data.csv")
+filtered = df[df["price"] > 10]
+grouped = df.groupby("fruit").agg({"price": "mean"})
+```
 
 ```rust
 use serde::Deserialize;

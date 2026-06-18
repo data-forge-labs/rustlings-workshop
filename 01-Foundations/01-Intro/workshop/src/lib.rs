@@ -12,47 +12,76 @@
 /// Converts Celsius to Fahrenheit.
 /// README §5: Functions
 pub fn celsius_to_fahrenheit(c: f64) -> f64 {
-    todo!()
+    c * 9.0 / 5.0 + 32.0
 }
 
 /// Converts Fahrenheit to Celsius.
 /// README §5: Exercise
 pub fn fahrenheit_to_celsius(f: f64) -> f64 {
-    todo!()
+    (f - 32.0) * 5.0 / 9.0
 }
 
 /// Classifies a temperature as "cold", "mild", or "hot".
 /// Demonstrates `if`/`else` as an expression.
 /// README §7: If/Else
 pub fn classify_temp(temp: i32) -> &'static str {
-    todo!()
+    if temp < 10 {
+        "cold"
+    } else if (temp < 30) && (temp >= 10) {
+        "mild"
+    } else {
+        "hot"
+    }
 }
 
 /// Counts how many values in a fixed array are positive (> 0).
 /// Demonstrates `for` loops and `if`.
 /// README §8: Loops
 pub fn count_positive(values: [i32; 5]) -> usize {
-    todo!()
+    let mut cnt = 0;
+    for i in values {
+        if i > 0 {
+            cnt += 1;
+        }
+    }
+    cnt
 }
 
 /// Sums all values in a fixed array of 5 i32s.
 /// README §8: Loops (exercise)
 pub fn sum_five(values: [i32; 5]) -> i32 {
-    todo!()
+    let mut s = 0;
+    for t in values {
+        s += t;
+    }
+    s
 }
 
 /// Classifies a data row given as a tuple `(id, value, is_valid)`.
 /// Demonstrates tuple destructuring.
 /// README §9: Tuples
 pub fn categorize_row(row: (u32, f64, bool)) -> &'static str {
-    todo!()
+    let (t, value, is_valid) = row;
+    if is_valid && value > 0.0 {
+        "ok"
+    } else if !is_valid {
+        "invalid"
+    } else {
+        "zero"
+    }
 }
 
 /// Returns the largest value in a fixed array of 5 i32s.
 /// Demonstrates fixed-size arrays and `for` ranges.
 /// README §10: Arrays
 pub fn max_of_five(values: [i32; 5]) -> i32 {
-    todo!()
+    let mut max = values[0];
+    for v in values {
+        if v > max {
+            max = v;
+        }
+    }
+    max
 }
 
 /// Counts how many readings in a 5-element array are "hot" (>= 30).
@@ -60,7 +89,20 @@ pub fn max_of_five(values: [i32; 5]) -> i32 {
 /// Demonstrates combining everything: arrays, loops, if, tuples.
 /// README §11: Putting It All Together
 pub fn hot_readings_summary(readings: [i32; 5]) -> (usize, &'static str) {
-    todo!()
+    let mut count: usize = 0;
+    for v in readings {
+        if v >= 30 {
+            count += 1;
+        }
+    }
+    let label = if count == 1 || count == 2 {
+        "some"
+    } else if count > 2 {
+        "many"
+    } else {
+        "few"
+    };
+    (count, label)
 }
 
 // ============================================================

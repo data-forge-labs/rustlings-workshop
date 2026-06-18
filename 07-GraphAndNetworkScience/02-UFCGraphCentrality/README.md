@@ -5,11 +5,20 @@
 > follow each section, replace `todo!()` with real code and run `cd workshop && cargo test` to
 > watch the pass count grow. Your goal: **all 14 tests pass**.
 
-## Why Compute Centrality Without `networkx`?
+## What Is This Project?
 
-**Python pain:** `nx.degree_centrality` and `nx.closeness_centrality` are one-liners — but every node is a Python object, every BFS step is a Python function call. On a 1K-node UFC fight graph that's ~2.5s where Rust's BFS does it in ~0.05s.
+Graph centrality algorithms (degree and closeness) on UFC fight data — measuring node importance.
 
-**Rust fix:** Operate directly on flat `HashMap` and `Vec` with `VecDeque` BFS — no wrapper overhead, no Python call dispatch:
+### Python equivalent
+
+```python
+import networkx as nx
+
+G = nx.Graph()
+G.add_edges_from([(0, 1), (1, 2), (2, 3)])
+degree = nx.degree_centrality(G)
+closeness = nx.closeness_centrality(G)
+```
 
 ```rust
 pub fn closeness_centrality(adj: &HashMap<usize, Vec<usize>>) -> HashMap<usize, f64> {

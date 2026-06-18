@@ -9,11 +9,25 @@
 
 ---
 
-## Why Ratatui for Data Pipeline UIs?
+## What Is This Project?
 
-**Python pain:** You want a live dashboard for a data pipeline (rows processed per second, error log, status by stage), but `curses` is hostile, `rich` is great for static output but weak for live redraws, and `textual` is heavyweight. You end up writing to stdout with `print` and praying.
+Interactive terminal UIs with `ratatui` — live dashboards for monitoring data pipelines.
 
-**Rust fix:** `ratatui` is a Rust port of the original Go `tview` library. It uses an immediate-mode rendering model — every frame is a complete redraw — which is perfect for live dashboards. Build a tree of widgets, render to a `Frame`, repeat on every event:
+### Python equivalent
+
+```python
+from rich.live import Live
+from rich.table import Table
+
+# Rich: great for static output, weak for live dashboards
+table = Table()
+table.add_column("Stage")
+table.add_column("Rows/s")
+
+with Live(table, refresh_per_second=4) as live:
+    table.add_row("Parse", "10,000")
+    live.update(table)
+```
 
 ```rust
 terminal.draw(|f| {
