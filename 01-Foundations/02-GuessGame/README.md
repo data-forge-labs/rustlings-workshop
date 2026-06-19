@@ -168,7 +168,9 @@ assert!(a != b);  // PartialEq makes this work
 
 Without `PartialEq`, `a != b` would be a compile error. In Python, `==` always works on any object — in Rust, you must opt in.
 
-> **Note:** `Clone` and `Copy` are other common derived traits you'll meet in [02-Traits](../../02-Traits/README.md). `Clone` lets you `.clone()` a value to make a deep copy; `Copy` makes small values (like `i32`) copy implicitly instead of moving. We don't need them here — `GuessOutcome` is small enough that the compiler handles it.
+### What is a Trait?
+
+A **trait** is a contract: "any type that implements these methods satisfies this interface." Think of it like a Python `Protocol` or `ABC` — but checked at compile time. `Debug` is a trait that says "I can be printed." `PartialEq` is a trait that says "I can be compared." When you write `#[derive(Debug, PartialEq)]`, Rust auto-generates the implementations for you. You'll learn traits in depth in [02-Traits](../../02-Traits/README.md).
 
 ### Python comparison
 
