@@ -54,22 +54,8 @@ match check_guess(secret, guess) {
 | 6 | `Result<T, E>` and `.parse()` | Rust's error type — compiler forces you to handle failures |
 | 7 | `match` (basic) | Pattern-based dispatch on `Result` and enums |
 | 8 | `?` operator | Propagate errors up without writing `match` blocks |
-
-## At a Glance
-
-| # | Concept | Rust | Python | Why it matters |
-|---|---------|------|--------|----------------|
-| 1 | External crate | `rand = "0.10"` in `Cargo.toml` | `import random` | Adding a third-party dependency — the same idea as `pip install`, but declared in one place |
-| 2 | `String` vs `&str` | `String` (owned, heap) / `&str` (borrowed view) | `str` (one type) | The first hurdle for Python devs — Rust distinguishes owned and borrowed strings |
-| 3 | Custom `enum` | `enum GuessOutcome { Correct, TooHigh, TooLow }` | `Enum` (3.4+) | A type-safe "one of these three things" — the compiler tracks every variant |
-| 4 | `derive` macro | `#[derive(Debug, PartialEq, Eq)]` | n/a | Auto-implement common traits (printing, equality) — saves boilerplate |
-| 5 | `std::io::stdin().read_line(&mut buf)` | mutable buffer + I/O | `input()` | Reading from stdin requires a mutable buffer (borrowing revisited) |
-| 6 | `io::stdout().flush()` | explicit flush | (implicit, line-buffered) | The prompt might not appear before the input read — flush forces it out |
-| 7 | `Result<T, E>` | `Ok(val)` / `Err(msg)` | try/except / raises | Rust's error type — the compiler forces you to look at the `Err` arm |
-| 8 | `.parse()` | `input.trim().parse::<u32>()` | `int(input)` | Parsing is fallible — returns `Result`, not a value |
-| 9 | `.expect("msg")` | crash with a message on `Err` | uncaught exception | The simplest "if it fails, blow up" — fine for small programs |
-| 10 | `match` (basic) | `match outcome { A => ..., B => ... }` | `match`/`case` (3.10+) | Pattern-based dispatch — we'll use it for `Result` and our enum here |
-| 11 | `continue` | skip to next loop iteration | `continue` | Same as Python — used when input is invalid |
+| 9 | `.expect("msg")` | Crash with a message on `Err` — fine for small programs |
+| 10 | `continue` | Skip to next loop iteration |
 
 > **Coming up next**: [03-BasicCalculator](../../03-BasicCalculator/README.md) deepens integers, overflow, and `panic!`. [04-MasterMind](../../04-MasterMind/README.md) then uses the same I/O and `match` ideas on a more complex game with `struct`, `Vec`, and `Option`.
 
@@ -152,10 +138,10 @@ A value of type `GuessOutcome` is **always exactly one of** those three things �
 
 ### Deriving common traits
 
-Above the enum, you'll often see `#[derive(...)]`. These are **auto-implementations** the compiler generates for you:
+Above the enum, you'll often see `#[derive(...)]`. Think of `derive` as "auto-generate boring boilerplate for me." We add two derived traits to `GuessOutcome`:
 
 ```rust
-#[derive(Debug, PartialEq, Eq)]
+#[derive(Debug, PartialEq)]
 pub enum GuessOutcome {
     Correct,
     TooHigh,
@@ -163,14 +149,26 @@ pub enum GuessOutcome {
 }
 ```
 
-| Trait | What it gives you | Python equivalent |
-|---|---|---|
-| `Debug` | Lets you `println!("{:?}", value)` and see the variant name | (no direct equivalent) |
-| `PartialEq`, `Eq` | Lets you compare with `==` and `!=` | `==` always works |
-| `Clone` | `.clone()` makes a copy | `.copy()` |
-| `Copy` | Copies happen implicitly (only for small enums) | (always copies) |
+**`Debug`** — lets you print the enum with `println!("{:?}", value)`:
 
-We'll add `Debug, PartialEq, Eq` to make the enum printable *and* comparable in tests.
+```rust
+let outcome = GuessOutcome::TooHigh;
+println!("{:?}", outcome);  // prints: TooHigh
+```
+
+Without `Debug`, printing would be a compile error. It's the Rust equivalent of Python's `repr()`.
+
+**`PartialEq`** — lets you compare two values with `==`:
+
+```rust
+let a = GuessOutcome::Correct;
+let b = GuessOutcome::TooHigh;
+assert!(a != b);  // PartialEq makes this work
+```
+
+Without `PartialEq`, `a != b` would be a compile error. In Python, `==` always works on any object — in Rust, you must opt in.
+
+> **Note:** `Clone` and `Copy` are other common derived traits you'll meet in [02-Traits](../../02-Traits/README.md). `Clone` lets you `.clone()` a value to make a deep copy; `Copy` makes small values (like `i32`) copy implicitly instead of moving. We don't need them here — `GuessOutcome` is small enough that the compiler handles it.
 
 ### Python comparison
 
@@ -188,7 +186,7 @@ In Rust there's no runtime "what's the variant" string — the *type system* alr
 
 ### Applying to our project
 
-Look at `src/lib.rs` — `GuessOutcome` is already defined with `#[derive(Debug, PartialEq, Eq)]`. You'll use it in `check_guess` and `hint_for`.
+Look at `src/lib.rs` — `GuessOutcome` is already defined with `#[derive(Debug, PartialEq)]`. You'll use it in `check_guess` and `hint_for`.
 
 ```rust
 pub fn check_guess(secret: u32, guess: u32) -> GuessOutcome {
@@ -637,7 +635,7 @@ Implement `Difficulty::attempts(&self) -> u32` and `Difficulty::range(&self) -> 
 | Owned string | `String::new()`, `String::from("...")` | `""`, `str(...)` |
 | Borrowed string | `&str` | n/a (always a `str`) |
 | Custom enum | `enum X { A, B, C }` | `class X(Enum): A = ...` |
-| `derive` | `#[derive(Debug, PartialEq, Eq)]` | n/a |
+| `derive` | `#[derive(Debug, PartialEq)]` | n/a |
 | Read input | `io::stdin().read_line(&mut buf)` | `input()` |
 | Flush output | `io::stdout().flush()` | n/a (auto-flushed) |
 | `Result<T, E>` | `Ok(v)` / `Err(e)` | try/except |
