@@ -170,7 +170,7 @@ Without `PartialEq`, `a != b` would be a compile error. In Python, `==` always w
 
 ### What is a Trait?
 
-A **trait** is a contract: "any type that implements these methods satisfies this interface." Think of it like a Python `Protocol` or `ABC` — but checked at compile time. `Debug` is a trait that says "I can be printed." `PartialEq` is a trait that says "I can be compared." When you write `#[derive(Debug, PartialEq)]`, Rust auto-generates the implementations for you. You'll learn traits in depth in [02-Traits](../../02-Traits/README.md).
+A **trait** is a named collection of method signatures. A type "implements" the trait by providing a body for every method in that list. Once it does, the type is said to satisfy the trait's contract, and you can use it anywhere that trait is expected. `Debug` is a trait that says "I can be printed." `PartialEq` is a trait that says "I can be compared." When you write `#[derive(Debug, PartialEq)]`, Rust auto-generates the implementations for you. You'll learn traits in depth in [02-Traits](../../02-Traits/README.md).
 
 ### Python comparison
 
