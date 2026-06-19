@@ -319,7 +319,7 @@ The workshop must be a Markdown file that follows this template. Every workshop 
 
 ### 6.1 Compact Preamble (the only block before `---`)
 
-The preamble is **always exactly three elements** and never more than ~25 lines:
+The preamble is **always exactly three elements** and never more than ~20 lines:
 
 1. **H1 + tagline** — the project name and a one-line description.
 2. **Test-driven banner** — `> **Test-driven approach**: ...` with the test count goal.
@@ -327,9 +327,6 @@ The preamble is **always exactly three elements** and never more than ~25 lines:
    - A 1–2 sentence description of what the project/concept does.
    - **Python equivalent** — a short Python code snippet showing the equivalent final result (if Python has one). Keep it to 5–15 lines. If the concept has no Python equivalent, note that briefly.
    - **Transition line** — `In this project you'll learn to build this in Rust — and along the way you'll discover {concept1}, {concept2}, ...`
-   - **One unified `## At a Glance` table** with 5 columns: `# | Concept | Rust | Python | Why it matters`
-
-The "Why it matters" column absorbs everything that used to live in the prose-only "Concepts at a Glance" section. **Do not add a separate "Concepts at a Glance" section** — that is the duplication we are eliminating.
 
 > **NEVER use "Python pain" / "Rust fix" framing.** The old template framed Python as "broken" and Rust as the "fix." The new template simply shows the Python equivalent (when one exists) and explains what the learner will build in Rust. This is more respectful of the learner's Python background and more accurate — Python is fine for many tasks; Rust offers different tradeoffs.
 
@@ -358,12 +355,6 @@ The "Why it matters" column absorbs everything that used to live in the prose-on
 
 In this project you'll learn to build this in Rust — and along the way
 you'll discover **{concept1}**, **{concept2}**, and **{concept3}**.
-
-## At a Glance
-
-| # | Concept | Rust | Python | Why it matters |
-|---|---------|------|--------|----------------|
-| 1 | Concept name | `crate::Module` | Python equivalent | One-line purpose |
 
 ---
 ```
@@ -415,10 +406,9 @@ Table listing the new concepts covered, with short descriptions and where they w
 
 ### 6.3 Important notes
 
-- **Every** project README must have the **compact preamble (§6.1)** before the `---` separator. The preamble is at most ~25 lines, not ~80.
+- **Every** project README must have the **compact preamble (§6.1)** before the `---` separator. The preamble is at most ~20 lines.
 - The `## What Is This {Project/Concept}?` heading is **always project-specific** (e.g., "What is RAII?", "What is a ticket system?", "What is parallel CSV parsing?"). Never use the generic "Why This Project?".
 - **NEVER use "Python pain" / "Rust fix" framing.** Show the Python equivalent (when one exists) and explain what the learner will build in Rust. The transition line should list the Rust concepts that will be discovered.
-- The "At a Glance" table is the **only** concept-list section in the preamble. No separate "Concepts at a Glance" prose section — the table's "Why it matters" column carries that information.
 - The "Concept" sections in the body must come **before** the final assembly.
 - Every concept section must include a **Python comparison** — this is not optional.
 - For Type B projects (Cargo projects), skip Section 3 and instead explain the Rust code directly.
