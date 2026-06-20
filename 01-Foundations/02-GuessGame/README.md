@@ -138,7 +138,7 @@ A value of type `GuessOutcome` is **always exactly one of** those three things �
 
 ### Deriving common traits
 
-In Python, when you define an Enum, you can print it and compare it with `==` — it just works. In Rust, every action on data must be explicitly defined and granted. You can't print a value or compare two values unless you (or the compiler) implement the ability first. But some of these actions are so common that the compiler offers to do the work for you.
+In Python, when you define an Enum, you can print it and compare it with `==` — it just works. In Rust, basic types like `i32`, `bool`, and `String` come with printing and comparison built in. But for every **user-defined type** (like our `GuessOutcome` enum), you must explicitly grant these abilities. You can't print a value or compare two values unless you (or the compiler) implement the ability first. Some of these actions are so common that the compiler offers to do the work for you.
 
 Above the enum, you'll see `#[derive(...)]`:
 
