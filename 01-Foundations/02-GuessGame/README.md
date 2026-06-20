@@ -140,7 +140,7 @@ A value of type `GuessOutcome` is **always exactly one of** those three things �
 
 In Python, when you define an Enum, you can print it and compare it with `==`, it just works. In Rust, basic types like `i32`, `bool`, and `String` come with printing and comparison built in. But for every **user-defined type** (like our `GuessOutcome` enum), you must explicitly grant these abilities. You can't print a value or compare two values unless you (or the compiler) implement the ability first. Some of these actions are so common that the compiler offers to do the work for you.
 
-Above the enum, you'll see `#[derive(...)]` — that asks the compiler to implement such common functions for us:
+Above the enum, you'll see `#[derive(...)]` — that asks the compiler to implement such common functions for us via traits, a mechanism for defining the functions we need on data types:
 
 ```rust
 #[derive(Debug, PartialEq)]
@@ -151,7 +151,7 @@ pub enum GuessOutcome {
 }
 ```
 
-**What is a trait?** A trait is a named collection of method signatures — like an interface or ABC class in Python. A type "implements" a trait by providing bodies for every method in that list. `Debug` is a trait that defines a sample string representation of a data type (used by `println!`). `PartialEq` is a trait that defines `==` and `!=` comparisons.
+**What is a trait?** A trait is a named collection of method signatures — like an interface or ABC class in Python. A type "implements" a trait by providing bodies for every method in that list. `Debug` is a trait that defines a sample string representation of a data type (used by `println!`). `PartialEq` is a trait that defines `==` and `!=` comparisons. Rust defines many common expected actions as standard traits that you'll meet throughout this course: `Debug`, `PartialEq`, `Clone`, `Display`, `From`, `Drop`, and more.
 
 When you write `#[derive(Debug)]`, you ask the compiler: "implement the `Debug` trait for my type." When you write `#[derive(PartialEq)]`, you ask it to implement `==`. You could write these implementations by hand, but `derive` auto-generates the boilerplate:
 
@@ -165,6 +165,8 @@ assert!(a != b);  // PartialEq makes this work
 ```
 
 Without `Debug`, `println!("{:?}", outcome)` is a compile error. Without `PartialEq`, `a != b` is a compile error. In Python these always work — in Rust, you must opt in.
+
+**What is `{:?}`?** It's a format specifier that asks Rust to use the `Debug` trait's string representation. `{}` uses the `Display` trait (human-friendly); `{:?}` uses `Debug` (developer-friendly, shows variant names). You'll use `{:?}` constantly for logging and debugging.
 
 ### Python comparison
 
