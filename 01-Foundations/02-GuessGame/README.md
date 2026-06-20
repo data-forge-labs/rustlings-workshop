@@ -281,7 +281,11 @@ This project's `Cargo.toml` already declares `rand = "0.10"`. The `generate_secr
 
 ### Stack vs Heap
 
-Two memory regions, completely different rules. Every running program has access to two pools of memory. The rules for using them are different enough that mixing them up causes the most common confusion in Rust — especially around `String` vs `&str`, `Vec`, and `Box`.
+When the compiler generates code for your program, it needs the actual physical address of every variable to include in the final binary. But not every variable has a fixed size — think of a user's name, email, or a cart's product list. These can be any length at runtime.
+
+So Rust divides memory into two regions: **stack** for fixed-size variables (the compiler knows their size and address at compile time), and **heap** for variable-length data (determined at runtime). The stack stores not just the values themselves but also pointers, lengths, and other metadata that describe where the heap data lives. The stack is the main memory — organized, fast, addresses fixed at compile time. The heap is an unordered pool of memory addresses allocated at runtime.
+
+Two memory regions, completely different rules. Every running program has access to both. The rules for using them are different enough that mixing them up causes the most common confusion in Rust — especially around `String` vs `&str`, `Vec`, and `Box`.
 
 #### The Stack
 
