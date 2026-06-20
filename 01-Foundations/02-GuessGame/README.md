@@ -279,29 +279,33 @@ This project's `Cargo.toml` already declares `rand = "0.10"`. The `generate_secr
 
 ---
 
-### A quick word on Stack vs Heap
+### Stack vs Heap
 
-Before we dive into `String` vs `&str`, here's the memory distinction that matters:
+Two memory regions, completely different rules. Every running program has access to two pools of memory. The rules for using them are different enough that mixing them up causes the most common confusion in Rust — especially around `String` vs `&str`, `Vec`, and `Box`.
 
-- **Stack** — fast, fixed-size data. Primitive types like `i32`, `bool`, `f64` live here. The compiler knows their size at compile time, so it can allocate and free them automatically.
-- **Heap** — flexible, dynamically-sized data. Types like `String` and `Vec` store their content on the heap because the size can change at runtime.
+#### The Stack
 
-```
-┌─────────────── Stack ───────────────┐
-│  let x: i32 = 42;       (4 bytes)  │
-│  let flag: bool = true;  (1 byte)   │
-├─────────────────────────────────────┤
-│  let s: String = ...;               │
-│  ┌─── ptr ──┐     ┌─── Heap ─────┐ │
-│  │ address  │────>│ "hello"      │ │
-│  └──────────┘     │ (5 bytes)    │ │
-│                   └──────────────┘ │
-└─────────────────────────────────────┘
-```
+The stack is a Last-In-First-Out pile of frames. When a function is called, a frame is pushed onto the top. When it returns, that frame is popped — everything inside it is gone. This is not garbage collection: it's mechanical, instantaneous, and costs nothing beyond moving a single pointer.
 
-In Python, *everything* lives on the heap and the garbage collector handles cleanup. In Rust, the compiler knows exactly when each value goes out of scope and frees it — no garbage collector needed. This is what **ownership** is about, and you'll learn it in depth in [Section 02: Ownership](../../02-Ownership/README.md).
+What can live on the stack has one hard constraint: **the compiler must know the size at compile time**. A `u32` is always 4 bytes. A `bool` is 1 byte. A `&str` is 16 bytes (pointer + length). These fit. A `String` whose content grows at runtime does not — the stack has no room for "I'll need somewhere between 0 and a million bytes."
 
-> **Ownership note:** In Rust, values like `String` and `Vec` live on the heap, while primitive values (e.g., `i32`, `bool`) live on the stack. Ownership rules govern when heap data is cleaned up.
+#### The Heap
+
+The heap is a shared pool of memory for data whose size isn't known at compile time. `String`, `Vec<T>`, and `Box<T>` store their content here. The stack holds only a small fixed-size descriptor (pointer, length, capacity) that points to the heap data.
+
+A `String` and a `&str` pointing at it share the same heap bytes — the `&str` is just a read-only window into the `String`'s allocation. No copy happens.
+
+#### Why allocation speed differs
+
+Stack allocation is moving a single integer (the stack pointer) backward by N bytes. The CPU does this in one instruction. No coordination needed because the stack is private to the current thread.
+
+Heap allocation requires asking the allocator, which must find a free block of the right size in a shared pool, possibly acquiring a lock to do so, and returning a pointer. Modern allocators are fast but not free — especially under contention from multiple threads. This is why the Rust standard library only allocates when it genuinely must, and why `&str` exists as a zero-allocation alternative to `String` for read-only use.
+
+#### The one rule that unifies everything
+
+When a value that owns heap memory goes out of scope, Rust calls its `Drop` implementation, which frees the heap bytes. Only one owner exists at any time — this is what makes Rust's memory safety possible without a garbage collector. The compiler tracks ownership statically. No runtime needed. No dangling pointers possible.
+
+You'll learn the full ownership model in [Section 02: Ownership](../../02-Ownership/README.md).
 
 ---
 
