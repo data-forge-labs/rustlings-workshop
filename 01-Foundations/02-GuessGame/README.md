@@ -282,14 +282,14 @@ This project's `Cargo.toml` already declares `rand = "0.10"`. The `generate_secr
 
 ## 5. Concept: Memory Allocation — Stack vs Heap
 
-When the compiler generates code for your program, it needs the actual physical address of every variable to include in the final binary. But not every variable has a fixed size — think of a user's name, email, or a cart's product list. These can be any length at runtime.
+When the compiler generates code for your program, it needs the memory address of every variable to include in the final binary. But not every variable has a fixed size — think of a user's name, email, or a cart's product list. These can be any length at runtime.
 
-So Rust divides memory into two regions: **stack** for fixed-size variables (the compiler knows their size and address at compile time), and **heap** for variable-length data (determined at runtime). The stack stores not just the values themselves but also pointers, lengths, and other metadata that describe where the heap data lives. The stack is the main memory — organized, fast, addresses fixed at compile time. The heap is an unordered pool of memory addresses allocated at runtime.
+So Rust divides memory into two regions: **stack** for fixed-size variables (the compiler knows their size and offsets at compile time), and **heap** for variable-length data (determined at runtime). The stack stores not just the values themselves but also pointers, lengths, and other metadata that describe where the heap data lives. The stack is organized and fast — the compiler knows the exact offsets of variables at compile time. The heap is an unordered pool of memory addresses allocated at runtime.
 
 ```rust
 let age: i32 = 25;              // 4 bytes on the stack — size known at compile time
 let active: bool = true;         // 1 byte on the stack
-let name = String::from("Alice"); // stack: 24 bytes (ptr + len + cap)
+let name = String::from("Alice"); // stack: 24 bytes (ptr + len + cap) on 64-bit
                                   // heap:  "Alice" (5 bytes)
 ```
 
@@ -322,14 +322,14 @@ fn greet() {
 
 #### The Heap
 
-The heap is a shared pool of memory for data whose size isn't known at compile time. `String`, `Vec<T>`, and `Box<T>` store their content here. The stack holds only a small fixed-size descriptor (pointer, length, capacity) that points to the heap data.
+The heap is a shared pool of memory for data whose size isn't known at compile time. `String`, `Vec<T>`, and `Box<T>` store their content here. For `String` and `Vec`, the stack holds a descriptor (pointer, length, capacity). For a `Box<T>`, it just holds the pointer — the compiler knows `T`'s exact size at compile time.
 
 ```rust
-let v = vec![1, 2, 3, 4, 5];  // stack: 24 bytes (ptr + len + cap)
+let v = vec![1, 2, 3, 4, 5];  // stack: 24 bytes (ptr + len + cap) on 64-bit
                                 // heap:  [1, 2, 3, 4, 5] (20 bytes)
 ```
 
-A `String` and a `&str` pointing at it share the same heap bytes — the `&str` is just a read-only window into the `String`'s allocation. No copy happens.
+A `String` and a `&str` pointing at it share the same heap bytes — the `&str` is just a read-only window into the `String`'s allocation. No copy happens. (Note: a `&str` can also point to static memory embedded in the compiled binary, such as string literals like `"hello"` — those live in `.rodata`, not the heap.)
 
 #### Why allocation speed differs
 
