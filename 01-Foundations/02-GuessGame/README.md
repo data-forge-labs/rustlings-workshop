@@ -361,23 +361,24 @@ This is the **single biggest adjustment** for Python developers. In Python, `"he
 │       String         │         │        &str          │
 │      (owned)         │         │     (borrowed)       │
 ├──────────────────────┤         ├──────────────────────┤
-│  Lives on the heap   │         │  A view into someone │
+│  You own it          │         │  A view into someone │
 │  Can grow & shrink   │         │  else's data         │
-│  You own it          │         │  You just borrow it  │
-│  Made with           │         │  String literals     │
-│  String::from("...") │         │  are &str            │
-│  or String::new()    │         │                      │
+│  Made with           │         │  You just borrow it  │
+│  String::from("...") │         │  String literals     │
+│  or String::new()    │         │  are &str            │
 └──────────────────────┘         └──────────────────────┘
         ▲                                 ▲
         │  &str = &my_string[..]          │
         └─────── one can borrow ──────────┘
 ```
 
+A `String` owns heap-allocated bytes (see [§5 Stack vs Heap](#5-concept-memory-allocation--stack-vs-heap)). A `&str` is a borrowed view — it can point into a `String`'s heap data, or into static memory in the binary (string literals like `"hello"` live in `.rodata`, not the heap).
+
 ### When you see each one
 
 | Context | Type you get |
 |---|---|
-| A literal: `"hello"` | `&str` (the compiler stores the bytes statically) |
+| A literal: `"hello"` | `&str` (static memory in the binary) |
 | `String::new()` | `String` (empty, owned, growable) |
 | `String::from("hi")` | `String` (owned, from a literal) |
 | `read_line(&mut buf)` writes into | `&mut String` (a mutable borrowed `String`) |
