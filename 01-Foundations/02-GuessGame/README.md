@@ -67,14 +67,15 @@ match check_guess(secret, guess) {
 2. [Prerequisites](#2-prerequisites)
 3. [Concept: Custom `enum`](#3-concept-custom-enum)
 4. [Concept: Adding an External Crate](#4-concept-adding-an-external-crate)
-5. [Concept: `String` vs `&str`](#5-concept-string-vs-str)
-6. [Concept: Reading Input — `std::io`](#6-concept-reading-input-stdio)
-7. [Concept: `Result<T, E>` and `.parse()`](#7-concept-resultt-e-and-parse)
-8. [Concept: The `?` Operator](#8-concept-the-operator)
-9. [Putting It All Together — The Full Game](#9-putting-it-all-together-the-full-game)
-10. [Exercises](#10-exercises)
-11. [Summary](#11-summary)
-12. [What's Next](#12-whats-next)
+5. [Concept: Memory Allocation — Stack vs Heap](#5-concept-memory-allocation--stack-vs-heap)
+6. [Concept: `String` vs `&str`](#6-concept-string-vs-str)
+7. [Concept: Reading Input — `std::io`](#7-concept-reading-input-stdio)
+8. [Concept: `Result<T, E>` and `.parse()`](#8-concept-resultt-e-and-parse)
+9. [Concept: The `?` Operator](#9-concept-the-operator)
+10. [Putting It All Together — The Full Game](#10-putting-it-all-together-the-full-game)
+11. [Exercises](#11-exercises)
+12. [Summary](#12-summary)
+13. [What's Next](#13-whats-next)
 
 ---
 
@@ -279,13 +280,32 @@ This project's `Cargo.toml` already declares `rand = "0.10"`. The `generate_secr
 
 ---
 
-### Stack vs Heap
+## 5. Concept: Memory Allocation — Stack vs Heap
 
 When the compiler generates code for your program, it needs the actual physical address of every variable to include in the final binary. But not every variable has a fixed size — think of a user's name, email, or a cart's product list. These can be any length at runtime.
 
 So Rust divides memory into two regions: **stack** for fixed-size variables (the compiler knows their size and address at compile time), and **heap** for variable-length data (determined at runtime). The stack stores not just the values themselves but also pointers, lengths, and other metadata that describe where the heap data lives. The stack is the main memory — organized, fast, addresses fixed at compile time. The heap is an unordered pool of memory addresses allocated at runtime.
 
-Two memory regions, completely different rules. Every running program has access to both. The rules for using them are different enough that mixing them up causes the most common confusion in Rust — especially around `String` vs `&str`, `Vec`, and `Box`.
+```rust
+let age: i32 = 25;              // 4 bytes on the stack — size known at compile time
+let active: bool = true;         // 1 byte on the stack
+let name = String::from("Alice"); // stack: 24 bytes (ptr + len + cap)
+                                  // heap:  "Alice" (5 bytes)
+```
+
+```
+Stack                              Heap
+┌─────────────────────┐
+│ age: i32 = 25       │         ┌───┬───┬───┬───┬───┐
+│ active: bool = true │         │ A │ l │ i │ c │ e │
+│ name: String        │         └───┴───┴───┴───┴───┘
+│   ptr  ─────────────────────►     "Alice"
+│   len: 5            │
+│   cap: 5            │
+└─────────────────────┘
+```
+
+Two memory regions, completely different rules. The rules for using them are different enough that mixing them up causes the most common confusion in Rust — especially around `String` vs `&str`, `Vec`, and `Box`.
 
 #### The Stack
 
@@ -293,9 +313,21 @@ The stack is a Last-In-First-Out pile of frames. When a function is called, a fr
 
 What can live on the stack has one hard constraint: **the compiler must know the size at compile time**. A `u32` is always 4 bytes. A `bool` is 1 byte. A `&str` is 16 bytes (pointer + length). These fit. A `String` whose content grows at runtime does not — the stack has no room for "I'll need somewhere between 0 and a million bytes."
 
+```rust
+fn greet() {
+    let x: i32 = 42;       // pushed onto stack when greet() is called
+    let flag: bool = true;  // also on the stack
+}   // x and flag are popped — gone, instantly, zero cost
+```
+
 #### The Heap
 
 The heap is a shared pool of memory for data whose size isn't known at compile time. `String`, `Vec<T>`, and `Box<T>` store their content here. The stack holds only a small fixed-size descriptor (pointer, length, capacity) that points to the heap data.
+
+```rust
+let v = vec![1, 2, 3, 4, 5];  // stack: 24 bytes (ptr + len + cap)
+                                // heap:  [1, 2, 3, 4, 5] (20 bytes)
+```
 
 A `String` and a `&str` pointing at it share the same heap bytes — the `&str` is just a read-only window into the `String`'s allocation. No copy happens.
 
@@ -309,11 +341,18 @@ Heap allocation requires asking the allocator, which must find a free block of t
 
 When a value that owns heap memory goes out of scope, Rust calls its `Drop` implementation, which frees the heap bytes. Only one owner exists at any time — this is what makes Rust's memory safety possible without a garbage collector. The compiler tracks ownership statically. No runtime needed. No dangling pointers possible.
 
+```rust
+{
+    let s = String::from("hello");  // heap allocated
+    // ... use s ...
+}   // s goes out of scope → Drop runs → heap memory freed immediately
+```
+
 You'll learn the full ownership model in [Section 02: Ownership](../../02-Ownership/README.md).
 
 ---
 
-## 5. Concept: `String` vs `&str`
+## 6. Concept: `String` vs `&str`
 
 This is the **single biggest adjustment** for Python developers. In Python, `"hello"` is just a `str`. In Rust, there are **two** string types you'll meet on day one:
 
@@ -372,7 +411,7 @@ The `parse_guess(input: &str)` function takes a `&str` so it can be called with 
 
 ---
 
-## 6. Concept: Reading Input — `std::io`
+## 7. Concept: Reading Input — `std::io`
 
 ### The two pieces
 
@@ -413,7 +452,7 @@ Rust separates them: `print!` for the prompt, `read_line` for the input. The `.e
 
 ---
 
-## 7. Concept: `Result<T, E>` and `.parse()`
+## 8. Concept: `Result<T, E>` and `.parse()`
 
 ### `Result` is Rust's error type
 
@@ -482,7 +521,7 @@ Same shape, but the `Err` arm is required by the type system, not a discipline y
 
 ---
 
-## 8. Concept: The `?` Operator
+## 9. Concept: The `?` Operator
 
 A small but powerful shortcut. When you have a function that returns `Result`, you can **propagate** an error up with `?`:
 
@@ -532,7 +571,7 @@ pub fn play_round(secret: u32, input: &str) -> Result<GuessOutcome, String> {
 
 ---
 
-## 9. Putting It All Together — The Full Game
+## 10. Putting It All Together — The Full Game
 
 Here's the entire `main.rs`. The lib.rs functions are reused throughout:
 
@@ -611,7 +650,7 @@ fn main() {
 
 ---
 
-## 10. Exercises
+## 11. Exercises
 
 Try these in order. Each builds on the last.
 
@@ -639,7 +678,7 @@ Implement `Difficulty::attempts(&self) -> u32` and `Difficulty::range(&self) -> 
 
 ---
 
-## 11. Summary
+## 12. Summary
 
 | Concept | Rust | Python equivalent |
 |---|---|---|
@@ -660,7 +699,7 @@ Implement `Difficulty::attempts(&self) -> u32` and `Difficulty::range(&self) -> 
 
 ---
 
-## 12. What's Next
+## 13. What's Next
 
 You now know how to read user input, parse it safely, dispatch on outcomes, and pull in an external crate. That's the **core of every interactive CLI** you'll build in Rust.
 
