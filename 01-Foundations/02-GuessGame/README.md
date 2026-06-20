@@ -138,7 +138,9 @@ A value of type `GuessOutcome` is **always exactly one of** those three things �
 
 ### Deriving common traits
 
-Above the enum, you'll often see `#[derive(...)]`. Think of `derive` as "auto-generate boring boilerplate for me." We add two derived traits to `GuessOutcome`:
+In Python, when you define an Enum, you can print it and compare it with `==` — it just works. In Rust, every action on data must be explicitly defined and granted. You can't print a value or compare two values unless you (or the compiler) implement the ability first. But some of these actions are so common that the compiler offers to do the work for you.
+
+Above the enum, you'll see `#[derive(...)]`:
 
 ```rust
 #[derive(Debug, PartialEq)]
@@ -149,28 +151,20 @@ pub enum GuessOutcome {
 }
 ```
 
-**`Debug`** — lets you print the enum with `println!("{:?}", value)`:
+**What is a trait?** A trait is a named collection of method signatures — like an interface or ABC class in Python. A type "implements" a trait by providing bodies for every method in that list. `Debug` is a trait that defines a sample string representation of a data type (used by `println!`). `PartialEq` is a trait that defines `==` and `!=` comparisons.
+
+When you write `#[derive(Debug)]`, you ask the compiler: "implement the `Debug` trait for my type." When you write `#[derive(PartialEq)]`, you ask it to implement `==`. You could write these implementations by hand, but `derive` auto-generates the boilerplate:
 
 ```rust
 let outcome = GuessOutcome::TooHigh;
-println!("{:?}", outcome);  // prints: TooHigh
-```
+println!("{:?}", outcome);  // prints: TooHigh — Debug makes this work
 
-Without `Debug`, printing would be a compile error. It's the Rust equivalent of Python's `repr()`.
-
-**`PartialEq`** — lets you compare two values with `==`:
-
-```rust
 let a = GuessOutcome::Correct;
 let b = GuessOutcome::TooHigh;
 assert!(a != b);  // PartialEq makes this work
 ```
 
-Without `PartialEq`, `a != b` would be a compile error. In Python, `==` always works on any object — in Rust, you must opt in.
-
-### What is a Trait?
-
-A **trait** is a named collection of method signatures. A type "implements" the trait by providing a body for every method in that list. Once it does, the type is said to satisfy the trait's contract, and you can use it anywhere that trait is expected. `Debug` is a trait that says "I can be printed." `PartialEq` is a trait that says "I can be compared." When you write `#[derive(Debug, PartialEq)]`, Rust auto-generates the implementations for you. You'll learn traits in depth in [02-Traits](../../02-Traits/README.md).
+Without `Debug`, `println!("{:?}", outcome)` is a compile error. Without `PartialEq`, `a != b` is a compile error. In Python these always work — in Rust, you must opt in.
 
 ### Python comparison
 
