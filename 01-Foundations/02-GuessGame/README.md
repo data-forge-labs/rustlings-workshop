@@ -151,7 +151,7 @@ pub enum GuessOutcome {
 }
 ```
 
-**What is a trait?** A trait is a named collection of method signatures — like an interface or ABC class in Python. A type "implements" a trait by providing bodies for every method in that list. `Debug` is a trait that defines a sample string representation of a data type (used by `println!`). `PartialEq` is a trait that defines `==` and `!=` comparisons. Rust defines many common expected actions as standard traits that you'll meet throughout this course: `Debug`, `PartialEq`, `Clone`, `Display`, `From`, `Drop`, and more.
+**What is a trait?** A trait is a named collection of method signatures — like an interface or ABC class in Python. You'll learn traits in depth in [02-Traits](../../02-Traits/README.md). For now, just know: `Debug` is a trait that defines how to print a value, and `PartialEq` defines how to compare with `==`.
 
 When you write `#[derive(Debug)]`, you ask the compiler: "implement the `Debug` trait for my type." When you write `#[derive(PartialEq)]`, you ask it to implement `==`. You could write these implementations by hand, but `derive` auto-generates the boilerplate:
 
@@ -239,6 +239,12 @@ cargo add rand
 ```
 
 This appends the latest version to `Cargo.toml` for you. Both approaches produce the same result.
+
+To pin a specific version from the command line:
+
+```bash
+cargo add rand@0.10.1
+```
 
 ### Using the crate
 
