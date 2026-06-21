@@ -2,12 +2,26 @@
 
 > **Test-driven approach**: This project includes a Cargo project with progressive unit tests. Each function in `workshop/src/lib.rs` starts as a `todo!()` stub. As you follow each section, replace `todo!()` with real code and run `cd workshop && cargo test` to watch the pass count grow. Your goal: **all 5 tests pass**.
 
-## Why Use Async/Await?
-
-Ownership note: In Rust, values like `String` and `Vec` live on the heap, while primitive values (e.g., `i32`, `bool`) live on the stack. Ownership rules govern when heap data is cleaned up.
-
-
 ---
+
+## What Is This Project?
+
+Async/await, tasks, and runtimes — asynchronous Rust with Tokio for I/O-bound workloads.
+
+### Python equivalent
+
+```python
+import asyncio
+
+async def fetch(url):
+    async with aiohttp.ClientSession() as session:
+        return await session.get(url)
+
+results = asyncio.gather(*[fetch(u) for u in urls])
+```
+
+In this project you'll learn to build this in Rust — and along the way
+you'll discover **`async`/`.await`**, **`tokio::spawn`**, and **futures**.
 
 ## Table of Contents
 1. [Introduction](#1-introduction)

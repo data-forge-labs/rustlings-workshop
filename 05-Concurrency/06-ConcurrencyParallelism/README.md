@@ -2,12 +2,24 @@
 
 > **Test-driven approach**: This project includes a Cargo project with progressive unit tests. Each function in `workshop/src/lib.rs` starts as a `todo!()` stub. As you follow each section, replace `todo!()` with real code and run `cd workshop && cargo test` to watch the pass count grow. Your goal: **all 20 tests pass**.
 
-## Why Use Send/Sync Markers?
-
-Ownership note: In Rust, values like `String` and `Vec` live on the heap, while primitive values (e.g., `i32`, `bool`) live on the stack. Ownership rules govern when heap data is cleaned up.
-
-
 ---
+
+## What Is This Project?
+
+Send/Sync marker traits and RwLock — thread safety foundations for concurrent Rust.
+
+### Python equivalent
+
+```python
+from threading import Lock, RLock
+
+lock = Lock()
+with lock:
+    shared_data.append(1)  # exclusive access
+```
+
+In this project you'll learn to build this in Rust — and along the way
+you'll discover **`Send`/`Sync` traits**, **`RwLock`**, and **thread safety markers**.
 
 ## Table of Contents
 1. [Introduction](#1-introduction)

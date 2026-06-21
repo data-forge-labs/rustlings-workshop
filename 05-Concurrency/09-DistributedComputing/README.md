@@ -2,12 +2,24 @@
 
 > **Test-driven approach**: This project includes a Cargo project with progressive unit tests. Each function in `workshop/src/lib.rs` starts as a `todo!()` stub. As you follow each section, replace `todo!()` with real code and run `cd workshop && cargo test` to watch the pass count grow. Your goal: **all 14 tests pass**.
 
-## Why Skip the Garbage Collector?
-
-Ownership note: In Rust, values like `String` and `Vec` live on the heap, while primitive values (e.g., `i32`, `bool`) live on the stack. Ownership rules govern when heap data is cleaned up.
-
-
 ---
+
+## What Is This Project?
+
+Why Rust for distributed systems — no GC pauses, compiled performance, and memory predictability.
+
+### Python equivalent
+
+```python
+# Python: GC pauses, memory overhead, GIL limits
+import asyncio
+
+async def process_batch(records):
+    return [transform(r) for r in records]  # single-threaded
+```
+
+In this project you'll learn to build this in Rust — and along the way
+you'll discover **allocation overhead**, **compiled vs interpreted trade-offs**, and **distributed patterns**.
 
 ## Table of Contents
 1. [Introduction](#1-introduction)

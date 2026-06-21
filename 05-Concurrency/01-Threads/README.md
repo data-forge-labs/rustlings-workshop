@@ -2,12 +2,27 @@
 
 > **Test-driven approach**: This project includes a Cargo project with progressive unit tests. Each function in `workshop/src/lib.rs` starts as a `todo!()` stub. As you follow each section, replace `todo!()` with real code and run `cd workshop && cargo test` to watch the pass count grow. Your goal: **all 9 tests pass**.
 
-## Why Use Real OS Threads?
-
-Ownership note: In Rust, values like `String` and `Vec` live on the heap, while primitive values (e.g., `i32`, `bool`) live on the stack. Ownership rules govern when heap data is cleaned up.
-
-
 ---
+
+## What Is This Project?
+
+OS threads, channels, and locks — the foundational primitives for concurrent Rust programs.
+
+### Python equivalent
+
+```python
+import threading
+
+def worker():
+    return "Hello from thread"
+
+t = threading.Thread(target=worker)
+t.start()
+result = t.join()  # blocks until done
+```
+
+In this project you'll learn to build this in Rust — and along the way
+you'll discover **`std::thread::spawn`**, **`mpsc` channels**, and **`Mutex` locks**.
 
 ## 2. Prerequisites
 

@@ -2,9 +2,24 @@
 
 > **Test-driven approach**: This project includes a Cargo project with progressive unit tests. Each function in `workshop/src/lib.rs` starts as a `todo!()` stub. As you follow each section, replace `todo!()` with real code and run `cd workshop && cargo test` to watch the pass count grow. Your goal: **all 14 tests pass**.
 
-## Why Model Consistency in the Type System?
-
 ---
+
+## What Is This Project?
+
+Consistency models, CAP theorem, and CRDTs — understanding distributed systems trade-offs in Rust.
+
+### Python equivalent
+
+```python
+# Python: consistency models are implicit
+# You choose between strong (Redis) and eventual (DynamoDB) at the infrastructure level
+import redis
+r = redis.Redis()
+r.set("key", "value")  # strong consistency within a single connection
+```
+
+In this project you'll learn to build this in Rust — and along the way
+you'll discover **CAP theorem**, **eventual consistency**, **CRDTs**, and **leader election**.
 
 ## Table of Contents
 1. [Introduction](#1-introduction)
