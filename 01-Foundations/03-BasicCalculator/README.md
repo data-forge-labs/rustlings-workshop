@@ -2,6 +2,8 @@
 
 > **Test-driven approach**: This project includes a Cargo project with progressive unit tests. Each `workshop/src/lib.rs` function starts as a `todo!()` stub. As you follow each section of this tutorial, replace `todo!()` with real code and run `cd workshop && cargo test` to watch the pass count grow. Your goal: **all 35 tests pass**.
 
+---
+
 ## What Is This Calculator?
 
 A command-line integer calculator that demonstrates Rust's fixed-size integer types, overflow behavior, and built-in unit testing.
@@ -27,22 +29,18 @@ you'll discover **fixed-size integer types**, **overflow and saturating arithmet
 
 > **Note:** Variables, mutability, `if`/`else` expressions, and the `bool`-only rule are taught in [Project 0: Intro](../01-Intro/README.md). This project focuses only on **integer-specific** Rust.
 
----
+### Topics covered
 
-## At a Glance
-
-| # | Concept | Rust | Python | Why it matters |
-|---|---------|------|--------|----------------|
-| 1 | Integer types | `u8`, `i32`, `u64`, `usize` | `int` (arbitrary precision) | Fixed-size types match hardware and prevent silent overflow |
-| 2 | Arithmetic operators | `+`, `-`, `*`, `/`, `%` | Same operators | Integer math; both operands must match in type |
-| 3 | Integer division | `5 / 2 == 2` (truncates) | `//` (floor division) | `/` on integers truncates toward zero, not floor |
-| 4 | `panic!` | `panic!("msg")` | `raise Exception(...)` | Unrecoverable runtime error for programmer bugs |
-| 5 | `while` loop | `while cond { }` | `while cond:` | Condition-controlled loop |
-| 6 | `for` with ranges | `0..n` (exclusive) / `0..=n` (inclusive) | `range(n)` / `range(n+1)` | Range-based iteration, both bounds included/excluded |
-| 7 | Integer overflow | Debug: panics, Release: wraps | Not possible (arbitrary precision) | Overflow is *visible* in Rust — never silent |
-| 8 | Wrapping / saturating | `.wrapping_add()`, `.saturating_add()` | N/A | Controlled overflow handling — wrap or clamp, your choice |
-| 9 | Type casting | `x as u64` | Implicit conversion | Explicit type conversion; truncates going wide → narrow |
-| 10 | Unit testing | `#[test]`, `#[should_panic]`, `#[cfg(test)]` | `pytest` / `unittest` | First-class built-in testing, no extra crate needed |
+| # | Concept | Why it matters |
+|---|---------|----------------|
+| 1 | Integer types | `u8`, `i32`, `u64`, `usize` — fixed-size, prevent silent overflow |
+| 2 | Arithmetic & division | `/` truncates toward zero, not floor |
+| 3 | `panic!` | Unrecoverable runtime error for programmer bugs |
+| 4 | `while` & `for` loops | Condition and range-based iteration |
+| 5 | Integer overflow | Debug: panics, Release: wraps — never silent |
+| 6 | Wrapping / saturating | `.wrapping_add()`, `.saturating_add()` — controlled overflow |
+| 7 | Type casting | `x as u64` — explicit, truncates wide → narrow |
+| 8 | Unit testing | `#[test]`, `#[should_panic]` — built-in, no extra crate |
 
 ---
 
@@ -74,19 +72,6 @@ We'll build a **command-line calculator** that can:
 - Add, subtract, multiply, and divide integers
 - Compute factorials
 - Detect and handle overflow gracefully
-
-### What You'll Learn
-
-| Rust Concept | Why It Matters for Data Engineering |
-|---|---|
-| Integer types (`u32`, `i32`, `i64`) | Choosing the right type for counts, IDs, timestamps |
-| Arithmetic operators & integer division | Predictable, deterministic math on fixed-precision types |
-| `while` and `for` loops | Iterating over data |
-| `panic!` | Error handling basics |
-| Integer overflow | Avoiding silent data corruption |
-| `wrapping_` / `saturating_` | Safe arithmetic in production |
-| `as` casting | Converting between types |
-| `#[test]`, `assert_eq!`, `#[should_panic]` | Unit testing — first-class language feature |
 
 > Variables, mutability, and `if`/`else` expressions are covered in [Project 0: Intro](../01-Intro/README.md).
 
