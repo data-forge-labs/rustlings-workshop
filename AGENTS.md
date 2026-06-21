@@ -319,21 +319,21 @@ The workshop must be a Markdown file that follows this template. Every workshop 
 
 ### 6.1 Compact Preamble (the only block before `---`)
 
-The preamble is **always exactly three elements** and never more than ~20 lines:
+The preamble is **always exactly four elements** and never more than ~25 lines:
 
 1. **H1 + tagline** — the project name and a one-line description.
 2. **Test-driven banner** — `> **Test-driven approach**: ...` with the test count goal.
-3. **`## What Is This {Project/Concept}?` heading** — project-specific. Below it:
+3. **`---` separator** — always between the banner and the first heading.
+4. **`## What Is This {Project/Concept}?` heading** — project-specific. Below it:
    - A 1–2 sentence description of what the project/concept does.
    - **Python equivalent** — a short Python code snippet showing the equivalent final result (if Python has one). Keep it to 5–15 lines. If the concept has no Python equivalent, note that briefly.
    - **Transition line** — `In this project you'll learn to build this in Rust — and along the way you'll discover {concept1}, {concept2}, ...`
+   - **Topics covered table** — `### Topics covered` with 3 columns: `# | Concept | Why it matters`. Keep it short (5–10 rows).
 
 > **NEVER use "Python pain" / "Rust fix" framing.** The old template framed Python as "broken" and Rust as the "fix." The new template simply shows the Python equivalent (when one exists) and explains what the learner will build in Rust. This is more respectful of the learner's Python background and more accurate — Python is fine for many tasks; Rust offers different tradeoffs.
 
 ```markdown
 # 🦀 Project Name — Python to Rust Workshop
-
-*Subtitle: one-line description of what the project builds.*
 
 > **Test-driven approach**: This project includes a Cargo project with progressive
 > unit tests. Each function in `src/lib.rs` starts as a `todo!()` stub. As you
@@ -355,6 +355,12 @@ The preamble is **always exactly three elements** and never more than ~20 lines:
 
 In this project you'll learn to build this in Rust — and along the way
 you'll discover **{concept1}**, **{concept2}**, and **{concept3}**.
+
+### Topics covered
+
+| # | Concept | Why it matters |
+|---|---------|----------------|
+| 1 | Concept name | One-line purpose |
 
 ---
 ```
@@ -406,11 +412,13 @@ Table listing the new concepts covered, with short descriptions and where they w
 
 ### 6.3 Important notes
 
-- **Every** project README must have the **compact preamble (§6.1)** before the `---` separator. The preamble is at most ~20 lines.
+- **Every** project README must have the **compact preamble (§6.1)** before the `---` separator. The preamble is at most ~25 lines.
 - The `## What Is This {Project/Concept}?` heading is **always project-specific** (e.g., "What is RAII?", "What is a ticket system?", "What is parallel CSV parsing?"). Never use the generic "Why This Project?".
 - **NEVER use "Python pain" / "Rust fix" framing.** Show the Python equivalent (when one exists) and explain what the learner will build in Rust. The transition line should list the Rust concepts that will be discovered.
-- The "Concept" sections in the body must come **before** the final assembly.
-- Every concept section must include a **Python comparison** — this is not optional.
+- The transition line **must** be present before the Topics covered table.
+- The Topics covered table uses 3 columns: `# | Concept | Why it matters`. Keep it short (5–10 rows).
+- Every concept section in the body must include a **Python comparison** — this is not optional.
+- Use consistent sub-headings within concept sections: `### Python comparison`, `### Explanation`, `### Applying to our project`.
 - For Type B projects (Cargo projects), skip Section 3 and instead explain the Rust code directly.
 - Use ASCII diagrams (`┌───┐` style) to illustrate ownership, borrowing, memory layout, data flow.
 - Include 2–3 exercises at the end with varying difficulty (easy / medium / hard).
