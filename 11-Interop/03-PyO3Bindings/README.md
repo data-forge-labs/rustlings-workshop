@@ -47,17 +47,6 @@ r.moving_average([1.0, 3.0, 5.0, 7.0], 2)  # [2.0, 4.0, 6.0]
 
 ---
 
-> **Test-driven approach**: This project includes a Cargo project with progressive
-> unit tests. Each function in `src/lib.rs` starts as a `todo!()` stub. As you
-> follow each section, replace `todo!()` with real code and run `cargo test` to
-> watch the pass count grow. Your goal: **all 12 tests pass**.
-
-> **Python build note**: To build the Python module, install `maturin`
-> (`pip install maturin`) and run `maturin develop --release --features python`
-> from this directory. The `cargo test` path runs without Python installed.
-
-**Goal**: Implement all functions in `src/lib.rs` to pass all 12 tests.
-
 
 ---
 

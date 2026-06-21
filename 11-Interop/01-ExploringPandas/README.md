@@ -5,6 +5,8 @@
 > follow each section, replace `todo!()` with real code and run `cd workshop && cargo test` to
 > watch the pass count grow. Your goal: **all 17 tests pass**.
 
+---
+
 ## What Is This Project?
 
 Building DataFrame operations from Rust primitives — understanding what pandas does under the hood.
@@ -31,7 +33,8 @@ pub struct FruitRecord {
 
 A CSV containing `"abc"` in the `price` column won't compile. Pandas-level expressiveness with C-level performance and Rust-level safety.
 
----
+In this project you'll learn to build this in Rust — and along the way
+you'll discover **serde**, **typed structs**, and **zero-copy operations**.
 
 ### Topics covered
 

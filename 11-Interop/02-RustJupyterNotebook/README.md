@@ -5,6 +5,8 @@
 > follow each section, replace `todo!()` with real code and run `cd workshop && cargo test` to
 > watch the pass count grow. Your goal: **all 21 tests pass**.
 
+---
+
 ## What Is This Project?
 
 Rust in Jupyter via `evcxr` — interactive Rust cells with rich HTML output.
@@ -31,9 +33,8 @@ let df = SimpleDataFrame::new(
 ":html " + &df.to_html()    // rich HTML table in the cell
 ```
 
-This project builds the Rust-side toolkit — `Matrix<T>`, `SimpleDataFrame`, `range_f64` — so you get Rust's performance with Jupyter's iterative workflow.
-
----
+In this project you'll learn to build this in Rust — and along the way
+you'll discover **`evcxr`**, **rich HTML output**, and **Jupyter integration**.
 
 ### Topics covered
 

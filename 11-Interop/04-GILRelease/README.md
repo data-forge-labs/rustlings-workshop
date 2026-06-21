@@ -45,6 +45,9 @@ fn cpu_intensive_sum(py: Python<'_>, n: u64) -> u64 {
 }
 ```
 
+In this project you'll learn to build this in Rust — and along the way
+you'll discover **GIL release**, **`allow_threads`**, and **parallel computation**.
+
 ### Topics covered
 
 | # | Concept | Why it matters |
@@ -56,11 +59,6 @@ fn cpu_intensive_sum(py: Python<'_>, n: u64) -> u64 {
 | 5 | Feature-gated FFI | Allow `cargo test` without Python |
 
 ---
-
-> **Test-driven approach**: This project includes a Cargo project with progressive
-> unit tests. Each function in `src/lib.rs` starts as a `todo!()` stub. As you
-> follow each section, replace `todo!()` with real code and run `cargo test` to
-> watch the pass count grow. Your goal: **all 11 tests pass**.
 
 > **Python build note**: `cargo test` runs without Python installed. To use the
 > GIL-release pattern with real Python, run `maturin develop --release --features
