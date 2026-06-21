@@ -2,6 +2,26 @@
 
 > **Test-driven approach**: This project includes a Cargo project with progressive unit tests. Each function in `workshop/src/lib.rs` starts as a `todo!()` stub. As you follow each section, replace `todo!()` with real code and run `cd workshop && cargo test` to watch the pass count grow. Your goal: **all 5 tests pass**.
 
+---
+
+## What Is This Project?
+
+Priority queues with `BinaryHeap` — always serve the highest-priority item first.
+
+### Python equivalent
+
+```python
+import heapq
+
+# Python's heapq is a min-heap; negate values for max-heap
+fruits = [(-3, "Fig"), (-1, "Apple"), (-2, "Banana")]
+heapq.heapify(fruits)
+best = heapq.heappop(fruits)  # (-3, 'Fig')
+```
+
+In this project you'll learn to build this in Rust — and along the way
+you'll discover **`BinaryHeap`**, **`Ord`/`PartialOrd` traits**, and **custom ordering**.
+
 ## Table of Contents
 
 1. [Introduction](#1-introduction)

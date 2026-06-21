@@ -2,22 +2,22 @@
 
 > **Test-driven approach**: This project includes a Cargo project with progressive unit tests. Each function in `workshop/src/lib.rs` starts as a `todo!()` stub. As you follow each section, replace `todo!()` with real code and run `cd workshop && cargo test` to watch the pass count grow. Your goal: **all 6 tests pass**.
 
-## Objective
+---
 
-This project demonstrates the practical use of Rust's HashMap data structure by creating a program that calculates and normalizes weights for programming languages based on their creation years. Through this project, you'll learn how to:
+## What Is This Project?
 
-- Create and manipulate HashMaps with complex data
-- Implement normalization algorithms
-- Work with mutable references
-- Handle date-based calculations
-- Perform statistical operations on collections
+Calculate and normalize weights for programming languages based on creation years — demonstrating `HashMap` with complex data.
 
-## Rust Concepts Covered
+### Python equivalent
 
-1. **HashMap**: Key-value storage with String keys
-2. **Mutable References**: Using values_mut for in-place updates
-3. **Normalization**: Implementing statistical normalization
-4. **Type Conversion**: Converting between numeric types
+```python
+languages = {"Rust": 2015, "Go": 2009, "Python": 1991}
+current_year = 2025
+weights = {lang: current_year - year for lang, year in languages.items()}
+```
+
+In this project you'll learn to build this in Rust — and along the way
+you'll discover **`HashMap`**, **mutable references**, **normalization**, and **type conversion**.
 5. **Iterators**: Working with map iterators
 6. **Error Handling**: Using unwrap_or for safe value access
 
