@@ -712,7 +712,7 @@ fn main() {
 
 ### What Is a Reference?
 
-A reference (`&T`) is a **non-owning pointer**. It lets you access data without taking ownership.
+A reference (`&T`) is a **non-owning pointer**. It lets you access data without taking ownership:
 
 ```rust
 let s = String::from("hello");
@@ -721,40 +721,18 @@ println!("{}", r);    // "hello"
 println!("{}", s);    // ✅ Still valid! s still owns the data
 ```
 
-### Visual: Reference in Memory
-
-```
-let s = String::from("Hey");
-let r = &s;
-
-Stack:
-┌──────────────────────────────────────┐
-│ s (String, 24 bytes):                │
-│   ptr:  ──────────────────┐          │
-│   len: 3                  │          │
-│   cap: 5                  │          │
-├──────────────────────────────────────┤
-│ r (&String, 8 bytes):     │          │
-│   ptr: ───────────────────┘          │
-└──────────────────────────────────────┘
-          │
-          v
-Heap:
-┌──────────────────────────────┐
-│ 'H' │ 'e' │ 'y' │   │   │   │
-└──────────────────────────────┘
-```
-
 ### Mutable References (`&mut`)
+
+To modify data through a reference, you need `&mut`:
 
 ```rust
 let mut s = String::from("hello");
-let r = &mut s;       // Mutable borrow
+let r = &mut s;        // Mutable borrow
 r.push_str(", world"); // Modify through the reference
-println!("{}", r);    // "hello, world"
+println!("{}", r);     // "hello, world"
 ```
 
-### The Borrowing Rules (MOST IMPORTANT)
+### The Borrowing Rules
 
 > **At any given time, you can have EITHER:**
 > - **One mutable reference, OR**
@@ -781,27 +759,9 @@ let r2 = &mut s;  // ❌ ERROR: can't borrow as mutable while immutable borrow e
 println!("{}", r1); // r1 is still live here
 ```
 
-### Why These Rules?
+These rules eliminate data races at compile time. You'll see this in action in [05-DataRace](../../05-Concurrency/03-DataRace/README.md).
 
-**Data races** — two threads reading and writing the same memory unpredictably — are eliminated at compile time.
-
-```python
-# Python — possible data race (GIL helps but doesn't eliminate)
-def update(list, index, value):
-    list[index] = value  # What if another thread is reading?
-
-# This runs fine until it doesn't
-```
-
-```rust
-// Rust — data race caught at compile time
-let mut data = vec![1, 2, 3];
-let r1 = &data;
-let r2 = &mut data;  // ❌ Compiler: "You already have an immutable borrow!"
-// If this compiled, r1 could see data change under it
-```
-
-### The Three Forms of `self` Revisited
+### The Three Forms of `self`
 
 ```rust
 impl Ticket {
