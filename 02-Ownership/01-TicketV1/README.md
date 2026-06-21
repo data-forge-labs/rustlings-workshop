@@ -50,23 +50,19 @@ def add_outlier(records):
 In this project you'll learn to build this in Rust — and along the way
 you'll discover **structs with `impl`**, **ownership and move semantics**, **borrowing (`&T` / `&mut T`)**, **stack vs heap**, and **the `Drop` trait**.
 
-## At a Glance
+### Topics covered
 
-| # | Concept | Rust | Python | Why it matters |
-|---|---------|------|--------|----------------|
-| 1 | Structs | `struct Ticket { title: String }` | `class` / `@dataclass` | Custom data types with explicit field layout |
-| 2 | Methods | `impl Ticket { fn title(&self) -> &String }` | methods inside `class` | Behavior attached to data type, with explicit `&self` |
-| 3 | Modules & Visibility | `pub`, `mod` | `_` naming convention | Encapsulation is compiler-enforced, not convention |
-| 4 | Ownership | one owner per value | GC at runtime | Memory safety *without* a garbage collector |
-| 5 | Move Semantics | `let b = a` invalidates `a` | `b = a` creates alias | Prevents accidental aliasing of mutable data |
-| 6 | References & Borrowing | `&T` (read) / `&mut T` (write) | pass-by-reference (any) | "Many readers OR one writer" enforced at compile time |
-| 7 | Stack vs Heap | primitives on stack, `String`/`Vec` on heap | all objects on heap | Stack data is faster; explicit layout helps pipelines |
-| 8 | Validation | `panic!` in `Ticket::new` | `raise ValueError` | "Make invalid states unrepresentable" — never accept a bad ticket |
-| 9 | Encapsulation | private fields + `pub fn new` | `_` convention | Construction must go through the validator |
-| 10 | Drop Trait | `Drop::drop()` runs at end of scope | `__del__` (non-deterministic) | Cleanup happens *immediately*, not whenever GC decides |
-| 11 | String Type | `String` (heap, growable, ptr+len+cap) | `str` (immutable) | Mutable growable text, but with explicit capacity |
-| 12 | Scopes | `{}` blocks trigger `Drop` | scope exit ≠ cleanup | Memory freed the moment a value is no longer needed |
-| 13 | Three `self` Forms | `self` / `&self` / `&mut self` | `self` only | Signature *shows* whether a method consumes, reads, or writes |
+| # | Concept | Why it matters |
+|---|---------|----------------|
+| 1 | Structs & methods | Custom data types with explicit field layout |
+| 2 | Modules & visibility | `pub`, `mod` — compiler-enforced encapsulation |
+| 3 | Ownership | One owner per value — no garbage collector |
+| 4 | Move semantics | `let b = a` invalidates `a` — prevents accidental aliasing |
+| 5 | References & borrowing | `&T` / `&mut T` — many readers OR one writer |
+| 6 | Stack vs heap | Primitives on stack, `String`/`Vec` on heap |
+| 7 | Validation | `panic!` — make invalid states unrepresentable |
+| 8 | Drop trait | Cleanup happens immediately at end of scope |
+| 9 | Three `self` forms | `self` / `&self` / `&mut self` — signature shows ownership |
 
 ---
 
@@ -642,17 +638,14 @@ fn main() {
 
 ## 10. Concept: Stack vs Heap — Where Data Lives
 
-### The Stack
+> **Recap**: You first learned about stack vs heap in [02-GuessGame §5](../../01-Foundations/02-GuessGame/README.md#5-concept-memory-allocation--stack-vs-heap). Here we go deeper: stack frames, `size_of`, and a step-by-step execution trace.
 
-- **LIFO** (Last In, First Out)
-- Super fast allocation/deallocation
-- Size must be known at compile time
-- Used for: local variables, function arguments
+### Stack Frames
+
+Each function call pushes a **frame** onto the stack. The frame holds local variables and arguments. When the function returns, the frame is popped:
 
 ```
-Stack layout when calling nested functions:
-
-    main() calls greet() calls format()
+main() calls greet() calls format()
 
     ┌──────────────────────┐
     │ format's frame       │
@@ -666,60 +659,22 @@ Stack layout when calling nested functions:
     ↑ stack pointer
 ```
 
-### The Heap
-
-- Dynamic memory — slower to allocate
-- Size can change at runtime
-- Used for: `String`, `Vec<T>`, boxed values
-- Must be freed when no longer needed
-
-```
-Heap layout for a String "Hello":
-
-Stack (3 × 8 bytes = 24 bytes):   Heap:
-┌──────────────────────────┐      ┌──────────────────┐
-│ String metadata          │      │ 'H' │ 'e' │ 'l'  │
-│ [ptr] ───────────────────────→  │ 'l' │ 'o' │      │
-│ [len: 5]                  │      └──────────────────┘
-│ [cap: 5]                  │
-└──────────────────────────┘
-```
-
-### Python vs Rust: Memory Management
-
-```python
-# Python — everything on heap, GC manages
-def process():
-    data = [1, 2, 3]  # List object on heap, refcounted
-    # ... Python tracks references, frees when refcount=0
-```
-
-```rust
-// Rust — stack by default, explicit heap
-fn process() {
-    let x = 42;                     // i32 — stack allocated
-    let s = String::from("hello");  // String — metadata on stack, chars on heap
-    let v = vec![1, 2, 3];          // Vec — metadata on stack, elements on heap
-    // When function returns, x, s, v all cleaned up (no GC needed)
-}
-```
-
 ### `size_of` — How Big Is Each Type?
 
 ```rust
 println!("i32:    {} bytes", std::mem::size_of::<i32>());      // 4
 println!("f64:    {} bytes", std::mem::size_of::<f64>());      // 8
 println!("bool:   {} bytes", std::mem::size_of::<bool>());     // 1
-println!("String: {} bytes", std::mem::size_of::<String>());   // 24 (on stack)
+println!("String: {} bytes", std::mem::size_of::<String>());   // 24 (on 64-bit)
 println!("&String:{} bytes", std::mem::size_of::<&String>());  // 8 (pointer size)
 println!("Vec<i32>:{} bytes", std::mem::size_of::<Vec<i32>>());// 24
 ```
 
 > A `String` is only 24 bytes on the stack — it's the **pointer to the heap** data, plus length and capacity.
 
-### Step-by-Step Execution Trace — Three-Column View
+### Step-by-Step Execution Trace
 
-The following trace shows how Rust's ownership model manages stack and heap memory line by line for a realistic data-engineering scenario.
+This trace shows how Rust's ownership model manages stack and heap memory line by line:
 
 ```rust
 fn main() {
