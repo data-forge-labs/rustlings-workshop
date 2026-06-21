@@ -1,6 +1,8 @@
-# Rust for Python Data Engineers â€” Vector Fruit Salad
+# Rust for Python Data Engineers — Vector Fruit Salad
 
 > **Test-driven approach**: This project includes a Cargo project with progressive unit tests. Each function in `workshop/src/lib.rs` starts as a `todo!()` stub. As you follow each section, replace `todo!()` with real code and run `cd workshop && cargo test` to watch the pass count grow. Your goal: **all 4 tests pass**.
+
+---
 
 ## What Is This Project?
 
@@ -14,6 +16,9 @@ fruits.append("Mango")
 fruits.sort()
 print(fruits[0])  # no compile-time type check
 ```
+
+In this project you'll learn to build this in Rust — and along the way
+you'll discover **`Vec<T>`**, **`rand` crate**, **random ranges**, and **in-place shuffling**.
 
 ### Topics covered
 
@@ -33,10 +38,10 @@ print(fruits[0])  # no compile-time type check
 1. [Project Overview](#1-project-overview)
 2. [Prerequisites](#2-prerequisites)
 3. [Running the Python Version](#3-running-the-python-version)
-4. [Concept: Vec Recap â€” Your Dynamic Collection](#4-concept-vec-recap--your-dynamic-collection)
-5. [Concept: The `rand` Crate â€” Random Numbers](#5-concept-the-rand-crate--random-numbers)
+4. [Concept: Vec Recap — Your Dynamic Collection](#4-concept-vec-recap--your-dynamic-collection)
+5. [Concept: The `rand` Crate — Random Numbers](#5-concept-the-rand-crate--random-numbers)
 6. [Concept: Working with External Crates (Cargo.toml)](#6-concept-working-with-external-crates-cargotoml)
-7. [Concept: SliceRandom â€” Shuffling and Choosing](#7-concept-slicerandom--shuffling-and-choosing)
+7. [Concept: SliceRandom — Shuffling and Choosing](#7-concept-slicerandom--shuffling-and-choosing)
 8. [Building Step by Step](#8-building-step-by-step)
 9. [Complete Code](#9-complete-code)
 10. [Exercises](#10-exercises)
@@ -50,7 +55,7 @@ We'll build a program that:
 1. Stores a list of fruits
 2. Randomly selects a subset
 3. Shuffles the selection
-4. Prints a "fruit salad" â€” a comma-separated list
+4. Prints a "fruit salad" — a comma-separated list
 
 ### Python Comparison
 
@@ -84,14 +89,14 @@ make_salad()
 ## 3. Running the Python Version
 
 ```python
-# project.py â€” run to see expected output
+# project.py — run to see expected output
 python project.py
 # Sample output: Fruit salad: Plum, Apple, Grape, Cherry
 ```
 
 ---
 
-## 4. Concept: Vec Recap â€” Your Dynamic Collection
+## 4. Concept: Vec Recap — Your Dynamic Collection
 
 ### Creating a Vec
 
@@ -144,7 +149,7 @@ let array: [f64; 4] = data.try_into().unwrap();
 
 ---
 
-## 5. Concept: The `rand` Crate â€” Random Numbers
+## 5. Concept: The `rand` Crate — Random Numbers
 
 ### Adding to Cargo.toml
 
@@ -212,7 +217,7 @@ rand = "0.10"
 |---|---|
 | `"0.8"` | `>=0.8.0` and `<0.9.0` (compatible with 0.8.x) |
 | `"0.8.5"` | Exactly `0.8.5` |
-| `"^0.8.5"` | Same as `"0.8.5"` â€” any 0.8.x >= 0.8.5 |
+| `"^0.8.5"` | Same as `"0.8.5"` — any 0.8.x >= 0.8.5 |
 | `">=1.0"` | Any version 1.0 or higher |
 | `"*"` | Any version (not recommended) |
 
@@ -228,7 +233,7 @@ rand = "0.10"
 
 ---
 
-## 7. Concept: SliceRandom â€” Shuffling and Choosing
+## 7. Concept: SliceRandom — Shuffling and Choosing
 
 ### The SliceRandom Trait
 
@@ -253,7 +258,7 @@ fruits.partial_shuffle(&mut rng, 2);
 
 ### Why `SliceRandom` Is a Trait
 
-In Rust, methods like `.shuffle()` and `.choose()` aren't built into `Vec` â€” they're added via a **trait** that you import:
+In Rust, methods like `.shuffle()` and `.choose()` aren't built into `Vec` — they're added via a **trait** that you import:
 
 ```rust
 // Without the import, this won't compile:
@@ -300,7 +305,7 @@ rand = "0.10"
 ### Step 3: Define the Fruit List
 
 ```rust
-// A constant array of fruit names â€” fixed at compile time
+// A constant array of fruit names — fixed at compile time
 const FRUITS: [&str; 10] = [
     "Orange", "Apple", "Banana", "Pear", "Grape",
     "Watermelon", "Strawberry", "Cherry", "Plum", "Peach",
@@ -370,7 +375,7 @@ use rand::rngs::ThreadRng;
 use rand::seq::SliceRandom;
 use rand::rng;
 
-/// The master list of available fruits â€” a fixed-size array
+/// The master list of available fruits — a fixed-size array
 const FRUITS: [&str; 10] = [
     "Orange", "Apple", "Banana", "Pear", "Grape",
     "Watermelon", "Strawberry", "Cherry", "Plum", "Peach",
@@ -425,7 +430,7 @@ Modify `select_random_fruits` so it never selects the same fruit twice:
 
 ```rust
 fn select_unique_fruits(count: usize, fruits: &[&str], rng: &mut ThreadRng) -> Vec<&str> {
-    // Your code here â€” hint: use a loop that checks for duplicates
+    // Your code here — hint: use a loop that checks for duplicates
     // Or: shuffle a copy of fruits and take the first `count`
 }
 ```
@@ -478,9 +483,9 @@ Stats: 3 fruits, 2 unique types
 ### Key Takeaway
 
 Vectors in Rust = Lists in Python. The core operations are the same, but Rust gives you:
-- **Type safety** â€” `Vec<&str>` can only hold string slices
-- **Explicit cloning** â€” no accidental duplicate of large data
-- **Trait-based extensions** â€” `.shuffle()` comes from importing `SliceRandom`, not built into Vec
+- **Type safety** — `Vec<&str>` can only hold string slices
+- **Explicit cloning** — no accidental duplicate of large data
+- **Trait-based extensions** — `.shuffle()` comes from importing `SliceRandom`, not built into Vec
 
 ### Next Project
 

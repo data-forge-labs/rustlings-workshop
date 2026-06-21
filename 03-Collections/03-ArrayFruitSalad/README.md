@@ -471,7 +471,7 @@ For any step:
    cargo new fruit_salad_array
    cd fruit_salad_array
    ```
-2. Update `Cargo.toml` (for Steps 2â€“4):
+2. Update `Cargo.toml` (for Steps 2“4):
    ```toml
    [dependencies]
    rand = "0.10"
