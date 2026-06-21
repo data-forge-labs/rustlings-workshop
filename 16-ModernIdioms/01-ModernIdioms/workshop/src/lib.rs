@@ -1,4 +1,4 @@
-use std::sync::{Arc, LazyLock};
+use std::sync::LazyLock;
 use std::collections::HashMap;
 
 /// Global configuration loaded lazily on first access.
@@ -57,12 +57,9 @@ pub fn parse_response(input: &str) -> ParsedResponse {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use std::sync::atomic::{AtomicUsize, Ordering};
 
     #[test]
     fn test_lazy_lock_initializes_once() {
-        static INIT_COUNT: AtomicUsize = AtomicUsize::new(0);
-        
         // First access initializes
         let config = get_config();
         assert_eq!(config.max_retries, 3);
