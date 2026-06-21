@@ -39,17 +39,15 @@ import pyarrow.parquet as pq
 └──────────────────────────────────────────────────────────────┘
 ```
 
-## At a Glance
+### Topics covered
 
-| # | Concept | Rust (mock) | Python | Why it matters |
-|---|---------|-------------|--------|----------------|
-| 1 | **Decoupled layout** | `IoUnit` + `Encoding` separate | N/A | I/O size ≠ encoding size |
-| 2 | **Dictionary scope** | per-IoUnit OR per-file | N/A | Tune for access pattern |
-| 3 | **Wasm decoder** | `rle_v1.wasm` embedded in file | N/A | Old engine decodes new encoding |
-| 4 | **Self-describing** | Footer has manifest | N/A | No external spec needed |
-| 5 | **Forward compatible** | Future encodings work today | N/A | Format evolves without EOL |
-| 6 | **Sandboxed decoding** | Linear memory isolation | N/A | Security for embedded code |
-| 7 | **Spec-as-software** | F3 = format + reference impl | N/A | No "implementation drift" |
+| # | Concept | Why it matters |
+|---|---------|----------------|
+| 1 | Decoupled layout | I/O size ≠ encoding size |
+| 2 | Dictionary scope | Per-IoUnit or per-file |
+| 3 | Wasm decoder | Old engine decodes new encoding |
+| 4 | Self-describing format | No external spec needed |
+| 5 | Forward compatible | Format evolves without EOL |
 
 ---
 

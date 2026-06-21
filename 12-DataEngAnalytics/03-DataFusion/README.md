@@ -32,16 +32,15 @@ let batches = ctx.sql("SELECT * FROM orders WHERE amount > 100").await?.collect(
 
 DataFusion is the query layer of distributed systems like **Ballista** (distributed DataFusion), **InfluxDB IOx** (the time-series database), and **Cube.js** (the analytics API platform). If your system needs to answer SQL queries, DataFusion is the kernel.
 
-## At a Glance
+### Topics covered
 
-| # | Concept | Rust | Python | Why it matters |
-|---|---------|------|--------|----------------|
-| 1 | Query engine | `SessionContext` | `pyspark.sql.SparkSession` | Embed a SQL planner in your app |
-| 2 | CSV registration | `ctx.register_csv` | `spark.read.csv` | Turn a file into a queryable table |
-| 3 | SQL execution | `ctx.sql("SELECT ...") | `spark.sql("...")` | Full SQL standard support |
-| 4 | Async API | `async/await` | n/a (sync in pyspark) | Composable with tokio |
-| 5 | Result collection | `.collect().await?` | `.toPandas()` | Returns Arrow `RecordBatch`es |
-| 6 | Parquet write | `ArrowWriter` | `df.write.parquet(...)` | Zero-copy Parquet output |
+| # | Concept | Why it matters |
+|---|---------|----------------|
+| 1 | `SessionContext` | Embed a SQL planner in your app |
+| 2 | CSV & Parquet registration | Turn files into queryable tables |
+| 3 | SQL execution | Full SQL standard support |
+| 4 | Async API | Composable with tokio |
+| 5 | Result collection | Returns Arrow `RecordBatch`es |
 
 ---
 

@@ -24,16 +24,15 @@ fn main() {
 }
 ```
 
-## At a Glance
+### Topics covered
 
-| # | Concept | Rust | Python | Why it matters |
-|---|---------|------|--------|----------------|
-| 1 | Facade | `log` crate | `logging` / `loguru` | Universal API; backend is pluggable |
-| 2 | Terminal backend | `env_logger` | `loguru.add(sys.stderr)` | Simple stdout/stderr output |
-| 3 | Structured backend | `tracing` | `structlog` | Span-based, async-aware logging |
-| 4 | Log macros | `info!`, `warn!`, `error!` | `logger.info(...)` | Log at a level in one macro call |
-| 5 | Level filtering | `RUST_LOG=info` | `LOG_LEVEL=INFO` env var | Configure verbosity at runtime |
-| 6 | `log_enabled!` | `log_enabled!(Level::Info)` | `logger.level` | Skip expensive log call work |
+| # | Concept | Why it matters |
+|---|---------|----------------|
+| 1 | `log` facade | Universal API; backend is pluggable |
+| 2 | `env_logger` | Simple stdout/stderr output |
+| 3 | `tracing` | Span-based, async-aware logging |
+| 4 | Log macros | `info!`, `warn!`, `error!` — one macro call |
+| 5 | Level filtering | `RUST_LOG=info` env var |
 
 ---
 

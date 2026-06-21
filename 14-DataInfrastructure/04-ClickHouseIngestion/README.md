@@ -31,18 +31,15 @@ cluster with thousands of small inserts per second.
 predictable throughput that the rest of the section (Project 08's
 unified pipeline) can rely on.
 
-## At a Glance
+### Topics covered
 
-| # | Concept | Rust | Python | Why it matters |
-|---|---------|------|--------|----------------|
-| 1 | HTTP + native URLs | `http_url` / `native_url` | `http://...` / `tcp://...` | Choose per workload |
-| 2 | Row structs | `OrderRow`, `EventRow` | `@dataclass` | Wire-format types |
-| 3 | DDL fragments | `DDL_ORDERS` | `CREATE TABLE` string | Centralized schema |
-| 4 | Status enum | `OrderStatus` | `enum.StrEnum` | Prevent `"cancelled"` vs `"canceled"` drift |
-| 5 | Batcher | `IngestBatcher` | `list` + `flush()` | Bounded memory + throughput |
-| 6 | Retry policy | `ClickHouseRetry` | `tenacity` | Predictable failure recovery |
-| 7 | Aggregations | `project_minute_buckets` | `pandas.resample("1min")` | Local rollup for testing |
-| 8 | SQL safety | `String` interpolation + `?fields` | f-strings | Avoid SQLi in known queries |
+| # | Concept | Why it matters |
+|---|---------|----------------|
+| 1 | Row structs | Wire-format types |
+| 2 | Status enum | Prevent string drift |
+| 3 | Batcher | Bounded memory + throughput |
+| 4 | Retry policy | Predictable failure recovery |
+| 5 | Aggregations | Local rollup for testing |
 
 ---
 

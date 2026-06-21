@@ -34,15 +34,14 @@ let sig = key.sign(b"message");
 key.verifying_key().verify(b"message", &sig).is_ok();
 ```
 
-## At a Glance
+### Topics covered
 
-| # | Concept | Rust | Python | Why it matters |
-|---|---------|------|--------|----------------|
-| 1 | Ed25519 signatures | `ed25519-dalek` | `cryptography` | Modern, fast, deterministic |
-| 2 | Keypair | `SigningKey::generate` | `Ed25519PrivateKey.generate` | 32-byte private key |
-| 3 | Sign | `key.sign(msg)` | `key.sign(msg)` | Returns 64-byte signature |
-| 4 | Verify | `key.verify(msg, sig)` | `pub.verify(msg, sig)` | Returns `Result<(), Error>` |
-| 5 | Hex serialization | `hex::encode` | `binascii.hexlify` | URL-safe transport |
+| # | Concept | Why it matters |
+|---|---------|----------------|
+| 1 | Ed25519 signatures | Modern, fast, deterministic |
+| 2 | Keypair generation | 32-byte private key |
+| 3 | Sign & verify | 64-byte signature, `Result<(), Error>` |
+| 4 | Hex serialization | URL-safe transport |
 
 ---
 

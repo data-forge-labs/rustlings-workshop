@@ -38,18 +38,15 @@ mock.expect_fetch()
 assert_eq!(run_etl(&mock, "SELECT 1").unwrap(), 1);
 ```
 
-## At a Glance
+### Topics covered
 
-| # | Concept | Rust | Python | Why it matters |
-|---|---------|------|--------|----------------|
-| 1 | `#[automock]` | `mockall` proc macro | `unittest.mock.MagicMock` | Generate a mock from a trait |
-| 2 | `&dyn Trait` | dynamic dispatch | `Protocol` with `runtime_checkable` | Pass the mock where a real source is expected |
-| 3 | Expectations | `mock.expect_xxx().returning(...)` | `mock.method.return_value = ...` | One fluent builder per call |
-| 4 | Argument matchers | `predicate::eq(s)` | `mock.method.assert_called_with(s)` | Constrain call args |
-| 5 | `return_const` | `return_const(true)` | `side_effect = lambda: True` | Constant returns |
-| 6 | Error simulation | `returning(\|_\| Err(...))` | `side_effect = MyError` | Test error paths without breaking prod |
-| 7 | Multiple calls | chain `.times(2).returning(...)` | `mock.method.call_count` | Count invocations |
-| 8 | `with(...).returning(...)` | mockall fluent | `mock.method.return_value` per-arg | Different return for each call |
+| # | Concept | Why it matters |
+|---|---------|----------------|
+| 1 | `#[automock]` | Generate a mock from a trait |
+| 2 | `&dyn Trait` | Dynamic dispatch for mock injection |
+| 3 | Expectations | Fluent builder per call |
+| 4 | Argument matchers | Constrain call args |
+| 5 | Error simulation | Test error paths without breaking prod |
 
 ---
 

@@ -19,18 +19,17 @@ def get_first(items):
 
 > **Note:** Move/Copy semantics recap: see [01-TicketV1 §9 — Ownership](../01-TicketV1/README.md#9-concept-ownership--the-key-to-rust).
 
-## At a Glance
+### Topics covered
 
-| # | Concept | Rust | Python | Why it matters |
-|---|---------|------|--------|----------------|
-| 1 | Lifetime Annotations | `'a` in `fn f<'a>(x: &'a T) -> &'a T` | Nothing (GC) | Connect lifetimes of references *at compile time* — zero runtime cost |
-| 2 | Lifetime Elision | compiler inference | Nothing | Auto-infer lifetimes in common patterns — no boilerplate |
-| 3 | Struct Lifetime Params | `struct Bookmark<'a> { title: &'a str }` | Nothing | Structs cannot outlive the data they borrow |
-| 4 | Move Semantics | non-`Copy` types transfer ownership | `b = a` creates alias | See TicketV1 §9 recap |
-| 5 | Copy Semantics | `Copy` types bitwise-duplicate | implicit for immutable primitives | See TicketV1 §9 recap |
-| 6 | `&str` (String Slice) | `&str` = `ptr + len` borrowed UTF-8 | `str` (always owned) | Borrow slices of a `String` without copying |
-| 7 | `'static` Lifetime | `'static` references live for the program | global / class-level | Bound on reference validity, not a guarantee of indefinite life |
-| 8 | Borrow Checker | compiler analysis | Nothing (runtime checks) | Validates all references — eliminates use-after-free at compile time |
+| # | Concept | Why it matters |
+|---|---------|----------------|
+| 1 | Lifetime annotations | `'a` — connect lifetimes at compile time, zero runtime cost |
+| 2 | Lifetime elision | Compiler infers lifetimes in common patterns |
+| 3 | Struct lifetime params | Structs cannot outlive the data they borrow |
+| 4 | Move & copy semantics | Non-`Copy` types transfer ownership; `Copy` types bitwise-duplicate |
+| 5 | `&str` (string slice) | Borrow slices of a `String` without copying |
+| 6 | `'static` lifetime | References that live for the program duration |
+| 7 | Borrow checker | Validates all references — eliminates use-after-free at compile time |
 
 ---
 

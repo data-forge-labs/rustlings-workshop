@@ -40,20 +40,16 @@ A `Future<Output = Result<(i32, i64), (KafkaError, OwnedMessage)>>` return
 type forces the caller to handle the error path, and a `DedupCache` struct
 keeps idempotency logic in your hands — not in a global.
 
-## At a Glance
+### Topics covered
 
-| # | Concept | Rust | Python | Why it matters |
-|---|---------|------|--------|----------------|
-| 1 | rdkafka client | `rdkafka::FutureProducer` / `StreamConsumer` | `confluent_kafka.Producer` / `Consumer` | Production-grade broker client |
-| 2 | Idempotent producer | `enable.idempotence=true` | `config["enable.idempotence"]="true"` | No duplicate writes on retry |
-| 3 | Manual commit | `commit_message(..., CommitMode::Async)` | `consumer.commit(msg)` | You control when offsets advance |
-| 4 | Tokio async | `tokio::main`, `.await` | `asyncio.run` | One runtime, no callback hell |
-| 5 | Streaming consumer | `StreamConsumer` + `recv().await` | poll-loop | Backpressure-aware |
-| 6 | FIFO dedup | `VecDeque<Uuid>` | `collections.deque` | At-least-once -> effectively-once |
-| 7 | FNV-1a partitioner | `partition_for(&Uuid, n)` | hashlib.fnv1a_64 | Stable key->partition mapping |
-| 8 | Outbox pattern | `OutboxRow -> EventEnvelope` | row + dict | Transactional event publishing |
-| 9 | Tracing | `tracing::info!` | `logging.info` | Structured logs in async land |
-| 10 | Docker broker | `kafka:9092` | localhost:9092 | Reproducible infra |
+| # | Concept | Why it matters |
+|---|---------|----------------|
+| 1 | `rdkafka` producer & consumer | Production-grade broker client |
+| 2 | Idempotent producer | No duplicate writes on retry |
+| 3 | Manual commit | You control when offsets advance |
+| 4 | Tokio async | One runtime, no callback hell |
+| 5 | FIFO dedup | At-least-once → effectively-once |
+| 6 | Outbox pattern | Transactional event publishing |
 
 ---
 

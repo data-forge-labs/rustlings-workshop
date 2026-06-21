@@ -45,18 +45,15 @@ fn cpu_intensive_sum(py: Python<'_>, n: u64) -> u64 {
 }
 ```
 
-## At a Glance
+### Topics covered
 
-| # | Concept | Rust | Python | Why it matters |
-|---|---------|------|--------|----------------|
-| 1 | GIL | CPython interpreter lock | `sys.setswitchinterval` | The thing `allow_threads` releases |
-| 2 | `Python::allow_threads` | `pyo3` API | n/a | The call that releases the GIL |
-| 3 | `std::thread` | Native OS thread | `threading.Thread` | Rust threads aren't limited by the GIL |
-| 4 | `available_parallelism` | `std::thread` | `os.cpu_count()` | Detect the worker's core count |
-| 5 | GIL contention factor | `(serial / parallel)` | n/a | Quantify how badly the GIL serialises work |
-| 6 | Long-running CPU | Rust loop | Python `for` | The work that needs the GIL released |
-| 7 | Feature-gated FFI | `pyo3` (optional) | setuptools | Allow `cargo test` without Python |
-| 8 | Pure-Rust split | lib.rs without `#[cfg]` | n/a | Same logic, Rust tests + Python caller |
+| # | Concept | Why it matters |
+|---|---------|----------------|
+| 1 | GIL & `allow_threads` | The call that releases the GIL |
+| 2 | `std::thread` | Rust threads aren't limited by the GIL |
+| 3 | `available_parallelism` | Detect the worker's core count |
+| 4 | GIL contention factor | Quantify how badly the GIL serialises work |
+| 5 | Feature-gated FFI | Allow `cargo test` without Python |
 
 ---
 

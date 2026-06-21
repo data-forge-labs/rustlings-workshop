@@ -33,31 +33,18 @@ for _ in 0..10 {
 
 This is the core of Rust's *fearless concurrency* — concurrent code that compiles is correct, with no runtime race surprises.
 
-## At a Glance
+### Topics covered
 
-| # | Concept | Rust | Python | Why it matters |
-|---|---------|------|--------|----------------|
-| 1 | Thread Spawning | `thread::spawn` | `threading.Thread` | Create parallel execution paths |
-| 2 | Move Closures | `move \|\|` | N/A (implicit) | Transfer ownership into a thread |
-| 3 | Shared Ownership | `Arc<T>` | N/A (GC handles this) | Thread-safe reference counting |
-| 4 | Mutual Exclusion | `Mutex<T>` | `threading.Lock` | Exclusive write access — compiler enforces |
-| 5 | Read-Write Lock | `RwLock<T>` | N/A in stdlib | Multiple readers OR one writer |
-| 6 | Condition Variable | `Condvar` | `threading.Condition` | Signal between threads |
-| 7 | Scoped Threads | `thread::scope` | N/A | Borrow data across threads without `move` |
-| 8 | Data Race Prevention | ownership + `Send`/`Sync` | None (runtime) | Concurrency bugs caught at compile time |
-| 9 | Automatic Unlock | `MutexGuard`'s `Drop` | `with lock:` | Lock released the moment the guard goes out of scope |
-
-## Concepts at a Glance
-
-- **Thread Spawning (`thread::spawn`)**: Creates a real OS thread. Unlike Python's `threading.Thread`, there is no GIL — threads run in true parallel. The closure captures owned data via `move`.
-- **Move Closures (`move ||`)**: Transfers ownership of captured variables into the thread's closure. Python captures references implicitly; Rust's `move` makes the transfer explicit and checkable.
-- **Shared Ownership (`Arc<T>`)**: Atomic reference counting enables multiple threads to share ownership of data. Python's GC handles this invisibly; `Arc` makes sharing explicit with predictable performance.
-- **Mutual Exclusion (`Mutex<T>`)**: Ensures only one thread accesses data at a time. Python's `threading.Lock` is the equivalent, but Rust's compiler forces you to use it when shared mutation is involved.
-- **Read-Write Lock (`RwLock<T>`)**: Allows many concurrent readers or one exclusive writer. Python has no stdlib `RwLock` — `threading.Lock` blocks all readers even when no write is happening.
-- **Condition Variable (`Condvar`)**: Lets threads wait for a condition and be notified when it changes. Python's `threading.Condition` is the same concept but with less ergonomic API.
-- **Scoped Threads (`thread::scope`)**: A unique Rust feature that lets threads borrow references from the parent, with the scope guaranteeing all threads finish before the scope exits.
-- **Data Race Prevention**: Rust's ownership system guarantees that data races cannot occur at compile time. The `Send` and `Sync` traits encode thread safety into the type system.
-- **Automatic Unlock (`MutexGuard` Drop)**: Rust's `Drop` trait automatically releases the mutex when the guard goes out of scope. No `finally` blocks needed — Python's `with` statement achieves the same but requires manual pairing.
+| # | Concept | Why it matters |
+|---|---------|----------------|
+| 1 | Thread spawning | Create parallel execution paths |
+| 2 | Move closures | Transfer ownership into a thread |
+| 3 | `Arc<T>` | Thread-safe reference counting |
+| 4 | `Mutex<T>` | Exclusive write access — compiler enforces |
+| 5 | `RwLock<T>` | Multiple readers OR one writer |
+| 6 | Scoped threads | Borrow data across threads without `move` |
+| 7 | Data race prevention | Ownership + `Send`/`Sync` — caught at compile time |
+| 8 | Automatic unlock | `MutexGuard`'s `Drop` — no `finally` needed |
 
 ---
 

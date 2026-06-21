@@ -34,17 +34,16 @@ import pyo3_bindings_workshop as r
 r.moving_average([1.0, 3.0, 5.0, 7.0], 2)  # [2.0, 4.0, 6.0]
 ```
 
-## At a Glance
+### Topics covered
 
-| # | Concept | Rust | Python | Why it matters |
-|---|---------|------|--------|----------------|
-| 1 | `#[pyfunction]` macro | `pyo3` | Cython `cdef` | Declare a function callable from Python |
-| 2 | `#[pymodule]` macro | `pyo3` | Cython module init | Register functions in the Python module |
-| 3 | Feature-gated FFI | `[features] python = ["dep:pyo3"]` | setuptools extras | Keep `cargo test` independent of Python headers |
-| 4 | `cdylib` crate type | `crate-type = ["cdylib"]` | Cython `.so` | Produce a `.so`/`.pyd` Python can dlopen |
-| 5 | Pure-Rust split | lib.rs without `#[cfg]` | n/a | Same logic, two consumers: Python + Rust tests |
-| 6 | `maturin develop` | `cargo` workflow | `pip install -e .` | One-command build + install of a Rust extension |
-| 7 | Vectorised slices | `&[f64]` ↔ `Vec<f64>` | NumPy `np.float64` | Natural interop with Python lists and arrays |
+| # | Concept | Why it matters |
+|---|---------|----------------|
+| 1 | `#[pyfunction]` macro | Declare a function callable from Python |
+| 2 | `#[pymodule]` macro | Register functions in the Python module |
+| 3 | Feature-gated FFI | Keep `cargo test` independent of Python headers |
+| 4 | `cdylib` crate type | Produce a `.so`/`.pyd` Python can dlopen |
+| 5 | Pure-Rust split | Same logic, two consumers: Python + Rust tests |
+| 6 | `maturin develop` | One-command build + install of a Rust extension |
 
 ---
 

@@ -28,20 +28,19 @@ def parse_status(s):
 
 — now has the error path in its type signature, and `match` forces the caller to handle it.
 
-## At a Glance
+### Topics covered
 
-| # | Concept | Rust | Python | Why it matters |
-|---|---------|------|--------|----------------|
-| 1 | Enums | `enum Status { Open, InProgress, ... }` | `class Status(Enum)` | Type-safe named variants — not integers, not strings |
-| 2 | `match` | `match val { A => ..., B => ... }` | `match`/`case` (3.10+) | **Exhaustive** — compiler verifies every variant is handled |
-| 3 | Enums with Data | `enum Source { Csv(String), Db { host, port } }` | `Union` types / dataclass variants | Variants carry values; tag + data in compact layout |
-| 4 | `if let` | `if let Status::Open = s { ... }` | `isinstance` check | Concise single-pattern match |
-| 5 | `Option<T>` | `Some(T)` / `None` | `Optional[T]` / `None` | Nullable values — compiler forces you to handle `None` |
-| 6 | `Result<T, E>` | `Ok(T)` / `Err(E)` | function returns or raises | Error path in the return type — caller must handle both |
-| 7 | Custom Error Types | `enum TicketError { EmptyTitle, TitleTooLong { ... } }` | custom `Exception` subclasses | Structured, matchable errors with rich data |
-| 8 | `?` Operator | `let x = func()?;` | `raise` (implicit) | Concise error propagation; visible in the code |
-| 9 | `thiserror` | `#[derive(Error)]` on your enum | custom exception class | Ergonomic `Display` + `Error` impls for libraries |
-| 10 | `anyhow` | `anyhow::Result<T>` + `.with_context(...)` | `raise Exception("msg")` | App-level errors with context; not for libraries |
+| # | Concept | Why it matters |
+|---|---------|----------------|
+| 1 | Enums | Type-safe named variants — not integers, not strings |
+| 2 | `match` | Exhaustive — compiler verifies every variant is handled |
+| 3 | Enums with data | Variants carry values; tag + data in compact layout |
+| 4 | `if let` | Concise single-pattern match |
+| 5 | `Option<T>` | Nullable values — compiler forces you to handle `None` |
+| 6 | `Result<T, E>` | Error path in the return type — caller must handle both |
+| 7 | Custom error types | Structured, matchable errors with rich data |
+| 8 | `?` operator | Concise error propagation |
+| 9 | `thiserror` & `anyhow` | Ergonomic error impls for libraries and apps |
 
 ---
 

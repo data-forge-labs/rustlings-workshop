@@ -43,17 +43,15 @@ pub fn dijkstra(adj: &HashMap<usize, Vec<(usize, f64)>>, start: usize) -> HashMa
 }
 ```
 
-## At a Glance
+### Topics covered
 
-| # | Concept | Rust | Python | Why it matters |
-|---|---------|------|--------|----------------|
-| 1 | Weighted edge | `struct WeightedEdge` + derive | `@dataclass` | Model edge with from, to, weight |
-| 2 | Weighted adjacency list | `HashMap<usize, Vec<(usize, f64)>>` | `defaultdict(list[tuple])` | Store weighted graph |
-| 3 | Min-heap priority queue | `BinaryHeap<Reverse<(f64, usize)>>` | `heapq` | Always expand closest unvisited node |
-| 4 | Dijkstra relaxation | distance compare + update | `nx.shortest_path` | Compute shortest distances |
-| 5 | Path reconstruction | `prev` map, walk backwards | `prev` dict + reverse | Reconstruct actual path nodes |
-| 6 | Path weight computation | `windows(2)` over edges | `zip(path, path[1:])` | Sum edge weights along a path |
-| 7 | Path formatting | `.map().join(" -> ")` | `" -> ".join(map(str, path))` | Display path as readable string |
+| # | Concept | Why it matters |
+|---|---------|----------------|
+| 1 | Weighted adjacency list | Store weighted graph |
+| 2 | Min-heap priority queue | Always expand closest unvisited node |
+| 3 | Dijkstra relaxation | Compute shortest distances |
+| 4 | Path reconstruction | Walk backwards via `prev` map |
+| 5 | Path formatting | Display path as readable string |
 
 ---
 

@@ -48,31 +48,16 @@ Same struct parses TOML, JSON, YAML, or env vars. Missing or wrong-type fields b
 
 Swap `FileFormat::Toml` to `Json` or `Yaml` — the code stays the same. Environment variable overrides are a single `.set_override()` call. All type mismatches are caught at deserialization time, not as runtime type errors.
 
-## At a Glance
+### Topics covered
 
-| # | Concept | Rust | Python | Why it matters |
-|---|---------|------|--------|----------------|
-| 1 | Serde Deserialize | `#[derive(Deserialize)]` | pydantic `BaseModel` | Type-safe config structs |
-| 2 | Config builder | `config::Config::builder()` | `configparser.ConfigParser` | Construct layered configuration |
-| 3 | `FileFormat` enum | `FileFormat::Toml` | `toml.load()` / `json.load()` | Parse TOML, JSON, or YAML uniformly |
-| 4 | Source layering | `.add_source(File::from_str(...))` | manual `{**d1, **d2}` | Stack config sources with priority |
-| 5 | Env overrides | `.set_override(key, value)` | `os.environ.get()` + manual | Apply env on top of file config |
-| 6 | `try_deserialize` | `.try_deserialize::<AppConfig>()` | pydantic validation | Convert parsed config to typed struct |
-| 7 | Match fallback | `match key { ... _ => "" }` | `config.get(key, default)` | Return field values with default |
-
----
-
-## Concepts at a Glance
-
-**1. Serde Deserialize derive** — Python's pydantic `BaseModel` validates at runtime during construction. Rust's `#[derive(Deserialize)]` generates a parser at compile time — the struct definition *is* the schema. Mismatched fields produce immediate deserialization errors, not silent NaN/null values.
-
-**2-3. Config builder & FileFormat** — Python uses separate libraries per format (toml, json, yaml). Rust's `Config::builder()` works identically for all formats — only the `FileFormat::*` variant changes. One pattern, many backends.
-
-**4. Source layering** — Python requires manual `{**file_config, **env_config}` dict merging. Rust's `.add_source()` stacks sources — later sources override earlier ones. Add a file, then env vars, then CLI args — all with the same builder API.
-
-**5. Environment overrides** — Python's `os.environ.get()` returns strings needing manual type conversion. Rust's `.set_override(key, value)` feeds into the same deserialization pipeline — type conversion happens automatically via serde.
-
-**6-7. try_deserialize & fallback** — pydantic validates types at model construction. Rust's `try_deserialize::<AppConfig>()` is equivalent: it converts unstructured config into a typed struct, failing fast on mismatches. The `match` fallback in `get_or_default` mirrors Python's `config.get(key, default)`.
+| # | Concept | Why it matters |
+|---|---------|----------------|
+| 1 | `#[derive(Deserialize)]` | Type-safe config structs |
+| 2 | Config builder | Construct layered configuration |
+| 3 | `FileFormat` enum | Parse TOML, JSON, or YAML uniformly |
+| 4 | Source layering | Stack config sources with priority |
+| 5 | Env overrides | Apply env on top of file config |
+| 6 | `try_deserialize` | Convert parsed config to typed struct |
 
 ---
 

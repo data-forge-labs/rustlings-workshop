@@ -33,18 +33,15 @@ for word in text.split():
     counts[word] = counts.get(word, 0) + 1
 ```
 
-## At a Glance
+### Topics covered
 
-| # | Concept | Rust | Python | Why it matters |
-|---|---------|------|--------|----------------|
-| 1 | `HashMap` | `HashMap<K, V>` | `dict` | Hash-based key-value storage with typed K, V |
-| 2 | Insert | `.insert(k, v)` | `d[k] = v` | Returns `Option<V>` (old value) |
-| 3 | Safe get | `.get(k)` → `Option<&V>` | `d.get(k)` → `None` or value | No `KeyError` — the type forces a check |
-| 4 | Entry API | `.entry(k).or_insert(0)` | `d.setdefault(k, 0)` | Insert-if-missing in a single lookup |
-| 5 | Mutable entry | `.entry(k).or_insert_with(default)` | N/A | Lazy default — only computed if missing |
-| 6 | Iteration | `for (k, v) in &map` | `for k, v in d.items()` | Borrowed iteration, no moves |
-| 7 | Sorting by value | Convert to `Vec<(K, V)>` then `sort_by` | `sorted(d.items(), key=...)` | Rust's `sort_by_key` / `sort_by` |
-| 8 | `BTreeMap` | `BTreeMap<K, V>` | `sortedcontainers.SortedDict` | Sorted iteration, same API as `HashMap` |
+| # | Concept | Why it matters |
+|---|---------|----------------|
+| 1 | `HashMap<K, V>` | Hash-based key-value storage |
+| 2 | Entry API | Insert-if-missing in a single lookup |
+| 3 | Iteration | Borrowed iteration, no moves |
+| 4 | Sorting by value | Convert to `Vec` then `sort_by` |
+| 5 | `BTreeMap<K, V>` | Sorted iteration, same API as `HashMap` |
 
 ---
 

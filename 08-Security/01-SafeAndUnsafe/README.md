@@ -26,15 +26,14 @@ unsafe { println!("{}", *ptr); }          // unsafe block required to dereferenc
 
 The `unsafe` keyword is auditable: a `grep "unsafe "` shows every escape hatch in the codebase.
 
-## At a Glance
+### Topics covered
 
-| # | Concept | Rust | Python | Why it matters |
-|---|---------|------|--------|----------------|
-| 1 | Safe Rust guarantees | compiler-enforced | runtime/GC-enforced | No null, no overflow, no use-after-free |
-| 2 | `unsafe` keyword | `unsafe { ... }` | N/A | Opt out of safety in an audited block |
-| 3 | Raw pointers | `*const T`, `*mut T` | N/A | C interop, FFI, custom allocators |
-| 4 | `split_at_mut` | `slice::split_at_mut` | N/A | Get two non-overlapping `&mut` slices safely |
-| 5 | When to use `unsafe` | FFI, hot paths | N/A | Hardware access, zero-copy parsers |
+| # | Concept | Why it matters |
+|---|---------|----------------|
+| 1 | Safe Rust guarantees | No null, no overflow, no use-after-free |
+| 2 | `unsafe` keyword | Opt out of safety in an audited block |
+| 3 | Raw pointers | C interop, FFI, custom allocators |
+| 4 | `split_at_mut` | Get two non-overlapping `&mut` slices safely |
 
 ---
 

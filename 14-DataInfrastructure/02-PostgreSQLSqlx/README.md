@@ -27,18 +27,16 @@ verification** against a live database (or `sqlx-cli`-managed cache). You
 *cannot* ship a query with a typo or a missing column. And `sqlx` is
 async-first, so it composes with `tokio` and `axum` without a GIL.
 
-## At a Glance
+### Topics covered
 
-| # | Concept | Rust | Python | Why it matters |
-|---|---------|------|--------|----------------|
-| 1 | Async connection pool | `sqlx::PgPool` | `asyncpg.create_pool` | Bounded concurrency, auto-reconnect |
-| 2 | Compile-time SQL check | `sqlx::query!` macro | n/a (runtime) | Type-safe queries |
-| 3 | Transaction | `pool.begin() -> Tx` | `async with conn.transaction()` | Atomic business writes |
-| 4 | Outbox table | `dataeng.outbox` | `outbox` table | Transactional event publishing |
-| 5 | Row converters | `Order::from_row` | `dataclass.from_dict` | Domain types from DB rows |
-| 6 | Batcher | `OutboxBatcher` | `asyncio.Queue` | Buffer rows for batched publish |
-| 7 | Exponential backoff | `next_retry_delay_ms` | `tenacity` | Retry policy for failed publishes |
-| 8 | NUMERIC -> f64 | `BigDecimal` -> `f64` | `decimal.Decimal` | Avoid float drift on money |
+| # | Concept | Why it matters |
+|---|---------|----------------|
+| 1 | Async connection pool | Bounded concurrency, auto-reconnect |
+| 2 | Compile-time SQL check | Type-safe queries |
+| 3 | Transaction | Atomic business writes |
+| 4 | Outbox table | Transactional event publishing |
+| 5 | Row converters | Domain types from DB rows |
+| 6 | Exponential backoff | Retry policy for failed publishes |
 
 ---
 

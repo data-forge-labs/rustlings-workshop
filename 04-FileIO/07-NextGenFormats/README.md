@@ -24,19 +24,17 @@ let batch: RecordBatch = dataset
     .await?;  // 100x faster than Parquet row-group scan
 ```
 
-## At a Glance
+### Topics covered
 
-| # | Concept | Rust | Python | Why it matters |
-|---|---------|------|--------|----------------|
-| 1 | **Parquet's row-group trap** | `parquet::row_group` | `pd.read_parquet` | Random access = read full page, throw away 99% |
-| 2 | **Structural encoding** (Lance) | `lance::Dataset` | `lance.file.dataset` | Adaptive encoding per mini-block → O(1) seeks |
-| 3 | **Cascading compression** (Vortex) | `vortex::file` | `vortex.array.encode` | Per-chunk codec: RLE here, bit-pack there, FSST there |
-| 4 | **FlatBuffer metadata** (Nimble, Vortex) | FlatBuffers schema | N/A | Zero-parse, O(1) column access in wide tables |
-| 5 | **Wasm decoders** (F3) | `fff-poc` (research) | N/A | Forward compatibility: new encodings work on old engines |
-| 6 | **Vector search in-file** (Lance) | `lance::vector::IndexType::Vector` | `lancedb.create_index` | HNSW index embedded in column chunks |
-| 7 | **Zero-copy versioning** (Lance) | `Dataset::checkout(version)` | `dataset.tags["v3"]` | ACID, time-travel, schema evolution without rewrites |
-| 8 | **Partitioned warehouse** | `lance::write` + `vortex::write` | `pyarrow.parquet.write_to_dataset` | Hive-style partition dirs (year=/month=/day=) |
-| 9 | **Compaction** | merge small files → big | `pyiceberg.rewrite_data_files` | Reduce file count to speed up query planning |
+| # | Concept | Why it matters |
+|---|---------|----------------|
+| 1 | Parquet's row-group trap | Random access = read full page, throw away 99% |
+| 2 | Structural encoding (Lance) | Adaptive encoding per mini-block → O(1) seeks |
+| 3 | Cascading compression (Vortex) | Per-chunk codec selection |
+| 4 | FlatBuffer metadata | Zero-parse, O(1) column access |
+| 5 | Wasm decoders (F3) | Forward compatibility: new encodings work on old engines |
+| 6 | Vector search in-file (Lance) | HNSW index embedded in column chunks |
+| 7 | Zero-copy versioning (Lance) | ACID, time-travel, schema evolution |
 
 ---
 

@@ -46,34 +46,19 @@ pub(crate) async fn run() -> Result<(), Box<dyn std::error::Error>> {
 
 Single-threaded Tokio with `Rc<RefCell<>>` gives zero-lock shared state — matching Redis's own design — without needing `Arc` or `Mutex`.
 
-## At a Glance
+### Topics covered
 
-| # | Concept | Rust | Python | Why it matters |
-|---|---------|------|--------|----------------|
-| 1 | Async/await | `tokio` runtime | `asyncio` | Concurrent TCP I/O without threads |
-| 2 | TCP networking | `tokio::net::TcpListener` | `asyncio.start_server` | Accept and manage client connections |
-| 3 | Recursive enum | `RespValue::Array(Vec<RespValue>)` | `Union[str, int, list, None]` | Model nested RESP protocol variants |
-| 4 | Pattern matching | `match first { b'*' => ... }` | `if/elif` / `match/case` | Parse wire protocol by first byte |
-| 5 | `From` trait | `impl From<&str> for CommandType` | dict lookup with `.upper()` | Case-insensitive command parsing |
-| 6 | `Rc<RefCell>` | `Rc<RefCell<Store>>` | mutable object (GIL) | Single-threaded shared state, zero locks |
-| 7 | `HashMap` store | `HashMap<String, StoreValue>` | `dict` | In-memory key-value data engine |
-| 8 | `BytesMut` | `bytes::BytesMut` | `bytearray` | Zero-copy byte buffer for network I/O |
-| 9 | `chrono` | `chrono::DateTime<Utc>` | `datetime.datetime` | TTL expiry timestamp tracking |
-| 10 | `spawn_local` | `task::spawn_local` | `asyncio.create_task` | Run `!Send` futures on the same thread |
+| # | Concept | Why it matters |
+|---|---------|----------------|
+| 1 | Async/await + Tokio | Concurrent TCP I/O without threads |
+| 2 | TCP networking | Accept and manage client connections |
+| 3 | Recursive enum | Model nested RESP protocol variants |
+| 4 | `From` trait | Case-insensitive command parsing |
+| 5 | `Rc<RefCell>` | Single-threaded shared state, zero locks |
+| 6 | `BytesMut` | Zero-copy byte buffer for network I/O |
+| 7 | `spawn_local` | Run `!Send` futures on the same thread |
 
 ---
-
-## Concepts at a Glance
-
-**1-2. Async/await with Tokio** — Python's `asyncio` and Rust's `tokio` both provide non-blocking I/O. Tokio defaults to multi-threaded work-stealing; Radish uses `current_thread` flavor to match Redis's single-threaded design, enabling zero-lock shared state.
-
-**3-4. Recursive enum & pattern matching** — RESP is a recursive protocol (arrays can contain arrays). Rust's `enum RespValue` with `Array(Vec<RespValue>)` models this natively. Python's equivalent is `Union[str, int, list, bytes, None]`, but without compiler-verified exhaustiveness.
-
-**5. From trait** — Python uses a dict or `if/elif` chain for name-to-enum mapping. Rust's `From<&str>` trait is the canonical conversion — the compiler enforces every command name produces a valid `CommandType`, and `match` is exhaustive.
-
-**6. Rc<RefCell>** — Python objects are freely mutable because the GIL protects everything. Rust distinguishes: `Rc<RefCell<T>>` for single-threaded (zero overhead) vs `Arc<Mutex<T>>` for multi-threaded (locking overhead). The type system enforces thread safety at compile time.
-
-**7. HashMap store** — Rust's `HashMap<String, StoreValue>` is the same as Python's `dict` — O(1) average lookup. Rust's `entry()` API replaces Python's `dict.setdefault()` pattern for atomic insert-or-update.
 
 **8. BytesMut** — Python's `bytearray` is a mutable byte buffer. Rust's `BytesMut` provides zero-copy slicing — split a buffer into segments without copying data. Critical for high-performance network protocol parsing.
 

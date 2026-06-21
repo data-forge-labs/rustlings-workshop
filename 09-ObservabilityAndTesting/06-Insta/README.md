@@ -38,18 +38,16 @@ fn test_format_currency() {
 }
 ```
 
-## At a Glance
+### Topics covered
 
-| # | Concept | Rust | Python | Why it matters |
-|---|---------|------|--------|----------------|
-| 1 | Inline snapshots | `assert_snapshot!(v, @"x")` | n/a (no clean equivalent) | Expected value lives in the test file |
-| 2 | External snapshots | `.snap` files in `src/snapshots/` | `pytest --snapshot` | Filesystem-managed snapshots |
-| 3 | Review workflow | `cargo insta review` | `pytest --snapshot-update` | Diff and accept interactively |
-| 4 | `assert_snapshot!` | redacted by default | n/a | Strings, Debug, JSON, YAML |
-| 5 | `assert_debug_snapshot!` | uses `{:?}` | n/a | Show struct state |
-| 6 | `assert_yaml_snapshot!` | uses serde_yaml | n/a | Pretty-print serde types |
-| 7 | Glob feature | redactions across all snapshots | n/a | One config for the whole test suite |
-| 8 | CI integration | `cargo insta test --review` | `--update-snapshots` | Block merges when snapshots differ |
+| # | Concept | Why it matters |
+|---|---------|----------------|
+| 1 | Inline snapshots | Expected value lives in the test file |
+| 2 | External snapshots | `.snap` files in `src/snapshots/` |
+| 3 | Review workflow | `cargo insta review` — diff and accept interactively |
+| 4 | `assert_debug_snapshot!` | Show struct state |
+| 5 | Glob feature | One config for the whole test suite |
+| 6 | CI integration | Block merges when snapshots differ |
 
 ---
 

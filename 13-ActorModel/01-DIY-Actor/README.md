@@ -46,18 +46,16 @@ tokio::spawn(async move {
 });
 ```
 
-## At a Glance
+### Topics covered
 
-| # | Concept | Rust | Python | Why it matters |
-|---|---------|------|--------|----------------|
-| 1 | Mailbox | `tokio::sync::mpsc::channel(n)` | `asyncio.Queue(maxsize=n)` | Bounded queue with backpressure |
-| 2 | `oneshot` reply | `oneshot::channel()` | return value of a coroutine | Request/response within the actor model |
-| 3 | Tell (fire-and-forget) | `tx.send(msg).await?` | `asyncio.create_task` | Cheap, no reply |
-| 4 | Ask (request-response) | `(tx, rx) = oneshot::channel(); tx.send(Get { reply: tx2 })` | n/a | Sync-style call on async state |
-| 5 | Single owner of state | the spawned task | n/a | No locks, no `Arc<Mutex<T>>` |
-| 6 | Sequential processing | `while let Some(msg) = rx.recv().await` | n/a | Order guaranteed |
-| 7 | Graceful shutdown | `Stop` message + `break` | n/a | Drain mailbox, then exit |
-| 8 | Supervisor | `JoinHandle` | n/a | Restart on panic if needed |
+| # | Concept | Why it matters |
+|---|---------|----------------|
+| 1 | `mpsc` mailbox | Bounded queue with backpressure |
+| 2 | `oneshot` reply | Request/response within the actor model |
+| 3 | Tell & ask patterns | Fire-and-forget vs request-response |
+| 4 | Single owner of state | No locks, no `Arc<Mutex<T>>` |
+| 5 | Sequential processing | Order guaranteed |
+| 6 | Graceful shutdown | Drain mailbox, then exit |
 
 ---
 

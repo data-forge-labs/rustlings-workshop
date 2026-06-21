@@ -28,18 +28,15 @@ let array = file.read_array().await?;
 let value_col = array.children()[2].clone();  // zero-copy column access
 ```
 
-## At a Glance
+### Topics covered
 
-| # | Concept | Rust | Python | Why it matters |
-|---|---------|------|--------|----------------|
-| 1 | **Vortex session** | `VortexSession::default()` | `vx.connect()` | Allocator, registry, config |
-| 2 | **Write file** | `VortexFile::new(writer).write(...).await` | `vx.write(...)` | Async, buffered |
-| 3 | **Read file** | `VortexFile::open(session, path).await` | `vx.read(...)` | Lazy metadata |
-| 4 | **Arrow ↔ Vortex** | `array.into_arrow()` | `vx.read().to_arrow()` | Zero-copy |
-| 5 | **Footer (postscript)** | `file.footer()` | `vx.info()` | Last 64KB read, then 0-parse |
-| 6 | **Cascading compression** | `CompactCompressor` | automatic | BtrBlocks-style adaptive |
-| 7 | **Layout tree** | `array.children()` | N/A | Recursive layouts |
-| 8 | **Compute kernels** | `vortex::compute::sum` | `vx.compute.sum` | Operate on encoded data |
+| # | Concept | Why it matters |
+|---|---------|----------------|
+| 1 | Vortex session & write | Async, buffered, automatic encoding |
+| 2 | Arrow ↔ Vortex | Zero-copy interop |
+| 3 | Footer (postscript) | Last 64KB read, then 0-parse |
+| 4 | Cascading compression | BtrBlocks-style adaptive |
+| 5 | Compute kernels | Operate on encoded data |
 
 ---
 

@@ -29,18 +29,15 @@ list.push_back("Apple");
 list.push_front("Banana");  // O(1) at the front
 ```
 
-## At a Glance
+### Topics covered
 
-| # | Concept | Rust | Python | Why it matters |
-|---|---------|------|--------|----------------|
-| 1 | Doubly-linked list | `LinkedList<T>` | (no stdlib equivalent) | O(1) splice/split, O(n) traversal |
-| 2 | Push/pop ends | `push_front`, `push_back`, `pop_front`, `pop_back` | `deque.append` / `pop` | O(1) at both ends |
-| 3 | Cursor API | `.cursor_front_mut()` | N/A | O(1) insertion/remove at any cursor position |
-| 4 | Splice / split | `.append(&mut other)`, `.split_off(idx)` | N/A | Move sub-lists in O(1) |
-| 5 | Iteration | `for x in &list` | `for x in deque` | Bidirectional, but no random access |
-| 6 | No indexing | `list[i]` doesn't exist | `deque[i]` works (O(n)) | Compile-time error forces you to think |
-| 7 | Conversion | `Vec::from(list)` / `LinkedList::from(vec)` | `list(deque)` | Convert when you need random access |
-| 8 | When *not* to use | Almost always prefer `Vec`/`VecDeque` | `deque` is usually fine | Cache locality matters more than splice |
+| # | Concept | Why it matters |
+|---|---------|----------------|
+| 1 | `LinkedList<T>` | O(1) splice/split, O(n) traversal |
+| 2 | Push/pop ends | O(1) at both ends |
+| 3 | Cursor API | O(1) insertion/remove at any position |
+| 4 | Splice / split | Move sub-lists in O(1) |
+| 5 | When *not* to use | Almost always prefer `Vec`/`VecDeque` |
 
 ---
 

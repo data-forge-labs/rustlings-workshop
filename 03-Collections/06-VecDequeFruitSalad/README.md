@@ -30,18 +30,15 @@ let first = queue.pop_front();  // Some(0)
 let last = queue.pop_back();    // Some(10)
 ```
 
-## At a Glance
+### Topics covered
 
-| # | Concept | Rust | Python | Why it matters |
-|---|---------|------|--------|----------------|
-| 1 | Double-ended queue | `VecDeque<T>` | `collections.deque` | O(1) at both ends, ring buffer |
-| 2 | Push back | `push_back(x)` | `d.append(x)` | O(1), amortized |
-| 3 | Push front | `push_front(x)` | `d.appendleft(x)` | O(1) — no element shifting |
-| 4 | Pop back | `pop_back()` → `Option<T>` | `d.pop()` | O(1) |
-| 5 | Pop front | `pop_front()` → `Option<T>` | `d.popleft()` | O(1) — no element shifting |
-| 6 | Indexing | `queue[i]` | `d[i]` | O(1) — same as `Vec` |
-| 7 | Iteration | `for x in &queue` | `for x in d` | Forward and reverse iterators |
-| 8 | Conversion | `Vec::from(queue)`, `VecDeque::from(vec)` | `list(d)`, `deque(lst)` | Convert to/from `Vec` losslessly |
+| # | Concept | Why it matters |
+|---|---------|----------------|
+| 1 | `VecDeque<T>` | O(1) at both ends, ring buffer |
+| 2 | Push/pop front & back | No element shifting |
+| 3 | Indexing | O(1) — same as `Vec` |
+| 4 | Iteration | Forward and reverse iterators |
+| 5 | Conversion | Convert to/from `Vec` losslessly |
 
 ---
 

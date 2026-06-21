@@ -35,18 +35,16 @@ multiplexed) and a typed `set_nx` that returns a real `bool`. The
 borrow checker makes it impossible to write the broken `if !set(...)`
 pattern because `set` returns a value, not a side-effect.
 
-## At a Glance
+### Topics covered
 
-| # | Concept | Rust | Python | Why it matters |
-|---|---------|------|--------|----------------|
-| 1 | Multiplexed connection | `ConnectionManager` | `redis.asyncio.Redis` | One connection, many tasks |
-| 2 | Connection URL | `redis://:pw@host:port/db` | `redis://...` | Same wire format |
-| 3 | Cache key naming | `order_key(&Uuid)` | `f"order:{id}"` | Centralized prefixing |
-| 4 | TTL bands | `ttl_for(CacheKind)` | per-call `ex=` | Strategy table |
-| 5 | Streams | `XADD` / `XREADGROUP` | `xadd` / `xreadgroup` | Persistent queue inside Redis |
-| 6 | Consumer groups | `ConsumerGroup` | `xgroup_create` | Per-key load balancing |
-| 7 | Idempotency | `IdempotencyClaim` | `SETNX` | At-most-once work scheduling |
-| 8 | Cache stats | `CacheStats` | dict + `INCR` | Hit-ratio observability |
+| # | Concept | Why it matters |
+|---|---------|----------------|
+| 1 | `ConnectionManager` | One connection, many tasks |
+| 2 | Cache key naming & TTL | Centralized prefixing, strategy table |
+| 3 | Streams (`XADD` / `XREADGROUP`) | Persistent queue inside Redis |
+| 4 | Consumer groups | Per-key load balancing |
+| 5 | Idempotency (`SETNX`) | At-most-once work scheduling |
+| 6 | Cache stats | Hit-ratio observability |
 
 ---
 

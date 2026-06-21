@@ -26,16 +26,15 @@ country_stream.write_string(&countries)?;
 writer.finish()?;
 ```
 
-## At a Glance
+### Topics covered
 
-| # | Concept | Rust (sketch) | Python | Why it matters |
-|---|---------|---------------|--------|----------------|
-| 1 | **Per-stream encoding** | `Encoding::Dictionary` | N/A | One codec per column chunk, not whole column |
-| 2 | **Cascading encodings** | `Encoding::Rle` → child `BitPacked` | N/A | Recursive encoding tree, BtrBlocks-style |
-| 3 | **FlatBuffer metadata** | `flatbuffers::root::<Manifest>(bytes)` | N/A | Zero-parse, O(1) wide-table access |
-| 4 | **Wide-table native** | stream-by-stream writes | N/A | Designed for 10k+ columns |
-| 5 | **SIMD-friendly** | FastLanes bit-packing | N/A | Saturate CPU/GPU during training |
-| 6 | **OpenZL backend** | uses `openzl` C++ library | N/A | Compression research from Meta |
+| # | Concept | Why it matters |
+|---|---------|----------------|
+| 1 | Per-stream encoding | One codec per column chunk |
+| 2 | Cascading encodings | Recursive encoding tree |
+| 3 | FlatBuffer metadata | Zero-parse, O(1) wide-table access |
+| 4 | Wide-table native | Designed for 10k+ columns |
+| 5 | SIMD-friendly | FastLanes bit-packing |
 
 ---
 

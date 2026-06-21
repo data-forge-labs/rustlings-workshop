@@ -32,18 +32,16 @@ let df = LazyFrame::scan_csv("data/sales.csv", ScanArgsCsv::default())?
 
 The lazy API builds a **query plan** that the optimizer transforms before execution. You can `.explain()` the plan to see what will run.
 
-## At a Glance
+### Topics covered
 
-| # | Concept | Rust | Python | Why it matters |
-|---|---------|------|--------|----------------|
-| 1 | DataFrame | `polars::DataFrame` | `pandas.DataFrame` | Columnar, typed, parallel |
-| 2 | Eager API | `df.column("x")?.sum()` | `df["x"].sum()` | Direct column access |
-| 3 | Lazy API | `df.lazy().filter(...).collect()` | `dask.dataframe` | Query optimization |
-| 4 | Group-by | `df.group_by([col])` | `df.groupby(col)` | Optimized aggregation |
-| 5 | Predicate pushdown | automatic (lazy) | manual filter indexing | Skip rows that don't match |
-| 6 | Parquet I/O | `ParquetWriter` / `ParquetReader` | `pd.read_parquet` | Native Arrow format |
-| 7 | Column expressions | `col("x") * col("y")` | `df["x"] * df["y"]` | Composable, type-checked |
-| 8 | Sort | `df.sort("col", SortOptions)` | `df.sort_values("col")` | Multi-key, descending |
+| # | Concept | Why it matters |
+|---|---------|----------------|
+| 1 | Eager & lazy API | Direct access vs query optimization |
+| 2 | Group-by | Optimized aggregation |
+| 3 | Predicate pushdown | Skip rows that don't match |
+| 4 | Parquet I/O | Native Arrow format |
+| 5 | Column expressions | Composable, type-checked |
+| 6 | Sort | Multi-key, descending |
 
 ---
 

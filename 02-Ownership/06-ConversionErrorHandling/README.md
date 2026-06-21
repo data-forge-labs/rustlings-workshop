@@ -38,22 +38,16 @@ fn read_age(s: &str) -> Result<u32, AppError> {
 }
 ```
 
-## At a Glance
+### Topics covered
 
-| # | Concept | Rust | Python | Why it matters |
-|---|---------|------|--------|----------------|
-| 1 | `Option::unwrap_or(default)` | `opt.unwrap_or(0)` | `x or 0` | Default value when None |
-| 2 | `Option::unwrap_or_default()` | `opt.unwrap_or_default()` | n/a | Uses `T::default()` |
-| 3 | `Option::map_or(f, \|v\| ...)` | `opt.map_or(0, \|v\| v * 2)` | `v * 2 if v else 0` | Branch in one line |
-| 4 | `Option::ok_or(err)` | `opt.ok_or(AppError::Missing)` | n/a | Lift `Option` to `Result` |
-| 5 | `Result::map_err(f)` | `r.map_err(AppError::from)` | `try/except` + rewrap | Convert error types |
-| 6 | `Result::and_then(f)` | `r.and_then(\|v\| process(v))` | chained `if r: return r` | Monadic bind |
-| 7 | `?` operator | `let v = fallible()?;` | `try/except` | Auto-propagate errors |
-| 8 | `From<E1> for E2` | `impl From<io::Error> for AppError` | n/a | `?` does the conversion for free |
-| 9 | `thiserror` | `#[derive(Error)]` + `#[from]` | `class AppError(Exception)` | Less boilerplate |
-| 10 | `Option::filter` | `opt.filter(\|v\| *v > 0)` | `if v > 0 else None` | Conditional None |
-| 11 | `Option::or_else` | `a.or_else(\|\| b())` | `a if a else b()` | Lazy fallback |
-| 12 | `Option::transpose` | `opt.transpose()` | n/a | Flip `Option<Result>` ↔ `Result<Option>` |
+| # | Concept | Why it matters |
+|---|---------|----------------|
+| 1 | `Option` combinators | `unwrap_or`, `map_or`, `ok_or`, `filter`, `or_else` |
+| 2 | `Result` combinators | `map_err`, `and_then` — monadic bind |
+| 3 | `?` operator | Auto-propagate errors |
+| 4 | `From<E1> for E2` | `?` does the conversion for free |
+| 5 | `thiserror` | Ergonomic `Display` + `Error` impls |
+| 6 | `Option::transpose` | Flip `Option<Result>` ↔ `Result<Option>` |
 
 ---
 

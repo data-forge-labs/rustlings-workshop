@@ -41,15 +41,14 @@ let tls_stream = acceptor.accept(tcp_stream).await?;
 // Now you have an encrypted byte stream
 ```
 
-## At a Glance
+### Topics covered
 
-| # | Concept | Rust | Python | Why it matters |
-|---|---------|------|--------|----------------|
-| 1 | Pure-Rust TLS | `rustls` | `ssl` (OpenSSL) | Memory-safe |
-| 2 | Server config | `ServerConfig::builder()` | `ssl.SSLContext` | Type-safe config |
-| 3 | Client config | `ClientConfig::builder()` | `ssl.create_default_context()` | Built-in cert verification |
-| 4 | Async TLS | `tokio-rustls` | n/a | `async/await` integration |
-| 5 | Self-signed cert | `rcgen::generate_simple_self_signed` | `openssl req -x509` | For testing |
+| # | Concept | Why it matters |
+|---|---------|----------------|
+| 1 | Pure-Rust TLS | `rustls` — memory-safe |
+| 2 | Server & client config | Type-safe config |
+| 3 | Async TLS | `tokio-rustls` — `async/await` integration |
+| 4 | Self-signed cert | For testing |
 
 ---
 

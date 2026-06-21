@@ -10,7 +10,7 @@
 #![allow(unused_imports)]
 
 /// The outcome of comparing a guess to the secret number.
-#[derive(Debug, PartialEq, Eq, Copy, Clone)]
+#[derive(Debug, PartialEq)]
 pub enum GuessOutcome {
     Correct,
     TooHigh,

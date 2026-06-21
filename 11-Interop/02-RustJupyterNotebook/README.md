@@ -35,34 +35,18 @@ This project builds the Rust-side toolkit — `Matrix<T>`, `SimpleDataFrame`, `r
 
 ---
 
-## At a Glance
+### Topics covered
 
-| # | Concept | Rust | Python | Why it matters |
-|---|---------|------|--------|----------------|
-| 1 | Generic struct | `Matrix<T>` | `numpy.ndarray` | Type-safe 2D matrix with flat `Vec` |
-| 2 | Generic trait bound | `T: std::fmt::Debug` | Duck typing | Restrict generic params at compile time |
-| 3 | Safe indexing | `get() -> Option<&T>` | `try/except IndexError` | Bounds-checked element access |
-| 4 | HTML rendering | `to_html() -> String` | `df._repr_html_()` | Rich table display in Jupyter |
-| 5 | `SimpleDataFrame` | struct | `pandas.DataFrame` | Columnar data, row-oriented storage |
-| 6 | `f64` range | `range_f64()` | `numpy.arange()` | Generate float sequences |
-| 7 | evcxr kernel | `evcxr_jupyter` | `ipykernel` | Interactive Rust in notebook cells |
-| 8 | Crate discovery | `list_interactive_crates()` | pip-installed libs | Plotters, ndarray, polars, rayon for notebooks |
+| # | Concept | Why it matters |
+|---|---------|----------------|
+| 1 | Generic struct `Matrix<T>` | Type-safe 2D matrix |
+| 2 | Generic trait bounds | Restrict generic params at compile time |
+| 3 | Safe indexing with `Option` | Bounds-checked element access |
+| 4 | HTML rendering | Rich table display in Jupyter |
+| 5 | `SimpleDataFrame` | Columnar data, row-oriented storage |
+| 6 | `evcxr` kernel | Interactive Rust in notebook cells |
 
 ---
-
-## Concepts at a Glance
-
-**1-2. Generic struct with impl** — Python's NumPy arrays are typed per-instance (dtype). Rust's `Matrix<T>` is generic at compile time — a `Matrix<f64>` and `Matrix<i32>` are different types. The `T: std::fmt::Debug` bound ensures we can format values for HTML display, similar to Python's `__repr__`.
-
-**3. Safe indexing with Option** — Python raises `IndexError` for out-of-bounds access. Rust's `get()` returns `Option<&T>` — `Some(&value)` or `None`. This forces callers to handle missing values at compile time, preventing runtime crashes.
-
-**4. HTML string rendering** — Python DataFrames auto-render in Jupyter via `_repr_html_()`. Rust requires explicit `.to_html()` calls and the `:html` directive. More manual but gives full control over the output format.
-
-**5. SimpleDataFrame** — pandas stores columnar data internally (columnar arrays). Rust's `SimpleDataFrame` stores row-oriented `Vec<Vec<String>>`. All values are strings deliberately — this maps how raw CSV or JSON data arrives before type conversion.
-
-**6. Float range generation** — Python's `range()` works only on integers; `numpy.arange()` handles floats. Rust's `..` syntax is integer-only too. `range_f64()` fills the gap with a simple while-loop, usable as x-axis values for `plotters` charts.
-
-**7-8. evcxr Jupyter kernel** — Python has `ipykernel` built into every notebook installation. Rust's `evcxr_jupyter` provides the same cell-by-cell execution model. `:dep` directives load crates per cell, similar to `pip install` but scoped to the notebook session.
 
 ---
 

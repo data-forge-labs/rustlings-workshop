@@ -38,16 +38,15 @@ pub fn page_rank(edges: &[(usize, usize)], node_count: usize,
 }
 ```
 
-## At a Glance
+### Topics covered
 
-| # | Concept | Rust | Python | Why it matters |
-|---|---------|------|--------|----------------|
-| 1 | Outlinks map | `HashMap<usize, Vec<usize>>` from `(from, to)` | `defaultdict(list)` | Map each node to outgoing edges |
-| 2 | Inlinks map | `HashMap<usize, Vec<usize>>` from `(to, from)` | `defaultdict(list)` | Map each node to incoming edges |
-| 3 | Iterative PageRank | power method + damping | `nx.pagerank` | Compute rank scores iteratively |
-| 4 | Damping factor | `damping: f64` (default 0.85) | `alpha` parameter | Control random-jump probability |
-| 5 | Top-N ranking | collect, sort desc, truncate | `sorted(..., key=-x[1])` | Find highest-ranked pages |
-| 6 | Convergence checking | sum of absolute deltas | `sum(abs(curr[k]-v) ...)` | Detect when ranks stabilize |
+| # | Concept | Why it matters |
+|---|---------|----------------|
+| 1 | Outlinks & inlinks maps | Map each node to edges |
+| 2 | Iterative PageRank | Power method + damping |
+| 3 | Damping factor | Control random-jump probability |
+| 4 | Top-N ranking | Find highest-ranked pages |
+| 5 | Convergence checking | Detect when ranks stabilize |
 
 ---
 

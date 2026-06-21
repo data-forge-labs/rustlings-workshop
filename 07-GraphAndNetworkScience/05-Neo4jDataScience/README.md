@@ -42,16 +42,15 @@ impl Graph {
 }
 ```
 
-## At a Glance
+### Topics covered
 
-| # | Concept | Rust | Python | Why it matters |
-|---|---------|------|--------|----------------|
-| 1 | Graph struct | `struct Graph { adjacency: HashMap... }` | class with `defaultdict` | Wrap graph data with methods |
-| 2 | Degree centrality | `neighbors.len() / (N-1)` | `nx.degree_centrality` | Count direct connections |
-| 3 | Closeness centrality | BFS from each node | `nx.closeness_centrality` | Measure reachability speed |
-| 4 | Betweenness centrality | Brandes' BFS algorithm | `nx.betweenness_centrality` | Count shortest-path passages |
-| 5 | Top-N ranking | `sort_by`, `truncate` | `sorted(... , key=-x[1])[:n]` | Find most central nodes |
-| 6 | Summary statistics | `fold` for min/max, `sum/len` for mean | `min/max/sum/len` | Summarize score distribution |
+| # | Concept | Why it matters |
+|---|---------|----------------|
+| 1 | Graph struct | Wrap graph data with methods |
+| 2 | Degree centrality | Count direct connections |
+| 3 | Closeness centrality | Measure reachability speed |
+| 4 | Betweenness centrality | Count shortest-path passages |
+| 5 | Top-N ranking | Find most central nodes |
 
 ---
 

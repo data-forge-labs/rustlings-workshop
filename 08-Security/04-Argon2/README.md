@@ -36,15 +36,15 @@ let hash = Argon2::default().hash_password(b"hunter2", &salt)?.to_string();
 
 The output is a self-describing string: `$argon2id$v=19$m=19456,t=2,p=1$...salt...$...hash...`. You can verify it with no extra metadata.
 
-## At a Glance
+### Topics covered
 
-| # | Concept | Rust | Python | Why it matters |
-|---|---------|------|--------|----------------|
-| 1 | Argon2id | `argon2::Argon2` | `argon2-cffi` | OWASP-recommended |
-| 2 | Random salt | `SaltString::generate(&mut OsRng)` | `os.urandom(16)` | One salt per password |
-| 3 | Hash + encode | `hash_password(...).to_string()` | `ph.hash(...).encode()` | Self-describing format |
-| 4 | Verify | `verify_password(...)` | `ph.verify(...)` | Constant-time |
-| 5 | Constant-time compare | `subtle::ConstantTimeEq` | `hmac.compare_digest` | Prevents timing attacks |
+| # | Concept | Why it matters |
+|---|---------|----------------|
+| 1 | Argon2id | OWASP-recommended password hashing |
+| 2 | Random salt | One salt per password |
+| 3 | Hash + encode | Self-describing format |
+| 4 | Verify | Constant-time comparison |
+| 5 | Constant-time compare | Prevents timing attacks |
 
 ---
 

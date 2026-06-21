@@ -36,29 +36,19 @@ fn test_divide_by_zero() {
 
 Tests compile alongside production code (behind `#[cfg(test)]`), so compile errors in tests fail the build. `#[should_panic]` is a first-class attribute, not a context manager. Tests run in parallel by default with `cargo test`.
 
-## At a Glance
+### Topics covered
 
-| # | Concept | Rust | Python | Why it matters |
-|---|---------|------|--------|----------------|
-| 1 | `#[test]` | `#[test]` | `def test_` (pytest) | Mark functions as tests |
-| 2 | Assertion macros | `assert_eq!`, `assert_ne!`, `assert!` | `assert` statement | Compare values with verbose failure output |
-| 3 | `#[should_panic]` | `#[should_panic(expected = "...")]` | `pytest.raises()` | Verify a function panics |
-| 4 | `Result<T,E>` in tests | `-> Result<(), String>` | `pytest.fail()` | Test functions that return errors |
-| 5 | `#[cfg(test)]` | conditional compilation | `if __name__ == "__main__"` | Compile test code only during testing |
-| 6 | Integration tests | `tests/` directory | separate `test_*.py` files | Test public API from external view |
-| 7 | Property-based patterns | manual boundary loops | `@given` in hypothesis | Test invariants across input ranges |
-| 8 | `cargo test` workflow | `cargo test`, `cargo test name` | `pytest`, `pytest -k` | Filtering and parallelism |
+| # | Concept | Why it matters |
+|---|---------|----------------|
+| 1 | `#[test]` | Mark functions as tests |
+| 2 | Assertion macros | `assert_eq!`, `assert_ne!`, `assert!` — verbose failure output |
+| 3 | `#[should_panic]` | Verify a function panics |
+| 4 | `Result<T,E>` in tests | Test functions that return errors |
+| 5 | `#[cfg(test)]` | Compile test code only during testing |
+| 6 | Integration tests | `tests/` directory — test public API from external view |
+| 7 | `cargo test` workflow | Filtering and parallelism |
 
 ---
-
-## Concepts at a Glance
-
-**1. #[test] attribute** — Python discovers tests by filename prefix (`test_*.py`) and function prefix (`def test_`). Rust uses an explicit `#[test]` attribute — no naming convention required. `cargo test` discovers all `#[test]` functions automatically.
-
-**2. Assertion macros** — Python's `assert result == 5` gives `AssertionError` with no details. Rust's `assert_eq!(result, 5)` prints both values on failure: `left: 4, right: 5`. This is built into the macro, not a pytest plugin.
-
-**3. #[should_panic]** — Python requires `with pytest.raises(ValueError)` as a context manager. Rust's `#[should_panic(expected = "...")]` is a function-level attribute. The `expected` parameter matches a substring of the panic message.
-
 **4. Result<T,E> in tests** — Python test functions can raise or use `pytest.fail()`. Rust tests can return `Result<(), E>` — if the function returns `Err`, the test fails. The `?` operator propagates errors naturally, just like in production code.
 
 **5. #[cfg(test)]** — Python uses `if __name__ == "__main__"` as a runtime guard. Rust's `#[cfg(test)]` is compile-time — the annotated module is removed from production builds entirely. Zero overhead, zero risk of test code leaking into deployment.

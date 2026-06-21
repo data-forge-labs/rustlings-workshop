@@ -35,18 +35,18 @@ tokio::select! {
 }
 ```
 
-## At a Glance
+### Topics covered
 
-| # | Concept | Rust | Python | Why it matters |
-|---|---------|------|--------|----------------|
-| 1 | `tokio::select!` | `select! { a => .., b => .. }` | `asyncio.wait({a, b}, return_when=FIRST_COMPLETED)` | Race N futures, cancel the rest |
-| 2 | `timeout` | `tokio::time::timeout(d, fut)` | `asyncio.wait_for(coro, d)` | Bound any future by time |
-| 3 | `Semaphore` | `Semaphore::new(n)`, `acquire_owned()` | `asyncio.Semaphore(n)` | Limit concurrency |
-| 4 | `Notify` | `notify_one()` / `notify_waiters()` | `asyncio.Event` | One-shot or broadcast event |
-| 5 | `JoinSet` | `JoinSet::spawn(f)` | `asyncio.TaskGroup` (3.11+) | Fan out + collect, abort on error |
-| 6 | `mpsc::channel(n)` | bounded → backpressure | `asyncio.Queue(maxsize=n)` | Apply backpressure to producers |
-| 7 | `CancellationToken` | `tokio_util::sync::CancellationToken` | custom `asyncio.Event` per shutdown | Tree-cancellable shutdown |
-| 8 | `buffer_unordered(n)` | `StreamExt::buffer_unordered` | `asyncio.as_completed` + semaphore | Run up to N at once, preserve stream order |
+| # | Concept | Why it matters |
+|---|---------|----------------|
+| 1 | `tokio::select!` | Race N futures, cancel the rest |
+| 2 | `timeout` | Bound any future by time |
+| 3 | `Semaphore` | Limit concurrency |
+| 4 | `Notify` | One-shot or broadcast event |
+| 5 | `JoinSet` | Fan out + collect, abort on error |
+| 6 | `mpsc::channel` | Bounded → backpressure |
+| 7 | `CancellationToken` | Tree-cancellable shutdown |
+| 8 | `buffer_unordered` | Run up to N at once, preserve order |
 
 ---
 

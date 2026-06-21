@@ -40,18 +40,16 @@ For data engineers who already know Kafka, Iggy is the "what if
 Kafka were a single Rust binary?" question. This project lets you
 benchmark and validate that path.
 
-## At a Glance
+### Topics covered
 
-| # | Concept | Rust | Python | Why it matters |
-|---|---------|------|--------|----------------|
-| 1 | TCP/HTTP/QUIC | `tcp_url` / `http_url` | `kafka-python` | Three protocols, one API |
-| 2 | Domain envelope | `IggyMessage` | `dict` | Self-describing payload |
-| 3 | Stream/topic/partition | `stream_for` / `topic_for` | `f"stream:{x}"` | Centralized naming |
-| 4 | Stable partition | `partition_for` (FNV-1a) | `hash(key) % N` | Same key -> same partition |
-| 5 | Thread-per-core | `consumer_parallelism` | n/a | Match consumers to cores |
-| 6 | Offset cursor | `OffsetCursor` | `kafka.consumer` | Manual commit semantics |
-| 7 | In-memory dedup | `IggyDedup` | `deque` | At-least-once -> effectively-once |
-| 8 | Wire format | `encode` / `decode` (JSON) | `json.dumps` | Cross-language readable |
+| # | Concept | Why it matters |
+|---|---------|----------------|
+| 1 | TCP/HTTP/QUIC protocols | Three protocols, one API |
+| 2 | Domain envelope | Self-describing payload |
+| 3 | Stream/topic/partition | Centralized naming |
+| 4 | Thread-per-core | Match consumers to cores |
+| 5 | Offset cursor | Manual commit semantics |
+| 6 | In-memory dedup | At-least-once → effectively-once |
 
 ---
 

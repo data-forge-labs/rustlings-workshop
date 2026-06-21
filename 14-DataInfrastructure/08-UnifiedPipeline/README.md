@@ -26,18 +26,16 @@ cache layer, without rewriting the pipeline.
 
 This is the capstone of Section 14 — it composes Projects 01–07.
 
-## At a Glance
+### Topics covered
 
-| # | Concept | Rust | Python | Why it matters |
-|---|---------|------|--------|----------------|
-| 1 | Pipeline config | `PipelineConfig` | dataclass | Single source of truth |
-| 2 | Canonical event | `PipelineEvent` | dict | Type-safe handoff |
-| 3 | Sink outcome | `SinkOutcome` | tuple | Per-sink success/error |
-| 4 | Fan-out | `fanout_targets` | `if "kafka" in sinks:` | Pluggable routing |
-| 5 | Live counters | `WindowCounters` | `Counter` | Per-type metrics |
-| 6 | Backoff | `sink_backoff_ms` | `tenacity` | Retry policy |
-| 7 | Dead-letter | `DeadLetter` | dict | Poison-message capture |
-| 8 | Pipeline stats | `PipelineStats` | dict | Success rate / throughput |
+| # | Concept | Why it matters |
+|---|---------|----------------|
+| 1 | Pipeline config | Single source of truth |
+| 2 | Canonical event | Type-safe handoff |
+| 3 | Fan-out & routing | Pluggable sink dispatch |
+| 4 | Live counters | Per-type metrics |
+| 5 | Backoff & retry | Predictable failure recovery |
+| 6 | Dead-letter | Poison-message capture |
 
 ---
 

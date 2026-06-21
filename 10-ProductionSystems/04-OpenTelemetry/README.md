@@ -37,18 +37,16 @@ let _enter = span.enter();
 tracing::info!(correlation_id = %cid, "ingested");
 ```
 
-## At a Glance
+### Topics covered
 
-| # | Concept | Rust | Python | Why it matters |
-|---|---------|------|--------|----------------|
-| 1 | Structured events | `tracing::info!` | `logging.info` (msg=...) | Field-based, not string-concat |
-| 2 | Spans | `tracing::info_span!` | `with tracer.start_as_current_span(...)` | Parent/child timing built in |
-| 3 | JSON output | `tracing_subscriber::fmt().json()` | `python-json-logger` | One log line = one event |
-| 4 | Correlation ids | `Uuid::new_v4()` | `uuid.uuid4()` | Tie together logs from one request |
-| 5 | Span attributes | `HashMap<String, String>` | OTel `Attributes` | Key-value context on a span |
-| 6 | Atomic metrics | `AtomicU64::fetch_add` | `threading.Lock` counter | Lock-free, multi-thread safe |
-| 7 | Log level filter | `EnvFilter` | `LOG_LEVEL=INFO` | Same env var pattern, no code change |
-| 8 | OTel data model | `SpanRecord` struct | `ReadableSpan` | The shape that exporters send |
+| # | Concept | Why it matters |
+|---|---------|----------------|
+| 1 | Structured events | `tracing::info!` — field-based, not string-concat |
+| 2 | Spans | Parent/child timing built in |
+| 3 | JSON output | One log line = one event |
+| 4 | Correlation IDs | Tie together logs from one request |
+| 5 | Atomic metrics | Lock-free, multi-thread safe |
+| 6 | `EnvFilter` | Same env var pattern, no code change |
 
 ---
 

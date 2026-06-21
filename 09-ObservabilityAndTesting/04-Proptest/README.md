@@ -41,18 +41,15 @@ proptest! {
 }
 ```
 
-## At a Glance
+### Topics covered
 
-| # | Concept | Rust | Python | Why it matters |
-|---|---------|------|--------|----------------|
-| 1 | Property-based testing | `proptest::proptest!` | `hypothesis.given(...)` | Generate inputs, not hand-pick them |
-| 2 | Strategies | `proptest::collection::vec(...)` | `hypothesis.strategies.integers()` | The "any input" type |
-| 3 | Random sampling | `ProptestConfig::with_cases(N)` | `@settings(max_examples=N)` | Control coverage vs speed |
-| 4 | Shrinking | automatic | automatic | Failure becomes smallest reproducer |
-| 5 | Invariants | `prop_assert!`, `prop_assert_eq!` | `assert ...` inside `@given` | The property the test must hold |
-| 6 | Idempotence check | `sort(sort(x)) == sort(x)` | n/a | Classic property |
-| 7 | Reference comparison | `count_above(x) == filter(x).count()` | n/a | Test the function via a known correct version |
-| 8 | Bound check | `result >= 0.0` (epsilon) | n/a | Numerical stability across inputs |
+| # | Concept | Why it matters |
+|---|---------|----------------|
+| 1 | Property-based testing | Generate inputs, not hand-pick them |
+| 2 | Strategies | The "any input" type |
+| 3 | Shrinking | Failure becomes smallest reproducer |
+| 4 | Invariants | `prop_assert!`, `prop_assert_eq!` |
+| 5 | Idempotence & reference comparison | Classic properties to test |
 
 ---
 

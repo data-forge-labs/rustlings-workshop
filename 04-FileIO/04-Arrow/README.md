@@ -38,21 +38,16 @@ let big     = filter_batch_by_value(&back, "age", 30);
 let total   = sum_int32_column(&big, "age").unwrap();
 ```
 
-## At a Glance
+### Topics covered
 
-| # | Concept | Rust | Python | Why it matters |
-|---|---------|------|--------|----------------|
-| 1 | Primitive arrays | `arrow::array::Int32Array` | `pa.array([], type=pa.int32())` | Columnar memory layout, cache-friendly |
-| 2 | Schema | `arrow::datatypes::Schema` | `pa.schema([...])` | Type metadata for the whole batch |
-| 3 | Fields | `Field::new(name, dt, nullable)` | `pa.field(name, type)` | One typed column descriptor |
-| 4 | Builders | `Int32Builder::append(&mut self, v)` | `pa.array` from Python list | Efficient construction, no Python overhead |
-| 5 | `RecordBatch` | `RecordBatch::try_new(schema, columns)` | `pa.record_batch([...])` | Tabular data with schema |
-| 6 | CSV → Arrow | `arrow::csv::ReaderBuilder` | `pa.csv.read_csv` | Skip pandas, go direct |
-| 7 | IPC streaming | `arrow::ipc::writer::StreamWriter` | `pa.ipc.new_stream` | Zero-copy format used by polars/datafusion/duckdb |
-| 8 | `sum` | `arrow::compute::sum` | `pc.sum` | Aggregate without iteration |
-| 9 | `filter` | `arrow::compute::filter_record_batch` | `pc.filter` | Vectorized WHERE |
-| 10 | `cast` | `arrow::compute::cast` | `pc.cast` | Type promotion (Int32 → Float64) |
-| 11 | `slice` | `RecordBatch::slice(offset, length)` | `tbl.slice(offset, length)` | Zero-copy row range |
+| # | Concept | Why it matters |
+|---|---------|----------------|
+| 1 | Primitive arrays | Columnar memory layout, cache-friendly |
+| 2 | Schema & fields | Type metadata for the whole batch |
+| 3 | Builders | Efficient construction, no Python overhead |
+| 4 | `RecordBatch` | Tabular data with schema |
+| 5 | IPC streaming | Zero-copy format used by polars/datafusion/duckdb |
+| 6 | `sum`, `filter`, `cast`, `slice` | Vectorized compute without iteration |
 
 ---
 

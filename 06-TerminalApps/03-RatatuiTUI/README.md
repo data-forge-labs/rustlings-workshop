@@ -42,18 +42,16 @@ terminal.draw(|f| {
 
 This project builds a 3-panel dashboard: header (summary paragraph), body (table of stage metrics), footer (barchart of rows processed per stage).
 
-## At a Glance
+### Topics covered
 
-| # | Concept | Rust | Python | Why it matters |
-|---|---------|------|--------|----------------|
-| 1 | TUI framework | `ratatui` | `rich`, `textual` | Immediate-mode terminal UI |
-| 2 | Cross-platform backend | `crossterm` | `prompt_toolkit` | Windows/Linux/macOS terminals |
-| 3 | Layouts | `Layout::split` | CSS flexbox-ish | Responsive panel arrangement |
-| 4 | Widgets | `Table`, `BarChart`, `List`, `Paragraph` | `rich.table`, `rich.bar` | Composable, pre-built UI parts |
-| 5 | Styling | `Style`, `Color`, `Modifier` | `rich.style` | Colors, bold, italic, underline |
-| 6 | Test backend | `TestBackend` | n/a (textual has `Pilot`) | Unit-test the rendering |
-| 7 | Event loop | `crossterm::event::poll` | `textual.on_event` | Async, non-blocking key input |
-| 8 | Raw mode | `enable_raw_mode` | terminal-only | Take over the terminal |
+| # | Concept | Why it matters |
+|---|---------|----------------|
+| 1 | `ratatui` TUI framework | Immediate-mode terminal UI |
+| 2 | `crossterm` backend | Cross-platform terminal support |
+| 3 | Layouts | Responsive panel arrangement |
+| 4 | Widgets | Composable, pre-built UI parts |
+| 5 | Styling | Colors, bold, italic |
+| 6 | Event loop | Async, non-blocking key input |
 
 ---
 

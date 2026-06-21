@@ -35,18 +35,15 @@ impl Actor for Counter {
 let (actor, _h) = Counter.spawn(()).await?;
 ```
 
-## At a Glance
+### Topics covered
 
-| # | Concept | Rust | Python | Why it matters |
-|---|---------|------|--------|----------------|
-| 1 | `Actor` trait | `#[ractor::async_trait] impl Actor` | n/a | The framework contract |
-| 2 | `pre_start` | `async fn pre_start(...)` | `__init__` | Initial state |
-| 3 | `handle` | `async fn handle(msg, state)` | `__call__` | Per-message handler |
-| 4 | `cast` (tell) | `actor.cast(Msg::X).unwrap()` | `asyncio.create_task` | Fire-and-forget |
-| 5 | `call` (ask) | `ractor::call!(actor, Msg::Get)` | n/a | Typed RPC with reply |
-| 6 | `CallResult` | `Success` / `Timeout` / `SenderError` | n/a | Discriminated result |
-| 7 | `ActorRef` | `actor_ref.send(...)` | n/a | Cheap clone of a handle |
-| 8 | Supervision | `ractor::Supervision` (opt-in) | n/a | Restart-on-panic |
+| # | Concept | Why it matters |
+|---|---------|----------------|
+| 1 | `Actor` trait | The framework contract |
+| 2 | `pre_start` & `handle` | Initial state + per-message handler |
+| 3 | `cast` & `call` | Fire-and-forget vs typed RPC |
+| 4 | `CallResult` | Discriminated result: Success / Timeout / Error |
+| 5 | Supervision | Restart-on-panic |
 
 ---
 

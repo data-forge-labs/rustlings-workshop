@@ -30,18 +30,16 @@ The Rust SDK (`ducklake` crate, pre-1.0) is incubating. This project
 exercises the *SQL* surface directly via the `duckdb` crate so you
 get the same queries whether you use the SDK or the SQL CLI.
 
-## At a Glance
+### Topics covered
 
-| # | Concept | Rust | Python | Why it matters |
-|---|---------|------|--------|----------------|
-| 1 | DuckDB connection | `duckdb::Connection` | `duckdb.connect()` | Embedded OLAP DB |
-| 2 | DuckLake attach | `ATTACH 'ducklake:...'` | `%sql ATTACH` | SQL catalog + Parquet data |
-| 3 | Time-travel | `AT (VERSION => N)` | `TIMESTAMP AS OF` | Reproducible queries |
-| 4 | Merge-upsert | `MERGE INTO ... USING` | `MERGE INTO` | Atomic batched writes |
-| 5 | Compaction | `should_compact` | `OPTIMIZE` | Bounded small-file count |
-| 6 | Stats | `compute_stats` | `pandas.describe` | Local pre-aggregations |
-| 7 | Domain types | `LakeOrder` | `@dataclass` | Wire-format rows |
-| 8 | SQL builders | `merge_upsert_statement` | f-string | Testable SQL fragments |
+| # | Concept | Why it matters |
+|---|---------|----------------|
+| 1 | DuckLake attach | SQL catalog + Parquet data |
+| 2 | Time-travel | Reproducible queries |
+| 3 | Merge-upsert | Atomic batched writes |
+| 4 | Compaction | Bounded small-file count |
+| 5 | Domain types | Wire-format rows |
+| 6 | SQL builders | Testable SQL fragments |
 
 ---
 

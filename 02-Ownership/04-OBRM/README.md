@@ -25,16 +25,15 @@ def process_data(path):
         return transform(data)
 ```
 
-## At a Glance
+### Topics covered
 
-| # | Concept | Rust | Python | Why it matters |
-|---|---------|------|--------|----------------|
-| 1 | RAII | resource acquired in ctor, released in `Drop` | `with` statement (manual) | Lifetime tied to scope — no leaks by default |
-| 2 | `Drop` Trait | `impl Drop for Resource { fn drop(&mut self) { ... } }` | `__del__` (non-deterministic) / `__exit__` (manual) | Both *automatic* and *deterministic* — the best of both |
-| 3 | Ownership Transfer | move transfers cleanup responsibility | passing a handle keeps the caller's reference | Caller is *forced* to give up the handle when it moves |
-| 4 | Borrowing | `&Resource` / `&mut Resource` | all references are equal | Borrower can't outlive the owner; owner can't close while borrowed |
-| 5 | Scope-based Cleanup | every `}` runs `Drop` for all locals | `with` (only if used) | Works even on early return and panic — zero escape hatches |
-| 6 | Resource Lifecycle | `closed → open → closed` tracked in struct | `__enter__` / `__exit__` protocol | The `Drop` impl closes if still open — the last line of defense |
+| # | Concept | Why it matters |
+|---|---------|----------------|
+| 1 | RAII | Resource lifetime tied to scope — no leaks by default |
+| 2 | `Drop` trait | Automatic and deterministic cleanup |
+| 3 | Ownership transfer | Move transfers cleanup responsibility |
+| 4 | Borrowing | Borrower can't outlive the owner |
+| 5 | Scope-based cleanup | Works on early return and panic — zero escape hatches |
 
 ---
 

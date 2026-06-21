@@ -35,17 +35,16 @@ pub fn build_retweet_graph(tweets: &[Tweet]) -> HashMap<String, Vec<String>> {
 }
 ```
 
-## At a Glance
+### Topics covered
 
-| # | Concept | Rust | Python | Why it matters |
-|---|---------|------|--------|----------------|
-| 1 | Optional fields | `Option<String>` | `Optional[str]` | Model nullable retweet_of field |
-| 2 | Retweet graph | `HashMap<String, Vec<String>>` | `defaultdict(list)` | Build directed graph from tweet data |
-| 3 | Counting with HashMap | `entry().or_insert(0) += 1` | `collections.Counter` | Count tweets per user |
-| 4 | Top-N sorting | `sort_by` desc, `truncate` | `Counter.most_common(n)` | Find most active users |
-| 5 | BFS reachability | `VecDeque` + `HashSet` | `deque` + `set` | Check info flow A → B |
-| 6 | Influence score | count incoming edges | list comprehension | Measure how many retweeted a user |
-| 7 | Bridge detection | BFS component labeling | connected components | Find users connecting communities |
+| # | Concept | Why it matters |
+|---|---------|----------------|
+| 1 | `Option<String>` | Model nullable fields |
+| 2 | Retweet graph | Build directed graph from tweet data |
+| 3 | Counting with `HashMap` | `entry().or_insert(0) += 1` |
+| 4 | Top-N sorting | Find most active users |
+| 5 | BFS reachability | Check info flow A → B |
+| 6 | Bridge detection | Find users connecting communities |
 
 ---
 

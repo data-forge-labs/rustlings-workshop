@@ -35,16 +35,14 @@ pub fn fully_connected_graph(nodes: &[i32], edges: &[(i32, i32)]) -> bool {
 // 50K edge lookups → 0.01s (vs 500K lookups → 0.5-1s)
 ```
 
-## At a Glance
+### Topics covered
 
-| # | Concept | Rust | Python | Why it matters |
-|---|---------|------|--------|----------------|
-| 1 | Edge existence | slice iter + pattern match | for loop with tuple unpacking | Check if two nodes are directly connected |
-| 2 | Memoization cache | `&mut HashMap<i32, i32>` | dict `memory` | Store verified connections |
-| 3 | Skip iteration | `continue` | `continue` | Skip cached connections |
-| 4 | Full connectivity | iterate all nodes, shared cache | for loop with shared dict | Verify graph is fully connected |
-| 5 | Complete graph generation | double loop `j = i + 1` | nested `for` with `range` | Generate all unique undirected pairs |
-| 6 | Node ID generation | loop with `push` | `list(range(n))` | Create sequential node IDs |
+| # | Concept | Why it matters |
+|---|---------|----------------|
+| 1 | Edge existence check | Pattern match on slice iter |
+| 2 | Memoization cache | Store verified connections |
+| 3 | Full connectivity | Verify graph is fully connected |
+| 4 | Complete graph generation | Generate all unique undirected pairs |
 
 ---
 

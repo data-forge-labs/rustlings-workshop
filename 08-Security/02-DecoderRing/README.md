@@ -36,17 +36,15 @@ use rayon::prelude::*;
     .unwrap()
 ```
 
-## At a Glance
+### Topics covered
 
-| # | Concept | Rust | Python | Why it matters |
-|---|---------|------|--------|----------------|
-| 1 | Frequency table | `HashMap<char, f32>` | `dict` | Store English letter frequencies |
-| 2 | Char range matching | `match 'a'..='z'` | `if/elif` + `ord()`/`chr()` | Classify letters for Caesar shifting |
-| 3 | Iterator chains | `chars().map().collect()` | list comprehension + `str.join()` | Transform strings functionally |
-| 4 | Max by key | `Iterator::max_by` | `max(key=...)` | Find the best-scoring shift |
-| 5 | Parallel iterators | `rayon::prelude::*` | `ProcessPoolExecutor` | Parallel brute-force across 26 shifts |
-| 6 | Frequency scoring | `entry().or_insert()` + divide | `Counter` | Score against English baseline |
-| 7 | Byte arithmetic | `u8` wrap with `% 26` | `ord()` / `chr()` modulo | Caesar letter shifting |
+| # | Concept | Why it matters |
+|---|---------|----------------|
+| 1 | Frequency table | Store English letter frequencies |
+| 2 | Char range matching | Classify letters for Caesar shifting |
+| 3 | Iterator chains | Transform strings functionally |
+| 4 | Parallel iterators | `rayon` — parallel brute-force across 26 shifts |
+| 5 | Byte arithmetic | `u8` wrap with `% 26` for letter shifting |
 
 ---
 

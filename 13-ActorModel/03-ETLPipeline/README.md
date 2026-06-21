@@ -44,18 +44,15 @@ tokio::spawn(run_transform(src_rx, trans_tx, ..., filter));
 tokio::spawn(run_sink(trans_rx, ...));
 ```
 
-## At a Glance
+### Topics covered
 
-| # | Concept | Rust | Python | Why it matters |
-|---|---------|------|--------|----------------|
-| 1 | Source task | `tokio::spawn` over `Vec<Row>` | generator | Reads from any source |
-| 2 | Bounded channel | `mpsc::channel(n)` | `asyncio.Queue(maxsize=n)` | Backpressure by construction |
-| 3 | Filter | `fn predicate(&Row) -> bool` | `df[df[col] > x]` | Pluggable transformation |
-| 4 | Atomic metrics | `AtomicUsize::fetch_add` | `threading.Lock` counter | Lock-free, multi-task safe |
-| 5 | Drop sender to close | `drop(tx)` | n/a | Signals end of stream |
-| 6 | Sink task | `while let Some(row) = rx.recv()` | async for-loop | Collects or writes anywhere |
-| 7 | Backpressure | channel fills → task blocks | manual chunking | Self-throttling |
-| 8 | Failure isolation | per-task panic | n/a | One stage down ≠ all down |
+| # | Concept | Why it matters |
+|---|---------|----------------|
+| 1 | Source & sink tasks | Read from any source, write anywhere |
+| 2 | Bounded channels | Backpressure by construction |
+| 3 | Filter transforms | Pluggable transformation |
+| 4 | Atomic metrics | Lock-free, multi-task safe |
+| 5 | Failure isolation | One stage down ≠ all down |
 
 ---
 

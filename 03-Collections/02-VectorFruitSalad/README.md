@@ -15,18 +15,16 @@ fruits.sort()
 print(fruits[0])  # no compile-time type check
 ```
 
-## At a Glance
+### Topics covered
 
-| # | Concept | Rust | Python | Why it matters |
-|---|---------|------|--------|----------------|
-| 1 | Dynamic arrays | `Vec<T>` | `list` | Type-safe, contiguous growable array |
-| 2 | Random generation | `rand::rng()` | `random.Random()` | OS-seeded RNG; pass `&mut rng` to methods |
-| 3 | Random ranges | `rng.random_range(1..=10)` | `random.randint(1, 10)` | Rust range syntax (inclusive/exclusive) |
-| 4 | Random selection | `fruits.choose(&mut rng)` | `random.choice(fruits)` | Returns `Option<&T>` — could be `None` |
-| 5 | Shuffling | `fruits.shuffle(&mut rng)` | `random.shuffle(fruits)` | In-place, zero allocations |
-| 6 | External crates | `rand = "0.10"` in `Cargo.toml` | `pip install` / `requirements.txt` | Cargo downloads and compiles deps |
-| 7 | `SliceRandom` trait | `use rand::seq::SliceRandom;` | N/A (built-in) | Rust's trait-based extension pattern |
-| 8 | Indexed iteration | `.iter().enumerate()` | `enumerate(fruits)` | Loop with `(index, value)` tuples |
+| # | Concept | Why it matters |
+|---|---------|----------------|
+| 1 | `Vec<T>` | Type-safe, contiguous growable array |
+| 2 | `rand` crate | OS-seeded RNG, `SliceRandom` trait |
+| 3 | Random ranges & selection | `rng.random_range()`, `.choose()` returns `Option` |
+| 4 | Shuffling | In-place, zero allocations |
+| 5 | External crates | Cargo downloads and compiles deps |
+| 6 | Indexed iteration | `.iter().enumerate()` — loop with `(index, value)` |
 
 ---
 

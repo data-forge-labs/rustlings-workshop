@@ -27,18 +27,14 @@ counter.fetch_add(1, Ordering::Relaxed);  // single CPU instruction
 
 You choose the memory ordering (`Relaxed` / `Acquire` / `Release` / `SeqCst`) for the trade-off between performance and synchronization guarantees.
 
-## At a Glance
+### Topics covered
 
-| # | Concept | Rust | Python | Why it matters |
-|---|---------|------|--------|----------------|
-| 1 | Atomic integers | `AtomicUsize`, `AtomicIsize` | `threading.Lock` + `int` | Lock-free counters |
-| 2 | Atomic booleans | `AtomicBool` | `threading.Lock` + `bool` | Lock-free flags |
-| 3 | Atomic add | `.fetch_add()` | `counter += 1` under lock | Atomic increment/decrement |
-| 4 | Atomic store/load | `.store()`, `.load()` | `flag = True` under lock | Atomic read/write |
-| 5 | Compare-and-swap | `.compare_exchange()` | N/A | Lock-free CAS primitive |
-| 6 | Relaxed ordering | `Ordering::Relaxed` | N/A (GIL provides this) | No ordering guarantees |
-| 7 | Acquire/Release | `Acquire` / `Release` | N/A | Happens-before guarantees for message passing |
-| 8 | SeqCst | `Ordering::SeqCst` | N/A (GIL provides this) | Strongest ordering — slowest |
+| # | Concept | Why it matters |
+|---|---------|----------------|
+| 1 | Atomic integers & booleans | Lock-free counters and flags |
+| 2 | `fetch_add`, `store`, `load` | Atomic increment/read/write |
+| 3 | Compare-and-swap | Lock-free CAS primitive |
+| 4 | Memory ordering | `Relaxed` / `Acquire` / `Release` / `SeqCst` |
 
 ---
 

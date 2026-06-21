@@ -25,18 +25,16 @@ with open("config.yaml") as f:
 db_pool = config["database"]["pool_szie"]  # KeyError or None
 ```
 
-## At a Glance
+### Topics covered
 
-| # | Concept | Rust | Python | Why it matters |
-|---|---------|------|--------|----------------|
-| 1 | YAML parsing | `serde_yaml::from_str` | `yaml.safe_load` | Typed deserialization into structs |
-| 2 | Derive macros | `#[derive(Deserialize)]` | `pydantic.BaseModel` | No runtime schema, compile-time checks |
-| 3 | Nested structs | `PipelineConfig { database, sources, schedule }` | nested dicts | Schema enforces shape |
-| 4 | Serialization | `serde_yaml::to_string` | `yaml.dump` | Generate config from code |
-| 5 | Custom enums | `#[serde(rename_all = "lowercase")]` | no direct equivalent | YAML keys map to enum variants |
-| 6 | File I/O | `fs::read_to_string` + deserialize | `open(...).read()` | One-call config loading |
-| 7 | Error handling | `Result<T, serde_yaml::Error>` | `try/except yaml.YAMLError` | Errors carry line/column info |
-| 8 | Collection dedup | `BTreeSet<T>` | `set()` | O(log n) sorted unique names |
+| # | Concept | Why it matters |
+|---|---------|----------------|
+| 1 | YAML parsing | Typed deserialization into structs |
+| 2 | Derive macros | `#[derive(Deserialize)]` — compile-time checks |
+| 3 | Nested structs | Schema enforces shape |
+| 4 | Serialization | Generate config from code |
+| 5 | Custom enums | YAML keys map to enum variants |
+| 6 | Error handling | Errors carry line/column info |
 
 ---
 

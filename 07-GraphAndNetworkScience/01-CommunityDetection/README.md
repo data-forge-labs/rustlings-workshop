@@ -33,16 +33,15 @@ pub fn kosaraju_scc(edges: &[(usize, usize)], node_count: usize) -> Vec<Vec<usiz
 }
 ```
 
-## At a Glance
+### Topics covered
 
-| # | Concept | Rust | Python | Why it matters |
-|---|---------|------|--------|----------------|
-| 1 | Adjacency list | `HashMap<usize, Vec<usize>>` | `dict[int, list[int]]` | Store directed graph edges |
-| 2 | Iterative DFS | `Vec` stack + `HashSet` | Stack-based DFS | Avoid stack overflow on deep graphs |
-| 3 | Graph transposition | `HashMap` reversal | Dict comprehension | Reverse edges for Kosaraju pass 2 |
-| 4 | Kosaraju's algorithm | Two-pass DFS | `nx.strongly_connected_components` | Find SCCs |
-| 5 | Distinct count | `HashSet` | `set()` | Deduplicate users from edge list |
-| 6 | Frequency ranking | `HashMap` + sort | `collections.Counter` | Find top-N most active users |
+| # | Concept | Why it matters |
+|---|---------|----------------|
+| 1 | Adjacency list | Store directed graph edges |
+| 2 | Iterative DFS | Avoid stack overflow on deep graphs |
+| 3 | Graph transposition | Reverse edges for Kosaraju pass 2 |
+| 4 | Kosaraju's algorithm | Find strongly connected components |
+| 5 | `HashSet` / `HashMap` | Distinct count, frequency ranking |
 
 ---
 

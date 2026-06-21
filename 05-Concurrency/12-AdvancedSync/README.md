@@ -37,18 +37,16 @@ let m = parking_lot::Mutex::new(0);
 *m.lock() += 1;  // no Result, no poisoning, ~2-3x faster
 ```
 
-## At a Glance
+### Topics covered
 
-| # | Concept | Rust | Python | Why it matters |
-|---|---------|------|--------|----------------|
-| 1 | `parking_lot::Mutex` | no poisoning, ~2-3× faster | `threading.Lock` | Hot-path performance |
-| 2 | `parking_lot::RwLock` | writer-starves-free, smaller | `threading.RLock` | Many-readers workloads |
-| 3 | `crossbeam_channel` | true MPMC, bounded + unbounded | `queue.Queue` | Multiple producers + consumers |
-| 4 | `arc_swap` | lock-free atomic swap | `contextvars.ContextVar` | Hot-reload config, versioned snapshots |
-| 5 | `try_lock` | returns `None` if locked | n/a | Non-blocking read attempt |
-| 6 | `Arc<Mutex<T>>` | `parking_lot::Mutex` is `!Sync` over `T` | n/a | Combine with `Arc` for shared state |
-| 7 | Reader guard | `lock.read()` returns `RwLockReadGuard` | `RLock` context manager | RAII lock release |
-| 8 | Writer guard | `lock.write()` returns `RwLockWriteGuard` | n/a | Exclusive access |
+| # | Concept | Why it matters |
+|---|---------|----------------|
+| 1 | `parking_lot::Mutex` | No poisoning, ~2-3x faster |
+| 2 | `parking_lot::RwLock` | Writer-starves-free, smaller |
+| 3 | `crossbeam_channel` | True MPMC, bounded + unbounded |
+| 4 | `arc_swap` | Lock-free atomic swap, hot-reload config |
+| 5 | `try_lock` | Non-blocking read attempt |
+| 6 | RAII guards | `MutexGuard`/`RwLockGuard` — automatic unlock |
 
 ---
 

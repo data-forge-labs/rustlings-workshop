@@ -29,21 +29,20 @@ primes = [2, 3, 5, 7]
 In this project you'll learn to write this in Rust — and along the way
 you'll discover **immutable by default**, **type inference**, **expression-based control flow**, and **fixed-size arrays**.
 
-## At a Glance
+### Topics covered
 
-| # | Concept | Rust | Python | Why it matters |
-|---|---------|------|--------|----------------|
-| 1 | Variable binding | `let x = 5;` | `x = 5` | Immutable by default — opt-in mutability |
-| 2 | Type inference | `let x: i32 = 5;` | `x: int = 5` | Compiler infers most types; explicit when needed |
-| 3 | Constants | `const MAX: u32 = 100_000;` | `MAX = 100_000` | Compile-time, inlined, no fixed address |
-| 4 | Functions | `fn add(a: i32, b: i32) -> i32 { a + b }` | `def add(a, b): return a + b` | Types in signature, expression-return by default |
-| 5 | Print | `println!("x = {}", x);` | `print(f"x = {x}")` | Macro, type-checked format string |
-| 6 | Tuple | `let t = (1, "hi", 3.14);` | `t = (1, "hi", 3.14)` | Fixed-size, mixed types, destructurable |
-| 7 | Array | `let a: [i32; 3] = [1, 2, 3];` | `a = [1, 2, 3]` | Fixed-size, stack-allocated, type-known length |
-| 8 | Control flow | `if x > 0 { ... } else { ... }` | `if x > 0: ... else: ...` | `if` is an expression — returns a value |
-| 9 | Loops | `loop`, `while`, `for x in 0..10` | `while`, `for x in range(10)` | `loop` has no Python equivalent — infinite by default |
-| 10 | Pattern match | `match x { 0 => ..., _ => ... }` | `match x: case 0: ...` | Exhaustive — compiler enforces all cases |
-| 11 | Unicode scalar | `char` | single-character string (e.g., `'a'`) | 4-byte Unicode scalar value |
+| # | Concept | Why it matters |
+|---|---------|----------------|
+| 1 | Variable binding | Immutable by default — opt-in mutability |
+| 2 | Type inference | Compiler infers most types; explicit when needed |
+| 3 | Constants | Compile-time, inlined |
+| 4 | Functions | Types in signature, expression-return |
+| 5 | `println!` macro | Type-checked format string |
+| 6 | Tuples & arrays | Fixed-size, mixed types, stack-allocated |
+| 7 | Control flow | `if` is an expression — returns a value |
+| 8 | Loops | `loop`, `while`, `for` — `loop` has no Python equivalent |
+| 9 | Pattern match | Exhaustive — compiler enforces all cases |
+| 10 | `char` type | 4-byte Unicode scalar value |
 
 ---
 

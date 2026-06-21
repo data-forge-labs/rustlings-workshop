@@ -35,17 +35,15 @@ conn.execute("CREATE TABLE t (x INTEGER, y TEXT)", [])?;
 let count: i64 = conn.query_row("SELECT COUNT(*) FROM t", [], |r| r.get(0))?;
 ```
 
-## At a Glance
+### Topics covered
 
-| # | Concept | Rust | Python | Why it matters |
-|---|---------|------|--------|----------------|
-| 1 | In-process DB | `Connection::open_in_memory()` | `duckdb.connect(":memory:")` | No server, no config |
-| 2 | DDL | `conn.execute("CREATE TABLE ...")` | `conn.execute("CREATE ...")` | Standard SQL |
-| 3 | DML with params | `params![id, name]` | `?` placeholders | SQL-injection-safe binding |
-| 4 | CSV import | `read_csv_auto('file.csv')` | `read_csv_auto('file.csv')` | Zero-config CSV ingestion |
-| 5 | Prepared statements | `conn.prepare(sql)` + `query_row` | `conn.execute(sql, params)` | Pre-compiled, reusable |
-| 6 | Raw SQL | `conn.prepare(any_sql)` | `conn.execute(any_sql)` | Full SQL standard support |
-| 7 | Return Vec | collect rows into `Vec<T>` | list of tuples | Idiomatic Rust return |
+| # | Concept | Why it matters |
+|---|---------|----------------|
+| 1 | In-process DB | No server, no config |
+| 2 | DDL & DML | Standard SQL with parameterized queries |
+| 3 | CSV import | Zero-config CSV ingestion |
+| 4 | Prepared statements | Pre-compiled, reusable |
+| 5 | Raw SQL | Full SQL standard support |
 
 ---
 

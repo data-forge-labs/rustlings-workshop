@@ -46,34 +46,20 @@ This workshop rebuilds a full Shop Manager backend (FastAPI → Axum) end-to-end
 
 ---
 
-## At a Glance
+### Topics covered
 
-| # | Concept | Rust | Python | Why it matters |
-|---|---------|------|--------|----------------|
-| 1 | Web framework | `axum::Router` | `FastAPI()` | Route definition and request dispatch |
-| 2 | Async runtime | `tokio` | `uvicorn` + `asyncio` | Multi-threaded async executor |
-| 3 | Request extractors | `Path`, `Query`, `Json`, `State` | Pydantic + `Depends` | Type-safe request parsing |
-| 4 | Async database | `sqlx` | `SQLAlchemy` + `asyncpg` | Async SQL with compile-time checking |
-| 5 | JSON serialization | `serde` / `serde_json` | Pydantic | Zero-cost struct ↔ JSON conversion |
-| 6 | Middleware | `tower-http`, `tower-sessions` | Starlette middleware | CORS, sessions, logging |
-| 7 | Custom extractors | `FromRequestParts` trait | `Depends()` | Auth/injection via the type system |
-| 8 | Password hashing | `sha2` + `hex` | `hashlib` | SHA-256 secure password storage |
-| 9 | CORS | `CorsLayer` | `CORSMiddleware` | Cross-origin request handling |
-| 10 | DB transactions | `pool.begin()` + `tx.commit()` | `db.commit()` | Atomic multi-table operations |
-| 11 | Error handling | `IntoResponse` for custom enums | exception handlers | Type-safe error → HTTP response |
-| 12 | Module organization | `mod`, routes as modules | `APIRouter` prefix | Clean codebase structure |
+| # | Concept | Why it matters |
+|---|---------|----------------|
+| 1 | `axum::Router` | Route definition and request dispatch |
+| 2 | `tokio` async runtime | Multi-threaded async executor |
+| 3 | Request extractors | Type-safe request parsing |
+| 4 | `sqlx` async database | Async SQL with compile-time checking |
+| 5 | `serde` JSON | Zero-cost struct ↔ JSON conversion |
+| 6 | Middleware | CORS, sessions, logging |
+| 7 | DB transactions | Atomic multi-table operations |
+| 8 | Error handling | Type-safe error → HTTP response |
 
 ---
-
-## Concepts at a Glance
-
-### 1. `axum::Router` — Route Definition
-Like `FastAPI()`, you define routes with `.route("/path", method(handler))`. Routes can be nested and merged — equivalent to FastAPI's `include_router`.
-
-### 2. `tokio` — Async Runtime
-Like Uvicorn running your FastAPI app. Tokio is a multi-threaded work-stealing runtime (unlike asyncio's single-threaded event loop). Handlers are `async fn` and `.await` database calls without blocking.
-
-### 3. Extractors — `Path`, `Query`, `Json`, `State`
 Axum uses **extractors** to pull data from requests, like FastAPI's `Depends()`:
 
 ```rust

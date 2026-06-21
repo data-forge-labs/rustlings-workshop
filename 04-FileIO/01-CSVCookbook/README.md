@@ -24,20 +24,15 @@ for result in rdr.deserialize() {
 }
 ```
 
-## At a Glance
+### Topics covered
 
-| # | Concept | Rust | Python | Why it matters |
-|---|---------|------|--------|----------------|
-| 1 | CSV data model | comma-separated fields, optional header | `csv` module | Understanding CSV structure |
-| 2 | String splitting | `.split(pat)` | `str.split(pat)` | Break CSV line into fields |
-| 3 | String joining | `.join(sep)` | `str.join(sep)` | Rebuild CSV line from fields |
-| 4 | Line iteration | `.lines()` | `.splitlines()` | Process file line by line |
-| 5 | String trimming | `.trim()` | `.strip()` | Clean whitespace from fields |
-| 6 | Manual CSV parsing | `Vec<String>` from split+trim | N/A (usually a lib) | Build your own parser to understand the format |
-| 7 | `csv::Reader` | `csv` crate | `csv.reader` | Production-grade parsing with quoting/escaping |
-| 8 | Deserialization | `rdr.deserialize::<T>()` | N/A (dicts) | Auto-map rows to typed structs |
-| 9 | Per-row errors | `Result<T, E>` per row | `try/except` around loop | One bad row doesn't crash the pipeline |
-| 10 | Buffered reading | `BufReader` | File buffering | Efficient sequential reads |
+| # | Concept | Why it matters |
+|---|---------|----------------|
+| 1 | CSV parsing | String splitting, joining, trimming |
+| 2 | `csv::Reader` | Production-grade parsing with quoting/escaping |
+| 3 | Deserialization | Auto-map rows to typed structs |
+| 4 | Per-row errors | One bad row doesn't crash the pipeline |
+| 5 | Buffered reading | Efficient sequential reads |
 
 ---
 

@@ -20,18 +20,17 @@ let scores: [i32; 5] = [90, 80, 85, 95, 88];  // exactly 5 elements
 let rgb: [u8; 3] = [255, 128, 0];              // 3 bytes, stack-only
 ```
 
-## At a Glance
+### Topics covered
 
-| # | Concept | Rust | Python | Why it matters |
-|---|---------|------|--------|----------------|
-| 1 | Fixed-size arrays | `[T; N]` | `array.array` | Stack-allocated, compile-time-known length |
-| 2 | Stack vs heap | Stack allocation | All on heap | Arrays live on the stack — no GC, no allocator |
-| 3 | `Copy` trait | `T: Copy` | Always copies | Arrays of `Copy` types are themselves `Copy` |
-| 4 | `vec![]` macro | `vec![a, b, c]` | `[a, b, c]` | Convert fixed array to dynamic Vec in one call |
-| 5 | `from_fn` / `map` | `[0; 5]` or `arr.map(\|x\| x*2)` | list comprehension | Build arrays from expressions |
-| 6 | Array indexing | `arr[i]` | `arr[i]` | O(1) access, panics on out-of-bounds |
-| 7 | Array vs Vec | `Vec<T>` (dynamic) | `list` (always dynamic) | Choose stack `[T;N]` for fixed, heap `Vec` for growth |
-| 8 | `SliceRandom` | `fruits.shuffle(&mut rng)` | `random.shuffle(fruits)` | Shuffle via the `rand` crate trait |
+| # | Concept | Why it matters |
+|---|---------|----------------|
+| 1 | `[T; N]` arrays | Stack-allocated, compile-time-known length |
+| 2 | Stack vs heap | Arrays live on the stack — no GC |
+| 3 | `Copy` trait | Arrays of `Copy` types are themselves `Copy` |
+| 4 | `vec![]` macro | Convert fixed array to dynamic Vec |
+| 5 | `from_fn` / `map` | Build arrays from expressions |
+| 6 | Array indexing | O(1) access, panics on out-of-bounds |
+| 7 | Array vs Vec | Choose stack `[T;N]` for fixed, heap `Vec` for growth |
 
 ---
 

@@ -34,16 +34,15 @@ pub fn closeness_centrality(adj: &HashMap<usize, Vec<usize>>) -> HashMap<usize, 
 }
 ```
 
-## At a Glance
+### Topics covered
 
-| # | Concept | Rust | Python | Why it matters |
-|---|---------|------|--------|----------------|
-| 1 | Undirected adjacency list | `HashMap` + dual insert | `defaultdict(list)` bidirectional | Store undirected graph |
-| 2 | Degree centrality | `v.len() as f64 / (N-1)` | `nx.degree_centrality` | Fraction of nodes a fighter has fought |
-| 3 | BFS distances | `VecDeque` + `HashMap<usize, usize>` | `collections.deque` + dict | Shortest-path distances |
-| 4 | Closeness centrality | `reachable / sum_dist` | `nx.closeness_centrality` | How quickly a fighter reaches others |
-| 5 | Max by float | `.max_by(partial_cmp)` | `max(dict, key=dict.get)` | `f64` has no `Ord`, use `partial_cmp` |
-| 6 | Sorted formatted output | sort keys, `format!("{:.4}")` | f-string | Deterministic score display |
+| # | Concept | Why it matters |
+|---|---------|----------------|
+| 1 | Undirected adjacency list | Store undirected graph |
+| 2 | Degree centrality | Fraction of nodes a fighter has fought |
+| 3 | BFS distances | Shortest-path distances |
+| 4 | Closeness centrality | How quickly a fighter reaches others |
+| 5 | `f64` ordering | `partial_cmp` — `f64` has no `Ord` |
 
 ---
 

@@ -30,19 +30,15 @@ pub fn hash_bytes(data: &[u8]) -> String {
 // same API for Sha3_256, Blake2b512, ...
 ```
 
-## At a Glance
+### Topics covered
 
-| # | Concept | Rust | Python | Why it matters |
-|---|---------|------|--------|----------------|
-| 1 | `Digest` trait | `sha2::Digest`, `sha3::Digest`, `blake2::Digest` | `hashlib._Hash` | Unified API for all hash algorithms |
-| 2 | SHA-256 | `sha2::Sha256` | `hashlib.sha256()` | NIST-standard 256-bit crypto hash |
-| 3 | SHA-3 | `sha3::Sha3_256` | `hashlib.sha3_256()` | Newer NIST standard (Keccak sponge) |
-| 4 | BLAKE2b | `blake2::Blake2b512` | `hashlib.blake2b()` | Fast crypto hash for file integrity |
-| 5 | Hex encoding | `format!("{:x}", hash)` | `.hexdigest()` | Convert digest bytes to hex string |
-| 6 | Simple sum hash | `u32 sum + format!` | `sum(ord(c) for c in s)` | Non-crypto hash (collisions easy) |
-| 7 | XOR checksum | `fold(0, \|acc, &b\| acc ^ b)` | `functools.reduce(operator.xor, ...)` | Error-detection checksum |
-| 8 | Avalanche effect | `unsafe { as_bytes_mut() }` bit toggle | `chr(ord(s[pos]) ^ 1)` | 1-bit input change affects output |
-| 9 | Deterministic property | function equality check | `hashlib` always same | Foundation of dicts, sets, content addressing |
+| # | Concept | Why it matters |
+|---|---------|----------------|
+| 1 | `Digest` trait | Unified API for all hash algorithms |
+| 2 | SHA-256, SHA-3, BLAKE2b | NIST-standard and fast crypto hashes |
+| 3 | Hex encoding | Convert digest bytes to hex string |
+| 4 | Simple sum & XOR hashes | Non-crypto hashes, error-detection |
+| 5 | Avalanche effect | 1-bit input change affects output |
 
 ---
 

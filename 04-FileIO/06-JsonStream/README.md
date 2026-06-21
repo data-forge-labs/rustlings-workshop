@@ -23,18 +23,14 @@ with open("users.json") as f:
     data = json.load(f)  # 10 GB file = 50 GB of dicts in RAM
 ```
 
-## At a Glance
+### Topics covered
 
-| # | Concept | Rust | Python | Why it matters |
-|---|---------|------|--------|----------------|
-| 1 | Typed parse | `serde_json::from_str::<User>` | `json.loads(line)` | Compile-time schema check |
-| 2 | Typed serialize | `serde_json::to_string` | `json.dumps` | Round-trip back to JSON |
-| 3 | Untyped walk | `serde_json::Value` | `dict` | Explore unknown JSON |
-| 4 | Pretty print | `serde_json::to_string_pretty` | `json.dumps(indent=2)` | Human-readable output |
-| 5 | Nested access | walk `Value` by path | `d["a"]["b"]["c"]` | Type-safe accessor |
-| 6 | NDJSON streaming | `BufReader::lines` + per-line parse | `for line in f: json.loads(line)` | O(1) memory regardless of file size |
-| 7 | NDJSON writing | `BufWriter` + per-line serialize | `for r in rows: f.write(...)` | Same streaming model on write |
-| 8 | Error per line | `Result<User, serde_json::Error>` | try/except | Skip bad lines, continue |
+| # | Concept | Why it matters |
+|---|---------|----------------|
+| 1 | Typed parse & serialize | Compile-time schema check, round-trip |
+| 2 | Untyped `Value` walk | Explore unknown JSON |
+| 3 | NDJSON streaming | O(1) memory regardless of file size |
+| 4 | Error per line | Skip bad lines, continue |
 
 ---
 

@@ -26,18 +26,16 @@ args = parser.parse_args()  # validation at runtime, after user typed everything
 ```
 - Runs async I/O (DB queries, network calls) without blocking
 
-## At a Glance
+### Topics covered
 
-| # | Concept | Rust | Python | Why it matters |
-|---|---------|------|--------|----------------|
-| 1 | Derive parser | `#[derive(Parser)]` | `argparse.ArgumentParser` | Compile-time-validated args |
-| 2 | Subcommands | `#[derive(Subcommand)]` enum | nested subparsers | Type-safe command tree |
-| 3 | Global flags | `#[arg(global = true)]` | manual handling | `--log-level` available everywhere |
-| 4 | Help text | `#[command(about = "...")]` | `description=` | Auto-generated `--help` |
-| 5 | Type validation | `u8`, `PathBuf` | manual range check | Wrong types rejected at parse |
-| 6 | Async runtime | `#[tokio::main]` | `asyncio.run` | tokio + async fn main |
-| 7 | Exit codes | `ExitCode::from(n)` | `sys.exit(n)` | Standardized CLI behavior |
-| 8 | JSON config | `serde_json::from_str` | `json.load` | Typed configuration loading |
+| # | Concept | Why it matters |
+|---|---------|----------------|
+| 1 | `#[derive(Parser)]` | Compile-time-validated args |
+| 2 | Subcommands | Type-safe command tree |
+| 3 | Global flags | `--log-level` available everywhere |
+| 4 | Async runtime | `#[tokio::main]` + async fn |
+| 5 | Exit codes | Standardized CLI behavior |
+| 6 | JSON config | Typed configuration loading |
 
 ---
 

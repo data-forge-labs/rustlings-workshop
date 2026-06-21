@@ -19,18 +19,17 @@ fruit_set = set(fruits)
 fruit_counts = {"Orange": 1, "Apple": 2}
 ```
 
-## At a Glance
+### Topics covered
 
-| # | Concept | Rust | Python | Why it matters |
-|---|---------|------|--------|----------------|
-| 1 | Constant array | `const FRUITS: [&str; 10] = [...]` | `FRUITS = [...]` | Compile-time fixed, stack-allocated |
-| 2 | Dynamic array | `Vec<&str>` | `list` | Growable, contiguous, type-safe |
-| 3 | Owned strings | `Vec<String>` | `list[str]` | Mutable, owned growable text |
-| 4 | Fixed array reference | `&[&str; 10]` | N/A | Borrowed view of compile-time-size data |
-| 5 | Array slice | `&[&str]` | N/A | Borrowed view of any contiguous sequence |
-| 6 | `HashMap` | `HashMap<&str, u32>` | `dict` | Hash-based key-value lookup |
-| 7 | `BinaryHeap` | `BinaryHeap<Item>` | `heapq` | Priority queue (max-heap by default) |
-| 8 | Sorting | `.sort_by_key(\|x\| x.priority)` | `sorted(items, key=...)` | Comparator-based sort, no intermediate state |
+| # | Concept | Why it matters |
+|---|---------|----------------|
+| 1 | Constant array | Compile-time fixed, stack-allocated |
+| 2 | `Vec<T>` | Growable, contiguous, type-safe |
+| 3 | `Vec<String>` | Mutable, owned growable text |
+| 4 | Slices `&[T]` | Borrowed view of any contiguous sequence |
+| 5 | `HashMap` | Hash-based key-value lookup |
+| 6 | `BinaryHeap` | Priority queue (max-heap) |
+| 7 | Sorting | Comparator-based sort |
 
 ---
 

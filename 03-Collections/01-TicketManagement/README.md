@@ -2,6 +2,8 @@
 
 > **Test-driven approach**: This project includes a Cargo project with progressive unit tests. Each function in `workshop/src/lib.rs` starts as a `todo!()` stub. As you follow each section, replace `todo!()` with real code and run `cd workshop && cargo test` to watch the pass count grow. Your goal: **all 15 tests pass**.
 
+---
+
 ## What Is This Project?
 
 A ticket management system that demonstrates `Vec`, `HashMap`, `BTreeMap`, and iterators — the core data structures for grouping and querying data.
@@ -19,26 +21,21 @@ for t in tickets:
     by_status[t["status"]].append(t)  # typo in key = silent new bucket
 ```
 
-```rust
-// Rust — typed index
-let mut by_status: HashMap<String, Vec<Ticket>> = HashMap::new();
-by_status.entry(ticket.status().to_string())
-    .or_insert_with(Vec::new)
-    .push(ticket);
-```
+In this project you'll learn to build this in Rust — and along the way
+you'll discover **`Vec<T>`**, **fixed-size arrays**, **`HashMap`**, **`BTreeMap`**, and **iterators**.
 
-## At a Glance
+### Topics covered
 
-| # | Concept | Rust | Python | Why it matters |
-|---|---------|------|--------|----------------|
-| 1 | Dynamic arrays | `Vec<T>` | `list` | Type-safe, contiguous growable array |
-| 2 | Fixed-size arrays | `[T; N]` | `array.array` | Stack-allocated, known-length collection |
-| 3 | Slices | `&[T]` | `list[:]` (view) | Borrowed view into a contiguous sequence |
-| 4 | Iterators | `.iter()`, `.into_iter()` | `iter()` | Lazy, composable functional iteration |
-| 5 | Iterator combinators | `.map()`, `.filter()`, `.fold()` | `map`, `filter`, `reduce` | Chain transformations on data |
-| 6 | Key-value maps | `HashMap<K, V>` | `dict` | Hash-based key-value storage |
-| 7 | Ordered maps | `BTreeMap<K, V>` | `sortedcontainers.SortedDict` | Sorted key-value pairs (by key) |
-| 8 | Lifetimes | `'a` | N/A (GC) | Compiler tracks how long references are valid |
+| # | Concept | Why it matters |
+|---|---------|----------------|
+| 1 | `Vec<T>` | Type-safe, contiguous growable array |
+| 2 | `[T; N]` arrays | Stack-allocated, known-length collection |
+| 3 | Slices `&[T]` | Borrowed view into a contiguous sequence |
+| 4 | Iterators | Lazy, composable functional iteration |
+| 5 | Iterator combinators | `.map()`, `.filter()`, `.fold()` — chain transformations |
+| 6 | `HashMap<K, V>` | Hash-based key-value storage |
+| 7 | `BTreeMap<K, V>` | Sorted key-value pairs |
+| 8 | Lifetimes | Compiler tracks how long references are valid |
 
 ---
 

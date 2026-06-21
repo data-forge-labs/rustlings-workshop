@@ -29,15 +29,14 @@ pub fn ascii_bar_chart(data: &[f64], labels: &[&str]) -> Vec<String> {
 }
 ```
 
-## At a Glance
+### Topics covered
 
-| # | Concept | Rust | Python | Why it matters |
-|---|---------|------|--------|----------------|
-| 1 | Summary statistics | `fold(f64::INFINITY, f64::min)` | `min()`, `max()`, `sum()/len` | Min, max, mean of a data slice |
-| 2 | Min-max normalization | `(v - min) / (max - min) * 100` | Same formula | Rescale data to 0-100 range |
-| 3 | String repetition | `"█".repeat(n)` | `"█" * n` | Build ASCII bars of variable length |
-| 4 | Labeled data series | `zip` into `Vec<(&str, f64)>` | `list(zip(names, values))` | Pair names with numeric values |
-| 5 | Format alignment | `format!("{:<10}", label)` | `f"{label:<10}"` | Left-align labels in fixed-width column |
+| # | Concept | Why it matters |
+|---|---------|----------------|
+| 1 | Summary statistics | Min, max, mean of a data slice |
+| 2 | Min-max normalization | Rescale data to 0-100 range |
+| 3 | ASCII bar charts | `"█".repeat(n)` — variable-length bars |
+| 4 | Format alignment | Left-align labels in fixed-width column |
 
 ---
 

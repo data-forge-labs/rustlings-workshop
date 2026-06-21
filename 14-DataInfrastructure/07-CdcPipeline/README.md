@@ -34,18 +34,16 @@ This project ships the **envelope shape** and the **plumbing**
 (leader claim, checkpoint, filter, batching). The actual
 `wal2json` / `pgoutput` decoder is a thin addition in `main.rs`.
 
-## At a Glance
+### Topics covered
 
-| # | Concept | Rust | Python | Why it matters |
-|---|---------|------|--------|----------------|
-| 1 | Envelope | `CdcEvent` (before/after/op/ts_ms/tx_id) | dict | Debezium-compatible shape |
-| 2 | Op codes | `CdcOp::{c,u,d,r}` | `'c'`,`'u'`,`'d'`,`'r'` | Compact serial form |
-| 3 | Routing | `topic_for`, `routing_key` | f-string | Partition by row id |
-| 4 | Filtering | `should_forward` | lambda | Skip snapshot/soft-delete |
-| 5 | Leader claim | `LeaderClaim` | `SETNX` | Single active pipeline per table |
-| 6 | Sink trait | `trait Sink` | `Protocol` (typing.Protocol) | Pluggable destinations |
-| 7 | Checkpoint | `Checkpoint` | `dict` | Restart-safe progress |
-| 8 | Batch decision | `batch_ready` | ad-hoc | Size / age / tx boundary |
+| # | Concept | Why it matters |
+|---|---------|----------------|
+| 1 | CDC envelope | Debezium-compatible shape |
+| 2 | Op codes & routing | Compact serial form, partition by row id |
+| 3 | Leader claim | Single active pipeline per table |
+| 4 | Sink trait | Pluggable destinations |
+| 5 | Checkpoint | Restart-safe progress |
+| 6 | Batch decision | Size / age / tx boundary |
 
 ---
 

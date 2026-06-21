@@ -24,23 +24,19 @@ def print_summary(item: Summarizable):
 In this project you'll learn to write this in Rust — and along the way
 you'll discover **trait definitions**, **trait bounds**, **`derive` macros**, **`From`/`Into` conversions**, **`Clone`/`Copy`**, and **operator overloading**.
 
-## At a Glance
+### Topics covered
 
-| # | Concept | Rust | Python | Why it matters |
-|---|---------|------|--------|----------------|
-| 1 | Trait Definition | `trait Summary { fn ... }` | `Protocol` / `ABC` | Shared behavior interfaces — nominal, not structural |
-| 2 | Trait Implementation | `impl Summary for Ticket { ... }` | subclass / `register` | Explicit opt-in; compiler verifies method match |
-| 3 | Orphan Rule | coherence rule | multiple inheritance | Prevents conflicting trait impls across crates |
-| 4 | Trait Bounds | `T: Summary` / `where T: Summary` | type hints (advisory) | Constrain generic functions — compiler-enforced |
-| 5 | Derive Macros | `#[derive(Debug, Clone, ...)]` | `@dataclass` | Auto-generate impls for common traits |
-| 6 | Display | `impl std::fmt::Display` | `__str__` | `{}` formatting for human output (manual impl) |
-| 7 | Debug | `impl std::fmt::Debug` | `__repr__` | `{:?}` formatting for dev output (can be derived) |
-| 8 | From / Into | `impl From<&str> for Ticket` | `__init__` from type | Type conversions; `From` gives `Into` for free |
-| 9 | Clone | `x.clone()` | `copy.deepcopy(x)` | Explicit deep copy — no accidental dataset duplication |
-| 10 | Copy | `derive Copy` (for stack types) | N/A (all references) | Implicit bitwise copy for `Copy` types like `i32` |
-| 11 | Drop | `impl Drop { fn drop(&mut self) }` | `__del__` | Deterministic cleanup (see OBRM for full RAII) |
-| 12 | Operator Overloading | `impl Add`, `Sub`, etc. | `__add__`, `__sub__` | Custom operators (`+`, `-`, `*`) on your types |
-| 13 | PartialEq / Eq | `derive PartialEq, Eq` | `__eq__` | `==` comparison; `Eq` = no NaN-like total equality |
+| # | Concept | Why it matters |
+|---|---------|----------------|
+| 1 | Trait definition & impl | Shared behavior interfaces — nominal, not structural |
+| 2 | Orphan rule | Prevents conflicting trait impls across crates |
+| 3 | Trait bounds | Constrain generic functions — compiler-enforced |
+| 4 | Derive macros | Auto-generate `Debug`, `Clone`, `PartialEq`, etc. |
+| 5 | `Display` & `Debug` | `{}` for human output, `{:?}` for dev output |
+| 6 | `From` / `Into` | Type conversions — `From` gives `Into` for free |
+| 7 | `Clone` & `Copy` | Explicit deep copy vs implicit bitwise copy |
+| 8 | `Drop` | Deterministic cleanup at end of scope |
+| 9 | Operator overloading | `impl Add`, `Sub`, etc. — custom operators on your types |
 
 ---
 

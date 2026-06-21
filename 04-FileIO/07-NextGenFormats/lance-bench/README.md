@@ -28,19 +28,16 @@ let batch: RecordBatch = dataset
     .await?;
 ```
 
-## At a Glance
+### Topics covered
 
-| # | Concept | Rust | Python | Why it matters |
-|---|---------|------|--------|----------------|
-| 1 | **Lance dataset** | `lance::Dataset` | `lance.dataset(uri)` | Open an on-disk dataset |
-| 2 | **Write a batch** | `Dataset::write(reader, uri, params)` | `lance.write_dataset(...)` | Initial creation |
-| 3 | **Count rows** | `dataset.count_rows()` | `ds.count_rows()` | Quick shape check |
-| 4 | **Random take** | `dataset.take(indices, projection)` | `ds.take(indices, columns)` | **100x faster than Parquet** |
-| 5 | **Scan + filter** | `dataset.scan().filter(pred).into_stream()` | `ds.to_table(filter=...)` | Predicate pushdown |
-| 6 | **Column projection** | `dataset.scan().project(&["id","value"])` | `ds.to_table(columns=...)` | Read 2 of 100 columns |
-| 7 | **Append rows** | `dataset.append(batch)` | `lance.write_dataset(..., mode="append")` | Zero-copy where possible |
-| 8 | **Vector index** | `dataset.create_index(&["emb"], Vector, ...)` | `ds.create_index(..., index_type="IVF")` | In-file HNSW/IVF |
-| 9 | **Versioning** | `dataset.version()` / `dataset.checkout(v)` | `ds.tags["v3"]` | ACID, time-travel |
+| # | Concept | Why it matters |
+|---|---------|----------------|
+| 1 | Lance dataset | Open an on-disk dataset |
+| 2 | Write & append | Initial creation, zero-copy where possible |
+| 3 | Random take | 100x faster than Parquet |
+| 4 | Scan + filter | Predicate pushdown |
+| 5 | Vector index | In-file HNSW/IVF |
+| 6 | Versioning | ACID, time-travel |
 
 ---
 

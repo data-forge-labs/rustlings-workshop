@@ -40,22 +40,16 @@ cargo build --release    # 8 MB binary, no debug info, full optimization
 cargo bench              # criterion measures ns/iter with statistical confidence
 ```
 
-## At a Glance
+### Topics covered
 
-| # | Concept | Rust | Python | Why it matters |
-|---|---------|------|--------|----------------|
-| 1 | Build profiles | `dev` / `release` | (none) | Different compile/run trade-offs |
-| 2 | Release flag | `cargo build --release` | N/A | Switch to optimized mode for production |
-| 3 | Profile config | `[profile.release]` in `Cargo.toml` | N/A | Tune opt-level, LTO, overflow checks |
-| 4 | Optimization level | `opt-level = 0..3` / `s` / `z` | N/A | Speed vs size trade-off |
-| 5 | Overflow checks | `overflow-checks = true` | N/A | Catch bugs in release too |
-| 6 | LTO | `lto = true` / `"fat"` | N/A | Whole-program optimization (slow link) |
-| 7 | Codegen units | `codegen-units = 1..256` | N/A | Compile time vs inlining trade-off |
-| 8 | Debug symbols | `debug = true/false/line-tables-only` | N/A | Strip symbols for smaller binaries |
-| 9 | Criterion benchmarks | `criterion` crate | `timeit`, `pytest-benchmark` | Statistically rigorous measurements |
-| 10 | Benchmark groups | `c.benchmark_group(...)` | Custom timing harnesses | Compare related functions side-by-side |
-| 11 | Comparing collections | `Vec` vs `HashMap` vs `BTreeMap` | List vs dict vs `SortedDict` | Pick the right tool for the workload |
-| 12 | Dev-vs-release gap | 10-50x speedup common | N/A | Always benchmark in release mode |
+| # | Concept | Why it matters |
+|---|---------|----------------|
+| 1 | Build profiles | `dev` / `release` — different compile/run trade-offs |
+| 2 | Profile config | `[profile.release]` — tune opt-level, LTO, overflow checks |
+| 3 | Overflow checks | Catch bugs in release too |
+| 4 | LTO & codegen units | Whole-program optimization vs compile time |
+| 5 | Criterion benchmarks | Statistically rigorous measurements |
+| 6 | Dev-vs-release gap | 10-50x speedup common |
 
 ---
 
