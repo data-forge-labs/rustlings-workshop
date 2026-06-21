@@ -31,6 +31,9 @@ cluster with thousands of small inserts per second.
 predictable throughput that the rest of the section (Project 08's
 unified pipeline) can rely on.
 
+In this project you'll learn to build this in Rust — and along the way
+you'll discover **ClickHouse**, **batched inserts**, and **exponential backoff**.
+
 ### Topics covered
 
 | # | Concept | Why it matters |

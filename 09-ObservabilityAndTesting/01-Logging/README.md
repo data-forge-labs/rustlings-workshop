@@ -2,6 +2,8 @@
 
 > **Test-driven approach**: This project includes a Cargo project with progressive unit tests. Each function in `workshop/src/lib.rs` starts as a `todo!()` stub. As you follow each section, replace `todo!()` with real code and run `cd workshop && cargo test` to watch the pass count grow. Your goal: **all 8 tests pass**.
 
+---
+
 ## What Is the `log` Facade?
 
 A logging facade that decouples log statements from backends — write once, plug in any backend.
@@ -33,6 +35,9 @@ fn main() {
 | 3 | `tracing` | Span-based, async-aware logging |
 | 4 | Log macros | `info!`, `warn!`, `error!` — one macro call |
 | 5 | Level filtering | `RUST_LOG=info` env var |
+
+In this project you'll learn to build this in Rust — and along the way
+you'll discover **`log` facade**, **`env_logger`**, **`tracing`**, and **log macros**.
 
 ---
 

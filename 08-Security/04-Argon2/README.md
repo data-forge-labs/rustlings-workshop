@@ -9,7 +9,7 @@
 
 ---
 
-## What Is Argon2?
+## What Is This Project?
 
 OWASP-recommended password hashing — memory-hard, parallel, and resistant to GPU attacks.
 
@@ -35,6 +35,9 @@ let hash = Argon2::default().hash_password(b"hunter2", &salt)?.to_string();
 ```
 
 The output is a self-describing string: `$argon2id$v=19$m=19456,t=2,p=1$...salt...$...hash...`. You can verify it with no extra metadata.
+
+In this project you'll learn to build this in Rust — and along the way
+you'll discover **Argon2id**, **random salting**, and **constant-time verification**.
 
 ### Topics covered
 

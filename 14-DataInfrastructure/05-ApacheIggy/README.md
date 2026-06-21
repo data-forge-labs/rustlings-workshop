@@ -40,6 +40,9 @@ For data engineers who already know Kafka, Iggy is the "what if
 Kafka were a single Rust binary?" question. This project lets you
 benchmark and validate that path.
 
+In this project you'll learn to build this in Rust — and along the way
+you'll discover **Apache Iggy**, **thread-per-core I/O**, and **TCP/HTTP/QUIC protocols**.
+
 ### Topics covered
 
 | # | Concept | Why it matters |

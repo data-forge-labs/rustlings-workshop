@@ -27,6 +27,9 @@ verification** against a live database (or `sqlx-cli`-managed cache). You
 *cannot* ship a query with a typo or a missing column. And `sqlx` is
 async-first, so it composes with `tokio` and `axum` without a GIL.
 
+In this project you'll learn to build this in Rust — and along the way
+you'll discover **`sqlx`**, **compile-time SQL verification**, and **transactional outbox**.
+
 ### Topics covered
 
 | # | Concept | Why it matters |

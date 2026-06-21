@@ -30,6 +30,9 @@ The Rust SDK (`ducklake` crate, pre-1.0) is incubating. This project
 exercises the *SQL* surface directly via the `duckdb` crate so you
 get the same queries whether you use the SDK or the SQL CLI.
 
+In this project you'll learn to build this in Rust — and along the way
+you'll discover **DuckLake**, **time-travel queries**, and **merge-upsert**.
+
 ### Topics covered
 
 | # | Concept | Why it matters |

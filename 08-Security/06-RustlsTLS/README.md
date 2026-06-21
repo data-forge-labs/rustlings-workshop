@@ -41,6 +41,9 @@ let tls_stream = acceptor.accept(tcp_stream).await?;
 // Now you have an encrypted byte stream
 ```
 
+In this project you'll learn to build this in Rust — and along the way
+you'll discover **`rustls`**, **async TLS**, and **self-signed certificates**.
+
 ### Topics covered
 
 | # | Concept | Why it matters |

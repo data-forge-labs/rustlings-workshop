@@ -34,6 +34,9 @@ This project ships the **envelope shape** and the **plumbing**
 (leader claim, checkpoint, filter, batching). The actual
 `wal2json` / `pgoutput` decoder is a thin addition in `main.rs`.
 
+In this project you'll learn to build this in Rust — and along the way
+you'll discover **CDC envelope**, **leader claim**, and **sink trait**.
+
 ### Topics covered
 
 | # | Concept | Why it matters |

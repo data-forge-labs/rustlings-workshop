@@ -9,7 +9,7 @@
 
 ---
 
-## What Are Ed25519 Signatures?
+## What Is This Project?
 
 Digital signatures with the Ed25519 elliptic-curve algorithm — fast, deterministic, and compact.
 
@@ -33,6 +33,9 @@ let sig = key.sign(b"message");
 // To verify:
 key.verifying_key().verify(b"message", &sig).is_ok();
 ```
+
+In this project you'll learn to build this in Rust — and along the way
+you'll discover **Ed25519 signatures**, **keypair generation**, and **hex serialization**.
 
 ### Topics covered
 

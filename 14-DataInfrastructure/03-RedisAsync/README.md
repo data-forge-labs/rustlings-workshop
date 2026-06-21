@@ -35,6 +35,9 @@ multiplexed) and a typed `set_nx` that returns a real `bool`. The
 borrow checker makes it impossible to write the broken `if !set(...)`
 pattern because `set` returns a value, not a side-effect.
 
+In this project you'll learn to build this in Rust — and along the way
+you'll discover **`redis-rs`**, **connection pooling**, and **Redis Streams**.
+
 ### Topics covered
 
 | # | Concept | Why it matters |

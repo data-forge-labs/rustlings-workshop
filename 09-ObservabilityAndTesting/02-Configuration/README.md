@@ -2,6 +2,8 @@
 
 > **Test-driven approach**: This project includes a Cargo project with progressive unit tests. Each function in `workshop/src/lib.rs` starts as a `todo!()` stub. As you follow each section, replace `todo!()` with real code and run `cd workshop && cargo test` to watch the pass count grow. Your goal: **all 11 tests pass**.
 
+---
+
 ## What Is This Project?
 
 Unified configuration with `config` crate + `serde` — one API for TOML, JSON, YAML, and env vars.
@@ -25,7 +27,7 @@ if os.getenv("APP_HOST"):            # manual env override
     host = os.getenv("APP_HOST")
 ```
 
-**Rust fix:** The `config` crate + `serde` gives one unified API for every format, with compile-time type safety:
+The `config` crate + `serde` gives one unified API for every format, with compile-time type safety:
 
 ```rust
 use config::{Config, FileFormat};

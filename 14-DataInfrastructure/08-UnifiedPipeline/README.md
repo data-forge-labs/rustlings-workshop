@@ -26,6 +26,9 @@ cache layer, without rewriting the pipeline.
 
 This is the capstone of Section 14 — it composes Projects 01–07.
 
+In this project you'll learn to build this in Rust — and along the way
+you'll discover **pipeline config**, **fan-out routing**, and **dead-letter queues**.
+
 ### Topics covered
 
 | # | Concept | Why it matters |

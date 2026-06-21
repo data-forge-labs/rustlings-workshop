@@ -40,6 +40,9 @@ A `Future<Output = Result<(i32, i64), (KafkaError, OwnedMessage)>>` return
 type forces the caller to handle the error path, and a `DedupCache` struct
 keeps idempotency logic in your hands — not in a global.
 
+In this project you'll learn to build this in Rust — and along the way
+you'll discover **`rdkafka`**, **idempotent producers**, and **FIFO dedup**.
+
 ### Topics covered
 
 | # | Concept | Why it matters |
