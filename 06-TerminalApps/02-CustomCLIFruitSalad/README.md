@@ -1,12 +1,32 @@
 # Project 33: Advanced CLI with clap + CSV Reading -- Modules and Project Structure
 
-> **Test-driven approach**: This project includes a Cargo project with progressive
-
-## Why Separate lib.rs from main.rs?
+> **Test-driven approach**: This project includes a Cargo project with progressive unit tests. Each function in `workshop/src/lib.rs` starts as a `todo!()` stub. As you follow each section, replace `todo!()` with real code and run `cd workshop && cargo test` to watch the pass count grow. Your goal: **all 15 tests pass**.
 
 ---
 
----
+## What Is This Project?
+
+Advanced CLI with `clap` + CSV reading — separating lib.rs from main.rs for testable code.
+
+### Python equivalent
+
+```python
+# Python: everything in one file
+import csv
+import argparse
+
+def read_csv(path):
+    with open(path) as f:
+        return list(csv.DictReader(f))
+
+args = argparse.ArgumentParser().parse_args()
+data = read_csv(args.file)
+```
+
+In this project you'll learn to build this in Rust — and along the way
+you'll discover **`clap` subcommands**, **lib/main split**, and **CSV parsing**.
+
+## Table of Contents
 
 ## Table of Contents
 

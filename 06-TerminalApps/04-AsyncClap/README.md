@@ -26,6 +26,9 @@ args = parser.parse_args()  # validation at runtime, after user typed everything
 ```
 - Runs async I/O (DB queries, network calls) without blocking
 
+In this project you'll learn to build this in Rust — and along the way
+you'll discover **`clap` derive parsing**, **`tokio` async runtime**, and **subcommands**.
+
 ### Topics covered
 
 | # | Concept | Why it matters |

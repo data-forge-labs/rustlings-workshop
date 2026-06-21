@@ -1,12 +1,28 @@
 # Project 18: CLI Salad -- Command-Line Parsing with clap
 
-> **Test-driven approach**: This project includes a Cargo project with progressive
-
-## Why Use `clap` for CLI Parsing?
+> **Test-driven approach**: This project includes a Cargo project with progressive unit tests. Each function in `workshop/src/lib.rs` starts as a `todo!()` stub. As you follow each section, replace `todo!()` with real code and run `cd workshop && cargo test` to watch the pass count grow. Your goal: **all 13 tests pass**.
 
 ---
 
----
+## What Is This Project?
+
+Command-line parsing with `clap` — type-safe argument handling for CLI tools.
+
+### Python equivalent
+
+```python
+import argparse
+
+parser = argparse.ArgumentParser()
+parser.add_argument("--name", required=True)
+parser.add_argument("--count", type=int, default=1)
+args = parser.parse_args()
+```
+
+In this project you'll learn to build this in Rust — and along the way
+you'll discover **`clap`**, **derive-based CLI parsing**, and **subcommands**.
+
+## Table of Contents
 
 ## Table of Contents
 

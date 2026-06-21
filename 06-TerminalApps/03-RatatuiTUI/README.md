@@ -42,6 +42,9 @@ terminal.draw(|f| {
 
 This project builds a 3-panel dashboard: header (summary paragraph), body (table of stage metrics), footer (barchart of rows processed per stage).
 
+In this project you'll learn to build this in Rust — and along the way
+you'll discover **`ratatui`**, **layouts**, **widgets**, and **event loops**.
+
 ### Topics covered
 
 | # | Concept | Why it matters |
