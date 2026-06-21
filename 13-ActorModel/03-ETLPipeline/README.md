@@ -54,14 +54,10 @@ tokio::spawn(run_sink(trans_rx, ...));
 | 4 | Atomic metrics | Lock-free, multi-task safe |
 | 5 | Failure isolation | One stage down ≠ all down |
 
+In this project you'll learn to build this in Rust — and along the way
+you'll discover **bounded channels**, **backpressure**, and **failure isolation**.
+
 ---
-
-> **Test-driven approach**: This project includes a Cargo project with progressive
-> async tests. Each function in `src/lib.rs` starts as a `todo!()` stub. As you
-> follow each section, replace `todo!()` with real code and run `cargo test` to
-> watch the pass count grow. Your goal: **all 5 tests pass**.
-
-**Goal**: Implement all functions in `src/lib.rs` to pass all 5 tests.
 
 
 ---

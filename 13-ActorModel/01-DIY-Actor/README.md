@@ -57,11 +57,10 @@ tokio::spawn(async move {
 | 5 | Sequential processing | Order guaranteed |
 | 6 | Graceful shutdown | Drain mailbox, then exit |
 
----
+In this project you'll learn to build this in Rust — and along the way
+you'll discover **`mpsc` channels**, **`oneshot` replies**, and **actor patterns**.
 
-> **Test-driven approach**: This project includes a Cargo project with progressive
-> async tests. Each function in `src/lib.rs` starts as a `todo!()` stub. As you
-> follow each section, replace `todo!()` with real code and run `cargo test` to
+---
 > watch the pass count grow. Your goal: **all 6 tests pass**.
 
 **Goal**: Implement all functions in `src/lib.rs` to pass all 6 tests.
