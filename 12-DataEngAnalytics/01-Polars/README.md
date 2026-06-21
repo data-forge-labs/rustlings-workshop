@@ -32,6 +32,9 @@ let df = LazyFrame::scan_csv("data/sales.csv", ScanArgsCsv::default())?
 
 The lazy API builds a **query plan** that the optimizer transforms before execution. You can `.explain()` the plan to see what will run.
 
+In this project you'll learn to build this in Rust — and along the way
+you'll discover **lazy evaluation**, **predicate pushdown**, and **Arrow integration**.
+
 ### Topics covered
 
 | # | Concept | Why it matters |

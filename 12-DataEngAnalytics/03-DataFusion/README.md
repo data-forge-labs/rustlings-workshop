@@ -32,6 +32,9 @@ let batches = ctx.sql("SELECT * FROM orders WHERE amount > 100").await?.collect(
 
 DataFusion is the query layer of distributed systems like **Ballista** (distributed DataFusion), **InfluxDB IOx** (the time-series database), and **Cube.js** (the analytics API platform). If your system needs to answer SQL queries, DataFusion is the kernel.
 
+In this project you'll learn to build this in Rust — and along the way
+you'll discover **DataFusion**, **SQL execution**, and **Arrow RecordBatches**.
+
 ### Topics covered
 
 | # | Concept | Why it matters |

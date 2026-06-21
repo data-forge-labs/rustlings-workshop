@@ -35,6 +35,9 @@ conn.execute("CREATE TABLE t (x INTEGER, y TEXT)", [])?;
 let count: i64 = conn.query_row("SELECT COUNT(*) FROM t", [], |r| r.get(0))?;
 ```
 
+In this project you'll learn to build this in Rust — and along the way
+you'll discover **DuckDB**, **in-process OLAP**, and **CSV import**.
+
 ### Topics covered
 
 | # | Concept | Why it matters |
