@@ -2,17 +2,25 @@
 
 > **Test-driven approach**: This project includes a Cargo project with progressive unit tests. Each function in `workshop/src/lib.rs` starts as a `todo!()` stub. As you follow each section, replace `todo!()` with real code and run `cd workshop && cargo test` to watch the pass count grow. Your goal: **all 4 tests pass**.
 
-## Why Serialize Structs Directly to CSV?
-
-Ownership note: In Rust, values like `String` and `Vec` live on the heap, while primitive values (e.g., `i32`, `bool`) live on the stack. Ownership rules govern when heap data is cleaned up.
-
-
 ---
-- **Field Renaming (`#[serde(rename_all = "PascalCase")]`)**: Transforms Rust's `snake_case` field names to `PascalCase` (or other cases) for CSV headers. Python's `DictWriter` lets you pass any `fieldnames` list — Rust enforces consistency via attributes.
-- **Custom Delimiters (`WriterBuilder::delimiter()`)**: Change the separator from comma to tab, pipe, or semicolon. Same as Python's `delimiter=` kwarg but configured via the builder pattern.
-- **Builder Pattern (`WriterBuilder`)**: A fluent API for configuring writers before creation. Python uses kwargs; Rust uses chained method calls with compile-time safety.
-- **Flushing (`Writer::flush()`)**: Forces buffered data to disk. Python's `with` block auto-flushes on exit; Rust requires explicit `flush()` or relies on `Drop`.
-- **In-Memory Writing (`Writer::from_writer(vec![])`)**: Write to a `Vec<u8>` buffer instead of a file — great for tests. Python equivalent: `io.StringIO`.
+
+## What Is This Project?
+
+Programmatic CSV writing with custom delimiters, serde field renaming, and in-memory buffers.
+
+### Python equivalent
+
+```python
+import csv
+
+with open("output.csv", "w", newline="") as f:
+    writer = csv.DictWriter(f, fieldnames=["name", "age"])
+    writer.writeheader()
+    writer.writerow({"name": "Alice", "age": 30})
+```
+
+In this project you'll learn to build this in Rust — and along the way
+you'll discover **`serde` field renaming**, **custom delimiters**, **builder patterns**, and **in-memory writing**.
 - **Error Handling (`?`)**: Every `csv::Writer` operation returns `Result`. The `?` operator propagates errors, similar to Python's `try/except` but zero-overhead at runtime.
 
 ---

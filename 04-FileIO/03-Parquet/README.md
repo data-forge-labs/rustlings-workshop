@@ -2,9 +2,27 @@
 
 > **Test-driven approach**: This project includes a Cargo project with progressive unit tests. Each function in `workshop/src/lib.rs` starts as a `todo!()` stub. As you follow each section, replace `todo!()` with real code and run `cd workshop && cargo test` to watch the pass count grow. Your goal: **all 13 tests pass**.
 
-## Why Use Parquet's Columnar Storage?
-
 ---
+
+## What Is This Project?
+
+Apache Parquet columnar storage with Arrow integration — efficient column-oriented file format.
+
+### Python equivalent
+
+```python
+import pyarrow.parquet as pq
+
+# Write Parquet
+table = pa.table({"name": ["Alice", "Bob"], "age": [30, 25]})
+pq.write_table(table, "data.parquet")
+
+# Read Parquet
+table = pq.read_table("data.parquet")
+```
+
+In this project you'll learn to build this in Rust — and along the way
+you'll discover **Parquet columnar storage**, **Arrow integration**, and **row vs column orientation**.
 
 ## Table of Contents
 

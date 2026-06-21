@@ -2,6 +2,8 @@
 
 > **Test-driven approach**: This project includes a Cargo project with progressive unit tests. Each function in `workshop/src/lib.rs` starts as a `todo!()` stub. As you follow each section, replace `todo!()` with real code and run `cd workshop && cargo test` to watch the pass count grow. Your goal: **all 7 tests pass**.
 
+---
+
 ## What Is This Cookbook?
 
 Streaming CSV read/write with the `csv` crate — lazy, type-safe, and memory-efficient.
@@ -23,6 +25,9 @@ for result in rdr.deserialize() {
     process(&record);                     // process, discard, move on
 }
 ```
+
+In this project you'll learn to build this in Rust — and along the way
+you'll discover **streaming CSV parsing**, **serde deserialization**, and **lazy row processing**.
 
 ### Topics covered
 
