@@ -43,6 +43,19 @@ pub struct AppConfig {
 
 Same struct parses TOML, JSON, YAML, or env vars. Missing or wrong-type fields become compile errors via `serde`, not runtime `KeyError`s.
 
+In this project you'll learn to build this in Rust — and along the way
+you'll discover **`config` crate**, **`serde` deserialization**, and **env var overrides**.
+
+### Topics covered
+
+| # | Concept | Why it matters |
+|---|---------|----------------|
+| 1 | `config` crate | Unified API for all formats |
+| 2 | `serde::Deserialize` | Compile-time type safety |
+| 3 | Env var override | Layer config sources |
+| 4 | Nested structs | Complex config hierarchies |
+| 5 | Default values | Graceful fallbacks |
+
 ---
         .and_then(|c| c.try_deserialize().map_err(|e| e.to_string()))
 }

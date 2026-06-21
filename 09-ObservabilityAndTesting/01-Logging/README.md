@@ -26,6 +26,9 @@ fn main() {
 }
 ```
 
+In this project you'll learn to build this in Rust — and along the way
+you'll discover **`log` facade**, **`env_logger`**, and **structured logging**.
+
 ### Topics covered
 
 | # | Concept | Why it matters |
