@@ -648,18 +648,20 @@ This repository is developed on Windows. All Rust compilation and testing is don
 # Navigate to a workshop directory (via WSL's /mnt/ mount)
 cd E:\MyProjects\RustTut\01-Foundations\01-Intro\workshop
 
-# Run cargo commands via WSL
-wsl -d Ubuntu-26.04 bash -c "cd /mnt/e/MyProjects/RustTut/01-Foundations/01-Intro/workshop && cargo check"
-wsl -d Ubuntu-26.04 bash -c "cd /mnt/e/MyProjects/RustTut/01-Foundations/01-Intro/workshop && cargo test"
-wsl -d Ubuntu-26.04 bash -c "cd /mnt/e/MyProjects/RustTut/01-Foundations/01-Intro/workshop && cargo run"
+# Run cargo commands via WSL (source cargo env first)
+wsl -d sepahram bash -c "source ~/.cargo/env && cd /mnt/e/MyProjects/RustTut/01-Foundations/01-Intro/workshop && cargo check"
+wsl -d sepahram bash -c "source ~/.cargo/env && cd /mnt/e/MyProjects/RustTut/01-Foundations/01-Intro/workshop && cargo test"
+wsl -d sepahram bash -c "source ~/.cargo/env && cd /mnt/e/MyProjects/RustTut/01-Foundations/01-Intro/workshop && cargo run"
 ```
+
+> **Note**: Cargo is installed at `~/.cargo/bin/cargo` in WSL. Always run `source ~/.cargo/env` before cargo commands, or use the full path `/home/smbanaie/.cargo/bin/cargo`.
 
 ### Shorthand helper
 
 Create a reusable alias in PowerShell to avoid repeating the full path:
 
 ```powershell
-function crun { wsl -d Ubuntu-26.04 bash -c "cd /mnt/e/MyProjects/RustTut/$args[0] && cargo $args[1]" }
+function crun { wsl -d sepahram bash -c "source ~/.cargo/env && cd /mnt/e/MyProjects/RustTut/$args[0] && cargo $args[1]" }
 # Usage: crun "01-Foundations/01-Intro/workshop" test
 ```
 
@@ -668,8 +670,8 @@ function crun { wsl -d Ubuntu-26.04 bash -c "cd /mnt/e/MyProjects/RustTut/$args[
 Pass the project-relative path from the repo root:
 
 ```powershell
-function ck { wsl -d Ubuntu-26.04 bash -c "cd /mnt/e/MyProjects/RustTut/$args && cargo check" }
-function ct { wsl -d Ubuntu-26.04 bash -c "cd /mnt/e/MyProjects/RustTut/$args && cargo test" }
+function ck { wsl -d sepahram bash -c "source ~/.cargo/env && cd /mnt/e/MyProjects/RustTut/$args && cargo check" }
+function ct { wsl -d sepahram bash -c "source ~/.cargo/env && cd /mnt/e/MyProjects/RustTut/$args && cargo test" }
 
 # Usage
 ck "01-Foundations/01-Intro/workshop"
@@ -703,7 +705,7 @@ find . -name "*.sh" -exec sed -i 's/\r$//' {} \;
 ### Running a single project's tests
 
 ```powershell
-wsl -d Ubuntu-26.04 bash -c "cd /mnt/e/MyProjects/RustTut/01-Foundations/01-Intro/workshop && cargo test"
+wsl -d sepahram bash -c "cd /mnt/e/MyProjects/RustTut/01-Foundations/01-Intro/workshop && cargo test"
 ```
 
 ### Running all projects' checks

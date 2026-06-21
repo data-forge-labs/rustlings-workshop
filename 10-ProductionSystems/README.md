@@ -183,10 +183,12 @@ impl Entry {
 
 | # | Project | Concepts | Format |
 |---|---------|----------|--------|
-| 59 | **Radish** — Redis-compatible KV store | `tokio` async, RESP protocol, TCP networking, `Rc<RefCell>`, `BytesMut`, TTL expiry | Project |
-| 60 | **AxumShop** — Shop Manager API with Axum | `axum::Router`, `tokio` async, `sqlx` async DB, `serde` JSON, `tower-http` CORS, `tower-sessions`, `FromRequestParts` auth, SHA-256 hashing, DB transactions | Workshop |
-| 61 | **AxumAuth** — JWT + Bearer middleware for Axum 0.8 | `jsonwebtoken` 9, HS256 sign/verify, typed `Claims`, role-based access, refresh tokens, `kid` header inspection | Workshop |
-| 62 | **OpenTelemetry** — Traces, spans, and correlation IDs | `tracing` 0.1, `tracing-subscriber` JSON output, OTel attribute model, `AtomicU64` pipeline metrics, `Uuid` correlation ids | Workshop |
+| 58 | **Radish** — Redis-compatible KV store | `tokio` async, RESP protocol, TCP networking, `Rc<RefCell>`, `BytesMut`, TTL expiry | Project |
+| 59 | **AxumShop** — Shop Manager API with Axum | `axum::Router`, `tokio` async, `sqlx` async DB, `serde` JSON, `tower-http` CORS, `tower-sessions`, `FromRequestParts` auth, SHA-256 hashing, DB transactions | Workshop |
+| 60 | **AxumAuth** — JWT + Bearer middleware for Axum 0.8 | `jsonwebtoken` 9, HS256 sign/verify, typed `Claims`, role-based access, refresh tokens, `kid` header inspection | Workshop |
+| 61 | **OpenTelemetry** — Traces, spans, and correlation IDs | `tracing` 0.1, `tracing-subscriber` JSON output, OTel attribute model, `AtomicU64` pipeline metrics, `Uuid` correlation ids | Workshop |
+| 62 | **RateLimiter** — Distributed rate limiter with gRPC + Redis | gRPC with Tonic, sliding window algorithm, Redis Lua scripts, clock abstraction, `tokio::join!`, property-based testing | Workshop |
+| 63 | **TinyRedis** — Redis clone with `Arc<Mutex<>>`, persistence, CLI client | `Arc<Mutex<HashMap>>`, `thiserror`, `tokio::spawn`, `time::interval`, `serde` JSON snapshots, TCP networking, integration tests | Project |
 
 ## For Inspiration — Production-Ready Reference Repos
 
@@ -198,11 +200,13 @@ impl Entry {
 
 ## Learning Path
 
-1. Build **01-Radish** to create a production-grade Redis-compatible server
+1. Build **01-Radish** to create a production-grade Redis-compatible server with RESP protocol, `Rc<RefCell<>>` zero-lock state, and `bytes` zero-copy buffering
 2. Build **02-AxumShop** to create a full async web API with Axum, matching a FastAPI project end-to-end
 3. **03-AxumAuth** adds JWT bearer auth + role checks — drop-in for any Axum service
 4. **04-OpenTelemetry** adds structured JSON logging, spans, and atomic metrics — the OTel data model without a collector
-5. **Explore For-Inspiration** — Study production-ready Rust data engineering repos like Tansu
+5. Build **05-RateLimiter** to create a distributed rate limiter with gRPC, Redis Lua scripts, and sliding window algorithms
+6. Build **06-TinyRedis** to create a concurrent, persistent Redis clone with `Arc<Mutex<>>`, background expiry, disk snapshots, and a CLI client
+7. **Explore For-Inspiration** — Study production-ready Rust data engineering repos like Tansu
 
 ## Exercises
 

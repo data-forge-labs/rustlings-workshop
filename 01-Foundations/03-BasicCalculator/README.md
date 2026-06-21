@@ -101,7 +101,7 @@ If `workshop/` does not exist yet, follow the [Setup section](#create-the-projec
 
 ## 4. Concept: Integer Types in Rust
 
-### Python vs Rust Integers
+### Python comparison
 
 ```python
 # Python — one integer type, arbitrary precision
@@ -116,7 +116,7 @@ let y: i32 = -42;     // Signed 32-bit: -2,147,483,648 to 2,147,483,647
 let z: u64 = 100;     // Unsigned 64-bit: 0 to 18,446,744,073,709,551,615
 ```
 
-### Why So Many Types?
+### Why these types matter
 
 In Python, one integer type is convenient but wastes memory. In data engineering:
 
@@ -128,7 +128,7 @@ In Python, one integer type is convenient but wastes memory. In data engineering
 
 Choosing a smaller type saves memory — critical when processing millions of records.
 
-### Integer Type Family
+### Type reference
 
 | Bit width | Signed (positive + negative) | Unsigned (0 and positive) | Max value (unsigned) |
 |---|---|---|---|
@@ -148,7 +148,7 @@ u32 = 32 bits = 4 bytes
                     Value: 42
 ```
 
-### Inference and Defaults
+### Default types and inference
 
 ```rust
 let x = 42;        // Defaults to i32
@@ -157,7 +157,7 @@ let z = 42u64;     // Suffix syntax — same as above
 let w = 1_000_000; // Underscores for readability
 ```
 
-### `usize` and `isize`
+### `usize` — the size type
 
 Special types that match your system's pointer size:
 - On 64-bit systems: `usize` = `u64`, `isize` = `i64`
@@ -223,7 +223,7 @@ In data engineering, **explicit mutability is a feature, not a restriction** —
 
 ## 6. Concept: Arithmetic Operators
 
-### The Operators
+### The operators
 
 | Operator | Meaning | Python Equivalent | Notes |
 |---|---|---|---|
@@ -234,7 +234,7 @@ In data engineering, **explicit mutability is a feature, not a restriction** —
 | `%` | Remainder | `%` | Same |
 | `+=` | Add and assign | Not available directly | `x += 1` is shorthand for `x = x + 1` |
 
-### Integer Division (Important!)
+### Integer division
 
 ```python
 # Python 3 — division always returns float
@@ -248,7 +248,7 @@ let x = 5 / 2;    // 2 (like Python //)
 let y = 5.0 / 2.0; // 2.5 (floating point)
 ```
 
-### Type Consistency
+### Type consistency
 
 Rust requires both operands of an arithmetic operation to be the **same type**:
 
@@ -345,7 +345,7 @@ This eliminates a whole class of Python bugs where `if 0:` or `if None:` silentl
 
 ## 9. Concept: Panics — Unrecoverable Errors
 
-### What Is a Panic?
+### What is a panic?
 
 A **panic** is Rust's way of saying "something went wrong and we can't continue."
 
@@ -356,7 +356,7 @@ fn main() {
 }
 ```
 
-### Division by Zero
+### Division by zero
 
 ```rust
 let x = 5 / 0;  // ⚡ Panic: "attempt to divide by zero"
@@ -368,14 +368,14 @@ thread 'main' panicked at src/main.rs:2:17:
 attempt to divide by zero
 ```
 
-### Index Out of Bounds
+### Index out of bounds
 
 ```rust
 let arr = [1, 2, 3];
 let x = arr[5];  // ⚡ Panic: "index out of bounds"
 ```
 
-### Python Comparison
+### Python comparison
 
 ```python
 # Python — raises exceptions that CAN be caught
@@ -389,7 +389,7 @@ panic!("bad data");
 
 > **Why?** Panics are for **programmer errors** (bugs). For expected failures (file not found, invalid input), Rust uses `Result<T, E>` (covered in later sections).
 
-### When to `panic!` vs When Not To
+### When to panic vs when not to
 
 | Scenario | Use |
 |---|---|
@@ -399,7 +399,7 @@ panic!("bad data");
 | Invalid user input | DON'T panic — return error |
 | Unreachable code | `unreachable!()` macro |
 
-### The `assert!` Macro
+### The `assert!` and `assert_eq!` macros
 
 ```rust
 fn main() {
@@ -416,7 +416,7 @@ assert_eq!(2 + 2, 4);    // ✅
 assert_eq!(2 + 2, 5);    // ⚡ "assertion failed: `(left == right)` left: `4`, right: `5`"
 ```
 
-### `panic!` vs `Result` — Side by Side
+### `panic!` vs `Result`
 
 For division-by-zero, you have two choices. Here's the same logic in both styles:
 
@@ -455,7 +455,7 @@ You saw `Result` briefly in [02-GuessGame §7](../02-GuessGame/README.md#7-conce
 
 ## 10. Concept: Loops — `while` and `for`
 
-### `while` Loop
+### The `while` loop
 
 ```rust
 let mut counter = 0;
@@ -466,7 +466,7 @@ while counter < 5 {
 // Prints: Count: 0, Count: 1, ..., Count: 4
 ```
 
-### `for` Loop with Ranges
+### The `for` loop with ranges
 
 ```rust
 // Exclusive range (0..5 includes 0,1,2,3,4)

@@ -1,0 +1,8 @@
+[package]
+name = "modern_idioms"
+version = "0.1.0"
+edition = "2021"
+rust-version = "1.96"
+description = "Modern Rust idioms: LazyLock, array_windows, if let chains, cfg_select!, assert_matches!"
+
+[dependencies]

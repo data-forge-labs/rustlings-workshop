@@ -23,10 +23,11 @@ RustTut/
 ├── 12-DataEngAnalytics/             ← Section 12 (projects 01-03) — Polars, DuckDB, DataFusion
 ├── 13-ActorModel/                   ← Section 13 (projects 01-03) — DIY actor, ractor, ETL pipeline
 ├── 14-DataInfrastructure/           ← Section 14 (projects 01-08) — Kafka, Postgres, Redis, ClickHouse, Iggy, DuckLake, CDC, Unified
-└── 15-Reference/                    ← Section 15 (reference appendix — no projects)
+├── 15-Reference/                    ← Section 15 (reference appendix — no projects)
+└── 16-ModernIdioms/                 ← Section 16 (projects 01) — LazyLock, array_windows, if let chains, cfg_select!, assert_matches!
 ```
 
-The course is organized into **15 sections** designed for a Python data engineer moving to Rust. Each section starts with tutorial-style projects (read `.md` files, write code alongside) and progresses to hands-on Cargo projects (build and run complete programs).
+The course is organized into **16 sections** designed for a Python data engineer moving to Rust. Each section starts with tutorial-style projects (read `.md` files, write code alongside) and progresses to hands-on Cargo projects (build and run complete programs).
 
 **Progression:** Go through sections in order. Within each section, start with lower-numbered projects (introduce concepts) then move to higher-numbered ones (apply and deepen). Concepts from earlier sections are assumed in later ones.
 
@@ -40,18 +41,19 @@ The course is carefully sequenced so each concept is introduced by one source an
 |---------|----------------|----------|
 | 1 — Foundations | Syntax, types, control flow, basic I/O, console games | 01 (Intro), 02 (GuessGame), 03 (BasicCalculator), 04 (MasterMind) |
 | 2 — Ownership | Structs, ownership, borrowing, lifetimes, traits, enums, error handling | 01 (TicketV1), 02 (Traits), 03 (TicketV2), 04 (OBRM), 05 (OwnershipLifetimes), 06 (ConversionErrorHandling) |
-| 3 — Collections | Vec, arrays, HashMap, HashSet, BTreeMap, iterators, LinkedList, VecDeque, BinaryHeap | 01 (TicketManagement), 02–13 (Fruit Salad series, HashMap, iterators) |
+| 3 — Collections | Vec, arrays, HashMap, HashSet, BTreeMap, iterators, LinkedList, VecDeque, BinaryHeap, closure traits | 01 (TicketManagement), 02–15 (Fruit Salad series, HashMap, iterators, closure traits) |
 | 4 — File I/O | CSV reading/writing, Parquet, Arrow, YAML, JSON/NDJSON, serde, file I/O | 01 (CSVCookbook), 02 (CSVWriter), 03 (Parquet), 04 (Arrow), 05 (YAML), 06 (JsonStream) |
 | 5 — Concurrency | Threads, async/await, Mutex, Arc, Send/Sync, Rayon, atomics, channels | 01 (Threads), 02 (Futures), 03–11 (DataRace, Atomics, DiningPhilosophers, Rayon, etc.), 12 (AdvancedSync), 13 (AsyncPatterns) |
 | 6 — Terminal Apps | clap, ratatui, async CLI subcommands | 01 (CLISalad), 02 (CustomCLIFruitSalad), 03 (RatatuiTUI), 04 (AsyncClap) |
 | 7 — Graph & Network Science | petgraph, SCC, Dijkstra, PageRank, ASCII viz, Neo4j | 01 (CommunityDetection), 02 (UFCGraphCentrality), 03 (GraphVisualize), 04 (LisbonShortestPath), 05 (Neo4jDataScience), 06 (PageRank), 07 (RussianTrollTweets), 08 (FullyConnectedGraph) |
 | 8 — Security | Safe vs unsafe, crypto, security model | 01 (SafeAndUnsafe), 02 (DecoderRing), 03 (RustCryptoHashes), 04 (Argon2), 05 (Ed25519), 06 (RustlsTLS) |
 | 9 — Observability & Testing | Logging, configuration management, testing frameworks (proptest, mockall, insta) | 01 (Logging), 02 (Configuration), 03 (Testing), 04 (Proptest), 05 (Mockall), 06 (Insta) |
-| 10 — Production Systems | Tokio, async, TCP, RESP protocol, Axum web API, JWT, OTel | 01 (Radish), 02 (AxumShop), 03 (AxumAuth), 04 (OpenTelemetry) |
+| 10 — Production Systems | Tokio, async, TCP, RESP protocol, Axum web API, JWT, OTel, gRPC, rate limiting | 01 (Radish), 02 (AxumShop), 03 (AxumAuth), 04 (OpenTelemetry), 05 (RateLimiter), 06 (TinyRedis) |
 | 11 — Interop | evcxr, Jupyter, PyO3, GIL release | 01 (ExploringPandas), 02 (RustJupyterNotebook), 03 (PyO3Bindings), 04 (GILRelease) |
 | 12 — DataEng Analytics | Polars DataFrame, DuckDB in-process OLAP, Apache DataFusion query engine | 01 (Polars), 02 (DuckDB), 03 (DataFusion) |
 | 13 — Actor Model | DIY actor with `mpsc` + `oneshot`, `ractor` production crate, ETL pipeline composition | 01 (DIY-Actor), 02 (Ractor), 03 (ETLPipeline) |
 | 14 — Reference | Quick concept lookup, cheatsheets, memory architecture | (no cargo projects — reference appendix) |
+| 16 — Modern Idioms | LazyLock, array_windows, if let chains, cfg_select!, assert_matches! | 01 (ModernIdioms) |
 
 **How to use this table:** Start from Section 1 and work forward. Within each section, start with the lower-numbered projects (they introduce the concepts) and then move to the higher-numbered ones (they apply and deepen them).
 
@@ -119,6 +121,7 @@ Projects are grouped into **sections** that map concepts a Python data engineer 
 | 12 | **RustIterators** — lazy functional iteration | `Iterator` trait, lazy eval, `map`/`filter`/`fold` |
 | 13 | **MutableFruitSalad** — Vec mutation | `push`/`pop`/`insert`/`remove`, capacity vs length |
 | 14 | **ProfileBenchmark** — Cargo profiles + criterion | dev vs release profiles, `[profile.release]`, `opt-level` / `lto` / `codegen-units` / `overflow-checks` / `debug`, `criterion` benchmark groups |
+| 15 | **ClosureTraits** — closure traits & custom iterators | `Fn`/`FnMut`/`FnOnce`, `move` closures, custom `Iterator` impl, `IntoIterator` |
 
 ### Section 4: File I/O — CSV & Parquet at Scale
 
@@ -216,7 +219,9 @@ Projects are grouped into **sections** that map concepts a Python data engineer 
 | 02 | **AxumShop** — Shop Manager API with Axum | `axum::Router`, `tokio` async, `sqlx` async DB, `serde` JSON, `tower-http` CORS, `tower-sessions`, `FromRequestParts` auth, SHA-256 hashing, DB transactions |
 | 03 | **AxumAuth** — JWT + Bearer middleware for Axum 0.8 | `jsonwebtoken` 9, HS256 sign/verify, typed `Claims`, role-based access, refresh tokens, `kid` header inspection |
 | 04 | **OpenTelemetry** — Traces, spans, and correlation IDs | `tracing` 0.1, `tracing-subscriber` JSON output, OTel attribute model, `AtomicU64` pipeline metrics, `Uuid` correlation ids |
-| 05 | **For-Inspiration / Tansu** — Kafka-compatible broker + data lake | Kafka protocol, schema registry, storage engines (PostgreSQL/S3/SQLite), Iceberg/Delta Lake, single binary |
+| 05 | **RateLimiter** — Distributed rate limiter with gRPC + Redis | gRPC with Tonic, sliding window algorithm, Redis Lua scripts, clock abstraction, `tokio::join!`, property-based testing |
+| 06 | **TinyRedis** — Redis clone with `Arc<Mutex<>>`, persistence, CLI client | `Arc<Mutex<HashMap>>`, `thiserror`, `tokio::spawn`, `time::interval`, `serde` JSON snapshots, TCP networking, integration tests |
+| — | **For-Inspiration / Tansu** — Kafka-compatible broker + data lake | Kafka protocol, schema registry, storage engines (PostgreSQL/S3/SQLite), Iceberg/Delta Lake, single binary |
 
 ### Section 11: Rust + Python Interop
 
@@ -249,6 +254,14 @@ Projects are grouped into **sections** that map concepts a Python data engineer 
 *Quick reference materials for concept lookup — no cargo projects, just cheatsheets and reference documents.*
 
 This appendix contains reference documents for quick lookup of Rust syntax, idioms, and patterns covered across all 14 prior sections.
+
+### Section 16: Modern Idioms
+
+*Modern Rust features from 1.80-1.96 that make your code cleaner, safer, and more efficient.*
+
+| # | Project | Rust Topics Covered |
+|---|---------|-------------------|
+| 01 | **ModernIdioms** — LazyLock, array_windows, if let chains, cfg_select!, assert_matches! | `LazyLock`, `array_windows`, `if let` chains, `cfg_select!`, `assert_matches!` |
 
 ### Section 12: Data Engineering Analytics — Polars, DuckDB, DataFusion
 
@@ -327,6 +340,10 @@ The table below lists all core Rust concepts a learner should eventually see. **
 | Integer overflow & saturating arithmetic | ✅ | 01-03 |
 | Iterators (`iter`, `map`, `filter`, `count`, `collect`, `zip`, `enumerate`, `any`, `all`) | ✅ | 01-04, 03-01, 03-12 |
 | Closures (`\|x\| x * 2`) | ✅ | 01-04, 03-12 |
+| `Fn` / `FnMut` / `FnOnce` closure traits | ✅ | 03-15 |
+| `move` closures | ✅ | 03-15, 05-03 |
+| Custom `Iterator` implementation | ✅ | 03-15 |
+| `IntoIterator` trait | ✅ | 03-15 |
 | `print!`, `println!` | ✅ | 01-01 |
 | `std::io::stdin()`, `read_line()` | ✅ | 01-02 |
 | `io::stdout().flush()` | ✅ | 01-02 |
@@ -437,6 +454,11 @@ The table below lists all core Rust concepts a learner should eventually see. **
 | Partitioned warehouse (Hive-style `year=/month=/day=` with multiple formats) | ✅ | 04-07 |
 | Schema evolution (add columns without rewrite on Lance) | ✅ | 04-07 |
 | Next-gen format benchmarking (Parquet vs Lance vs Vortex — write, scan, project, take, filter, compact) | ✅ | 04-07 |
+| `LazyLock` / `LazyCell` (thread-safe lazy initialization) | ✅ | 16-01 |
+| `array_windows` (sliding window operations) | ✅ | 16-01 |
+| `if let` chains (complex conditional pattern matching) | ✅ | 16-01 |
+| `cfg_select!` (platform-specific code) | ✅ | 16-01 |
+| `assert_matches!` (better test assertions) | ✅ | 16-01 |
 
 ---
 
