@@ -5,6 +5,8 @@
 > follow each section, replace `todo!()` with real code and run `cd workshop && cargo test` to
 > watch the pass count grow. Your goal: **all 17 tests pass**.
 
+---
+
 ## What Is This Project?
 
 Kosaraju's strongly-connected-components algorithm — finding communities in directed graphs.
@@ -32,6 +34,9 @@ pub fn kosaraju_scc(edges: &[(usize, usize)], node_count: usize) -> Vec<Vec<usiz
     // second pass on reversed graph...
 }
 ```
+
+In this project you'll learn to build this in Rust — and along the way
+you'll discover **adjacency lists**, **iterative DFS**, and **Kosaraju's algorithm**.
 
 ### Topics covered
 

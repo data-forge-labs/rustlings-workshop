@@ -5,6 +5,8 @@
 > follow each section, replace `todo!()` with real code and run `cd workshop && cargo test` to
 > watch the pass count grow. Your goal: **all 16 tests pass**.
 
+---
+
 ## What Is This Project?
 
 Social graph analysis — building a retweet network and detecting influence patterns.
@@ -34,6 +36,9 @@ pub fn build_retweet_graph(tweets: &[Tweet]) -> HashMap<String, Vec<String>> {
     graph
 }
 ```
+
+In this project you'll learn to build this in Rust — and along the way
+you'll discover **adjacency lists**, **influence scoring**, and **social network analysis**.
 
 ### Topics covered
 

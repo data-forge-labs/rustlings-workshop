@@ -5,6 +5,8 @@
 > follow each section, replace `todo!()` with real code and run `cd workshop && cargo test` to
 > watch the pass count grow. Your goal: **all 14 tests pass**.
 
+---
+
 ## What Is This Project?
 
 Dijkstra's shortest-path algorithm on weighted graphs — route planning with `BinaryHeap`.
@@ -42,6 +44,9 @@ pub fn dijkstra(adj: &HashMap<usize, Vec<(usize, f64)>>, start: usize) -> HashMa
     dist
 }
 ```
+
+In this project you'll learn to build this in Rust — and along the way
+you'll discover **Dijkstra's algorithm**, **`BinaryHeap`**, and **weighted graph traversal**.
 
 ### Topics covered
 

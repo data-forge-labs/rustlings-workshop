@@ -5,6 +5,8 @@
 > follow each section, replace `todo!()` with real code and run `cd workshop && cargo test` to
 > watch the pass count grow. Your goal: **all 8 tests pass**.
 
+---
+
 ## What Is This Project?
 
 Checking graph connectivity with memoization — efficiently determining if all nodes are reachable.
@@ -34,6 +36,9 @@ pub fn fully_connected_graph(nodes: &[i32], edges: &[(i32, i32)]) -> bool {
 }
 // 50K edge lookups → 0.01s (vs 500K lookups → 0.5-1s)
 ```
+
+In this project you'll learn to build this in Rust — and along the way
+you'll discover **graph connectivity**, **DFS**, and **memoization**.
 
 ### Topics covered
 

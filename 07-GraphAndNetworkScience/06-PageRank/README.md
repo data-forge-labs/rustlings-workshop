@@ -5,6 +5,8 @@
 > follow each section, replace `todo!()` with real code and run `cd workshop && cargo test` to
 > watch the pass count grow. Your goal: **all 18 tests pass**.
 
+---
+
 ## What Is This Project?
 
 PageRank algorithm — iterative ranking with damping factor for web graphs.
@@ -37,6 +39,9 @@ pub fn page_rank(edges: &[(usize, usize)], node_count: usize,
     ranks
 }
 ```
+
+In this project you'll learn to build this in Rust — and along the way
+you'll discover **PageRank**, **damping factor**, and **power iteration**.
 
 ### Topics covered
 

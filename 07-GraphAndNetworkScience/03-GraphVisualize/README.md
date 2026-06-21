@@ -5,6 +5,8 @@
 > follow each section, replace `todo!()` with real code and run `cd workshop && cargo test` to
 > watch the pass count grow. Your goal: **all 16 tests pass**.
 
+---
+
 ## What Is This Project?
 
 ASCII bar charts for terminal data visualization — no GUI dependencies, works over SSH.
@@ -28,6 +30,9 @@ pub fn ascii_bar_chart(data: &[f64], labels: &[&str]) -> Vec<String> {
     }).collect()
 }
 ```
+
+In this project you'll learn to build this in Rust — and along the way
+you'll discover **string repetition**, **width calculations**, and **terminal rendering**.
 
 ### Topics covered
 

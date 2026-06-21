@@ -5,6 +5,8 @@
 > follow each section, replace `todo!()` with real code and run `cd workshop && cargo test` to
 > watch the pass count grow. Your goal: **all 14 tests pass**.
 
+---
+
 ## What Is This Project?
 
 Graph centrality algorithms (degree and closeness) on UFC fight data — measuring node importance.
@@ -33,6 +35,9 @@ pub fn closeness_centrality(adj: &HashMap<usize, Vec<usize>>) -> HashMap<usize, 
     scores
 }
 ```
+
+In this project you'll learn to build this in Rust — and along the way
+you'll discover **degree centrality**, **closeness centrality**, and **BFS traversal**.
 
 ### Topics covered
 

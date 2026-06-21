@@ -5,6 +5,8 @@
 > follow each section, replace `todo!()` with real code and run `cd workshop && cargo test` to
 > watch the pass count grow. Your goal: **all 14 tests pass**.
 
+---
+
 ## What Is This Project?
 
 Graph centrality algorithms (degree, closeness, betweenness) — self-contained, no database required.
@@ -41,6 +43,9 @@ impl Graph {
     }
 }
 ```
+
+In this project you'll learn to build this in Rust — and along the way
+you'll discover **degree centrality**, **closeness centrality**, and **betweenness centrality**.
 
 ### Topics covered
 
