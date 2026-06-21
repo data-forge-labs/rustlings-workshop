@@ -2,6 +2,8 @@
 
 > **Test-driven approach**: This project includes two Cargo projects with progressive unit tests. The **basic** workshop (`workshop/`) implements the core game; the **advanced** workshop (`workshop/advanced/`) adds modules, CLI args with `clap`, and documentation. Each function in `src/lib.rs` starts as a `todo!()` stub. Run `cd workshop && cargo test` (basic) or `cd workshop/advanced && cargo test` (advanced) to watch the pass count grow. Your goal: **all 30 tests pass (basic) and all tests pass (advanced)**.
 
+---
+
 ## What Is This Game?
 
 A classic code-breaking game where the computer generates a 4-digit secret code and you guess it with bull/cow feedback. It introduces `struct`, `Vec`, `Option`, and exhaustive `match`.
@@ -26,22 +28,20 @@ record = {"status": "open", "value": 42}
 In this project you'll learn to build this in Rust — and along the way
 you'll discover **structs with `impl`**, **`Vec<T>`**, **`Option<T>`**, **exhaustive `match`**, and **iterators**.
 
-## At a Glance
+### Topics covered
 
-| # | Concept | Rust | Python | Why it matters |
-|---|---------|------|--------|----------------|
-| 1 | `String` vs `&str` | `String`, `&str` | `str` | Owned (heap, growable) vs borrowed (fixed) — one `str` in Python |
-| 2 | `Vec<T>` | `Vec<T>` | `list` | Dynamic typed array — `Vec` is *typed*, no mixed types |
-| 3 | `struct` | `struct Name { fields }` | `@dataclass` / `class` | Custom data types validated at compile time |
-| 4 | `impl` blocks | `impl Guess { fn new(...) -> Self { ... } }` | methods inside `class` | Rust separates *data* (struct) from *behavior* (impl) |
-| 5 | `Option<T>` | `Some(val)` / `None` | `None` / `Optional[T]` | Nullable values the compiler forces you to check |
-| 6 | `match` | `match val { A => ..., B => ... }` | `if/elif/else` | Exhaustive — compiler verifies every variant is handled |
-| 7 | Ownership basics | `&self`, function params | N/A (GC) | Memory safety *without* garbage collection |
-| 8 | Iterators | `.chars()`, `.enumerate()`, `.filter()` | `for ch in s`, `enumerate(s)` | Lazy, composable functional iteration |
-| 9 | Console I/O | `io::stdin().read_line(&mut buf)`, `println!` | `input()`, `print()` | Read user input and print output |
-| 10 | `rand` crate | `pool.shuffle(&mut rand::rng())` (uses `SliceRandom`) | `random.shuffle(list)` | Random shuffling of a pool of candidates (add `rand = "0.10"`) |
-| 11 | `pub` visibility | `pub fn`, `pub struct` | Public by default | Items are private unless explicitly exported |
-| 12 | `Self` constructor | `fn new(...) -> Self` | `__init__(self)` | Idiomatic constructor pattern; `Self` abbreviates the type |
+| # | Concept | Why it matters |
+|---|---------|----------------|
+| 1 | `String` vs `&str` | Owned (heap) vs borrowed (fixed) |
+| 2 | `Vec<T>` | Dynamic typed array |
+| 3 | `struct` + `impl` | Custom data types with methods |
+| 4 | `Option<T>` | Nullable values the compiler forces you to check |
+| 5 | `match` | Exhaustive pattern dispatch |
+| 6 | Ownership basics | `&self` — memory safety without GC |
+| 7 | Iterators | `.chars()`, `.enumerate()`, `.filter()` |
+| 8 | Console I/O | `read_line`, `println!` |
+| 9 | `rand` crate | Random shuffling |
+| 10 | `pub` visibility | Items private unless explicitly exported |
 
 ---
 
@@ -70,19 +70,6 @@ MasterMind is a classic code-breaking game:
 - The player guesses the code
 - After each guess, the computer gives feedback: correct digits in the right position (A), and correct digits in the wrong position (B)
 - The player wins by guessing the code in as few tries as possible
-
-### Rust Concepts Covered
-
-| Concept | Python Equivalent | Why It Matters for Data Engineering |
-|---|---|---|
-| `String` vs `&str` | `str` | Text processing in data pipelines |
-| Ownership & Borrowing | N/A (GC handles this) | Memory safety without GC pauses |
-| `Vec<T>` | `list` | Dynamic collections for data |
-| `struct` + `impl` | `class` | Organizing data and behavior |
-| `Option<T>` | `None` / `Optional` | Handling missing data |
-| Pattern matching (`match`) | `if`/`elif`/`else` | Clean branching logic |
-| Iterators & Closures | `for` loops, `map`/`filter` | Functional data processing |
-| Console I/O | `input()` / `print()` | CLI tools for data engineering |
 
 ---
 
