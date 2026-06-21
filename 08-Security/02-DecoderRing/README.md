@@ -5,6 +5,8 @@
 > follow each section, replace `todo!()` with real code and run `cd workshop && cargo test` to
 > watch the pass count grow. Your goal: **all 7 tests pass**.
 
+---
+
 ## What Is This Project?
 
 Caesar cipher cracking with parallel frequency analysis — using Rayon for data-parallel computation.
@@ -35,6 +37,9 @@ use rayon::prelude::*;
     .max_by(|a, b| a.2.partial_cmp(&b.2).unwrap())
     .unwrap()
 ```
+
+In this project you'll learn to build this in Rust — and along the way
+you'll discover **Rayon parallel iterators**, **frequency analysis**, and **Caesar ciphers**.
 
 ### Topics covered
 

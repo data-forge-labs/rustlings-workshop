@@ -5,6 +5,8 @@
 > follow each section, replace `todo!()` with real code and run `cd workshop && cargo test` to
 > watch the pass count grow. Your goal: **all 13 tests pass**.
 
+---
+
 ## What Is This Project?
 
 Safe vs unsafe Rust — understanding the boundary between compiler-guaranteed safety and manual control.
@@ -25,6 +27,9 @@ unsafe { println!("{}", *ptr); }          // unsafe block required to dereferenc
 ```
 
 The `unsafe` keyword is auditable: a `grep "unsafe "` shows every escape hatch in the codebase.
+
+In this project you'll learn to build this in Rust — and along the way
+you'll discover **safe vs unsafe Rust**, **raw pointers**, and **bounds-check skipping**.
 
 ### Topics covered
 

@@ -5,6 +5,8 @@
 > follow each section, replace `todo!()` with real code and run `cd workshop && cargo test` to
 > watch the pass count grow. Your goal: **all 12 tests pass**.
 
+---
+
 ## What Is This Project?
 
 Cryptographic hashing with RustCrypto — SHA-2, SHA-3, and BLAKE2 for data integrity.
@@ -29,6 +31,9 @@ pub fn hash_bytes(data: &[u8]) -> String {
 }
 // same API for Sha3_256, Blake2b512, ...
 ```
+
+In this project you'll learn to build this in Rust — and along the way
+you'll discover **RustCrypto**, **`Digest` trait**, and **parallel hashing**.
 
 ### Topics covered
 
