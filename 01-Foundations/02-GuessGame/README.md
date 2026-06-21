@@ -44,6 +44,9 @@ match check_guess(secret, guess) {
 
 ### Topics covered in this project
 
+In this project you'll learn to build this in Rust — and along the way
+you'll discover **external crates**, **`String` vs `&str`**, **custom `enum`**, **`#[derive]` macros**, **`std::io`**, **`Result<T, E>`**, **`match`**, and **the `?` operator**.
+
 | # | Concept | Why it matters |
 |---|---------|----------------|
 | 1 | External crate (`rand`) | Adding dependencies — Rust's `pip install` |
