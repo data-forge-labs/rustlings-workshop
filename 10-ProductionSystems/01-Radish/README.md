@@ -1,5 +1,9 @@
 # Radish — Build a Redis-Compatible KV Store in Rust
 
+> **Test-driven approach**: This project includes a Cargo project with progressive unit tests. Each function in `src/lib.rs` starts as a `todo!()` stub. As you follow each section, replace `todo!()` with real code and run `cargo test` to watch the pass count grow.
+
+---
+
 ## What Is Radish?
 
 A Redis-compatible KV store built from scratch — raw TCP, RESP protocol, async I/O.
@@ -45,6 +49,9 @@ pub(crate) async fn run() -> Result<(), Box<dyn std::error::Error>> {
 ```
 
 Single-threaded Tokio with `Rc<RefCell<>>` gives zero-lock shared state — matching Redis's own design — without needing `Arc` or `Mutex`.
+
+In this project you'll learn to build this in Rust — and along the way
+you'll discover **RESP protocol**, **async TCP**, and **zero-lock shared state**.
 
 ### Topics covered
 

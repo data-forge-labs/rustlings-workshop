@@ -44,6 +44,9 @@ Axum brings the FastAPI developer experience to Rust:
 
 This workshop rebuilds a full Shop Manager backend (FastAPI → Axum) end-to-end: database, authentication, CRUD, nested orders with transactions.
 
+In this project you'll learn to build this in Rust — and along the way
+you'll discover **`axum`**, **`sqlx`**, and **Tower middleware**.
+
 ---
 
 ### Topics covered
