@@ -351,7 +351,15 @@ When a value that owns heap memory goes out of scope, Rust calls its `Drop` impl
 }   // s goes out of scope → Drop runs → heap memory freed immediately
 ```
 
-You'll learn the full ownership model in [Section 02: Ownership](../../02-Ownership/README.md).
+> **Why this matters: Ownership is about heap pointers**
+>
+> Every time you create a `String`, `Vec`, or `Box`, Rust puts the actual data on the heap and stores a **pointer** to it on the stack. The critical question becomes: *who is responsible for freeing that heap memory when it's no longer needed?*
+>
+> In Python, the garbage collector answers this — it tracks every reference and frees memory when the count drops to zero. But GC is unpredictable (you don't know *when* cleanup happens) and expensive (reference counting on every assignment).
+>
+> In Rust, the answer is simpler: **the variable that holds the pointer owns it**. When that variable goes out of scope, the heap memory is freed — immediately, predictably, with zero runtime cost. The compiler knows exactly which pointer owns which heap block, and it inserts the cleanup code for you. No garbage collector needed. No reference counting overhead. No "when will this be freed?" uncertainty.
+>
+> This is what **ownership** means in Rust: it's a compile-time bookkeeping system for heap pointers. The full rules are covered in [Section 02: Ownership](../../02-Ownership/README.md).
 
 ---
 
