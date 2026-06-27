@@ -4,27 +4,36 @@ use rand::rngs::OsRng;
 use subtle::ConstantTimeEq;
 
 pub fn hash_password(password: &str) -> Result<String, password_hash::Error> {
-    todo!()
+    let salt = SaltString::generate(&mut OsRng);
+    let hash = Argon2::default().hash_password(password.as_bytes(), &salt)?;
+    Ok(hash.to_string())
 }
 
 pub fn verify_password(password: &str, hash: &str) -> Result<bool, password_hash::Error> {
-    todo!()
+    let parsed = PasswordHash::new(hash)?;
+    Ok(Argon2::default()
+        .verify_password(password.as_bytes(), &parsed)
+        .is_ok())
 }
 
 pub fn generate_salt() -> SaltString {
-    todo!()
+    SaltString::generate(&mut OsRng)
 }
 
 pub fn is_password_valid(password: &str, min_length: usize) -> bool {
-    todo!()
+    password.len() >= min_length && !password.is_empty()
 }
 
 pub fn constant_time_eq(a: &[u8], b: &[u8]) -> bool {
-    todo!()
+    if a.len() != b.len() {
+        return false;
+    }
+    a.ct_eq(b).into()
 }
 
 pub fn hash_with_salt(password: &str, salt: &SaltString) -> Result<String, password_hash::Error> {
-    todo!()
+    let hash = Argon2::default().hash_password(password.as_bytes(), salt)?;
+    Ok(hash.to_string())
 }
 
 #[cfg(test)]

@@ -1,39 +1,61 @@
 use duckdb::{params, Connection, Result};
 
 pub fn open_in_memory() -> Result<Connection> {
-    todo!()
+    Connection::open_in_memory()
 }
 
 pub fn create_products_table(conn: &Connection) -> Result<()> {
-    todo!()
+    conn.execute("CREATE TABLE products (id INTEGER, name VARCHAR, region VARCHAR)", [])?;
+    Ok(())
 }
 
 pub fn insert_product(conn: &Connection, id: i32, name: &str, region: &str) -> Result<()> {
-    todo!()
+    conn.execute("INSERT INTO products VALUES (?, ?, ?)", params![id, name, region])?;
+    Ok(())
 }
 
 pub fn count_products(conn: &Connection) -> Result<i64> {
-    todo!()
+    let count: i64 = conn.query_row("SELECT COUNT(*) FROM products", [], |row| row.get(0))?;
+    Ok(count)
 }
 
 pub fn products_in_region(conn: &Connection, region: &str) -> Result<Vec<(i32, String)>> {
-    todo!()
+    let mut stmt = conn.prepare("SELECT id, name FROM products WHERE region = ?")?;
+    let rows: Vec<(i32, String)> = stmt.query_map(params![region], |row| {
+        Ok((row.get(0)?, row.get(1)?))
+    })?.filter_map(|r| r.ok()).collect();
+    Ok(rows)
 }
 
 pub fn regions_with_count(conn: &Connection) -> Result<Vec<(String, i64)>> {
-    todo!()
+    let mut stmt = conn.prepare("SELECT region, COUNT(*) FROM products GROUP BY region ORDER BY region")?;
+    let rows: Vec<(String, i64)> = stmt.query_map([], |row| {
+        Ok((row.get(0)?, row.get(1)?))
+    })?.filter_map(|r| r.ok()).collect();
+    Ok(rows)
 }
 
 pub fn import_csv_from_file(conn: &Connection, table: &str, path: &str) -> Result<usize> {
-    todo!()
+    conn.execute(&format!("CREATE TABLE {} AS SELECT * FROM read_csv_auto('{}')", table, path), [])?;
+    let count: i64 = conn.query_row(&format!("SELECT COUNT(*) FROM {}", table), [], |row| row.get(0))?;
+    Ok(count as usize)
 }
 
 pub fn run_sql(conn: &Connection, sql: &str) -> Result<Vec<Vec<String>>> {
-    todo!()
+    let mut stmt = conn.prepare(sql)?;
+    let rows: Vec<Vec<String>> = stmt.query_map([], |row| {
+        let mut values = Vec::new();
+        for i in 0..row.column_count() {
+            values.push(row.get::<_, String>(i)?);
+        }
+        Ok(values)
+    })?.filter_map(|r| r.ok()).collect();
+    Ok(rows)
 }
 
 pub fn prepared_count(conn: &Connection, region: &str) -> Result<i64> {
-    todo!()
+    let count: i64 = conn.query_row("SELECT COUNT(*) FROM products WHERE region = ?", params![region], |row| row.get(0))?;
+    Ok(count)
 }
 
 #[cfg(test)]

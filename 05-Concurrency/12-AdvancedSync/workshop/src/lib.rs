@@ -3,49 +3,94 @@ use std::sync::Arc;
 use std::time::Duration;
 
 pub fn with_mutex<F: FnOnce(&mut i32) -> R, R>(m: &Mutex<i32>, f: F) -> R {
-    todo!()
+    let mut guard = m.lock();
+    f(&mut guard)
 }
 
 pub fn try_with_mutex<F: FnOnce(&mut i32) -> R, R>(m: &Mutex<i32>, f: F) -> Option<R> {
-    todo!()
+    match m.try_lock() {
+        Some(mut guard) => Some(f(&mut guard)),
+        None => None,
+    }
 }
 
 pub fn update_counter(counter: &Mutex<i32>, delta: i32) -> i32 {
-    todo!()
+    let mut guard = counter.lock();
+    *guard += delta;
+    *guard
 }
 
 pub fn benchmark_parking_lot_vs_std(iterations: u32) -> Duration {
-    todo!()
+    let parking = Arc::new(Mutex::new(0i32));
+    let std_mutex = Arc::new(std::sync::Mutex::new(0i32));
+
+    let start = std::time::Instant::now();
+    let mut handles = vec![];
+    for _ in 0..4 {
+        let p = Arc::clone(&parking);
+        handles.push(std::thread::spawn(move || {
+            for _ in 0..iterations {
+                *p.lock() += 1;
+            }
+        }));
+    }
+    for h in handles {
+        h.join().unwrap();
+    }
+    let _ = start.elapsed();
+    let start2 = std::time::Instant::now();
+    let mut handles = vec![];
+    for _ in 0..4 {
+        let s = Arc::clone(&std_mutex);
+        handles.push(std::thread::spawn(move || {
+            for _ in 0..iterations {
+                *s.lock().unwrap() += 1;
+            }
+        }));
+    }
+    for h in handles {
+        h.join().unwrap();
+    }
+    start2.elapsed()
 }
 
 pub fn read_under_rwlock<F: FnOnce(&i32) -> R, R>(
     lock: &parking_lot::RwLock<i32>,
     f: F,
 ) -> R {
-    todo!()
+    let guard = lock.read();
+    f(&guard)
 }
 
 pub fn write_under_rwlock<F: FnOnce(&mut i32) -> R, R>(
     lock: &parking_lot::RwLock<i32>,
     f: F,
 ) -> R {
-    todo!()
+    let mut guard = lock.write();
+    f(&mut guard)
 }
 
 pub fn crossbeam_send(tx: &crossbeam_channel::Sender<i32>, value: i32) -> Result<(), &'static str> {
-    todo!()
+    tx.send(value).map_err(|_| "send failed")
 }
 
 pub fn crossbeam_collect(rx: crossbeam_channel::Receiver<i32>, n: usize) -> Vec<i32> {
-    todo!()
+    let mut result = Vec::with_capacity(n);
+    for _ in 0..n {
+        match rx.recv() {
+            Ok(v) => result.push(v),
+            Err(_) => break,
+        }
+    }
+    result
 }
 
 pub fn arc_swap_load(swap: &arc_swap::ArcSwap<String>) -> arc_swap::Guard<Arc<String>> {
-    todo!()
+    swap.load()
 }
 
 pub fn arc_swap_store(swap: &arc_swap::ArcSwap<String>, value: String) {
-    todo!()
+    swap.store(Arc::new(value));
 }
 
 #[cfg(test)]

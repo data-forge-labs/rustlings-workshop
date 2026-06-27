@@ -1,15 +1,17 @@
 use ractor::Actor;
+use tokio::sync::oneshot;
 
-#[derive(Debug, Clone)]
+#[derive(Debug)]
 pub struct CounterState {
     pub value: i32,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug)]
 pub enum CounterMsg {
     Increment(i32),
     Decrement(i32),
     Reset,
+    GetValue(oneshot::Sender<i32>),
 }
 
 pub struct Counter;
@@ -25,7 +27,7 @@ impl Actor for Counter {
         _myself: ractor::ActorRef<Self::Msg>,
         _: (),
     ) -> Result<Self::State, ractor::ActorProcessingErr> {
-        todo!()
+        Ok(CounterState { value: 0 })
     }
 
     async fn handle(
@@ -34,34 +36,54 @@ impl Actor for Counter {
         message: Self::Msg,
         state: &mut Self::State,
     ) -> Result<(), ractor::ActorProcessingErr> {
-        todo!()
+        match message {
+            CounterMsg::Increment(d) => state.value += d,
+            CounterMsg::Decrement(d) => state.value -= d,
+            CounterMsg::Reset => state.value = 0,
+            CounterMsg::GetValue(reply) => {
+                let _ = reply.send(state.value);
+            }
+        }
+        Ok(())
     }
 }
 
 pub async fn spawn_counter() -> Result<ractor::ActorRef<CounterMsg>, String> {
-    todo!()
+    let (actor_ref, _handle) = Actor::spawn(None, Counter, ())
+        .await
+        .map_err(|e| e.to_string())?;
+    Ok(actor_ref)
 }
 
 pub fn cast_increment(
     actor: &ractor::ActorRef<CounterMsg>,
     delta: i32,
 ) -> Result<(), String> {
-    todo!()
+    actor
+        .cast(CounterMsg::Increment(delta))
+        .map_err(|e| e.to_string())
 }
 
 pub fn cast_decrement(
     actor: &ractor::ActorRef<CounterMsg>,
     delta: i32,
 ) -> Result<(), String> {
-    todo!()
+    actor
+        .cast(CounterMsg::Decrement(delta))
+        .map_err(|e| e.to_string())
 }
 
 pub async fn call_get_value(actor: &ractor::ActorRef<CounterMsg>) -> Result<i32, String> {
-    todo!()
+    let (tx, rx) = oneshot::channel();
+    actor
+        .cast(CounterMsg::GetValue(tx))
+        .map_err(|e| e.to_string())?;
+    rx.await.map_err(|e| e.to_string())
 }
 
 pub async fn stop_counter(actor: ractor::ActorRef<CounterMsg>) -> Result<(), String> {
-    todo!()
+    actor.stop(None);
+    Ok(())
 }
 
 #[cfg(test)]

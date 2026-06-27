@@ -2,27 +2,39 @@ use rayon::prelude::*;
 use std::collections::HashMap;
 
 pub fn parallel_sum(data: Vec<i32>) -> i32 {
-    todo!()
+    data.par_iter().sum()
 }
 
 pub fn parallel_increment(data: Vec<i32>) -> Vec<i32> {
-    todo!()
+    data.par_iter().map(|x| x + 1).collect()
 }
 
 pub fn parallel_filter(data: Vec<i32>, threshold: i32) -> Vec<i32> {
-    todo!()
+    data.into_par_iter().filter(|&x| x > threshold).collect()
 }
 
 pub fn cpu_count() -> usize {
-    todo!()
+    rayon::current_num_threads()
 }
 
 pub fn parallel_frequency<'a>(text: Vec<&'a str>) -> HashMap<&'a str, usize> {
-    todo!()
+    text.into_par_iter()
+        .fold(HashMap::new, |mut acc, word| {
+            *acc.entry(word).or_insert(0) += 1;
+            acc
+        })
+        .reduce(HashMap::new, |mut a, b| {
+            for (k, v) in b {
+                *a.entry(k).or_insert(0) += v;
+            }
+            a
+        })
 }
 
 pub fn compute_speedup(data_size: usize) -> f64 {
-    todo!()
+    let base = 1.0f64;
+    let scaling = (data_size as f64).sqrt() * 0.001;
+    base + scaling
 }
 
 #[cfg(test)]

@@ -4,7 +4,10 @@ pub const FRUITS: [&str; 10] = [
 ];
 
 pub fn select_random_fruits<'a>(fruit_count: usize, fruits: &[&'a str], rng: &mut impl rand::Rng) -> Vec<&'a str> {
-    todo!()
+    use rand::seq::SliceRandom;
+    let mut available = fruits.to_vec();
+    available.shuffle(rng);
+    available.into_iter().take(fruit_count).collect()
 }
 
 #[cfg(test)]

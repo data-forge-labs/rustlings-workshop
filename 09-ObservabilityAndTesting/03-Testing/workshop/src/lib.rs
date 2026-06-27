@@ -1,31 +1,66 @@
 /// Add two numbers (for basic unit test demo)
 pub fn add(a: i32, b: i32) -> i32 {
-    todo!()
+    a + b
 }
 
 /// Divide, returning Result (for error-handling test demo)
 pub fn divide(a: f64, b: f64) -> Result<f64, String> {
-    todo!()
+    if b == 0.0 {
+        Err("division by zero".to_string())
+    } else {
+        Ok(a / b)
+    }
 }
 
 /// Find item in slice (for testing Option return)
 pub fn find_item<T: PartialEq>(slice: &[T], target: &T) -> Option<usize> {
-    todo!()
+    slice.iter().position(|x| x == target)
 }
 
 /// Fibonacci (for property-based testing demo)
 pub fn fibonacci(n: u32) -> u64 {
-    todo!()
+    match n {
+        0 => 0,
+        1 => 1,
+        _ => {
+            let mut a = 0u64;
+            let mut b = 1u64;
+            for _ in 2..=n {
+                let temp = b;
+                b = a + b;
+                a = temp;
+            }
+            b
+        }
+    }
 }
 
 /// Validate email format (for parameterized testing demo)
 pub fn validate_email(email: &str) -> bool {
-    todo!()
+    if email.is_empty() {
+        return false;
+    }
+    let at_pos = match email.find('@') {
+        Some(p) => p,
+        None => return false,
+    };
+    let local = &email[..at_pos];
+    let domain = &email[at_pos + 1..];
+    !local.is_empty()
+        && !domain.is_empty()
+        && domain.contains('.')
+        && !domain.starts_with('.')
+        && !domain.ends_with('.')
 }
 
 /// Describe different test types and their Python equivalents
 pub fn test_types() -> Vec<(&'static str, &'static str)> {
-    todo!()
+    vec![
+        ("#[test]", "pytest"),
+        ("#[should_panic]", "pytest.raises"),
+        ("assert_eq!", "assert =="),
+        ("Result<(), E> in test", "pytest + raises"),
+    ]
 }
 
 #[cfg(test)]

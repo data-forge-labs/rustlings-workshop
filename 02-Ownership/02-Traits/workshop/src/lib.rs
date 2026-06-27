@@ -23,7 +23,7 @@ pub struct Ticket {
 /// README §2: Implementing Display (manual — like Python's __str__)
 impl fmt::Display for Ticket {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        todo!()
+        write!(f, "[{}] {} — {}", self.status, self.title, self.description)
     }
 }
 
@@ -33,14 +33,18 @@ impl fmt::Display for Ticket {
 /// README §5: From/Into — convert a &str into a Ticket
 impl From<&str> for Ticket {
     fn from(title: &str) -> Ticket {
-        todo!()
+        Ticket {
+            title: title.to_string(),
+            description: String::new(),
+            status: "Open".to_string(),
+        }
     }
 }
 
 /// README §3: A generic function with trait bounds
 /// Formats and returns a string using Display + Debug
 pub fn format_summary<T: fmt::Display + fmt::Debug>(item: &T) -> String {
-    todo!()
+    format!("Display: {}, Debug: {:?}", item, item)
 }
 
 /// README §7: A resource that demonstrates Drop

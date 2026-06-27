@@ -73,7 +73,70 @@ pub fn batch_iter(batch: RecordBatch) -> impl Iterator<Item = std::result::Resul
 // =============================================================================
 /// Write a single batch to a new Lance dataset at `path`. Returns the URI used.
 pub async fn write_initial_dataset(path: &str, batch: RecordBatch) -> Result<String> {
-    todo!("Step 01: write `batch` to a new Lance dataset at `path`")
+    use lance::dataset::Dataset;
+    let reader = batch_iter(batch);
+    let dataset = Dataset::write(reader, path, None).await?;
+    Ok(dataset.uri().to_string())
+}
+
+pub async fn count_rows(path: &str) -> Result<usize> {
+    use lance::dataset::Dataset;
+    let dataset = Dataset::open(path).await?;
+    Ok(dataset.count_rows(None).await?)
+}
+
+pub async fn take_rows(path: &str, indices: &[u32]) -> Result<RecordBatch> {
+    use lance::dataset::Dataset;
+    let dataset = Dataset::open(path).await?;
+    let indices_u64: Vec<u64> = indices.iter().map(|&i| i as u64).collect();
+    let lance_schema: Arc<lance::datatypes::Schema> = Arc::new(dataset.schema().clone());
+    let batch = dataset.take(&indices_u64, lance::dataset::ProjectionRequest::Schema(lance_schema)).await?;
+    Ok(RecordBatch::try_new(batch.schema(), batch.columns().to_vec())?)
+}
+
+pub async fn filter_by_value(path: &str, threshold: f32) -> Result<RecordBatch> {
+    use lance::dataset::Dataset;
+    let dataset = Dataset::open(path).await?;
+    let batch = dataset.scan().try_into_stream().await?
+        .try_collect::<Vec<_>>().await?;
+    let batch = arrow_select::concat::concat_batches(&batch[0].schema(), &batch)?;
+    let arr = batch.column(2).as_any().downcast_ref::<Float32Array>().unwrap();
+    let mask: arrow_array::BooleanArray = (0..arr.len())
+        .map(|i| arr.is_valid(i) && arr.value(i) > threshold)
+        .collect();
+    Ok(arrow_select::filter::filter_record_batch(&batch, &mask)?)
+}
+
+pub async fn project_two_columns(path: &str) -> Result<RecordBatch> {
+    use lance::dataset::Dataset;
+    let dataset = Dataset::open(path).await?;
+    let mut scanner = dataset.scan();
+    scanner.project(&["id", "value"])?;
+    let batch = scanner.try_into_stream().await?
+        .try_collect::<Vec<_>>().await?;
+    Ok(arrow_select::concat::concat_batches(&batch[0].schema(), &batch)?)
+}
+
+pub async fn append_batch(path: &str, new_batch: RecordBatch) -> Result<usize> {
+    use lance::dataset::Dataset;
+    let mut dataset = Dataset::open(path).await?;
+    let reader = batch_iter(new_batch);
+    dataset.append(reader, None).await?;
+    Ok(dataset.count_rows(None).await?)
+}
+
+pub async fn create_index_on_id(path: &str) -> Result<()> {
+    use lance::dataset::Dataset;
+    use lance::index::IndexType;
+    let mut dataset = Dataset::open(path).await?;
+    dataset.create_index(&["id"], IndexType::Scalar, None, None, false).await?;
+    Ok(())
+}
+
+pub async fn current_version(path: &str) -> Result<u64> {
+    use lance::dataset::Dataset;
+    let dataset = Dataset::open(path).await?;
+    Ok(dataset.version().version)
 }
 
 // =============================================================================

@@ -4,33 +4,64 @@ use std::collections::{BTreeMap, BinaryHeap, HashMap};
 /// Used by all three counting strategies so that "Hello" and "hello"
 /// (and "don't!" and "dont") count as the same word.
 pub fn normalize_word(word: &str) -> String {
-    todo!()
+    word.chars().filter(|c| c.is_alphanumeric()).collect::<String>().to_lowercase()
 }
 
 /// Step 2: Count word frequencies by collecting all words into a Vec,
 /// then aggregating into a HashMap, then sorting the result alphabetically.
 /// Returns a sorted `Vec<(word, count)>`.
 pub fn count_vec(text: &str) -> Vec<(String, usize)> {
-    todo!()
+    let words: Vec<String> = text.split_whitespace().map(|w| normalize_word(w)).filter(|w| !w.is_empty()).collect();
+    let mut counts: HashMap<String, usize> = HashMap::new();
+    for word in words {
+        *counts.entry(word).or_insert(0) += 1;
+    }
+    let mut result: Vec<(String, usize)> = counts.into_iter().collect();
+    result.sort_by(|a, b| a.0.cmp(&b.0));
+    result
 }
 
 /// Step 3: Count word frequencies in a single pass using a HashMap.
 /// Returns an unordered `HashMap<word, count>`.
 pub fn count_hashmap(text: &str) -> HashMap<String, usize> {
-    todo!()
+    let mut counts = HashMap::new();
+    for word in text.split_whitespace() {
+        let normalized = normalize_word(word);
+        if !normalized.is_empty() {
+            *counts.entry(normalized).or_insert(0) += 1;
+        }
+    }
+    counts
 }
 
 /// Step 4: Count word frequencies in a single pass using a BTreeMap.
 /// Returns a `BTreeMap<word, count>` — automatically sorted by key.
 pub fn count_btreemap(text: &str) -> BTreeMap<String, usize> {
-    todo!()
+    let mut counts = BTreeMap::new();
+    for word in text.split_whitespace() {
+        let normalized = normalize_word(word);
+        if !normalized.is_empty() {
+            *counts.entry(normalized).or_insert(0) += 1;
+        }
+    }
+    counts
 }
 
 /// Step 5: Return the N most frequent words from a count map, ordered
 /// by count descending. Ties broken alphabetically (handled by the
 /// `(count, word)` tuple ordering).
 pub fn top_n(counts: &HashMap<String, usize>, n: usize) -> Vec<(String, usize)> {
-    todo!()
+    use std::collections::BinaryHeap;
+    let mut heap: BinaryHeap<(usize, &String)> = counts.iter().map(|(k, &v)| (v, k)).collect();
+    let mut result = Vec::new();
+    for _ in 0..n {
+        if let Some((count, word)) = heap.pop() {
+            result.push((word.clone(), count));
+        } else {
+            break;
+        }
+    }
+    result
 }
 
 #[cfg(test)]

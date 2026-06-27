@@ -16,7 +16,22 @@ pub const HINT_DIGIT_COST: u32 = 3;
 /// Returns true if the given string consists of 4 unique digits.
 /// README §5: Strings, iterators
 pub fn has_unique_digits(s: &str) -> bool {
-    todo!()
+    if s.len() != 4 {
+        return false;
+    }
+    let mut seen = [false; 10];
+    for ch in s.chars() {
+        match ch.to_digit(10) {
+            Some(d) => {
+                if seen[d as usize] {
+                    return false;
+                }
+                seen[d as usize] = true;
+            }
+            None => return false,
+        }
+    }
+    true
 }
 
 /// A secret 4-digit code with hint-tracking state.
@@ -31,35 +46,92 @@ impl SecretCode {
     /// Creates a new random 4-digit code with no hints revealed.
     /// README §7: struct constructors
     pub fn new() -> Self {
-        todo!()
+        use rand::RngExt;
+        let mut digits = Vec::new();
+        let mut rng = rand::rng();
+        while digits.len() < 4 {
+            let d = rng.random_range(0..=9);
+            if !digits.contains(&d) {
+                digits.push(d);
+            }
+        }
+        SecretCode {
+            digits,
+            revealed_positions: vec![false; 4],
+            revealed_digits: vec![false; 10],
+        }
     }
 
     /// Compares a guess (exactly 4 digits) with the secret.
     /// Returns (green, yellow, red) — exact matches, wrong-position, none.
     /// README §9: Iterators, zip, filter, count
     pub fn evaluate_guess(&self, guess: &str) -> (usize, usize, usize) {
-        todo!()
+        let guess_digits: Vec<u8> = guess
+            .chars()
+            .map(|c| c.to_digit(10).unwrap() as u8)
+            .collect();
+
+        let mut green = 0;
+        let mut yellow = 0;
+        let mut secret_matched = [false; 4];
+        let mut guess_matched = [false; 4];
+
+        for i in 0..4 {
+            if self.digits[i] == guess_digits[i] {
+                green += 1;
+                secret_matched[i] = true;
+                guess_matched[i] = true;
+            }
+        }
+
+        for i in 0..4 {
+            if guess_matched[i] {
+                continue;
+            }
+            for j in 0..4 {
+                if !secret_matched[j] && self.digits[j] == guess_digits[i] {
+                    yellow += 1;
+                    secret_matched[j] = true;
+                    break;
+                }
+            }
+        }
+
+        let red = 4 - green - yellow;
+        (green, yellow, red)
     }
 
     /// Returns true if at least one position hint remains.
     pub fn can_give_position_hint(&self) -> bool {
-        todo!()
+        self.revealed_positions.iter().any(|&r| !r)
     }
 
     /// Returns true if at least one digit hint remains.
     pub fn can_give_digit_hint(&self) -> bool {
-        todo!()
+        self.digits.iter().any(|&d| !self.revealed_digits[d as usize])
     }
 
     /// Reveals one unrevealed position. Returns Some((index, digit)) or None.
     /// README §8: Option, match
     pub fn give_position_hint(&mut self) -> Option<(usize, u8)> {
-        todo!()
+        for i in 0..4 {
+            if !self.revealed_positions[i] {
+                self.revealed_positions[i] = true;
+                return Some((i, self.digits[i]));
+            }
+        }
+        None
     }
 
     /// Reveals one unrevealed digit (without position). Returns Some(digit) or None.
     pub fn give_digit_hint(&mut self) -> Option<u8> {
-        todo!()
+        for &d in &self.digits.clone() {
+            if !self.revealed_digits[d as usize] {
+                self.revealed_digits[d as usize] = true;
+                return Some(d);
+            }
+        }
+        None
     }
 }
 
@@ -74,13 +146,90 @@ pub struct MastermindGame {
 impl MastermindGame {
     /// Creates a new game with a random secret.
     pub fn new(max_attempts: u32) -> Self {
-        todo!()
+        MastermindGame {
+            secret: SecretCode::new(),
+            attempts_left: max_attempts,
+            guess_count: 0,
+        }
     }
 
     /// Runs the main game loop.
     /// README §11: I/O, §5: loops, §9: branching
     pub fn play(&mut self) {
-        todo!()
+        use std::io::{self, Write};
+        println!("Welcome to Mastermind!");
+        println!("I've picked a 4-digit code with unique digits.");
+        println!("You have {} attempts.", self.attempts_left);
+        println!("Commands: 'hint' (position), 'digit' (digit), 'quit'");
+
+        loop {
+            print!("\nAttempts left: {} | Guesses so far: {} | > ", self.attempts_left, self.guess_count);
+            io::stdout().flush().unwrap();
+
+            let mut input = String::new();
+            if io::stdin().read_line(&mut input).is_err() {
+                println!("Error reading input.");
+                continue;
+            }
+            let input = input.trim();
+
+            match input {
+                "quit" | "q" => {
+                    println!("Thanks for playing!");
+                    break;
+                }
+                "hint" => {
+                    if self.attempts_left < HINT_POSITION_COST {
+                        println!("Not enough attempts for a position hint (cost: {}).", HINT_POSITION_COST);
+                        continue;
+                    }
+                    match self.secret.give_position_hint() {
+                        Some((pos, digit)) => {
+                            self.attempts_left -= HINT_POSITION_COST;
+                            println!("Position {} is {}", pos, digit);
+                        }
+                        None => println!("No position hints left."),
+                    }
+                    continue;
+                }
+                "digit" => {
+                    if self.attempts_left < HINT_DIGIT_COST {
+                        println!("Not enough attempts for a digit hint (cost: {}).", HINT_DIGIT_COST);
+                        continue;
+                    }
+                    match self.secret.give_digit_hint() {
+                        Some(digit) => {
+                            self.attempts_left -= HINT_DIGIT_COST;
+                            println!("The code contains digit {}", digit);
+                        }
+                        None => println!("No digit hints left."),
+                    }
+                    continue;
+                }
+                _ => {}
+            }
+
+            if !has_unique_digits(input) {
+                println!("Please enter exactly 4 unique digits.");
+                continue;
+            }
+
+            self.attempts_left -= 1;
+            self.guess_count += 1;
+
+            let (green, yellow, red) = self.secret.evaluate_guess(input);
+            println!("Result: {} green, {} yellow, {} red", green, yellow, red);
+
+            if green == 4 {
+                println!("Congratulations! You cracked the code in {} guesses!", self.guess_count);
+                break;
+            }
+
+            if self.attempts_left == 0 {
+                println!("Out of attempts! The code was: {:?}", self.secret.digits);
+                break;
+            }
+        }
     }
 }
 

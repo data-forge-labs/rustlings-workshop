@@ -1,11 +1,37 @@
 use std::collections::HashMap;
 
 pub fn languages() -> HashMap<String, u32> {
-    todo!()
+    let mut m = HashMap::new();
+    m.insert("C".to_string(), 1972);
+    m.insert("C++".to_string(), 1979);
+    m.insert("Python".to_string(), 1991);
+    m.insert("Java".to_string(), 1995);
+    m.insert("JavaScript".to_string(), 1995);
+    m.insert("C#".to_string(), 2000);
+    m.insert("Go".to_string(), 2009);
+    m.insert("Kotlin".to_string(), 2011);
+    m.insert("Rust".to_string(), 2010);
+    m.insert("Swift".to_string(), 2014);
+    m.insert("TypeScript".to_string(), 2012);
+    m.insert("Julia".to_string(), 2012);
+    m.insert("Zig".to_string(), 2016);
+    m.insert("Nim".to_string(), 2008);
+    m.insert("Crystal".to_string(), 2014);
+    m
 }
 
 pub fn normalize(languages: &mut HashMap<String, u32>) -> HashMap<String, u32> {
-    todo!()
+    let max_year = *languages.values().max().unwrap_or(&0);
+    let min_year = *languages.values().min().unwrap_or(&0);
+    let range = (max_year - min_year) as f64;
+    languages.iter().map(|(k, &v)| {
+        let weight = if range == 0.0 {
+            50
+        } else {
+            (1.0 + 99.0 * (v as f64 - min_year as f64) / range) as u32
+        };
+        (k.clone(), weight)
+    }).collect()
 }
 
 #[cfg(test)]

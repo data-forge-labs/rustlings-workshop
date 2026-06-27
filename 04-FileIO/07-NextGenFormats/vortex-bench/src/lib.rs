@@ -63,7 +63,144 @@ pub fn make_events_batch(n_rows: usize, seed: u64) -> RecordBatch {
 /// Convert an Arrow RecordBatch into a Vortex `ArrayRef` (StructArray) and
 /// write it to a Vortex file at `path`. Returns the file size in bytes.
 pub async fn write_vortex_file(path: &str, batch: RecordBatch) -> Result<u64> {
-    todo!("Step 01: convert Arrow → Vortex StructArray, write to VTX file")
+    use vortex::array::arrow::FromArrowArray;
+    use vortex::file::VortexWriteOptions;
+    use vortex::session::VortexSession;
+    use vortex::VortexSessionDefault;
+
+    let session = VortexSession::default();
+    let vp_array = vortex::array::ArrayRef::from_arrow(batch.clone(), false)?;
+    let file = tokio::fs::File::create(path).await?;
+    VortexWriteOptions::new(session)
+        .write(file, vp_array.to_array_stream())
+        .await?;
+    Ok(std::fs::metadata(path)?.len())
+}
+
+pub async fn read_vortex_row_count(path: &str) -> Result<usize> {
+    use vortex::file::OpenOptionsSessionExt;
+    use vortex::session::VortexSession;
+    use vortex::VortexSessionDefault;
+
+    let session = VortexSession::default();
+    let vf = session.open_options().open_path(path).await?;
+    Ok(vf.scan()?.into_array_stream()?.dtype().len())
+}
+
+pub async fn vortex_to_arrow(path: &str) -> Result<RecordBatch> {
+    use arrow_array::StructArray;
+    use arrow_schema::Schema;
+    use vortex::array::arrow::IntoArrowArray;
+    use vortex::file::OpenOptionsSessionExt;
+    use vortex::session::VortexSession;
+    use vortex::VortexSessionDefault;
+    use futures::StreamExt;
+
+    let session = VortexSession::default();
+    let vf = session.open_options().open_path(path).await?;
+    let stream = vf.scan()?.into_array_stream()?;
+    tokio::pin!(stream);
+    if let Some(chunk) = stream.next().await {
+        #[allow(deprecated)]
+        let arrow_arr = chunk?.into_arrow_preferred()?;
+        let struct_arr = arrow_arr.as_any().downcast_ref::<StructArray>()
+            .ok_or("expected StructArray")?;
+        let schema = Schema::new(struct_arr.fields().to_vec());
+        Ok(RecordBatch::try_new(Arc::new(schema), struct_arr.columns().to_vec())?)
+    } else {
+        Err("empty stream".into())
+    }
+}
+
+pub fn inspect_vortex_structure(path: &str) -> Result<String> {
+    let metadata = std::fs::metadata(path)?;
+    let file_size = metadata.len();
+    let bytes = std::fs::read(path)?;
+    let segment_count = bytes.windows(4).filter(|w| w == b"VTX\0").count().max(1);
+    Ok(format!("Vortex file: {} bytes, ~{} segments", file_size, segment_count))
+}
+
+pub async fn write_with_cascading_compression(path: &str, batch: RecordBatch) -> Result<u64> {
+    use vortex::array::arrow::FromArrowArray;
+    use vortex::compressor::CompactCompressor;
+    use vortex::file::VortexWriteOptions;
+    use vortex::session::VortexSession;
+    use vortex::VortexSessionDefault;
+
+    let session = VortexSession::default();
+    let vp_array = vortex::array::ArrayRef::from_arrow(batch.clone(), false)?;
+    let compressed = CompactCompressor::new(&session).compress(&vp_array)?;
+    let file = tokio::fs::File::create(path).await?;
+    VortexWriteOptions::new(session)
+        .write(file, compressed.to_array_stream())
+        .await?;
+    Ok(std::fs::metadata(path)?.len())
+}
+
+pub async fn project_value_column(path: &str) -> Result<Vec<f32>> {
+    use vortex::file::OpenOptionsSessionExt;
+    use vortex::session::VortexSession;
+    use vortex::VortexSessionDefault;
+    use futures::StreamExt;
+
+    let session = VortexSession::default();
+    let vf = session.open_options().open_path(path).await?;
+    let stream = vf.scan()?.project(&["value"])?.into_array_stream()?;
+    tokio::pin!(stream);
+    let mut all_values = Vec::new();
+    while let Some(chunk) = stream.next().await {
+        let chunk = chunk?;
+        use arrow_array::cast::AsArray;
+        #[allow(deprecated)]
+        let arrow_arr = chunk.into_arrow_preferred()?;
+        let struct_arr = arrow_arr.as_any().downcast_ref::<arrow_array::StructArray>().unwrap();
+        let float_arr = struct_arr.column_by_name("value").unwrap().as_primitive::<arrow_array::types::Float32Type>();
+        for i in 0..float_arr.len() {
+            all_values.push(float_arr.value(i));
+        }
+    }
+    Ok(all_values)
+}
+
+pub async fn sum_id_column(path: &str) -> Result<i64> {
+    use vortex::file::OpenOptionsSessionExt;
+    use vortex::session::VortexSession;
+    use vortex::VortexSessionDefault;
+    use futures::StreamExt;
+
+    let session = VortexSession::default();
+    let vf = session.open_options().open_path(path).await?;
+    let stream = vf.scan()?.project(&["id"])?.into_array_stream()?;
+    tokio::pin!(stream);
+    let mut sum: i64 = 0;
+    while let Some(chunk) = stream.next().await {
+        let chunk = chunk?;
+        use arrow_array::cast::AsArray;
+        #[allow(deprecated)]
+        let arrow_arr = chunk.into_arrow_preferred()?;
+        let struct_arr = arrow_arr.as_any().downcast_ref::<arrow_array::StructArray>().unwrap();
+        let int_arr = struct_arr.column_by_name("id").unwrap().as_primitive::<arrow_array::types::Int32Type>();
+        for i in 0..int_arr.len() {
+            sum += int_arr.value(i) as i64;
+        }
+    }
+    Ok(sum)
+}
+
+pub async fn list_field_names(path: &str) -> Result<Vec<String>> {
+    use vortex::file::OpenOptionsSessionExt;
+    use vortex::session::VortexSession;
+    use vortex::VortexSessionDefault;
+
+    let session = VortexSession::default();
+    let vf = session.open_options().open_path(path).await?;
+    let dtype = vf.scan()?.into_array_stream()?.dtype();
+    match dtype {
+        vortex::dtype::DType::Struct(fields, _) => {
+            Ok(fields.iter().map(|(name, _)| name.to_string()).collect())
+        }
+        _ => Err("expected struct dtype".into()),
+    }
 }
 
 // =============================================================================

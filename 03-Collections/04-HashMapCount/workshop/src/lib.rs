@@ -1,11 +1,19 @@
 use std::collections::HashMap;
 
 pub fn count_frequencies(numbers: Vec<i32>) -> HashMap<i32, u32> {
-    todo!()
+    let mut map = HashMap::new();
+    for n in numbers {
+        *map.entry(n).or_insert(0) += 1;
+    }
+    map
 }
 
 pub fn most_frequent(numbers: &[i32]) -> Option<(i32, u32)> {
-    todo!()
+    if numbers.is_empty() {
+        return None;
+    }
+    let counts = count_frequencies(numbers.to_vec());
+    counts.into_iter().max_by_key(|&(_, count)| count)
 }
 
 #[cfg(test)]

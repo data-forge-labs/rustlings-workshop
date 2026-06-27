@@ -1,19 +1,24 @@
 use rand::seq::SliceRandom;
 
 pub fn remove_fruit(fruit_salad: &mut Vec<&str>, fruit_to_remove: &str) -> bool {
-    todo!()
+    if let Some(pos) = fruit_salad.iter().position(|&f| f == fruit_to_remove) {
+        fruit_salad.remove(pos);
+        true
+    } else {
+        false
+    }
 }
 
 pub fn add_fruit<'a>(fruit_salad: &mut Vec<&'a str>, fruit: &'a str) {
-    todo!()
+    fruit_salad.push(fruit);
 }
 
 pub fn sort_fruits(fruit_salad: &mut Vec<&str>) {
-    todo!()
+    fruit_salad.sort();
 }
 
 pub fn pick_random_fruit<'a>(fruit_salad: &[&'a str], rng: &mut impl rand::Rng) -> Option<&'a str> {
-    todo!()
+    fruit_salad.choose(rng).copied()
 }
 
 #[cfg(test)]

@@ -1,11 +1,15 @@
 use std::collections::VecDeque;
 
 pub fn make_fruit_deque() -> VecDeque<&'static str> {
-    todo!()
+    let mut d = VecDeque::new();
+    d.push_back("Apple");
+    d.push_back("Banana");
+    d.push_back("Cherry");
+    d
 }
 
 pub fn format_fruit_salad(fruit: &VecDeque<&str>) -> String {
-    todo!()
+    fruit.iter().copied().collect::<Vec<&str>>().join(", ")
 }
 
 #[cfg(test)]

@@ -26,23 +26,52 @@ pub struct ActorHandle {
 }
 
 pub fn spawn_counter(buffer: usize) -> ActorHandle {
-    todo!()
+    let (tx, rx) = mpsc::channel(buffer);
+    let join = tokio::spawn(async move {
+        let mut actor = CounterActor::new();
+        while let Some(msg) = rx.recv().await {
+            match msg {
+                CounterMsg::Increment(d) => actor.value += d,
+                CounterMsg::Decrement(d) => actor.value -= d,
+                CounterMsg::Get { reply } => {
+                    let _ = reply.send(actor.value);
+                }
+                CounterMsg::Stop => break,
+            }
+        }
+    });
+    ActorHandle { tx, join }
 }
 
 pub async fn send_increment(handle: &ActorHandle, delta: i32) -> Result<(), &'static str> {
-    todo!()
+    handle
+        .tx
+        .send(CounterMsg::Increment(delta))
+        .await
+        .map_err(|_| "channel closed")
 }
 
 pub async fn send_decrement(handle: &ActorHandle, delta: i32) -> Result<(), &'static str> {
-    todo!()
+    handle
+        .tx
+        .send(CounterMsg::Decrement(delta))
+        .await
+        .map_err(|_| "channel closed")
 }
 
 pub async fn ask_value(handle: &ActorHandle) -> Result<i32, &'static str> {
-    todo!()
+    let (reply_tx, reply_rx) = oneshot::channel();
+    handle
+        .tx
+        .send(CounterMsg::Get { reply: reply_tx })
+        .await
+        .map_err(|_| "channel closed")?;
+    reply_rx.await.map_err(|_| "reply channel closed")
 }
 
 pub async fn stop_actor(handle: ActorHandle) -> Result<(), &'static str> {
-    todo!()
+    let _ = handle.tx.send(CounterMsg::Stop).await;
+    handle.join.await.map_err(|_| "join failed")
 }
 
 #[cfg(test)]

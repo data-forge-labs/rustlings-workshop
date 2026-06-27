@@ -9,35 +9,48 @@ pub trait DataSource {
 }
 
 pub fn run_etl(source: &dyn DataSource, query: &str) -> Result<usize, String> {
-    todo!()
+    let rows = source.fetch(query)?;
+    Ok(rows.len())
 }
 
 pub fn count_records(source: &dyn DataSource, query: &str) -> Result<u64, String> {
-    todo!()
+    let rows = source.fetch(query)?;
+    Ok(rows.len() as u64)
 }
 
 pub fn is_healthy(source: &dyn DataSource) -> bool {
-    todo!()
+    source.health()
 }
 
 pub fn get_schema(source: &dyn DataSource) -> Vec<String> {
-    todo!()
+    source.schema()
 }
 
 pub fn filter_rows(source: &dyn DataSource, query: &str, prefix: &str) -> Result<Vec<String>, String> {
-    todo!()
+    let rows = source.fetch(query)?;
+    Ok(rows.into_iter().filter(|r| r.starts_with(prefix)).collect())
 }
 
 pub fn batch_etl(source: &dyn DataSource, queries: &[&str]) -> Result<Vec<Vec<String>>, String> {
-    todo!()
+    queries.iter().map(|q| source.fetch(q)).collect()
 }
 
 pub fn validate_pipeline(source: &dyn DataSource) -> Result<&'static str, String> {
-    todo!()
+    if !source.health() {
+        return Err("source is unhealthy".to_string());
+    }
+    let rows = source.fetch("SELECT 1")?;
+    if rows.is_empty() {
+        return Err("source returned empty result".to_string());
+    }
+    Ok("ok")
 }
 
 pub fn total_rows(source: &dyn DataSource, tables: &[&str]) -> Result<u64, String> {
-    todo!()
+    tables
+        .iter()
+        .map(|t| source.record_count(t))
+        .sum::<Result<u64, String>>()
 }
 
 #[cfg(test)]

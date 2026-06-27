@@ -23,11 +23,17 @@ pub struct SpanRecord {
 }
 
 pub fn new_correlation_id() -> String {
-    todo!()
+    Uuid::new_v4().to_string()
 }
 
 pub fn format_log_line(level: &str, target: &str, message: &str, correlation_id: Option<&str>) -> LogLine {
-    todo!()
+    LogLine {
+        timestamp: Utc::now(),
+        level: level.to_string(),
+        target: target.to_string(),
+        message: message.to_string(),
+        correlation_id: correlation_id.map(|s| s.to_string()),
+    }
 }
 
 pub fn build_span(
@@ -36,30 +42,47 @@ pub fn build_span(
     attributes: std::collections::HashMap<String, String>,
     duration: Duration,
 ) -> SpanRecord {
-    todo!()
+    SpanRecord {
+        name: name.to_string(),
+        correlation_id: correlation_id.to_string(),
+        start: Utc::now(),
+        duration_ms: duration.as_millis() as u64,
+        attributes,
+    }
 }
 
 pub fn with_correlation<F: FnOnce(&str) -> R, R>(correlation_id: &str, f: F) -> R {
-    todo!()
+    f(correlation_id)
 }
 
 pub fn parse_log_level(s: &str) -> Result<u8, String> {
-    todo!()
+    match s.to_uppercase().as_str() {
+        "TRACE" => Ok(10),
+        "DEBUG" => Ok(15),
+        "INFO" => Ok(20),
+        "WARN" => Ok(30),
+        "ERROR" => Ok(40),
+        _ => Err(format!("unknown log level: {}", s)),
+    }
 }
 
 pub fn span_duration_ms(d: Duration) -> u64 {
-    todo!()
+    d.as_millis() as u64
 }
 
 pub fn merge_attributes(
     a: std::collections::HashMap<String, String>,
     b: std::collections::HashMap<String, String>,
 ) -> std::collections::HashMap<String, String> {
-    todo!()
+    let mut merged = a;
+    for (k, v) in b {
+        merged.insert(k, v);
+    }
+    merged
 }
 
 pub fn otel_attribute(key: &str, value: &str) -> (String, String) {
-    todo!()
+    (key.to_string(), value.to_string())
 }
 
 pub struct PipelineMetrics {
@@ -78,19 +101,23 @@ impl PipelineMetrics {
     }
 
     pub fn record_success(&self) {
-        todo!()
+        self.processed.fetch_add(1, Ordering::Relaxed);
     }
 
     pub fn record_failure(&self) {
-        todo!()
+        self.failed.fetch_add(1, Ordering::Relaxed);
     }
 
     pub fn record_span(&self) {
-        todo!()
+        self.spans_emitted.fetch_add(1, Ordering::Relaxed);
     }
 
     pub fn snapshot(&self) -> (u64, u64, u64) {
-        todo!()
+        (
+            self.processed.load(Ordering::Relaxed),
+            self.failed.load(Ordering::Relaxed),
+            self.spans_emitted.load(Ordering::Relaxed),
+        )
     }
 }
 

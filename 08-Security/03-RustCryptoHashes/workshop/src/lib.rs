@@ -1,31 +1,48 @@
 /// Simple string-based hash function (demonstration, not cryptographic)
 pub fn simple_hash(input: &str) -> String {
-    todo!()
+    let mut hash: u64 = 0;
+    for byte in input.bytes() {
+        hash = hash.wrapping_mul(31).wrapping_add(byte as u64);
+    }
+    format!("{:016x}", hash)
 }
 
 /// Compute a checksum-like value by XOR-ing bytes
 pub fn xor_checksum(input: &[u8]) -> u8 {
-    todo!()
+    input.iter().fold(0u8, |acc, &b| acc ^ b)
 }
 
 /// Demonstrate hashing properties: deterministic
 pub fn is_deterministic(input: &str) -> bool {
-    todo!()
+    simple_hash(input) == simple_hash(input)
 }
 
 /// Demonstrate avalanche effect: small change produces very different hash
 pub fn avalanche_effect(input: &str, change_at: usize) -> bool {
-    todo!()
+    if change_at >= input.len() {
+        return true;
+    }
+    let mut chars: Vec<char> = input.chars().collect();
+    let original = chars[change_at];
+    chars[change_at] = if original == 'a' { 'b' } else { 'a' };
+    let changed: String = chars.into_iter().collect();
+    simple_hash(input) != simple_hash(&changed)
 }
 
 /// Return the list of hash algorithms covered conceptually
 pub fn hash_algorithms() -> Vec<&'static str> {
-    todo!()
+    vec!["SHA-256", "SHA-512", "MD5", "BLAKE3", "Argon2"]
 }
 
 /// List the key properties of cryptographic hash functions
 pub fn hash_properties() -> Vec<&'static str> {
-    todo!()
+    vec![
+        "deterministic",
+        "collision resistance",
+        "pre-image resistance",
+        "avalanche effect",
+        "fixed output size",
+    ]
 }
 
 #[cfg(test)]

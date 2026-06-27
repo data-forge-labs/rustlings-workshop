@@ -1,21 +1,46 @@
 /// Add two numbers (safe function)
-pub fn safe_add(a: i32, b: i32) -> i32 { todo!() }
+pub fn safe_add(a: i32, b: i32) -> i32 { a + b }
 
 /// Dereference a raw pointer (requires unsafe)
 /// Returns the value at the pointer, or 0 if null
-pub unsafe fn unsafe_dereference(ptr: *const i32) -> i32 { todo!() }
+pub unsafe fn unsafe_dereference(ptr: *const i32) -> i32 {
+    if ptr.is_null() {
+        0
+    } else {
+        unsafe { *ptr }
+    }
+}
 
 /// Create a mutable raw pointer and write to it (unsafe)
-pub unsafe fn unsafe_write(ptr: *mut i32, val: i32) { todo!() }
+pub unsafe fn unsafe_write(ptr: *mut i32, val: i32) {
+    unsafe { *ptr = val };
+}
 
 /// Safe wrapper that demonstrates split_at_mut (safe interior mutability pattern)
-pub fn safe_split_sum(slice: &mut [i32]) -> (i32, i32) { todo!() }
+pub fn safe_split_sum(slice: &mut [i32]) -> (i32, i32) {
+    let mid = slice.len() / 2;
+    let (left, right) = slice.split_at_mut(mid);
+    let sum_left: i32 = left.iter().sum();
+    let sum_right: i32 = right.iter().sum();
+    (sum_left, sum_right)
+}
 
 /// Demonstrate that safe Rust prevents buffer overflow
-pub fn safe_index(slice: &[i32], index: usize) -> Option<i32> { todo!() }
+pub fn safe_index(slice: &[i32], index: usize) -> Option<i32> {
+    slice.get(index).copied()
+}
 
 /// Return which safety concepts this project covers
-pub fn safety_concepts() -> Vec<&'static str> { todo!() }
+pub fn safety_concepts() -> Vec<&'static str> {
+    vec![
+        "safe functions",
+        "unsafe functions",
+        "raw pointers",
+        "null pointer safety",
+        "split_at_mut",
+        "bounds checking",
+    ]
+}
 
 #[cfg(test)]
 mod tests {

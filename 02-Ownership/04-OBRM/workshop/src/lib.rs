@@ -6,42 +6,56 @@ pub struct Resource {
 
 impl Resource {
     pub fn new(id: u32) -> Self {
-        todo!()
+        Resource { id, is_open: true }
     }
 
     pub fn close(&mut self) {
-        todo!()
+        self.is_open = false;
     }
 
     pub fn is_open(&self) -> bool {
-        todo!()
+        self.is_open
     }
 }
 
 impl Drop for Resource {
     fn drop(&mut self) {
-        todo!()
+        self.is_open = false;
     }
 }
 
 /// Demonstrate RAII: resource is automatically closed when scope ends
 pub fn raii_demo() -> Vec<String> {
-    todo!()
+    let mut messages = Vec::new();
+    {
+        let mut res = Resource::new(1);
+        messages.push(format!("Resource {} created and open", res.id));
+        messages.push(format!("Resource {} will be dropped at end of scope", res.id));
+    }
+    messages
 }
 
 /// Transfer ownership and demonstrate drop at end of scope
 pub fn ownership_transfer() -> u32 {
-    todo!()
+    let mut res = Resource::new(1);
+    let id = res.id;
+    let _moved = res;
+    id
 }
 
 /// Borrow a resource without taking ownership
 pub fn borrow_resource(res: &Resource) -> u32 {
-    todo!()
+    res.id
 }
 
 /// Return a list of RAII/OBRM concepts covered
 pub fn obrm_concepts() -> Vec<&'static str> {
-    todo!()
+    vec![
+        "RAII — Resource Acquisition Is Initialization",
+        "Drop trait — automatic cleanup when value goes out of scope",
+        "Ownership transfer — moving values between scopes",
+        "Borrowing — temporary access without ownership",
+    ]
 }
 
 #[cfg(test)]

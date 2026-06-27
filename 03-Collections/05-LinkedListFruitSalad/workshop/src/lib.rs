@@ -1,15 +1,21 @@
 use std::collections::LinkedList;
 
 pub fn make_fruit_list() -> LinkedList<&'static str> {
-    todo!()
+    let mut list = LinkedList::new();
+    list.push_back("Apple");
+    list.push_back("Banana");
+    list.push_back("Cherry");
+    list
 }
 
 pub fn shuffle_to_vec(list: LinkedList<&'static str>, rng: &mut impl rand::Rng) -> Vec<&'static str> {
-    todo!()
+    let mut vec: Vec<&str> = list.into_iter().collect();
+    vec.shuffle(rng);
+    vec
 }
 
 pub fn vec_to_linked_list(vec: Vec<&'static str>) -> LinkedList<&'static str> {
-    todo!()
+    vec.into_iter().collect()
 }
 
 #[cfg(test)]

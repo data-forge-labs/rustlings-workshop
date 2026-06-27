@@ -89,27 +89,100 @@ use std::collections::HashMap;
 
 /// Build a map of English letter frequencies (percentages).
 pub fn gen_counts() -> HashMap<char, f32> {
-    todo!()
+    let mut m = HashMap::new();
+    m.insert('a', 8.17);
+    m.insert('b', 1.49);
+    m.insert('c', 2.78);
+    m.insert('d', 4.25);
+    m.insert('e', 12.70);
+    m.insert('f', 2.23);
+    m.insert('g', 2.02);
+    m.insert('h', 6.09);
+    m.insert('i', 6.97);
+    m.insert('j', 0.15);
+    m.insert('k', 0.77);
+    m.insert('l', 4.03);
+    m.insert('m', 2.41);
+    m.insert('n', 6.75);
+    m.insert('o', 7.51);
+    m.insert('p', 1.93);
+    m.insert('q', 0.10);
+    m.insert('r', 5.99);
+    m.insert('s', 6.33);
+    m.insert('t', 9.06);
+    m.insert('u', 2.76);
+    m.insert('v', 0.98);
+    m.insert('w', 2.36);
+    m.insert('x', 0.15);
+    m.insert('y', 1.97);
+    m.insert('z', 0.07);
+    m
 }
 
 /// Apply a Caesar shift back by `shift` positions.
 pub fn decrypt(text: &str, shift: usize) -> String {
-    todo!()
+    text.chars()
+        .map(|c| {
+            if c.is_ascii_lowercase() {
+                (b'a' + ((c as u8 - b'a' + 26 - shift as u8) % 26)) as char
+            } else {
+                c
+            }
+        })
+        .collect()
 }
 
 /// Score how English-like a piece of text is using letter frequency comparison.
 pub fn score_text(text: &str, freqs: &HashMap<char, f32>) -> f32 {
-    todo!()
+    let lower: String = text.chars().filter(|c| c.is_ascii_lowercase()).collect();
+    if lower.is_empty() {
+        return 0.0;
+    }
+    let len = lower.len() as f32;
+    let mut observed = HashMap::new();
+    for c in lower.chars() {
+        *observed.entry(c).or_insert(0.0f32) += 1.0;
+    }
+    let mut score = 0.0f32;
+    for (ch, count) in &observed {
+        let observed_pct = (count / len) * 100.0;
+        let expected_pct = freqs.get(ch).copied().unwrap_or(0.0);
+        score += 1.0 - (observed_pct - expected_pct).abs() / expected_pct.max(1.0);
+    }
+    score
 }
 
 /// Try all shifts up to `depth` and return the best (shift, decrypted text, score).
 pub fn guess_shift(text: &str, depth: usize) -> (usize, String, f32) {
-    todo!()
+    let freqs = gen_counts();
+    let mut best_shift = 0;
+    let mut best_text = String::new();
+    let mut best_score = f32::NEG_INFINITY;
+    for shift in 0..depth {
+        let decrypted = decrypt(text, shift);
+        let score = score_text(&decrypted, &freqs);
+        if score > best_score {
+            best_score = score;
+            best_shift = shift;
+            best_text = decrypted;
+        }
+    }
+    (best_shift, best_text, best_score)
 }
 
 /// Parallel version of `guess_shift` using Rayon.
 pub fn guess_shift_parallel(text: &str, depth: usize) -> (usize, String, f32) {
-    todo!()
+    use rayon::prelude::*;
+    let freqs = gen_counts();
+    (0..depth)
+        .into_par_iter()
+        .map(|shift| {
+            let decrypted = decrypt(text, shift);
+            let score = score_text(&decrypted, &freqs);
+            (shift, decrypted, score)
+        })
+        .max_by(|a, b| a.2.partial_cmp(&b.2).unwrap())
+        .unwrap()
 }
 
 #[cfg(test)]

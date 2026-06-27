@@ -23,59 +23,67 @@ pub struct Ticket {
 impl Ticket {
     /// README §3: Vec — storing tickets
     pub fn new(id: u32, title: String, description: String, status: String) -> Ticket {
-        todo!()
+        Ticket { id, title, description, status }
     }
 
     pub fn id(&self) -> u32 {
-        todo!()
+        self.id
     }
 
     pub fn title(&self) -> &str {
-        todo!()
+        &self.title
     }
 
     /// README §4: Slices — views into data
     pub fn status(&self) -> &str {
-        todo!()
+        &self.status
     }
 
     pub fn is_open(&self) -> bool {
-        todo!()
+        self.status == "Open"
     }
 
     pub fn is_closed(&self) -> bool {
-        todo!()
+        self.status == "Closed"
     }
 }
 
 /// Index tickets by status using HashMap.
 /// README §7: HashMap — key-value store
 pub fn index_by_status(tickets: &[Ticket]) -> HashMap<&str, Vec<&Ticket>> {
-    todo!()
+    let mut map: HashMap<&str, Vec<&Ticket>> = HashMap::new();
+    for ticket in tickets {
+        map.entry(ticket.status()).or_default().push(ticket);
+    }
+    map
 }
 
 /// Find the most common status using iterators.
 /// README §5-6: Iterators, combinators
 pub fn most_common_status(tickets: &[Ticket]) -> Option<(&str, usize)> {
-    todo!()
+    let counts = count_by_status(tickets);
+    counts.into_iter().max_by_key(|&(_, count)| count)
 }
 
 /// Return titles of all open tickets using filter + map.
 /// README §6: Iterator combinators
 pub fn open_ticket_titles(tickets: &[Ticket]) -> Vec<&str> {
-    todo!()
+    tickets.iter().filter(|t| t.is_open()).map(|t| t.title()).collect()
 }
 
 /// Format each ticket as "N: [Status] Title" using map.
 /// README §6: map combinator
 pub fn ticket_summaries(tickets: &[Ticket]) -> Vec<String> {
-    todo!()
+    tickets.iter().map(|t| format!("{}: [{}] {}", t.id(), t.status(), t.title())).collect()
 }
 
 /// Count tickets per status using fold.
 /// README §6: fold combinator
 pub fn count_by_status(tickets: &[Ticket]) -> HashMap<&str, usize> {
-    todo!()
+    tickets.iter().fold(HashMap::new(), |mut acc, t| {
+        *acc.entry(t.status()).or_insert(0) += 1;
+        acc
+    })
 }
 
 // ============================================================

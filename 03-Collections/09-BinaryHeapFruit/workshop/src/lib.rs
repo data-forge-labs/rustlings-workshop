@@ -9,7 +9,12 @@ pub enum Fruit {
 
 impl Ord for Fruit {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering {
-        todo!()
+        match (self, other) {
+            (Fruit::Fig, Fruit::Fig) => std::cmp::Ordering::Equal,
+            (Fruit::Fig, Fruit::Other(_)) => std::cmp::Ordering::Greater,
+            (Fruit::Other(_), Fruit::Fig) => std::cmp::Ordering::Less,
+            (Fruit::Other(_), Fruit::Other(_)) => std::cmp::Ordering::Equal,
+        }
     }
 }
 
@@ -20,7 +25,13 @@ impl PartialOrd for Fruit {
 }
 
 pub fn generate_fruit_salad() -> BinaryHeap<Fruit> {
-    todo!()
+    let fruits = vec![
+        Fruit::Fig,
+        Fruit::Other("Apple".into()),
+        Fruit::Other("Banana".into()),
+        Fruit::Other("Cherry".into()),
+    ];
+    fruits.into_iter().collect()
 }
 
 #[cfg(test)]

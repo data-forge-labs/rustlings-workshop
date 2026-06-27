@@ -1,20 +1,29 @@
+use std::sync::Arc;
 use tokio::sync::{mpsc, Notify, Semaphore};
 use tokio::time::{timeout, Duration};
 use tokio_util::sync::CancellationToken;
 
 pub async fn race_two(fast: Duration, slow: Duration) -> &'static str {
-    todo!()
+    tokio::select! {
+        _ = tokio::time::sleep(fast) => "fast",
+        _ = tokio::time::sleep(slow) => "slow",
+    }
 }
 
 pub async fn with_timeout<F>(fut: F, limit: Duration) -> Result<F::Output, Duration>
 where
     F: std::future::Future,
 {
-    todo!()
+    timeout(limit, fut).await.map_err(|_| limit)
 }
 
 pub async fn acquire_permits(sem: &Semaphore, n: u32) -> Vec<tokio::sync::OwnedSemaphorePermit> {
-    todo!()
+    let sem = Arc::new((*sem).clone());
+    let mut permits = Vec::new();
+    for _ in 0..n {
+        permits.push(sem.clone().acquire_owned().await.unwrap());
+    }
+    permits
 }
 
 pub async fn run_with_concurrency_limit<F, T>(items: Vec<T>, limit: usize, op: F) -> Vec<T>
@@ -22,15 +31,31 @@ where
     F: Fn(T) -> futures::future::BoxFuture<'static, T> + Send + Sync + 'static,
     T: Send + 'static,
 {
-    todo!()
+    let sem = Arc::new(Semaphore::new(limit));
+    let mut handles = Vec::new();
+    for item in items {
+        let sem = Arc::clone(&sem);
+        let permit = sem.clone().acquire_owned().await.unwrap();
+        let fut = op(item);
+        handles.push(tokio::spawn(async move {
+            let result = fut.await;
+            drop(permit);
+            result
+        }));
+    }
+    let mut results = Vec::new();
+    for h in handles {
+        results.push(h.await.unwrap());
+    }
+    results
 }
 
 pub async fn notify_one(notify: &Notify) {
-    todo!()
+    notify.notify_one();
 }
 
 pub async fn wait_for(notify: &Notify) {
-    todo!()
+    notify.notified().await;
 }
 
 pub async fn joinset_spawn_all<F, T>(count: usize, f: F) -> Vec<T>
@@ -38,7 +63,16 @@ where
     F: Fn(usize) -> futures::future::BoxFuture<'static, T> + Send + Sync + 'static,
     T: Send + 'static,
 {
-    todo!()
+    let mut joinset = tokio::task::JoinSet::new();
+    for i in 0..count {
+        let fut = f(i);
+        joinset.spawn(fut);
+    }
+    let mut results = Vec::with_capacity(count);
+    while let Some(r) = joinset.join_next().await {
+        results.push(r.unwrap());
+    }
+    results
 }
 
 pub async fn joinset_first_error<F, T>(count: usize, f: F) -> Result<(), &'static str>
@@ -46,23 +80,45 @@ where
     F: Fn(usize) -> futures::future::BoxFuture<'static, Result<T, &'static str>> + Send + Sync + 'static,
     T: Send + 'static,
 {
-    todo!()
+    let mut joinset = tokio::task::JoinSet::new();
+    for i in 0..count {
+        let fut = f(i);
+        joinset.spawn(fut);
+    }
+    while let Some(r) = joinset.join_next().await {
+        let result = r.unwrap();
+        if let Err(e) = result {
+            return Err(e);
+        }
+    }
+    Ok(())
 }
 
 pub async fn bounded_send_n(tx: mpsc::Sender<i32>, n: i32) -> Result<(), mpsc::error::SendError<i32>> {
-    todo!()
+    for i in 1..=n {
+        tx.send(i).await?;
+    }
+    Ok(())
 }
 
 pub async fn bounded_drain(mut rx: mpsc::Receiver<i32>, n: usize) -> Vec<i32> {
-    todo!()
+    let mut result = Vec::with_capacity(n);
+    for _ in 0..n {
+        match rx.recv().await {
+            Some(v) => result.push(v),
+            None => break,
+        }
+    }
+    result
 }
 
 pub fn is_cancelled(token: &CancellationToken) -> bool {
-    todo!()
+    token.is_cancelled()
 }
 
 pub async fn cancel_after(token: CancellationToken, delay: Duration) {
-    todo!()
+    tokio::time::sleep(delay).await;
+    token.cancel();
 }
 
 #[cfg(test)]

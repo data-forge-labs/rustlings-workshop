@@ -8,32 +8,57 @@ pub struct AppConfig {
     pub database_url: Option<String>,
 }
 
-/// Parse TOML string into AppConfig
+use config::Config;
+
 pub fn parse_toml_config(toml_str: &str) -> Result<AppConfig, String> {
-    todo!()
+    let config = Config::builder()
+        .add_source(config::File::from_str(toml_str, config::FileFormat::Toml))
+        .build()
+        .map_err(|e| e.to_string())?;
+    config.try_deserialize().map_err(|e| e.to_string())
 }
 
-/// Parse JSON string into AppConfig
 pub fn parse_json_config(json_str: &str) -> Result<AppConfig, String> {
-    todo!()
+    let config = Config::builder()
+        .add_source(config::File::from_str(json_str, config::FileFormat::Json))
+        .build()
+        .map_err(|e| e.to_string())?;
+    config.try_deserialize().map_err(|e| e.to_string())
 }
 
-/// Parse YAML string into AppConfig
 pub fn parse_yaml_config(yaml_str: &str) -> Result<AppConfig, String> {
-    todo!()
+    let config = Config::builder()
+        .add_source(config::File::from_str(yaml_str, config::FileFormat::Yaml))
+        .build()
+        .map_err(|e| e.to_string())?;
+    config.try_deserialize().map_err(|e| e.to_string())
 }
 
-/// Merge config from multiple sources (file + env overrides)
 pub fn merge_config(
     file_config: &str,
     env_override: Option<(&str, &str)>,
 ) -> Result<AppConfig, String> {
-    todo!()
+    let mut builder = Config::builder()
+        .add_source(config::File::from_str(file_config, config::FileFormat::Toml));
+
+    if let Some((key, value)) = env_override {
+        let map: std::collections::HashMap<String, String> =
+            std::collections::HashMap::from([(key.to_string(), value.to_string())]);
+        builder = builder.add_source(config::Config::try_from(&map).map_err(|e| e.to_string())?);
+    }
+
+    let config = builder.build().map_err(|e| e.to_string())?;
+    config.try_deserialize().map_err(|e| e.to_string())
 }
 
-/// Get a config value with a default fallback (like Python's config.get(key, default))
 pub fn get_or_default(config: &AppConfig, key: &str) -> String {
-    todo!()
+    match key {
+        "host" => config.host.clone(),
+        "port" => config.port.to_string(),
+        "debug" => config.debug.to_string(),
+        "database_url" => config.database_url.clone().unwrap_or_default(),
+        _ => String::new(),
+    }
 }
 
 #[cfg(test)]

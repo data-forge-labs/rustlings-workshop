@@ -1,17 +1,20 @@
 pub fn parse_csv_line(line: &str) -> Vec<String> {
-    todo!()
+    line.split(',').map(|s| s.to_string()).collect()
 }
 
 pub fn format_csv_line(fields: &[&str]) -> String {
-    todo!()
+    fields.join(",")
 }
 
 pub fn count_lines(csv_content: &str) -> usize {
-    todo!()
+    csv_content.lines().count()
 }
 
 pub fn column_values(csv_content: &str, col_index: usize) -> Vec<String> {
-    todo!()
+    csv_content
+        .lines()
+        .filter_map(|line| line.split(',').nth(col_index).map(|s| s.to_string()))
+        .collect()
 }
 
 #[cfg(test)]

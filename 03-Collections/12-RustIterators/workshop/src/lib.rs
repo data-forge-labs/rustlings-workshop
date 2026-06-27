@@ -1,36 +1,30 @@
 /// Sum all elements using fold.
 pub fn sum_with_fold(numbers: &[i32]) -> i32 {
-    todo!()
+    numbers.iter().fold(0, |acc, &x| acc + x)
 }
 
-/// Keep only even numbers using filter.
 pub fn keep_even(numbers: &[i32]) -> Vec<i32> {
-    todo!()
+    numbers.iter().copied().filter(|x| x % 2 == 0).collect()
 }
 
-/// Double each element using map.
 pub fn double_all(numbers: &[i32]) -> Vec<i32> {
-    todo!()
+    numbers.iter().map(|x| x * 2).collect()
 }
 
-/// Take the first n elements.
 pub fn take_first_n<T: Clone>(items: &[T], n: usize) -> Vec<T> {
-    todo!()
+    items.iter().cloned().take(n).collect()
 }
 
-/// Skip the first n elements.
 pub fn skip_first_n<T: Clone>(items: &[T], n: usize) -> Vec<T> {
-    todo!()
+    items.iter().cloned().skip(n).collect()
 }
 
-/// Reverse a slice.
 pub fn reverse_slice<T: Clone>(items: &[T]) -> Vec<T> {
-    todo!()
+    items.iter().cloned().rev().collect()
 }
 
-/// Flatten a nested vector.
 pub fn flatten<T: Clone>(nested: Vec<Vec<T>>) -> Vec<T> {
-    todo!()
+    nested.into_iter().flatten().collect()
 }
 
 #[cfg(test)]

@@ -2,7 +2,11 @@ use std::collections::{BinaryHeap, HashMap};
 use std::cmp::Ordering;
 
 pub fn word_counter(text: &str) -> HashMap<String, u32> {
-    todo!()
+    let mut map = HashMap::new();
+    for word in text.split_whitespace() {
+        *map.entry(word.to_string()).or_insert(0) += 1;
+    }
+    map
 }
 
 #[derive(Debug, Eq)]
@@ -13,7 +17,7 @@ pub struct Item {
 
 impl Ord for Item {
     fn cmp(&self, other: &Self) -> Ordering {
-        todo!()
+        self.priority.cmp(&other.priority)
     }
 }
 
@@ -36,19 +40,19 @@ pub struct PriorityQueue {
 
 impl PriorityQueue {
     pub fn new() -> Self {
-        todo!()
+        PriorityQueue { items: BinaryHeap::new() }
     }
 
     pub fn push(&mut self, item: Item) {
-        todo!()
+        self.items.push(item);
     }
 
     pub fn pop(&mut self) -> Option<Item> {
-        todo!()
+        self.items.pop()
     }
 
     pub fn len(&self) -> usize {
-        todo!()
+        self.items.len()
     }
 }
 

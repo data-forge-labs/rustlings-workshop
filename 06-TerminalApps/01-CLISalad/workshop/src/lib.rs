@@ -114,15 +114,19 @@ pub fn list_fruits() -> Vec<String> {
     ]
 }
 
-/// Create a fruit salad with `num_fruits` randomly selected fruits.
 pub fn create_fruit_salad(num_fruits: usize) -> Vec<String> {
-    todo!()
+    use rand::seq::SliceRandom;
+    let mut fruits = list_fruits();
+    let mut rng = rand::rng();
+    fruits.shuffle(&mut rng);
+    fruits.into_iter().take(num_fruits).collect()
 }
 
-/// Simulate CLI parsing: expects args like `["program", "5"]`.
-/// Returns a formatted salad string or an error message.
 pub fn fruit_salad_cli(args: Vec<String>) -> Result<String, String> {
-    todo!()
+    let num = args.get(1).ok_or_else(|| "missing argument".to_string())?;
+    let n: usize = num.parse().map_err(|e| format!("invalid number: {}", e))?;
+    let salad = create_fruit_salad(n);
+    Ok(format!("Fruit salad with {} fruits: {:?}", n, salad))
 }
 
 #[cfg(test)]

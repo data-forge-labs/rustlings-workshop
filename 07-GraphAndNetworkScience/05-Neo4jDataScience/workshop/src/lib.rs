@@ -1,31 +1,130 @@
-use std::collections::HashMap;
+use std::collections::{HashMap, VecDeque};
 
 pub struct Graph {
     pub adjacency: HashMap<usize, Vec<usize>>,
 }
 
 pub fn build_graph(edges: &[(usize, usize)]) -> Graph {
-    todo!()
+    let mut adjacency: HashMap<usize, Vec<usize>> = HashMap::new();
+    for &(a, b) in edges {
+        adjacency.entry(a).or_default().push(b);
+        if a != b {
+            adjacency.entry(b).or_default().push(a);
+        }
+    }
+    Graph { adjacency }
 }
 
 pub fn compute_degree_centrality(graph: &Graph) -> HashMap<usize, f64> {
-    todo!()
+    let n = graph.adjacency.len();
+    let denom = if n <= 1 { 1.0 } else { (n - 1) as f64 };
+    graph
+        .adjacency
+        .iter()
+        .map(|(&k, v)| (k, v.len() as f64 / denom))
+        .collect()
 }
 
 pub fn compute_closeness_centrality(graph: &Graph) -> HashMap<usize, f64> {
-    todo!()
+    use std::collections::VecDeque;
+    let mut result = HashMap::new();
+    for &start in graph.adjacency.keys() {
+        let mut visited: HashMap<usize, usize> = HashMap::new();
+        let mut queue = VecDeque::new();
+        visited.insert(start, 0);
+        queue.push_back(start);
+        while let Some(node) = queue.pop_front() {
+            let dist = visited[&node];
+            if let Some(neighbors) = graph.adjacency.get(&node) {
+                for &neighbor in neighbors {
+                    if !visited.contains_key(&neighbor) {
+                        visited.insert(neighbor, dist + 1);
+                        queue.push_back(neighbor);
+                    }
+                }
+            }
+        }
+        let mut sum_dist = 0usize;
+        let mut reachable = 0usize;
+        for (&node, &d) in &visited {
+            if node != start {
+                sum_dist += d;
+                reachable += 1;
+            }
+        }
+        let closeness = if reachable > 0 && sum_dist > 0 {
+            reachable as f64 / sum_dist as f64
+        } else {
+            0.0
+        };
+        result.insert(start, closeness);
+    }
+    result
 }
 
 pub fn compute_betweenness_centrality(graph: &Graph) -> HashMap<usize, f64> {
-    todo!()
+    let mut scores: HashMap<usize, f64> = graph.adjacency.keys().map(|&k| (k, 0.0)).collect();
+    let nodes: Vec<usize> = graph.adjacency.keys().copied().collect();
+    for &s in &nodes {
+        let mut stack = Vec::new();
+        let mut predecessors: HashMap<usize, Vec<usize>> = HashMap::new();
+        let mut dist: HashMap<usize, f64> = HashMap::new();
+        let mut sigma: HashMap<usize, f64> = HashMap::new();
+        dist.insert(s, 0.0);
+        sigma.insert(s, 1.0);
+        let mut queue = VecDeque::new();
+        queue.push_back(s);
+        while let Some(v) = queue.pop_front() {
+            stack.push(v);
+            if let Some(neighbors) = graph.adjacency.get(&v) {
+                for &w in neighbors {
+                    let new_dist = dist[&v] + 1.0;
+                    if !dist.contains_key(&w) {
+                        dist.insert(w, new_dist);
+                        queue.push_back(w);
+                    }
+                    if dist[&w] == new_dist {
+                        *sigma.entry(w).or_insert(0.0) += sigma[&v];
+                        predecessors.entry(w).or_default().push(v);
+                    }
+                }
+            }
+        }
+        let mut delta: HashMap<usize, f64> = HashMap::new();
+        while let Some(w) = stack.pop() {
+            if let Some(preds) = predecessors.get(&w) {
+                for &v in preds {
+                    let contrib = (sigma[&v] / sigma[&w]) * (1.0 + *delta.get(&w).unwrap_or(&0.0));
+                    *delta.entry(v).or_insert(0.0) += contrib;
+                }
+            }
+            if w != s {
+                *scores.entry(w).or_insert(0.0) += *delta.get(&w).unwrap_or(&0.0);
+            }
+        }
+    }
+    let n = nodes.len() as f64;
+    if n > 2.0 {
+        for v in scores.values_mut() {
+            *v /= (n - 1.0) * (n - 2.0);
+        }
+    }
+    scores
 }
 
 pub fn top_n_central(scores: &HashMap<usize, f64>, n: usize) -> Vec<(usize, f64)> {
-    todo!()
+    let mut sorted: Vec<(usize, f64)> = scores.iter().map(|(&k, &v)| (k, v)).collect();
+    sorted.sort_by(|a, b| b.1.partial_cmp(&a.1).unwrap_or(std::cmp::Ordering::Equal));
+    sorted.truncate(n);
+    sorted
 }
 
 pub fn centrality_summary(scores: &HashMap<usize, f64>) -> (f64, f64, f64) {
-    todo!()
+    let values: Vec<f64> = scores.values().copied().collect();
+    let min = values.iter().cloned().fold(f64::INFINITY, f64::min);
+    let max = values.iter().cloned().fold(f64::NEG_INFINITY, f64::max);
+    let mean = values.iter().sum::<f64>() / values.len() as f64;
+    (min, max, mean)
 }
 
 #[cfg(test)]

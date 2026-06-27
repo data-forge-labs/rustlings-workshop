@@ -15,37 +15,95 @@ use std::time::Duration;
 /// Spawn a thread that returns a greeting string.
 /// README §1: Threads — spawn and join
 pub fn spawn_and_join() -> String {
-    todo!()
+    let handle = thread::spawn(|| {
+        String::from("Hello from thread!")
+    });
+    handle.join().unwrap()
 }
 
 /// Sum numbers in a vector by splitting work across two threads.
 /// README §1: Threads — data parallelism
 pub fn sum_in_parallel(data: Vec<i32>) -> i32 {
-    todo!()
+    if data.is_empty() {
+        return 0;
+    }
+    let mid = data.len() / 2;
+    let (left, right) = data.split_at(mid);
+    let left = left.to_vec();
+    let right = right.to_vec();
+    let t1 = thread::spawn(move || left.into_iter().sum::<i32>());
+    let t2 = thread::spawn(move || right.into_iter().sum::<i32>());
+    t1.join().unwrap() + t2.join().unwrap()
 }
 
 /// Send messages through an mpsc channel.
 /// README §5: Channels — message passing
 pub fn channel_send_receive() -> Vec<String> {
-    todo!()
+    let (tx, rx) = std::sync::mpsc::channel();
+    let tx1 = tx.clone();
+    let tx2 = tx.clone();
+    drop(tx);
+    thread::spawn(move || {
+        tx1.send(String::from("hello")).unwrap();
+    });
+    thread::spawn(move || {
+        tx2.send(String::from("world")).unwrap();
+    });
+    rx.iter().collect()
 }
 
 /// Increment a shared counter using Arc<Mutex<usize>>.
 /// README §11: Locks — Mutex
 pub fn shared_counter(ops: usize) -> usize {
-    todo!()
+    let counter = Arc::new(Mutex::new(0usize));
+    let mut handles = vec![];
+    for _ in 0..ops {
+        let counter = Arc::clone(&counter);
+        handles.push(thread::spawn(move || {
+            let mut val = counter.lock().unwrap();
+            *val += 1;
+        }));
+    }
+    for h in handles {
+        h.join().unwrap();
+    }
+    *counter.lock().unwrap()
 }
 
 /// Demonstrate a shared counter using Arc<RwLock<usize>>.
 /// README §12: RwLock
 pub fn rwlock_counter(ops: usize) -> usize {
-    todo!()
+    let counter = Arc::new(RwLock::new(0usize));
+    let mut handles = vec![];
+    for _ in 0..ops {
+        let counter = Arc::clone(&counter);
+        handles.push(thread::spawn(move || {
+            let mut val = counter.write().unwrap();
+            *val += 1;
+        }));
+    }
+    for h in handles {
+        h.join().unwrap();
+    }
+    *counter.read().unwrap()
 }
 
 /// Run a closure on a scoped thread.
 /// README §4: Scoped threads
 pub fn scoped_worker(data: Vec<i32>) -> Vec<i32> {
-    todo!()
+    let mut results = vec![0i32; data.len()];
+    thread::scope(|s| {
+        let results_chunks: Vec<&mut [i32]> = results.chunks_mut(1).collect();
+        let data_chunks: Vec<&[i32]> = data.chunks(1).collect();
+        for (rc, dc) in results_chunks.into_iter().zip(data_chunks) {
+            s.spawn(move || {
+                for (r, d) in rc.iter_mut().zip(dc) {
+                    *r = d * 2;
+                }
+            });
+        }
+    });
+    results
 }
 
 // ============================================================

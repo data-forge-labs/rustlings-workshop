@@ -2,31 +2,40 @@ use ed25519_dalek::{Signature, Signer, SigningKey, Verifier, VerifyingKey};
 use rand::rngs::OsRng;
 
 pub fn generate_keypair() -> SigningKey {
-    todo!()
+    SigningKey::generate(&mut OsRng)
 }
 
 pub fn sign_message(key: &SigningKey, message: &[u8]) -> Signature {
-    todo!()
+    key.sign(message)
 }
 
 pub fn verify_signature(key: &VerifyingKey, message: &[u8], signature: &Signature) -> bool {
-    todo!()
+    key.verify(message, signature).is_ok()
 }
 
 pub fn public_key_to_hex(key: &VerifyingKey) -> String {
-    todo!()
+    hex::encode(key.to_bytes())
 }
 
 pub fn public_key_from_hex(s: &str) -> Result<VerifyingKey, ed25519_dalek::SignatureError> {
-    todo!()
+    let bytes = hex::decode(s).map_err(|_| ed25519_dalek::SignatureError::from_source("invalid hex"))?;
+    VerifyingKey::from_bytes(&bytes.try_into().map_err(|_| ed25519_dalek::SignatureError::from_source("invalid length"))?)
 }
 
 pub fn sign_then_verify(message: &[u8]) -> bool {
-    todo!()
+    let key = generate_keypair();
+    let sig = sign_message(&key, message);
+    verify_signature(&key.verifying_key(), message, &sig)
 }
 
 pub fn tampered_signature_fails(message: &[u8]) -> bool {
-    todo!()
+    let key = generate_keypair();
+    let sig = sign_message(&key, message);
+    let tampered_bytes = sig.to_bytes();
+    let mut modified = tampered_bytes;
+    modified[0] ^= 0xff;
+    let tampered_sig = Signature::from_bytes(&modified);
+    verify_signature(&key.verifying_key(), message, &tampered_sig)
 }
 
 #[cfg(test)]

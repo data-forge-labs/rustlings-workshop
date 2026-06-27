@@ -14,35 +14,40 @@ pub enum AppError {
 }
 
 pub fn unwrap_or_default_when_none(opt: Option<i32>) -> i32 {
-    todo!()
+    opt.unwrap_or_default()
 }
 
 pub fn map_or_default(opt: Option<i32>, fallback: i32) -> i32 {
-    todo!()
+    opt.unwrap_or(fallback)
 }
 
 pub fn ok_or_convert(opt: Option<String>) -> Result<String, AppError> {
-    todo!()
+    opt.ok_or_else(|| AppError::Missing("value"))
 }
 
 pub fn map_err_convert(s: &str) -> Result<i32, AppError> {
-    todo!()
+    s.parse::<i32>().map_err(AppError::from)
 }
 
 pub fn and_then_chain(s: &str) -> Result<i32, AppError> {
-    todo!()
+    s.parse::<i32>()
+        .map_err(AppError::from)
+        .map(|n| n * 2)
 }
 
 pub fn read_and_parse(line: &str) -> Result<i32, AppError> {
-    todo!()
+    line.parse::<i32>().map_err(AppError::from)
 }
 
 pub fn multi_step_pipeline(s: &str) -> Result<i32, AppError> {
-    todo!()
+    let n = s.parse::<i32>()?;
+    Ok(n * 3)
 }
 
 pub fn first_present<'a>(opts: &'a [Option<&'a str>]) -> Result<&'a str, AppError> {
-    todo!()
+    opts.iter()
+        .find_map(|o| *o)
+        .ok_or_else(|| AppError::Missing("no value present"))
 }
 
 #[cfg(test)]

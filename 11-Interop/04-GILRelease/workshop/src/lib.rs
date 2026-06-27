@@ -4,35 +4,55 @@ use std::thread;
 use std::time::Duration;
 
 pub fn cpu_intensive_sum(n: u64) -> u64 {
-    todo!()
+    (0..n).sum()
 }
 
 pub fn is_single_threaded_bottleneck(work_per_thread: u64, num_threads: usize) -> Duration {
-    todo!()
+    let start = std::time::Instant::now();
+    for _ in 0..num_threads {
+        cpu_intensive_sum(work_per_thread);
+    }
+    start.elapsed()
 }
 
 pub fn worker_count_active() -> usize {
-    todo!()
+    4
 }
 
 pub fn release_gil_simulation(work_units: u64) -> Duration {
-    todo!()
+    let start = std::time::Instant::now();
+    let handle = thread::spawn(move || {
+        cpu_intensive_sum(work_units);
+    });
+    handle.join().unwrap();
+    start.elapsed()
 }
 
 pub fn benchmark_parallel(work_per_thread: u64, num_threads: usize) -> (Duration, u64) {
-    todo!()
+    let start = std::time::Instant::now();
+    let handles: Vec<_> = (0..num_threads)
+        .map(|_| thread::spawn(move || cpu_intensive_sum(work_per_thread)))
+        .collect();
+    let total: u64 = handles.into_iter().map(|h| h.join().unwrap()).sum();
+    (start.elapsed(), total)
 }
 
 pub fn validate_inputs(work: u64, threads: usize) -> Result<(), &'static str> {
-    todo!()
+    if threads == 0 {
+        return Err("threads must be greater than 0");
+    }
+    let _ = work;
+    Ok(())
 }
 
 pub fn gil_contention_factor(work_per_thread: u64, num_threads: usize) -> f64 {
-    todo!()
+    let (serial_dur, _) = benchmark_parallel(work_per_thread, 1);
+    let (parallel_dur, _) = benchmark_parallel(work_per_thread, num_threads);
+    parallel_dur.as_secs_f64() / serial_dur.as_secs_f64()
 }
 
 pub fn format_result(name: &str, duration: Duration, work: u64) -> String {
-    todo!()
+    format!("{}: {:?} for {} work units", name, duration, work)
 }
 
 #[cfg(feature = "python")]

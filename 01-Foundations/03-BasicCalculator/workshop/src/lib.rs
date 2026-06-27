@@ -12,72 +12,81 @@
 /// Adds two integers.
 /// README §4: Integer Types / §5: Variables / §6: Arithmetic
 pub fn add(a: i32, b: i32) -> i32 {
-    todo!()
+    a + b
 }
 
 /// Subtracts `b` from `a`.
 pub fn subtract(a: i32, b: i32) -> i32 {
-    todo!()
+    a - b
 }
 
 /// Multiplies two integers.
 pub fn multiply(a: i32, b: i32) -> i32 {
-    todo!()
+    a * b
 }
 
 /// Divides `a` by `b`. Panics if `b` is 0.
 /// README §9: Panics
 pub fn divide(a: i32, b: i32) -> i32 {
-    todo!()
+    assert!(b != 0, "Cannot divide by zero");
+    a / b
 }
 
 /// Computes `n!` using saturating arithmetic.
 /// Returns `u32::MAX` (clamped) on overflow instead of panicking.
 /// README §10-12: Loops, Overflow, Saturating arithmetic
 pub fn factorial_safe(n: u32) -> u32 {
-    todo!()
+    let mut result: u32 = 1;
+    for i in 2..=n {
+        result = result.saturating_mul(i);
+    }
+    result
 }
 
 /// Computes `n!` using wrapping arithmetic.
 /// On overflow the result wraps around (modulo 2^32).
 /// README §12: Wrapping arithmetic
 pub fn factorial_wrapping(n: u32) -> u32 {
-    todo!()
+    let mut result: u32 = 1;
+    for i in 2..=n {
+        result = result.wrapping_mul(i);
+    }
+    result
 }
 
 /// Returns the average of two `u32` values.
 /// Uses saturating addition to avoid overflow.
 /// README §15 Exercise 1
 pub fn average(a: u32, b: u32) -> u32 {
-    todo!()
+    a / 2 + b / 2 + ((a % 2 + b % 2) / 2)
 }
 
 /// Safely sums a slice of row counts using saturating addition.
 /// README §15 Exercise 2
 pub fn total_rows(counts: &[u64]) -> u64 {
-    todo!()
+    counts.iter().copied().fold(0u64, |acc, x| acc.saturating_add(x))
 }
 
 /// Returns the minimum value in a slice of temperatures.
 /// README §15 Exercise 3
 pub fn min_temp(temps: &[i32]) -> i32 {
-    todo!()
+    temps.iter().copied().min().unwrap()
 }
 
 /// Returns the maximum value in a slice of temperatures.
 pub fn max_temp(temps: &[i32]) -> i32 {
-    todo!()
+    temps.iter().copied().max().unwrap()
 }
 
 /// Returns the arithmetic mean of a slice of temperatures as `f64`.
 pub fn avg_temp(temps: &[i32]) -> f64 {
-    todo!()
+    temps.iter().copied().sum::<i32>() as f64 / temps.len() as f64
 }
 
 /// Returns `true` if adding `a` + `b` would overflow `u32`.
 /// README §15 Exercise 4
 pub fn would_overflow(a: u32, b: u32) -> bool {
-    todo!()
+    a.checked_add(b).is_none()
 }
 
 // ============================================================

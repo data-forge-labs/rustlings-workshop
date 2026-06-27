@@ -7,27 +7,29 @@ unsafe impl Sync for Wrapper {}
 
 /// Generic function requiring `Send`.
 pub fn verify_send<T: Send>(val: T) -> T {
-    todo!()
+    val
 }
 
 /// Generic function requiring `Sync`.
 pub fn verify_sync<T: Sync>(val: T) -> T {
-    todo!()
+    val
 }
 
 /// Generic function requiring both `Send` and `Sync`.
 pub fn verify_send_sync<T: Send + Sync>(val: T) -> T {
-    todo!()
+    val
 }
 
 /// Create a ThreadSafe wrapper that is Send + Sync.
 pub fn create_thread_safe_wrapper(val: i32) -> Wrapper {
-    todo!()
+    Wrapper(val)
 }
 
 /// Demonstrate that `Arc<Mutex<i32>>` is Send + Sync.
 pub fn demonstrate_mutex_send_sync() -> bool {
-    todo!()
+    fn assert_send_sync<T: Send + Sync>() {}
+    assert_send_sync::<std::sync::Arc<std::sync::Mutex<i32>>>();
+    true
 }
 
 #[cfg(test)]

@@ -1,33 +1,53 @@
 pub fn is_sorted_ascending(v: &[i32]) -> bool {
-    todo!()
+    v.windows(2).all(|w| w[0] <= w[1])
 }
 
 pub fn sort_ascending(v: Vec<i32>) -> Vec<i32> {
-    todo!()
+    let mut v = v;
+    v.sort();
+    v
 }
 
 pub fn reverse_vec(v: Vec<i32>) -> Vec<i32> {
-    todo!()
+    v.into_iter().rev().collect()
 }
 
 pub fn count_above(v: &[i32], threshold: i32) -> usize {
-    todo!()
+    v.iter().filter(|&&x| x > threshold).count()
 }
 
 pub fn sum_vec(v: Vec<i32>) -> i32 {
-    todo!()
+    v.into_iter().sum()
 }
 
 pub fn normalize_floats(v: Vec<f64>) -> Vec<f64> {
-    todo!()
+    if v.is_empty() {
+        return v;
+    }
+    let min = v.iter().cloned().fold(f64::INFINITY, f64::min);
+    let max = v.iter().cloned().fold(f64::NEG_INFINITY, f64::max);
+    let range = max - min;
+    if range == 0.0 {
+        v.into_iter().map(|_| 0.5).collect()
+    } else {
+        v.into_iter().map(|x| (x - min) / range).collect()
+    }
 }
 
 pub fn min_max(v: &[i32]) -> Option<(i32, i32)> {
-    todo!()
+    if v.is_empty() {
+        return None;
+    }
+    let min = v.iter().cloned().min().unwrap();
+    let max = v.iter().cloned().max().unwrap();
+    Some((min, max))
 }
 
 pub fn dedup_sorted(v: Vec<i32>) -> Vec<i32> {
-    todo!()
+    let mut v = v;
+    v.sort();
+    v.dedup();
+    v
 }
 
 #[cfg(test)]

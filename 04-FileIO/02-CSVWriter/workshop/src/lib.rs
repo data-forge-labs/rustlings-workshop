@@ -10,11 +10,14 @@ pub struct Product {
 }
 
 pub fn apply_discount(product: &Product) -> Product {
-    todo!()
+    Product {
+        name: product.name.clone(),
+        price: product.price * (1.0 - DISCOUNT),
+    }
 }
 
 pub fn total_savings(products: &[Product]) -> f64 {
-    todo!()
+    products.iter().map(|p| p.price * DISCOUNT).sum()
 }
 
 #[cfg(test)]

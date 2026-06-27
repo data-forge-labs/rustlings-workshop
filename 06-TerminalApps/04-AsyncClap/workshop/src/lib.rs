@@ -56,27 +56,45 @@ pub struct PipelineConfig {
 }
 
 pub fn parse_args(args: &[&str]) -> Result<Cli, clap::Error> {
-    todo!()
+    Cli::try_parse_from(args)
 }
 
 pub fn parse_pipeline_config(json: &str) -> Result<PipelineConfig, serde_json::Error> {
-    todo!()
+    serde_json::from_str(json)
 }
 
 pub fn extract_target(cli: &Cli) -> Option<String> {
-    todo!()
+    match &cli.command {
+        Commands::Etl {
+            action: EtlAction::Load { target },
+        } => Some(target.clone()),
+        _ => None,
+    }
 }
 
 pub fn run_summary(cli: &Cli) -> String {
-    todo!()
+    match &cli.command {
+        Commands::Run { config, parallelism } => {
+            format!("run config={} parallelism={}", config, parallelism)
+        }
+        Commands::Etl { action } => match action {
+            EtlAction::Extract { source } => format!("etl extract source={}", source),
+            EtlAction::Transform { rule } => format!("etl transform rule={}", rule),
+            EtlAction::Load { target } => format!("etl load target={}", target),
+        },
+        Commands::Status { pipeline } => format!("status pipeline={}", pipeline),
+    }
 }
 
 pub async fn fake_io_work(ms: u64) -> Result<String, String> {
-    todo!()
+    tokio::time::sleep(Duration::from_millis(ms)).await;
+    Ok(format!("done in {}ms", ms))
 }
 
 pub async fn run_pipeline(cli: &Cli) -> Result<String, String> {
-    todo!()
+    let summary = run_summary(cli);
+    fake_io_work(10).await?;
+    Ok(summary)
 }
 
 #[cfg(test)]

@@ -1,23 +1,66 @@
 use std::cell::{Cell, RefCell};
 
 pub fn cell_counter(ops: usize) -> usize {
-    todo!()
+    let counter = Cell::new(0usize);
+    for _ in 0..ops {
+        counter.set(counter.get() + 1);
+    }
+    counter.get()
 }
 
 pub fn cell_string(initial: &str, append: &str) -> String {
-    todo!()
+    let cell = Cell::new(String::from(initial));
+    let mut val = cell.into_inner();
+    val.push_str(append);
+    val
 }
 
 pub fn refcell_demo(values: Vec<i32>) -> Vec<i32> {
-    todo!()
+    let r = RefCell::new(values);
+    let mut borrowed = r.borrow_mut();
+    for v in borrowed.iter_mut() {
+        *v *= 2;
+    }
+    borrowed.clone()
 }
 
 pub fn refcell_borrow_error() -> Result<String, String> {
-    todo!()
+    let r = RefCell::new(String::from("hello"));
+    let _borrow1 = r.borrow();
+    match r.try_borrow_mut() {
+        Ok(_) => Err(String::from("should have failed")),
+        Err(e) => Err(format!("borrow error: {e}")),
+    }
 }
 
 pub fn simulate_race_condition() -> usize {
-    todo!()
+    use std::cell::UnsafeCell;
+    use std::sync::Arc;
+    use std::thread;
+
+    struct FakeCounter(UnsafeCell<usize>);
+    unsafe impl Send for FakeCounter {}
+    unsafe impl Sync for FakeCounter {}
+
+    let counter = Arc::new(FakeCounter(UnsafeCell::new(0)));
+    let mut handles = vec![];
+    for _ in 0..8 {
+        let counter = Arc::clone(&counter);
+        handles.push(thread::spawn(move || {
+            for _ in 0..1000 {
+                unsafe {
+                    let ptr = counter.0.get();
+                    let val = std::ptr::read(ptr);
+                    thread::yield_now();
+                    std::ptr::write(ptr, val + 1);
+                }
+            }
+        }));
+    }
+    for h in handles {
+        h.join().unwrap();
+    }
+    unsafe { *counter.0.get() }
 }
 
 #[cfg(test)]

@@ -49,7 +49,42 @@ pub struct F3Footer {
 // =============================================================================
 /// Describe the F3 file layout as a multi-line string (ASCII diagram).
 pub fn file_layout_description() -> String {
-    todo!("Step 01: return ASCII art showing F3 file layout (header, I/O units, footer, Wasm)")
+    "F3 File Layout:\n\
+     +------------------+\n\
+     | Header (magic)   |  4 bytes: 'F3\\0\\0'\n\
+     +------------------+\n\
+     | I/O Unit 0       |  Column chunk with encoding tag\n\
+     | I/O Unit 1       |  Each unit has offset + length\n\
+     | ...              |  Independent read granularity\n\
+     +------------------+\n\
+     | Footer (FlatBuf) |  Schema, I/O unit index, decoder manifest\n\
+     +------------------+\n\
+     | Wasm Decoders    |  Embedded decoder modules (RLE, FSST, etc.)\n\
+     +------------------+"
+        .to_string()
+}
+
+pub fn decoupled_io_explanation() -> String {
+    "F3 decouples I/O granularity from encoding: each I/O unit is a self-contained chunk of column data with its own encoding tag. A single column can span multiple I/O units with different encodings, allowing the file to adapt to local data patterns without changing the I/O read size."
+}
+
+pub fn wasm_vs_native_table() -> String {
+    "| Feature | Wasm Decoder | Native Decoder |\n\
+     |---|---|---|\n\
+     | Portability | Any Wasm runtime | Platform-specific binary |\n\
+     | Performance | ~1.5-3x slower (sandbox overhead) | Full native speed |\n\
+     | Security | Sandboxed linear memory | Full process access |\n\
+     | Extensibility | Add decoders without recompiling | Requires recompilation |\n\
+     | Deployment | Embedded in file | Must be installed |\n"
+        .to_string()
+}
+
+pub fn security_model_description() -> String {
+    "F3 uses Wasm sandboxed linear memory: each decoder module runs in its own memory space with no access to host memory or system calls. An allowlist in the file footer specifies which decoder modules are permitted, preventing execution of arbitrary code. The host only passes the encoded bytes into the sandbox and reads decoded output."
+}
+
+pub fn future_proof_argument() -> String {
+    "F3 is future-proof because new encodings can be embedded as Wasm decoder modules directly in the file. A reader written today can decode data encoded with future algorithms by loading the embedded Wasm modules, eliminating the need for reader upgrades when new encoding formats are invented."
 }
 
 // =============================================================================

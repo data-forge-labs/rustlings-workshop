@@ -8,34 +8,44 @@
 
 #![allow(unused_variables)]
 
+use std::time::Duration;
+
 /// An async function that returns a greeting.
 /// README §1: async fn — lazy futures
 pub async fn async_hello() -> String {
-    todo!()
+    String::from("Hello from async!")
 }
 
 /// Chain two async operations sequentially.
 /// README §1: .await — driving futures to completion
 pub async fn process_chain() -> String {
-    todo!()
+    let step1 = async { String::from("Step 1") }.await;
+    let step2 = async { String::from(" + Step 2") }.await;
+    format!("{step1}{step2}")
 }
 
 /// Run two async tasks concurrently and collect results.
 /// README §2: tokio::spawn — concurrent tasks
 pub async fn run_concurrent() -> Vec<String> {
-    todo!()
+    let h1 = tokio::spawn(async { String::from("task1") });
+    let h2 = tokio::spawn(async { String::from("task2") });
+    let r1 = h1.await.unwrap();
+    let r2 = h2.await.unwrap();
+    vec![r1, r2]
 }
 
 /// Block on an async function using a runtime.
 /// README §3: Runtime — blocking on async code
 pub fn block_on_hello() -> String {
-    todo!()
+    let rt = tokio::runtime::Runtime::new().unwrap();
+    rt.block_on(async_hello())
 }
 
 /// Simulate a delay using tokio::time::sleep.
 /// README §5: Blocking vs async I/O
 pub async fn delayed_greeting(seconds: u64) -> String {
-    todo!()
+    tokio::time::sleep(Duration::from_secs(seconds)).await;
+    String::from("Hello after delay!")
 }
 
 // ============================================================

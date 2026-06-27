@@ -2,27 +2,82 @@ use std::sync::{Arc, Condvar, Mutex, RwLock};
 use std::thread;
 
 pub fn greet_thread() -> String {
-    todo!()
+    let handle = thread::spawn(|| {
+        String::from("Hello from thread!")
+    });
+    handle.join().unwrap()
 }
 
 pub fn sum_in_parallel(data: Vec<i32>) -> i32 {
-    todo!()
+    if data.is_empty() {
+        return 0;
+    }
+    let mid = data.len() / 2;
+    let (left, right) = data.split_at(mid);
+    let left = left.to_vec();
+    let right = right.to_vec();
+    let t1 = thread::spawn(move || left.into_iter().sum::<i32>());
+    let t2 = thread::spawn(move || right.into_iter().sum::<i32>());
+    t1.join().unwrap() + t2.join().unwrap()
 }
 
 pub fn move_closure_example(data: Vec<i32>) -> Vec<i32> {
-    todo!()
+    let handle = thread::spawn(move || {
+        data.into_iter().map(|x| x * 2).collect()
+    });
+    handle.join().unwrap()
 }
 
 pub fn shared_counter_arc_mutex(ops: usize) -> usize {
-    todo!()
+    let counter = Arc::new(Mutex::new(0usize));
+    let mut handles = vec![];
+    for _ in 0..ops {
+        let counter = Arc::clone(&counter);
+        handles.push(thread::spawn(move || {
+            let mut val = counter.lock().unwrap();
+            *val += 1;
+        }));
+    }
+    for h in handles {
+        h.join().unwrap();
+    }
+    *counter.lock().unwrap()
 }
 
 pub fn shared_counter_rwlock(ops: usize) -> usize {
-    todo!()
+    let counter = Arc::new(RwLock::new(0usize));
+    let mut handles = vec![];
+    for _ in 0..ops {
+        let counter = Arc::clone(&counter);
+        handles.push(thread::spawn(move || {
+            let mut val = counter.write().unwrap();
+            *val += 1;
+        }));
+    }
+    for h in handles {
+        h.join().unwrap();
+    }
+    *counter.read().unwrap()
 }
 
 pub fn condvar_coordinate() -> String {
-    todo!()
+    let pair = Arc::new((Mutex::new(false), Condvar::new()));
+    let pair_clone = Arc::clone(&pair);
+
+    let handle = thread::spawn(move || {
+        let (lock, cvar) = &*pair_clone;
+        let mut ready = lock.lock().unwrap();
+        *ready = true;
+        cvar.notify_one();
+    });
+
+    let (lock, cvar) = &*pair;
+    let mut ready = lock.lock().unwrap();
+    while !*ready {
+        ready = cvar.wait(ready).unwrap();
+    }
+    handle.join().unwrap();
+    String::from("done")
 }
 
 #[cfg(test)]

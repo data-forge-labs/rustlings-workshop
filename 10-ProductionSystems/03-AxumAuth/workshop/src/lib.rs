@@ -28,19 +28,40 @@ pub enum AuthError {
 }
 
 pub fn sign_token(claims: &Claims, secret: &[u8]) -> Result<String, AuthError> {
-    todo!()
+    encode(
+        &Header::default(),
+        claims,
+        &EncodingKey::from_secret(secret),
+    )
+    .map_err(|e| AuthError::InvalidToken(e.to_string()))
 }
 
 pub fn verify_token(token: &str, secret: &[u8]) -> Result<Claims, AuthError> {
-    todo!()
+    decode::<Claims>(
+        token,
+        &DecodingKey::from_secret(secret),
+        &Validation::default(),
+    )
+    .map(|data| data.claims)
+    .map_err(|e| match e.kind() {
+        jsonwebtoken::errors::ErrorKind::ExpiredSignature => AuthError::Expired,
+        _ => AuthError::InvalidToken(e.to_string()),
+    })
 }
 
 pub fn extract_bearer(authorization_header: &str) -> Result<&str, AuthError> {
-    todo!()
+    if authorization_header.is_empty() {
+        return Err(AuthError::MissingHeader);
+    }
+    if let Some(token) = authorization_header.strip_prefix("Bearer ") {
+        Ok(token)
+    } else {
+        Err(AuthError::InvalidScheme)
+    }
 }
 
 pub fn is_expired(claims: &Claims) -> bool {
-    todo!()
+    Utc::now().timestamp() >= claims.exp
 }
 
 pub fn create_access_token(
@@ -49,23 +70,49 @@ pub fn create_access_token(
     secret: &[u8],
     ttl_seconds: i64,
 ) -> Result<String, AuthError> {
-    todo!()
+    let now = Utc::now();
+    let claims = Claims {
+        sub: subject.to_string(),
+        role: role.to_string(),
+        iat: now.timestamp(),
+        exp: (now + Duration::seconds(ttl_seconds)).timestamp(),
+    };
+    sign_token(&claims, secret)
 }
 
 pub fn create_refresh_token(subject: &str, secret: &[u8]) -> Result<String, AuthError> {
-    todo!()
+    let now = Utc::now();
+    let claims = Claims {
+        sub: subject.to_string(),
+        role: "refresh".to_string(),
+        iat: now.timestamp(),
+        exp: (now + Duration::days(30)).timestamp(),
+    };
+    sign_token(&claims, secret)
 }
 
 pub fn has_role(claims: &Claims, allowed: &[&str]) -> bool {
-    todo!()
+    allowed.contains(&claims.role.as_str())
 }
 
 pub fn require_role(claims: &Claims, allowed: &[&str]) -> Result<(), AuthError> {
-    todo!()
+    if has_role(claims, allowed) {
+        Ok(())
+    } else {
+        Err(AuthError::UnauthorizedRole(claims.role.clone()))
+    }
 }
 
 pub fn key_id_from_header(token: &str) -> Option<&str> {
-    todo!()
+    let parts: Vec<&str> = token.split('.').collect();
+    if parts.len() < 2 {
+        return None;
+    }
+    let header_b64 = parts[0];
+    use base64::Engine;
+    let decoded = base64::engine::general_purpose::URL_SAFE_NO_PAD.decode(header_b64).ok()?;
+    let header: serde_json::Value = serde_json::from_slice(&decoded).ok()?;
+    header.get("kid")?.as_str()
 }
 
 #[cfg(test)]

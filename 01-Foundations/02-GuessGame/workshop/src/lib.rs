@@ -21,34 +21,49 @@ pub enum GuessOutcome {
 /// too high, or too low.
 /// README §3: Custom `enum`
 pub fn check_guess(secret: u32, guess: u32) -> GuessOutcome {
-    todo!()
+    if secret == guess {
+        GuessOutcome::Correct
+    } else if guess > secret {
+        GuessOutcome::TooHigh
+    } else {
+        GuessOutcome::TooLow
+    }
 }
 
 /// Convert a hint outcome to the message shown to the player.
 /// README §3: Custom `enum`
 pub fn hint_for(outcome: GuessOutcome) -> &'static str {
-    todo!()
+    match outcome {
+        GuessOutcome::Correct => "Correct!",
+        GuessOutcome::TooHigh => "Too high!",
+        GuessOutcome::TooLow => "Too low!",
+    }
 }
 
 /// Parse the player's input into a number.
 /// Returns Ok(number) for valid input, Err(message) for invalid input.
 /// README §5 / §7: String vs &str, Result<T, E>, .parse()
 pub fn parse_guess(input: &str) -> Result<u32, String> {
-    todo!()
+    let trimmed = input.trim();
+    trimmed
+        .parse::<u32>()
+        .map_err(|e| format!("Invalid input: {}", e))
 }
 
 /// Play one round: parse the input, then compare to the secret.
 /// Returns the outcome or an error message if the input was bad.
 /// README §6 / §8: ? operator
 pub fn play_round(secret: u32, input: &str) -> Result<GuessOutcome, String> {
-    todo!()
+    let guess = parse_guess(input)?;
+    Ok(check_guess(secret, guess))
 }
 
 /// Generate a secret number in the inclusive range [min, max].
 /// Uses the `rand` crate.
 /// README §4: External crates
 pub fn generate_secret(min: u32, max: u32) -> u32 {
-    todo!()
+    use rand::RngExt;
+    rand::rng().random_range(min..=max)
 }
 
 // ============================================================

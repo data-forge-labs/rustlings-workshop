@@ -1,33 +1,48 @@
 pub fn double_values(values: &[f64]) -> Vec<f64> {
-    todo!()
+    values.iter().map(|v| v * 2.0).collect()
 }
 
 pub fn sum_values(values: &[f64]) -> f64 {
-    todo!()
+    values.iter().sum()
 }
 
 pub fn normalize(values: &[f64]) -> Vec<f64> {
-    todo!()
+    if values.is_empty() {
+        return vec![];
+    }
+    let min = values.iter().cloned().fold(f64::INFINITY, f64::min);
+    let max = values.iter().cloned().fold(f64::NEG_INFINITY, f64::max);
+    let range = max - min;
+    if range == 0.0 {
+        return values.iter().map(|_| 0.0).collect();
+    }
+    values.iter().map(|v| (v - min) / range).collect()
 }
 
 pub fn moving_average(values: &[f64], window: usize) -> Vec<f64> {
-    todo!()
+    if window == 0 || values.len() < window {
+        return vec![];
+    }
+    values
+        .windows(window)
+        .map(|w| w.iter().sum::<f64>() / window as f64)
+        .collect()
 }
 
 pub fn count_above_threshold(values: &[f64], threshold: f64) -> usize {
-    todo!()
+    values.iter().filter(|&&v| v > threshold).count()
 }
 
 pub fn reverse_in_place(values: &mut [f64]) {
-    todo!()
+    values.reverse();
 }
 
 pub fn hello_from_rust(name: &str) -> String {
-    todo!()
+    format!("Hello, {} from Rust!", name)
 }
 
 pub fn parse_csv_line(line: &str) -> Vec<f64> {
-    todo!()
+    line.split(',').filter_map(|s| s.trim().parse().ok()).collect()
 }
 
 #[cfg(feature = "python")]

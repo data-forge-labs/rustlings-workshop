@@ -13,7 +13,156 @@ use std::sync::Arc;
 
 /// Build an `Int32Array` from a `Vec<i32>`.
 pub fn build_int32_array(values: Vec<i32>) -> Int32Array {
-    todo!()
+    Int32Array::from(values)
+}
+
+pub fn build_string_array(values: Vec<&str>) -> StringArray {
+    StringArray::from(values)
+}
+
+pub fn build_float64_array(values: Vec<f64>) -> Float64Array {
+    Float64Array::from(values)
+}
+
+pub fn build_schema() -> Schema {
+    Schema::new(vec![
+        Field::new("id", DataType::Int32, false),
+        Field::new("name", DataType::Utf8, true),
+        Field::new("age", DataType::Int32, true),
+    ])
+}
+
+pub fn nullable_field(name: &str, dt: DataType) -> Field {
+    Field::new(name, dt, true)
+}
+
+pub fn build_int32_with_builder(values: Vec<i32>) -> Int32Array {
+    let mut builder = Int32Builder::with_capacity(values.len());
+    for v in values {
+        builder.append_value(v);
+    }
+    builder.finish()
+}
+
+pub fn build_string_with_builder(values: Vec<&str>) -> StringArray {
+    let mut builder = StringBuilder::with_capacity(values.len(), 32);
+    for v in values {
+        builder.append_value(v);
+    }
+    builder.finish()
+}
+
+pub fn build_mixed_batch(names: Vec<&str>, ages: Vec<i32>) -> RecordBatch {
+    let schema = Arc::new(Schema::new(vec![
+        Field::new("name", DataType::Utf8, true),
+        Field::new("age", DataType::Int32, true),
+    ]));
+    RecordBatch::try_new(
+        schema,
+        vec![
+            Arc::new(StringArray::from(names)),
+            Arc::new(Int32Array::from(ages)),
+        ],
+    )
+    .unwrap()
+}
+
+pub fn build_sample_batch() -> RecordBatch {
+    let schema = Arc::new(build_schema());
+    RecordBatch::try_new(
+        schema,
+        vec![
+            Arc::new(Int32Array::from(vec![1, 2, 3, 4, 5])),
+            Arc::new(StringArray::from(vec!["Alice", "Bob", "Carol", "Dave", "Eve"])),
+            Arc::new(Int32Array::from(vec![30, 25, 35, 28, 42])),
+        ],
+    )
+    .unwrap()
+}
+
+pub fn batch_num_rows(batch: &RecordBatch) -> usize {
+    batch.num_rows()
+}
+
+pub fn batch_column_name(batch: &RecordBatch, idx: usize) -> String {
+    batch.schema().field(idx).name().to_string()
+}
+
+pub fn batch_schema_string(batch: &RecordBatch) -> String {
+    format!("{}", batch.schema())
+}
+
+pub fn csv_bytes_to_batch(csv: &[u8]) -> Result<RecordBatch, Box<dyn std::error::Error>> {
+    let cursor = Cursor::new(csv);
+    let schema = Arc::new(build_schema());
+    let builder = arrow::csv::ReaderBuilder::new()
+        .with_schema(schema)
+        .has_header(true)
+        .with_batch_size(1024);
+    let mut reader = builder.build(cursor)?;
+    let batch = reader.next().unwrap()?;
+    Ok(batch)
+}
+
+pub fn csv_with_nullable_schema(csv: &[u8]) -> Result<RecordBatch, Box<dyn std::error::Error>> {
+    let cursor = Cursor::new(csv);
+    let schema = Arc::new(Schema::new(vec![
+        nullable_field("id", DataType::Int32),
+        nullable_field("name", DataType::Utf8),
+        nullable_field("age", DataType::Int32),
+    ]));
+    let builder = arrow::csv::ReaderBuilder::new()
+        .with_schema(schema)
+        .has_header(true)
+        .with_batch_size(1024);
+    let mut reader = builder.build(cursor)?;
+    let batch = reader.next().unwrap()?;
+    Ok(batch)
+}
+
+pub fn write_ipc_to_bytes(batch: &RecordBatch) -> Result<Vec<u8>, Box<dyn std::error::Error>> {
+    let mut buffer = Vec::new();
+    {
+        let mut writer = StreamWriter::try_new(&mut buffer, &batch.schema())?;
+        writer.write(batch)?;
+        writer.finish()?;
+    }
+    Ok(buffer)
+}
+
+pub fn read_ipc_from_bytes(bytes: &[u8]) -> Result<RecordBatch, Box<dyn std::error::Error>> {
+    let cursor = Cursor::new(bytes);
+    let mut reader = StreamReader::try_new(cursor, None)?;
+    let batch = reader.next().unwrap()?;
+    Ok(batch)
+}
+
+pub fn sum_int32_column(batch: &RecordBatch, col_name: &str) -> Option<i64> {
+    let col = batch.column_by_name(col_name)?;
+    let arr = col.as_any().downcast_ref::<Int32Array>()?;
+    Some(compute::sum(arr)? as i64)
+}
+
+pub fn filter_batch_by_value(batch: &RecordBatch, col_name: &str, threshold: i32) -> RecordBatch {
+    let col = batch.column_by_name(col_name).unwrap();
+    let arr = col.as_any().downcast_ref::<Int32Array>().unwrap();
+    let mask = (0..arr.len())
+        .map(|i| arr.is_valid(i) && arr.value(i) > threshold)
+        .collect();
+    compute::filter_record_batch(batch, &mask).unwrap()
+}
+
+pub fn slice_batch(batch: &RecordBatch, offset: usize, length: usize) -> RecordBatch {
+    batch.slice(offset, length)
+}
+
+pub fn cast_int32_to_float64(batch: &RecordBatch, col_name: &str) -> RecordBatch {
+    let col_idx = batch.schema().index_of(col_name).unwrap();
+    let col = batch.column(col_idx);
+    let casted = compute::cast(col, &DataType::Float64).unwrap();
+    let mut columns: Vec<Arc<dyn Array>> = batch.columns().to_vec();
+    columns[col_idx] = casted;
+    RecordBatch::try_new(batch.schema(), columns).unwrap()
 }
 
 /// Build a `StringArray` (UTF-8) from a `Vec<&str>`.

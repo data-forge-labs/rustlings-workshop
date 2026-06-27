@@ -1,43 +1,69 @@
 use polars::prelude::*;
 
 pub fn load_sales_csv(path: &str) -> Result<DataFrame, PolarsError> {
-    todo!()
+    CsvReadOptions::default()
+        .try_into_reader_with_file_path(Some(path.into()))?
+        .finish()
 }
 
 pub fn total_units(sales: &DataFrame) -> Result<i64, PolarsError> {
-    todo!()
+    sales.column("units")?.sum()
 }
 
 pub fn total_revenue(sales: &DataFrame) -> Result<f64, PolarsError> {
-    todo!()
+    let units = sales.column("units")?.f64()?;
+    let amount = sales.column("amount")?.f64()?;
+    let revenue: f64 = units.into_iter().zip(amount.into_iter())
+        .map(|(u, a)| u.unwrap_or(0.0) * a.unwrap_or(0.0))
+        .sum();
+    Ok(revenue)
 }
 
 pub fn filter_expensive(sales: &DataFrame, min_amount: f64) -> Result<DataFrame, PolarsError> {
-    todo!()
+    let mask = sales.column("amount")?.f64()?.gt(min_amount);
+    sales.filter(&mask)
 }
 
 pub fn revenue_per_product(sales: &DataFrame) -> Result<DataFrame, PolarsError> {
-    todo!()
+    let units = sales.column("units")?.cast(&DataType::Float64)?;
+    let amount = sales.column("amount")?.f64()?;
+    let revenue: Series = units.f64()?.into_iter().zip(amount.into_iter())
+        .map(|(u, a)| u.unwrap_or(0.0) * a.unwrap_or(0.0))
+        .collect();
+    let df = DataFrame::new(vec![
+        sales.column("name")?.clone(),
+        revenue.into(),
+    ])?;
+    df.group_by(["name"])?.agg(&[(&"revenue", &["sum"])]?.into())
 }
 
 pub fn high_revenue_products(sales: &DataFrame, min_revenue: f64) -> Result<DataFrame, PolarsError> {
-    todo!()
+    let result = revenue_per_product(sales)?;
+    let mask = result.column("revenue_sum")?.f64()?.gt(min_revenue);
+    result.filter(&mask)
 }
 
 pub fn write_parquet(df: &DataFrame, path: &str) -> Result<(), PolarsError> {
-    todo!()
+    let file = std::fs::File::create(path)?;
+    ParquetWriter::new(file).finish(df)?;
+    Ok(())
 }
 
 pub fn read_parquet(path: &str) -> Result<DataFrame, PolarsError> {
-    todo!()
+    ParquetReader::new(std::fs::File::open(path)?).finish()
 }
 
 pub fn lazy_filter_expensive(min_amount: f64) -> Result<DataFrame, PolarsError> {
-    todo!()
+    LazyFrame::scan_parquet("data/sales.parquet", Default::default())?
+        .filter(col("amount").gt(lit(min_amount)))
+        .collect()
 }
 
 pub fn lazy_group_by_total() -> Result<DataFrame, PolarsError> {
-    todo!()
+    LazyFrame::scan_parquet("data/sales.parquet", Default::default())?
+        .group_by(["name"])
+        .agg([col("units").sum().alias("total_units")])
+        .collect()
 }
 
 #[cfg(test)]

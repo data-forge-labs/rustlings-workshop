@@ -6,15 +6,44 @@ use tokio::net::{TcpListener, TcpStream};
 use tokio_rustls::{TlsAcceptor, TlsConnector};
 
 pub fn build_server_config(cert: Vec<CertificateDer<'static>>, key: PrivateKeyDer<'static>) -> Result<Arc<ServerConfig>, rustls::Error> {
-    todo!()
+    let mut config = ServerConfig::builder()
+        .with_no_client_auth()
+        .with_single_cert(cert, key)?;
+    config.alpn_protocols = vec![b"h2".to_vec(), b"http/1.1".to_vec()];
+    Ok(Arc::new(config))
 }
 
 pub fn build_client_config() -> Arc<ClientConfig> {
-    todo!()
+    let mut roots = rustls::RootCertStore::empty();
+    roots.extend(webpki_roots::TLS_SERVER_ROOTS.iter().cloned());
+    let config = ClientConfig::builder()
+        .with_root_certificates(roots)
+        .with_no_client_auth();
+    Arc::new(config)
 }
 
 pub async fn run_echo_server(addr: &str, config: Arc<ServerConfig>) -> std::io::Result<()> {
-    todo!()
+    let listener = TcpListener::bind(addr).await?;
+    loop {
+        let (stream, _) = listener.accept().await?;
+        let config = config.clone();
+        tokio::spawn(async move {
+            let tls = TlsAcceptor::from(config);
+            let mut tls_stream = match tls.accept(stream).await {
+                Ok(s) => s,
+                Err(_) => return,
+            };
+            let mut buf = [0u8; 4096];
+            loop {
+                match tls_stream.read(&mut buf).await {
+                    Ok(0) | Err(_) => break,
+                    Ok(n) => {
+                        let _ = tls_stream.write_all(&buf[..n]).await;
+                    }
+                }
+            }
+        });
+    }
 }
 
 pub async fn tls_echo_roundtrip(
@@ -22,11 +51,18 @@ pub async fn tls_echo_roundtrip(
     server_config: Arc<ServerConfig>,
     message: &[u8],
 ) -> Result<Vec<u8>, Box<dyn std::error::Error>> {
-    todo!()
+    let connector = TlsConnector::from(server_config);
+    let stream = TcpStream::connect(server_addr).await?;
+    let domain = ServerName::try_from("localhost".to_string())?;
+    let mut tls_stream = connector.connect(domain, stream).await?;
+    tls_stream.write_all(message).await?;
+    let mut buf = Vec::new();
+    tls_stream.read_to_end(&mut buf).await?;
+    Ok(buf)
 }
 
 pub fn parse_server_name(name: &str) -> Result<ServerName<'static>, rustls::pki_types::InvalidDnsNameError> {
-    todo!()
+    ServerName::try_from(name.to_string())
 }
 
 #[cfg(test)]

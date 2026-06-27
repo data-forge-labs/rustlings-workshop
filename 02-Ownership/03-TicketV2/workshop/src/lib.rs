@@ -24,13 +24,24 @@ impl Status {
     /// Parse a string into a Status variant.
     /// README §4: Match — exhaustive pattern matching
     pub fn from_str(s: &str) -> Result<Status, TicketError> {
-        todo!()
+        match s {
+            "Open" => Ok(Status::Open),
+            "In Progress" => Ok(Status::InProgress),
+            "Resolved" => Ok(Status::Resolved),
+            "Closed" => Ok(Status::Closed),
+            other => Err(TicketError::InvalidStatus(other.to_string())),
+        }
     }
 }
 
 impl fmt::Display for Status {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        todo!()
+        match self {
+            Status::Open => write!(f, "Open"),
+            Status::InProgress => write!(f, "In Progress"),
+            Status::Resolved => write!(f, "Resolved"),
+            Status::Closed => write!(f, "Closed"),
+        }
     }
 }
 
@@ -48,7 +59,17 @@ pub enum TicketError {
 
 impl fmt::Display for TicketError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        todo!()
+        match self {
+            TicketError::EmptyTitle => write!(f, "Title cannot be empty"),
+            TicketError::TitleTooLong { max, actual } => {
+                write!(f, "Title too long: max {} but got {}", max, actual)
+            }
+            TicketError::EmptyDescription => write!(f, "Description cannot be empty"),
+            TicketError::DescriptionTooLong { max, actual } => {
+                write!(f, "Description too long: max {} but got {}", max, actual)
+            }
+            TicketError::InvalidStatus(s) => write!(f, "Invalid status: {}", s),
+        }
     }
 }
 
@@ -65,31 +86,53 @@ impl Ticket {
     /// Create a Ticket, returning an error if validation fails.
     /// README §7: Result<T, E> — recoverable errors
     pub fn new(title: String, description: String, status: Status) -> Result<Ticket, TicketError> {
-        todo!()
+        if title.is_empty() {
+            return Err(TicketError::EmptyTitle);
+        }
+        if title.len() > 50 {
+            return Err(TicketError::TitleTooLong {
+                max: 50,
+                actual: title.len(),
+            });
+        }
+        if description.is_empty() {
+            return Err(TicketError::EmptyDescription);
+        }
+        if description.len() > 500 {
+            return Err(TicketError::DescriptionTooLong {
+                max: 500,
+                actual: description.len(),
+            });
+        }
+        Ok(Ticket {
+            title,
+            description,
+            status,
+        })
     }
 
     /// README §7-9
     pub fn title(&self) -> &str {
-        todo!()
+        &self.title
     }
 
     pub fn description(&self) -> &str {
-        todo!()
+        &self.description
     }
 
     pub fn status(&self) -> &Status {
-        todo!()
+        &self.status
     }
 
     /// README §5: if let — set status when you only care about one variant
     pub fn set_status(&mut self, status: Status) {
-        todo!()
+        self.status = status;
     }
 }
 
 impl fmt::Display for Ticket {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        todo!()
+        write!(f, "[{}] {} — {}", self.status, self.title, self.description)
     }
 }
 

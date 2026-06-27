@@ -114,7 +114,43 @@ pub fn make_int_batch(n_rows: usize) -> RecordBatch {
 // =============================================================================
 /// Describe the encoding model in one sentence.
 pub fn encoding_model_summary() -> &'static str {
-    todo!("Step 01: explain Nimble's per-stream model in 1-2 sentences")
+    "Nimble encodes each column as a stream of independently compressed chunks, choosing the optimal encoding per chunk based on data patterns."
+}
+
+pub fn writer_api_doc() -> String {
+    "NimbleWriter API:\n\
+     - NimbleWriter::new(schema) -> creates a writer with the given schema\n\
+     - StreamBuilder::new(name, encoding) -> configures a per-column stream\n\
+     - writer.write_stream(stream_builder, data) -> appends encoded data\n\
+     - writer.finish() -> flushes all streams to disk"
+        .to_string()
+}
+
+pub fn reader_api_doc() -> String {
+    "NimbleReader API:\n\
+     - NimbleReader::open(path) -> opens a Nimble file for reading\n\
+     - reader.schema() -> returns the file schema\n\
+     - reader.read_stream(name) -> returns a StreamReader for one column\n\
+     - reader.read_batch(columns) -> returns a RecordBatch with selected columns"
+        .to_string()
+}
+
+pub fn cascading_vs_fixed_table() -> String {
+    "| Feature | Cascading (Nimble) | Fixed Codec (Parquet) |\n\
+     |---|---|---|\n\
+     | Encoding per chunk | Yes (recursive tree) | No (one codec per column) |\n\
+     | Adaptability | High (best encoding per data pattern) | Low (fixed choice at write time) |\n\
+     | Overhead | Slightly higher metadata | Lower metadata |\n\
+     | Decode speed | Depends on encoding tree | Predictable (one codec) |\n"
+        .to_string()
+}
+
+pub fn flatbuffer_metadata_benefit() -> String {
+    "Nimble uses FlatBuffer metadata to enable O(1) column access. The footer contains a FlatBuffer index that maps each column directly to its offset and length on disk, avoiding full-file scans for wide tables with hundreds of columns."
+}
+
+pub fn simd_gpu_benefit() -> String {
+    "Nimble encodings like Frame-of-Reference and BitPacking are SIMD-friendly: they operate on fixed-width integer lanes that map directly to vector instructions. GPU acceleration is possible because the same per-lane operations can be parallelized across thousands of CUDA cores for bulk decoding."
 }
 
 // =============================================================================

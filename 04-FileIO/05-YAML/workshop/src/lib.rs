@@ -31,19 +31,22 @@ pub struct PipelineConfig {
 }
 
 pub fn parse_pipeline_config(yaml: &str) -> Result<PipelineConfig, serde_yaml::Error> {
-    todo!()
+    serde_yaml::from_str(yaml)
 }
 
 pub fn write_pipeline_config(config: &PipelineConfig) -> Result<String, serde_yaml::Error> {
-    todo!()
+    serde_yaml::to_string(config)
 }
 
 pub fn read_pipeline_file(path: &str) -> Result<PipelineConfig, Box<dyn std::error::Error>> {
-    todo!()
+    let contents = fs::read_to_string(path)?;
+    Ok(serde_yaml::from_str(&contents)?)
 }
 
 pub fn write_pipeline_file(path: &str, config: &PipelineConfig) -> Result<(), Box<dyn std::error::Error>> {
-    todo!()
+    let yaml = serde_yaml::to_string(config)?;
+    fs::write(path, yaml)?;
+    Ok(())
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -63,23 +66,29 @@ pub enum JobStatus {
 }
 
 pub fn parse_job_results(yaml: &str) -> Result<Vec<JobResult>, serde_yaml::Error> {
-    todo!()
+    serde_yaml::from_str(yaml)
 }
 
 pub fn serialize_job_results(results: &[JobResult]) -> Result<String, serde_yaml::Error> {
-    todo!()
+    serde_yaml::to_string(results)
 }
 
 pub fn merge_configs(base: &str, override_yaml: &str) -> Result<PipelineConfig, serde_yaml::Error> {
-    todo!()
+    let mut config: PipelineConfig = serde_yaml::from_str(base)?;
+    let override_config: PipelineConfig = serde_yaml::from_str(override_yaml)?;
+    config.database = override_config.database;
+    Ok(config)
 }
 
 pub fn unique_source_names(config: &PipelineConfig) -> Vec<String> {
-    todo!()
+    let mut names: Vec<String> = config.sources.iter().map(|s| s.name.clone()).collect();
+    names.sort();
+    names.dedup();
+    names
 }
 
 pub fn count_sources_by_format(config: &PipelineConfig, format: &str) -> usize {
-    todo!()
+    config.sources.iter().filter(|s| s.format == format).count()
 }
 
 #[cfg(test)]

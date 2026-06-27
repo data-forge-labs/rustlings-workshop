@@ -1,7 +1,9 @@
 use rand::seq::SliceRandom;
 
 pub fn create_fruit_salad(mut fruits: Vec<String>) -> Vec<String> {
-    todo!()
+    let mut rng = rand::rng();
+    fruits.shuffle(&mut rng);
+    fruits
 }
 
 pub fn csv_to_vec(csv: &str) -> Vec<String> {

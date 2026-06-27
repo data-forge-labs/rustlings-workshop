@@ -734,3 +734,61 @@ When a project fails to compile, always run `cargo check` (not `cargo build`) fo
 | crate download fails | Network blocks crates.io (corporate VPN/firewall) | Try `cargo check --offline` if deps are already cached, or use a different network |
 
 ---
+
+## 12. Branch Strategy: Solutions Branch
+
+This repository maintains two branches to support the learning workflow:
+
+### Branch structure
+
+| Branch | Purpose | Code state |
+|--------|---------|------------|
+| `main` | Student-facing branch | All functions contain `todo!()` stubs — students implement them |
+| `solutions` | Reference/solution branch | All functions are fully implemented — for verification |
+
+### How it works
+
+1. **Students** clone the repo and work on `main`. Each workshop's `src/lib.rs` has `todo!()` stubs that students replace with real code as they follow the README.
+
+2. **Students verify** by switching to the `solutions` branch or comparing their implementation against it:
+   ```bash
+   # See the diff between your work and the solution
+   git diff solutions -- 01-Foundations/02-GuessGame/workshop/src/lib.rs
+   ```
+
+3. **Instructors/contributors** update both branches when modifying exercises:
+   - On `main`: ensure all functions still have `todo!()` stubs
+   - On `solutions`: ensure the same functions have correct implementations
+
+### Maintaining both branches
+
+When adding or updating a lesson:
+
+```bash
+# 1. Work on the solutions branch first (implement the functions)
+git checkout solutions
+# ... implement functions ...
+cargo test  # verify solutions pass
+
+# 2. Switch to main and create todo!() stubs
+git checkout main
+# ... replace implementations with todo!() stubs ...
+cargo check  # verify code compiles (todo!() always compiles)
+
+# 3. Commit to both branches
+git checkout solutions && git add -A && git commit -m "Implement: lesson name"
+git checkout main && git add -A && git commit -m "Stub: lesson name"
+git push origin solutions main
+```
+
+### Quick verification commands
+
+```bash
+# Check if main has todo!() in a file (should show matches)
+git show main:path/to/file.rs | grep "todo!"
+
+# Check if solutions has implementations (should NOT show bare todo!())
+git show solutions:path/to/file.rs | grep "todo!" | grep -v "todo!()"
+```
+
+---

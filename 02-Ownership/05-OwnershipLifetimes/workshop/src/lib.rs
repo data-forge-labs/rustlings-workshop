@@ -1,11 +1,11 @@
 /// Return the longer of two string slices (basic lifetime demo)
 pub fn longest<'a>(x: &'a str, y: &'a str) -> &'a str {
-    todo!()
+    if x.len() >= y.len() { x } else { y }
 }
 
 /// Return the first element of a slice (lifetime elision)
 pub fn first<'a>(items: &'a [i32]) -> &'a i32 {
-    todo!()
+    &items[0]
 }
 
 /// A struct with a reference (requires lifetime annotation)
@@ -16,27 +16,32 @@ pub struct Bookmark<'a> {
 
 impl<'a> Bookmark<'a> {
     pub fn new(title: &'a str, url: &'a str) -> Self {
-        todo!()
+        Bookmark { title, url }
     }
 
     pub fn display(&self) -> String {
-        todo!()
+        format!("{} - {}", self.title, self.url)
     }
 }
 
 /// Demonstrate move semantics
 pub fn move_demo(s: String) -> String {
-    todo!()
+    s
 }
 
 /// Demonstrate Copy types (i32 is Copy)
 pub fn copy_demo(x: i32) -> i32 {
-    todo!()
+    x
 }
 
 /// Return a list of lifetime/ownership concepts
 pub fn lifetime_concepts() -> Vec<&'static str> {
-    todo!()
+    vec![
+        "Lifetime annotations ('a)",
+        "Borrowing — shared references",
+        "Move semantics — ownership transfer",
+        "Copy types — stack-only types that are implicitly copied",
+    ]
 }
 
 #[cfg(test)]

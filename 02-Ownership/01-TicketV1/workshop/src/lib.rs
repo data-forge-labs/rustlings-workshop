@@ -21,37 +21,59 @@ impl Ticket {
     /// panics if title/description/status are invalid.
     /// README §4: Structs, §6: Validation
     pub fn new(title: String, description: String, status: String) -> Ticket {
-        todo!()
+        assert!(!title.is_empty(), "Title cannot be empty");
+        assert!(title.len() <= 50, "Title too long");
+        assert!(!title.contains('\n'), "Title cannot contain newlines");
+        assert!(!description.is_empty(), "Description cannot be empty");
+        assert!(description.len() <= 500, "Description too long");
+        assert!(
+            matches!(status.as_str(), "Open" | "In Progress" | "Closed"),
+            "Invalid status"
+        );
+        Ticket {
+            title,
+            description,
+            status,
+        }
     }
 
     /// README §5: Methods, §11: References
     pub fn title(&self) -> &String {
-        todo!()
+        &self.title
     }
 
     /// README §5: Methods, §11: References
     pub fn description(&self) -> &String {
-        todo!()
+        &self.description
     }
 
     /// README §5: Methods, §11: References
     pub fn status(&self) -> &String {
-        todo!()
+        &self.status
     }
 
     /// README §7: Setters
     pub fn set_title(&mut self, title: String) {
-        todo!()
+        assert!(!title.is_empty(), "Title cannot be empty");
+        assert!(title.len() <= 50, "Title too long");
+        assert!(!title.contains('\n'), "Title cannot contain newlines");
+        self.title = title;
     }
 
     /// README §7: Setters
     pub fn set_description(&mut self, description: String) {
-        todo!()
+        assert!(!description.is_empty(), "Description cannot be empty");
+        assert!(description.len() <= 500, "Description too long");
+        self.description = description;
     }
 
     /// README §7: Setters
     pub fn set_status(&mut self, status: String) {
-        todo!()
+        assert!(
+            matches!(status.as_str(), "Open" | "In Progress" | "Closed"),
+            "Invalid status"
+        );
+        self.status = status;
     }
 }
 

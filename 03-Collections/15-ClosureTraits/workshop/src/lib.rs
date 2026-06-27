@@ -4,17 +4,15 @@
 /// Accepts a closure that can only be called once (FnOnce).
 /// The closure takes ownership of any captured values.
 pub fn apply_fn_once<F: FnOnce() -> String>(f: F) -> String {
-    todo!("Call f() and return its result")
+    f()
 }
 
-/// Accepts a mutable reference to a closure that can mutate captured state (FnMut).
 pub fn apply_fn_mut<F: FnMut(i32) -> i32>(f: &mut F, val: i32) -> i32 {
-    todo!("Call f(val) and return its result")
+    f(val)
 }
 
-/// Accepts a closure that only borrows captured values immutably (Fn).
 pub fn apply_fn<F: Fn(i32) -> bool>(f: &F, val: i32) -> bool {
-    todo!("Call f(val) and return its result")
+    f(val)
 }
 
 // Step 2: Closures returning closures
@@ -31,7 +29,7 @@ pub fn make_adder(n: i32) -> impl Fn(i32) -> i32 {
 
 /// Sort a slice of (name, score) tuples by score descending using sort_by with a closure.
 pub fn sort_by_score(data: &mut Vec<(&str, i32)>) {
-    todo!("Use data.sort_by() with a closure that compares scores descending")
+    data.sort_by(|a, b| b.1.cmp(&a.1));
 }
 
 // Step 4: Custom Iterator — Counter
@@ -53,7 +51,12 @@ impl Iterator for Counter {
     type Item = u32;
 
     fn next(&mut self) -> Option<Self::Item> {
-        todo!("Increment count, return Some(count) if count <= max, else None")
+        if self.count < self.max {
+            self.count += 1;
+            Some(self.count)
+        } else {
+            None
+        }
     }
 }
 
@@ -76,7 +79,11 @@ impl Iterator for Fibonacci {
     type Item = u64;
 
     fn next(&mut self) -> Option<Self::Item> {
-        todo!("Return current a, then advance: new_a = b, new_b = a + b")
+        let result = self.a;
+        let new_b = self.a + self.b;
+        self.a = self.b;
+        self.b = new_b;
+        Some(result)
     }
 }
 
@@ -86,7 +93,7 @@ impl Iterator for Fibonacci {
 /// Given a list of numbers, return only even numbers, square them, and sum the results.
 /// Demonstrates chaining closures with iterator adapters.
 pub fn run_pipeline(data: &[i32]) -> Vec<i32> {
-    todo!("filter evens, map to squares, collect into Vec")
+    data.iter().copied().filter(|x| x % 2 == 0).map(|x| x * x).collect()
 }
 
 #[cfg(test)]

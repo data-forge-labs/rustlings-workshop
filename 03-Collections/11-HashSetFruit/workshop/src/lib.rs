@@ -2,11 +2,22 @@ use rand::seq::SliceRandom;
 use std::collections::{HashMap, HashSet};
 
 pub fn generate_fruit() -> &'static str {
-    todo!()
+    let fruits = ["Apple", "Banana", "Cherry", "Date", "Elderberry", "Fig", "Grape", "Honeydew"];
+    let mut rng = rand::rng();
+    fruits[rng.random_range(0..fruits.len())]
 }
 
 pub fn collect_unique_fruits(count: usize) -> (HashSet<&'static str>, HashMap<&'static str, u32>) {
-    todo!()
+    let fruits = ["Apple", "Banana", "Cherry", "Date", "Elderberry", "Fig", "Grape", "Honeydew"];
+    let mut set = HashSet::new();
+    let mut counter = HashMap::new();
+    let mut rng = rand::rng();
+    for _ in 0..count {
+        let fruit = fruits[rng.random_range(0..fruits.len())];
+        set.insert(fruit);
+        *counter.entry(fruit).or_insert(0) += 1;
+    }
+    (set, counter)
 }
 
 #[cfg(test)]

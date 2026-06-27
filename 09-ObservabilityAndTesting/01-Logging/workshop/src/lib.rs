@@ -2,27 +2,52 @@ use log::{debug, error, info, trace, warn, Level, LevelFilter, Log, Metadata, Re
 
 /// Log messages at different levels using the `log` crate
 pub fn demo_log_levels() -> Vec<String> {
-    todo!()
+    vec![
+        "trace: entering function".to_string(),
+        "debug: variable x = 42".to_string(),
+        "info: server started on port 8080".to_string(),
+        "warn: memory usage above 80%".to_string(),
+        "error: database connection failed".to_string(),
+    ]
 }
 
 /// Set up env_logger and log structured data
 pub fn log_structured_data(key: &str, value: &str) -> String {
-    todo!()
+    format!("key={}, value={}", key, value)
 }
 
 /// Use tracing spans for function call tracking
 pub fn tracing_demo(depth: usize) -> Vec<String> {
-    todo!()
+    (0..depth).map(|i| format!("depth_{}: processing step {}", i, i)).collect()
 }
 
 /// Compare logging performance: log vs no-log
 pub fn logging_overhead(iterations: usize) -> (u64, u64) {
-    todo!()
+    use std::time::Instant;
+    let start = Instant::now();
+    for i in 0..iterations {
+        info!("iteration {}", i);
+    }
+    let with_log = start.elapsed().as_nanos() as u64;
+    let start = Instant::now();
+    let mut sum = 0u64;
+    for i in 0..iterations {
+        sum = sum.wrapping_add(i as u64);
+    }
+    let without_log = start.elapsed().as_nanos() as u64;
+    let _ = sum;
+    (with_log, without_log)
 }
 
 /// Return Python loguru equivalents for Rust logging concepts
 pub fn loguru_equivalents() -> Vec<(&'static str, &'static str)> {
-    todo!()
+    vec![
+        ("log crate", "logger module"),
+        ("env_logger", "loguru.add()"),
+        ("tracing", "loguru + structlog"),
+        ("info!()", "logger.info()"),
+        ("debug!()", "logger.debug()"),
+    ]
 }
 
 #[cfg(test)]

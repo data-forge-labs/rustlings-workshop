@@ -1,21 +1,23 @@
 /// Build a new array by copying elements from the start.
 pub fn take_first<T: Copy>(arr: &[T; 5], n: usize) -> Vec<T> {
-    todo!()
+    arr.iter().copied().take(n).collect()
 }
 
 /// Sum all elements in a fixed-size array.
 pub fn sum_array(arr: &[i32; 5]) -> i32 {
-    todo!()
+    arr.iter().sum()
 }
 
 /// Find the max element in a fixed-size array.
 pub fn max_array(arr: &[i32; 5]) -> i32 {
-    todo!()
+    arr.iter().copied().max().unwrap()
 }
 
 /// Reverse a fixed-size array into a new array.
 pub fn reverse_array(arr: &[i32; 5]) -> [i32; 5] {
-    todo!()
+    let mut result = *arr;
+    result.reverse();
+    result
 }
 
 #[cfg(test)]

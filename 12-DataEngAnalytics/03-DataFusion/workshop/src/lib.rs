@@ -4,35 +4,60 @@ use datafusion::error::Result;
 use datafusion::prelude::*;
 
 pub async fn create_context() -> Result<SessionContext> {
-    todo!()
+    Ok(SessionContext::new())
 }
 
 pub async fn register_csv(ctx: &SessionContext, table: &str, path: &str) -> Result<()> {
-    todo!()
+    ctx.register_csv(table, path, CsvReadOptions::default()).await?;
+    Ok(())
 }
 
 pub async fn count_rows(ctx: &SessionContext, table: &str) -> Result<i64> {
-    todo!()
+    let df = ctx.sql(&format!("SELECT COUNT(*) AS n FROM {}", table)).await?;
+    let batches = df.collect().await?;
+    let batch = &batches[0];
+    let n_col = batch.column(0).as_any().downcast_ref::<Int64Array>().unwrap();
+    Ok(n_col.value(0))
 }
 
 pub async fn total_amount(ctx: &SessionContext, table: &str) -> Result<f64> {
-    todo!()
+    let df = ctx.sql(&format!("SELECT SUM(amount) AS total FROM {}", table)).await?;
+    let batches = df.collect().await?;
+    let batch = &batches[0];
+    let col = batch.column(0).as_any().downcast_ref::<Float64Array>().unwrap();
+    Ok(col.value(0))
 }
 
 pub async fn rows_above_amount(ctx: &SessionContext, table: &str, threshold: f64) -> Result<usize> {
-    todo!()
+    let df = ctx.sql(&format!("SELECT COUNT(*) AS n FROM {} WHERE amount > {}", table, threshold)).await?;
+    let batches = df.collect().await?;
+    let batch = &batches[0];
+    let n_col = batch.column(0).as_any().downcast_ref::<Int64Array>().unwrap();
+    Ok(n_col.value(0) as usize)
 }
 
 pub async fn names_above_amount(ctx: &SessionContext, table: &str, threshold: f64) -> Result<Vec<String>> {
-    todo!()
+    let df = ctx.sql(&format!("SELECT name FROM {} WHERE amount > {} ORDER BY name", table, threshold)).await?;
+    let batches = df.collect().await?;
+    let mut names = Vec::new();
+    for batch in &batches {
+        let col = batch.column(0).as_any().downcast_ref::<StringArray>().unwrap();
+        for i in 0..col.len() {
+            names.push(col.value(i).to_string());
+        }
+    }
+    Ok(names)
 }
 
 pub async fn run_sql(ctx: &SessionContext, sql: &str) -> Result<Vec<RecordBatch>> {
-    todo!()
+    let df = ctx.sql(sql).await?;
+    Ok(df.collect().await?)
 }
 
 pub async fn write_parquet(ctx: &SessionContext, table: &str, path: &str) -> Result<()> {
-    todo!()
+    let df = ctx.sql(&format!("SELECT * FROM {}", table)).await?;
+    df.write_parquet(path, None).await?;
+    Ok(())
 }
 
 #[cfg(test)]

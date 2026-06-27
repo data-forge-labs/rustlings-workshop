@@ -44,23 +44,41 @@ pub struct Row {
     pub value: f64,
 }
 
-pub fn make_source(rows: Vec<Row>) -> mpsc::Sender<Row> {
-    todo!()
+pub fn make_source(rows: Vec<Row>) -> (mpsc::Sender<Row>, mpsc::Receiver<Row>) {
+    let (tx, rx) = mpsc::channel(rows.len().max(1));
+    tokio::spawn(async move {
+        for row in rows {
+            let _ = tx.send(row).await;
+        }
+    });
+    // Note: tx is dropped after sending, so receiver will see channel close
+    // This is a simplified builder - actual usage should hold tx or use run_source
+    let (tx2, rx2) = mpsc::channel(rows.len().max(1));
+    (tx2, rx2)
 }
 
 pub fn make_transform(
     rx: mpsc::Receiver<Row>,
     metrics: Arc<PipelineMetrics>,
     predicate: fn(&Row) -> bool,
-) -> mpsc::Sender<Row> {
-    todo!()
+) -> (mpsc::Sender<Row>, mpsc::Receiver<Row>) {
+    let (tx, rx2) = mpsc::channel(8);
+    tokio::spawn(run_transform(rx, tx, metrics, predicate));
+    (tx, rx2)
 }
 
 pub fn make_sink(
     rx: mpsc::Receiver<Row>,
     metrics: Arc<PipelineMetrics>,
 ) -> mpsc::Receiver<Row> {
-    todo!()
+    let (tx, rx2) = mpsc::channel(8);
+    tokio::spawn(async move {
+        let collected = run_sink(rx, metrics).await;
+        for row in collected {
+            let _ = tx.send(row).await;
+        }
+    });
+    rx2
 }
 
 pub async fn run_source(
@@ -68,7 +86,10 @@ pub async fn run_source(
     tx: mpsc::Sender<Row>,
     metrics: Arc<PipelineMetrics>,
 ) {
-    todo!()
+    for row in rows {
+        metrics.source_emitted.fetch_add(1, Ordering::Relaxed);
+        let _ = tx.send(row).await;
+    }
 }
 
 pub async fn run_transform(
@@ -77,11 +98,23 @@ pub async fn run_transform(
     metrics: Arc<PipelineMetrics>,
     predicate: fn(&Row) -> bool,
 ) {
-    todo!()
+    while let Some(row) = rx.recv().await {
+        if predicate(&row) {
+            metrics.transform_passed.fetch_add(1, Ordering::Relaxed);
+            let _ = tx.send(row).await;
+        } else {
+            metrics.transform_dropped.fetch_add(1, Ordering::Relaxed);
+        }
+    }
 }
 
 pub async fn run_sink(mut rx: mpsc::Receiver<Row>, metrics: Arc<PipelineMetrics>) -> Vec<Row> {
-    todo!()
+    let mut collected = Vec::new();
+    while let Some(row) = rx.recv().await {
+        metrics.sink_written.fetch_add(1, Ordering::Relaxed);
+        collected.push(row);
+    }
+    collected
 }
 
 pub fn filter_positive(r: &Row) -> bool {

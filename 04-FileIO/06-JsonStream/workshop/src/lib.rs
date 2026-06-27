@@ -10,47 +10,74 @@ pub struct User {
 }
 
 pub fn parse_user(json: &str) -> Result<User, serde_json::Error> {
-    todo!()
+    serde_json::from_str(json)
 }
 
 pub fn serialize_user(user: &User) -> Result<String, serde_json::Error> {
-    todo!()
+    serde_json::to_string(user)
 }
 
 pub fn parse_value(json: &str) -> Result<Value, serde_json::Error> {
-    todo!()
+    serde_json::from_str(json)
 }
 
 pub fn pretty_print(value: &Value) -> Result<String, serde_json::Error> {
-    todo!()
+    serde_json::to_string_pretty(value)
 }
 
 pub fn get_nested_string<'a>(value: &'a Value, path: &[&str]) -> Option<&'a str> {
-    todo!()
+    let mut current = value;
+    for key in path {
+        current = current.get(key)?;
+    }
+    current.as_str()
 }
 
 pub fn read_ndjson_users(path: &str) -> Result<Vec<User>, Box<dyn std::error::Error>> {
-    todo!()
+    let contents = fs::read_to_string(path)?;
+    let mut users = Vec::new();
+    for line in contents.lines() {
+        if !line.trim().is_empty() {
+            users.push(serde_json::from_str(line)?);
+        }
+    }
+    Ok(users)
 }
 
 pub fn write_ndjson_users(path: &str, users: &[User]) -> Result<(), Box<dyn std::error::Error>> {
-    todo!()
+    let lines: Vec<String> = users.iter().map(|u| serde_json::to_string(u)).collect::<Result<_, _>>()?;
+    fs::write(path, lines.join("\n"))?;
+    Ok(())
 }
 
 pub fn write_pretty_json_file(path: &str, value: &Value) -> Result<(), Box<dyn std::error::Error>> {
-    todo!()
+    let json = serde_json::to_string_pretty(value)?;
+    fs::write(path, json)?;
+    Ok(())
 }
 
 pub fn count_keys(value: &Value) -> usize {
-    todo!()
+    match value {
+        Value::Object(map) => map.len(),
+        _ => 0,
+    }
 }
 
 pub fn merge_values(a: &Value, b: &Value) -> Value {
-    todo!()
+    match (a, b) {
+        (Value::Object(a_map), Value::Object(b_map)) => {
+            let mut merged = a_map.clone();
+            for (k, v) in b_map {
+                merged.insert(k.clone(), v.clone());
+            }
+            Value::Object(merged)
+        }
+        _ => b.clone(),
+    }
 }
 
 pub fn filter_users_by_age(users: &[User], min_age: u32) -> Vec<User> {
-    todo!()
+    users.iter().filter(|u| u.age >= min_age).cloned().collect()
 }
 
 #[cfg(test)]
