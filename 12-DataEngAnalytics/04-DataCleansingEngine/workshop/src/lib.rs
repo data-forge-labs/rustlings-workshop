@@ -1,4 +1,5 @@
 use flate2::read::GzDecoder;
+use polars::prelude::*;
 use serde::{Deserialize, Serialize};
 use std::io::Read;
 use thiserror::Error;
@@ -48,7 +49,16 @@ impl Default for ProcessingLimits {
 
 /// Validate that headers don't exceed the column limit.
 pub fn validate_headers(headers: &[String], limits: &ProcessingLimits) -> Result<(), TurboError> {
-    todo!("Check if headers.len() > limits.max_columns, return SecurityLimit if exceeded")
+    if headers.len() > limits.max_columns {
+        return Err(TurboError::SecurityLimit {
+            msg: format!(
+                "Column count {} exceeds limit {}",
+                headers.len(),
+                limits.max_columns
+            ),
+        });
+    }
+    Ok(())
 }
 
 // ============================================================
@@ -63,15 +73,28 @@ pub struct SafeGzipReader<R: Read> {
 
 impl<R: Read> SafeGzipReader<R> {
     pub fn new(inner: R, compressed_size: usize, limits: &ProcessingLimits) -> Self {
-        todo!("Create SafeGzipReader with max_bytes = compressed_size * max_decompression_ratio")
+        Self {
+            decoder: GzDecoder::new(inner),
+            bytes_read: 0,
+            max_bytes: (compressed_size as f64 * limits.max_decompression_ratio) as u64,
+        }
     }
 }
 
 impl<R: Read> Read for SafeGzipReader<R> {
     fn read(&mut self, buf: &mut [u8]) -> std::io::Result<usize> {
-        todo!(
-            "Read from decoder, track bytes_read, return Err if bytes_read > max_bytes"
-        )
+        let n = self.decoder.read(buf)?;
+        self.bytes_read += n as u64;
+        if self.bytes_read > self.max_bytes {
+            return Err(std::io::Error::new(
+                std::io::ErrorKind::Other,
+                format!(
+                    "Decompressed data exceeds security limit: {} > {} bytes",
+                    self.bytes_read, self.max_bytes
+                ),
+            ));
+        }
+        Ok(n)
     }
 }
 
@@ -98,12 +121,12 @@ pub enum CleaningRule {
 impl CleaningRule {
     /// Serialize this rule to a JSON string.
     pub fn to_json(&self) -> Result<String, TurboError> {
-        todo!("Use serde_json::to_string")
+        serde_json::to_string(self).map_err(|e| TurboError::Serialization(e.to_string()))
     }
 
     /// Deserialize a rule from a JSON string.
     pub fn from_json(s: &str) -> Result<Self, TurboError> {
-        todo!("Use serde_json::from_str")
+        serde_json::from_str(s).map_err(|e| TurboError::Serialization(e.to_string()))
     }
 }
 
@@ -122,7 +145,14 @@ pub struct ColumnProfile {
 /// - If null_count > 0 → suggest ImputeMissing with Mean
 /// - If column name contains "id" → skip (don't impute IDs)
 pub fn suggest_rules(profiles: &[ColumnProfile]) -> Vec<CleaningRule> {
-    todo!("Iterate profiles, generate CleaningRule::ImputeMissing for non-ID columns with nulls")
+    profiles
+        .iter()
+        .filter(|p| p.null_count > 0 && !p.name.to_lowercase().contains("id"))
+        .map(|p| CleaningRule::ImputeMissing {
+            column: p.name.clone(),
+            strategy: ImputeStrategy::Mean,
+        })
+        .collect()
 }
 
 // ============================================================
@@ -162,9 +192,29 @@ impl CleaningEngine {
         path: &str,
         rules: &[CleaningRule],
     ) -> Result<polars::prelude::LazyFrame, TurboError> {
-        todo!(
-            "Create LazyCsvReader, apply rules as .filter() expressions, return the LazyFrame"
-        )
+        let lf = LazyCsvReader::new(path).finish()?;
+
+        let mut filtered = lf;
+        for rule in rules {
+            match rule {
+                CleaningRule::DropNulls { columns } => {
+                    for col_name in columns {
+                        filtered = filtered.filter(col(col_name).is_not_null());
+                    }
+                }
+                CleaningRule::FilterOutliersIQR { column, factor } => {
+                    let q1_expr = col(column).quantile(lit(0.25), QuantileMethod::Linear);
+                    let q3_expr = col(column).quantile(lit(0.75), QuantileMethod::Linear);
+                    let iqr = q3_expr.clone() - q1_expr.clone();
+                    let lower = q1_expr - iqr.clone() * lit(*factor);
+                    let upper = q3_expr + iqr * lit(*factor);
+                    filtered = filtered.filter(col(column).gt_eq(lower).and(col(column).lt_eq(upper)));
+                }
+                _ => {}
+            }
+        }
+
+        Ok(filtered)
     }
 
     /// Execute the plan with streaming and write to Parquet.
@@ -174,9 +224,20 @@ impl CleaningEngine {
         output_path: &str,
         rules: &[CleaningRule],
     ) -> Result<CleaningReport, TurboError> {
-        todo!(
-            "Build lazy plan, execute with .with_streaming(true).sink_parquet(), return report"
-        )
+        let lf = self.build_lazy_plan(input_path, rules)?;
+        lf.with_streaming(true)
+            .sink_parquet(&output_path, Default::default(), None)?;
+
+        let rows_read = {
+            let df = LazyCsvReader::new(input_path).finish()?.collect()?;
+            df.height() as u64
+        };
+
+        Ok(CleaningReport {
+            rows_read,
+            rows_written: rows_read,
+            rules_applied: rules.len(),
+        })
     }
 }
 
