@@ -98,6 +98,7 @@ off with `docker compose stop <service>`.
 | 06 | **DuckLakeCatalog** | `duckdb` | PyIceberg / Delta Lake | SQL catalog + Parquet + time-travel + merge-upsert |
 | 07 | **CdcPipeline** | `tokio`, `async-trait` | Debezium + Kafka Connect | Envelope shape, `Sink` trait, leader claim, checkpoint |
 | 08 | **UnifiedPipeline** | `tokio`, `async-trait` | Airbyte / Prefect / Dagster | Multi-sink fan-out, retry, dead-letter, live counters |
+| 09 | **OpenDalStorage** | `opendal`, `tokio` | `boto3` / `smart_open` / `fsspec` | Storage-agnostic pipelines: Operator, layers (retry/logging/metrics), Local FS → MinIO |
 
 ## Learning Path
 
@@ -113,6 +114,7 @@ Wave 2 (compose them):
   06 DuckLakeCatalog   ── Alternative to 04
   07 CdcPipeline       ── Composes 02 as a source
   08 UnifiedPipeline   ── Composes 01/03/04/05/06 as sinks
+  09 OpenDalStorage    ── Storage-agnostic file I/O (FS ↔ MinIO)
 ```
 
 After Wave 1 you have a *complete data pipeline* using
@@ -142,6 +144,9 @@ the alternative broker (Iggy) and the alternative lake
 - **Unified orchestrator** — the lesson is: every team
   eventually writes this. Now you have a reference
   implementation.
+- **OpenDAL** — storage-agnostic file I/O. One `Operator` API
+  for local FS, S3, GCS, Azure. Swapping backends is a config
+  change, not a code rewrite. The `boto3` of Rust, but unified.
 
 ## Python Pain → Rust Fix (one-line summary)
 

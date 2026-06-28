@@ -1,0 +1,25 @@
+[package]
+name = "open_dal_storage"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+opendal = { version = "0.57", features = [
+    # Storage backends
+    "services-fs",
+    "services-memory",
+    "services-s3",
+    # Composable layers
+    "layers-retry",
+    "layers-logging",
+    "layers-metrics",
+] }
+tokio = { version = "1", features = ["macros", "rt-multi-thread"] }
+anyhow = "1.0"
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter", "fmt"] }
+
+[profile.release]
+opt-level = 3
+lto = "thin"
+codegen-units = 1
