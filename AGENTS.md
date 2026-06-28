@@ -608,12 +608,12 @@ The following sections have **not yet been fully audited** for compact-preamble 
 | Add Exercises | Medium | |
 | Add Pipeline context section | Low | |
 
-### Section 14 — DataInfrastructure (8 projects)
+### Section 14 — DataInfrastructure (9 projects)
 
 | Task | Priority | Notes |
 |------|----------|-------|
 | Compact preamble audit | High | |
-| Replace "Python pain" / "Rust fix" with Python equivalent + transition | High | All 8 projects |
+| Replace "Python pain" / "Rust fix" with Python equivalent + transition | High | All 9 projects |
 | Fix links to other sections | High | |
 | Verify external‑service dependencies documented | High | Kafka, PostgreSQL, etc. need Docker Compose notes |
 | Add Python comparisons for Kafka, PostgreSQL, Redis | Medium | `rdkafka` ↔ `confluent_kafka`, `sqlx` ↔ `asyncpg`, `redis` ↔ `redis-py` |

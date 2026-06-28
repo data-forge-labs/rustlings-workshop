@@ -22,7 +22,7 @@ RustTut/
 ├── 11-Interop/                      ← Section 11 (projects 01-04) — PyO3, evcxr, GIL release
 ├── 12-DataEngAnalytics/             ← Section 12 (projects 01-03) — Polars, DuckDB, DataFusion
 ├── 13-ActorModel/                   ← Section 13 (projects 01-03) — DIY actor, ractor, ETL pipeline
-├── 14-DataInfrastructure/           ← Section 14 (projects 01-08) — Kafka, Postgres, Redis, ClickHouse, Iggy, DuckLake, CDC, Unified
+├── 14-DataInfrastructure/           ← Section 14 (projects 01-09) — Kafka, Postgres, Redis, ClickHouse, Iggy, DuckLake, CDC, Unified, OpenDAL
 ├── 15-Reference/                    ← Section 15 (reference appendix — no projects)
 └── 16-ModernIdioms/                 ← Section 16 (projects 01) — LazyLock, array_windows, if let chains, cfg_select!, assert_matches!
 ```
@@ -248,6 +248,7 @@ Projects are grouped into **sections** that map concepts a Python data engineer 
 | 06 | **DuckLakeCatalog** — SQL-on-Parquet lakehouse | `duckdb::Connection`, `ATTACH 'ducklake:...'`, time-travel `AT (VERSION => N)`, `MERGE INTO` upsert, compaction heuristic |
 | 07 | **CdcPipeline** — Debezium-style CDC | `CdcEvent` (before/after/op/ts_ms/tx_id), `CdcOp` enum, `topic_for`/`routing_key`, `LeaderClaim`, `Sink` trait, `Checkpoint`, `batch_ready` |
 | 08 | **UnifiedPipeline** — multi-sink orchestrator | `PipelineConfig`, `PipelineEvent`, `SinkOutcome`, `fanout_targets`, `WindowCounters`, `sink_backoff_ms`, `DeadLetter`, `PipelineStats` |
+| 09 | **OpenDalStorage** — storage-agnostic pipelines | `opendal` `Operator`, service builders (`Fs`/`Memory`/`S3`), `RetryLayer`, `LoggingLayer`, `MetricsLayer`, `pipeline_copy`, feature flags |
 
 ### Section 15: Reference Appendix
 
@@ -459,6 +460,10 @@ The table below lists all core Rust concepts a learner should eventually see. **
 | `if let` chains (complex conditional pattern matching) | ✅ | 16-01 |
 | `cfg_select!` (platform-specific code) | ✅ | 16-01 |
 | `assert_matches!` (better test assertions) | ✅ | 16-01 |
+| OpenDAL `Operator` (unified storage abstraction) | ✅ | 14-09 |
+| OpenDAL service builders (`Fs`, `Memory`, `S3`) | ✅ | 14-09 |
+| OpenDAL composable layers (`RetryLayer`, `LoggingLayer`, `MetricsLayer`) | ✅ | 14-09 |
+| Cross-backend pipeline (FS → S3 with same code) | ✅ | 14-09 |
 
 ---
 
@@ -558,12 +563,13 @@ Both features are now ✅ covered in this course. See the [Concepts Coverage](#r
 
 ## Credits
 
-This course is built from two excellent open-source Rust resources:
+This course is built from three excellent open-source Rust resources:
 
 - **[data-engineering-rust](https://github.com/jolisper/data-engineering-rust)** by [Jorge López](https://github.com/jolisper) — the hands-on Cargo projects teaching Rust for data engineering through practical examples (collections, graphs, concurrency, file I/O, etc.).
 - **[100-exercises-to-learn-rust](https://github.com/mainmatter/100-exercises-to-learn-rust)** by [Mainmatter](https://mainmatter.com) — the tutorial exercises teaching Rust fundamentals through structured, progressive exercises.
+- **[rust-magic-patterns](https://github.com/alexpusch/rust-magic-patterns)** by [Alex Pusch](https://github.com/alexpusch) — advanced Rust patterns and visualizations: async pipeline internals, stream API behavior, iterator internals, and concurrency visualization. The async pipeline and stream visualization workshops in sections 14 and 04 are adapted from this excellent resource.
 
-The original content, structure, and teaching design belong to their respective authors. This repository reorganizes and sequences the material into a single progressive curriculum. Huge thanks to both projects for their excellent work.
+The original content, structure, and teaching design belong to their respective authors. This repository reorganizes and sequences the material into a single progressive curriculum. Huge thanks to all three projects for their excellent work.
 
 ---
 
